@@ -30,6 +30,14 @@ group :development, :test do
 
   gem 'cucumber-rails'
   gem 'rspec'
+  gem 'database_cleaner'
+
+  # Guard
+  gem 'guard-cucumber'
+  gem 'rb-inotify' if RUBY_PLATFORM.downcase.include?('linux')
+  gem 'libnotify' if RUBY_PLATFORM.downcase.include?('linux')
+  gem 'rb-fsevent' if RUBY_PLATFORM.downcase.include?('darwin')
+  gem 'growl' if RUBY_PLATFORM.downcase.include?('darwin')
 
   # Pretty printed test output
   gem 'turn', :require => false
