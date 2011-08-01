@@ -25,8 +25,11 @@ gem 'haml-rails'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
-group [:dvelopment, :test] do
+group :development, :test do
   gem 'sqlite3'
+
+  gem 'cucumber-rails'
+  gem 'rspec'
 
   # Pretty printed test output
   gem 'turn', :require => false
