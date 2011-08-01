@@ -1,0 +1,20 @@
+
+common: &COMMON
+  adapter: sqlite3
+  encoding: utf8
+  pool: 5
+  timeout: 5000
+
+development:
+  <<: *COMMON
+  database: db/development.sqlite3
+
+test:
+  <<: *COMMON
+  database: db/test.sqlite3
+
+production:
+  <<: *COMMON
+  adapter: mysql2
+  host: localhost
+  database: nabu

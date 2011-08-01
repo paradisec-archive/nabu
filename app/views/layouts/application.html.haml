@@ -1,0 +1,11 @@
+!!! html5
+%html
+%head
+  %title Nabu
+  = stylesheet_link_tag    'application'
+  = javascript_include_tag 'application'
+  = csrf_meta_tags %>
+
+%body
+
+  = yield
