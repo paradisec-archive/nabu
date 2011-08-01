@@ -2,10 +2,43 @@
 %html
 %head
   %title Nabu
-  = stylesheet_link_tag    'application'
-  = javascript_include_tag 'application'
-  = csrf_meta_tags %>
+  = stylesheet_link_tag :screen, :media => 'screen, projection'
+  = stylesheet_link_tag :print,  :media => 'print'
+  /[if lt IE 8]
+    = stylesheet_link_tag :ie, :media => 'screen, projection'
 
-%body
+  = javascript_include_tag :application
 
-  = yield
+  = csrf_meta_tags
+
+%body.bp
+
+  #container
+    #header
+      .logo= image_tag 'paradisec.jpg', :height => 100
+      .name PARADISEC Catalog
+      .auth
+        = link_to 'Register', '#'
+        |
+        = link_to 'Login', '#'
+
+    #nav
+      #menu
+        %ul
+          %li.active= link_to 'Home', '#'
+          %li= link_to 'Browse Collections', '#'
+          %li= link_to 'Browse Items', '#'
+          %li= link_to 'Search', '#'
+          %li= link_to 'Help', '#'
+
+    #content
+      = yield
+
+    #footer
+      %center
+        = link_to 'About', '#'
+        |
+        = link_to 'Contact', '#'
+
+
+

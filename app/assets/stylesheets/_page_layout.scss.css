@@ -1,0 +1,21 @@
+
+// Page layout can be done using mixins applied to your semantic classes and IDs:
+body.bp {
+  #container {
+    @include container;
+  }
+  #header, #nav, #footer {
+    @include column($blueprint-grid-columns);
+  }
+  #content {
+    @include column($blueprint-grid-columns);
+  }
+
+  #header {
+    .logo { @include column(4); }
+    .name { @include column(16); }
+    .auth { @include column(4, last); }
+  }
+}
+
+

@@ -1,0 +1,43 @@
+body.bp {
+  a {
+    text-decoration: none;
+  }
+}
+
+// TODO move these to partials
+#header {
+  .name {
+    font-size: 5em;
+  }
+  .auth {
+    font-size: 2em;
+  }
+}
+
+#nav {
+  #menu {
+    padding-left: 10px;
+    border: #000 solid 4px;
+    ul {
+      @include horizontal-list(30px);
+      font-size: 2em;
+    }
+  }
+}
+
+#content {
+  margin-top: 20px;
+  min-height: 400px;
+}
+
+#footer {
+  margin-top: 20px;
+}
+
+.page {
+  border: #000 solid 4px;
+  background: #e5ecf9;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
