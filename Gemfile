@@ -18,6 +18,8 @@ gem 'jquery-rails'
 
 gem 'haml-rails'
 
+gem 'devise'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -31,8 +33,12 @@ group :development, :test do
   gem 'sqlite3'
 
   gem 'cucumber-rails'
-  gem 'rspec'
+  gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'pickle'
   gem 'database_cleaner'
+  gem 'email_spec'
+  gem 'launchy'
 
   # Guard
   gem 'guard-cucumber'

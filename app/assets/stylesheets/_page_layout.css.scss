@@ -13,8 +13,8 @@ body.bp {
 
   #header {
     .logo { @include column(4); }
-    .name { @include column(16); }
-    .auth { @include column(4, last); }
+    .name { @include column(12); }
+    .auth { @include column(8, last); }
   }
 }
 

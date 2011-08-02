@@ -11,6 +11,10 @@ body.bp {
   }
   .auth {
     font-size: 2em;
+    padding-top: 10px;
+    .inner {
+      float: right;
+    }
   }
 }
 
@@ -41,3 +45,6 @@ body.bp {
   padding-left: 10px;
 }
 
+#flash {
+  padding-top: 10px;
+}

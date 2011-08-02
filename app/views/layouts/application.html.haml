@@ -18,9 +18,15 @@
       .logo= image_tag 'paradisec.jpg', :height => 100
       .name PARADISEC Catalog
       .auth
-        = link_to 'Register', '#'
-        |
-        = link_to 'Login', '#'
+        .inner
+          - if user_signed_in?
+            = link_to current_user.name, '#' #current_user
+            |
+            = link_to 'Sign out', destroy_user_session_path, :method => :delete
+          - else
+            = link_to 'Sign up', new_user_registration_path
+            |
+            = link_to 'Sign in', new_user_session_path
 
     #nav
       #menu
@@ -30,6 +36,11 @@
           %li= link_to 'Browse Items', '#'
           %li= link_to 'Search', '#'
           %li= link_to 'Help', '#'
+
+    #flash
+      - flash.each do |name, msg|
+        - if msg.is_a?(String)
+          %div{:class => name}= msg
 
     #content
       = yield
