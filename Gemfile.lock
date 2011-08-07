@@ -124,6 +124,7 @@ GEM
     mysql2 (0.3.6)
     nokogiri (1.5.0)
     orm_adapter (0.0.5)
+    pg (0.11.0)
     pickle (0.4.8)
       cucumber (>= 0.8)
       rake
@@ -220,6 +221,7 @@ DEPENDENCIES
   launchy
   libnotify
   mysql2
+  pg
   pickle
   rails (= 3.1.0.rc5)
   rb-inotify
