@@ -3,6 +3,8 @@ source 'http://rubygems.org'
 gem 'rails', '3.1.0.rc5'
 
 gem 'mysql2'
+# For heroku
+gem 'pg'
 
 # Gems used only for assets and not required
 # in production environments by default.
