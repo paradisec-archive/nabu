@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 
     if result
       flash[:notice] = 'User was successfully updated.'
-      sign_in :user, @user, :bypass => true
+      sign_in :user, @user, :bypass => true if current_user == @user
       redirect_to @user
     else
       render :action => 'edit'
