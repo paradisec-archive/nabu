@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
   load_and_authorize_resource
 
+  def index
+  end
+
   def show
     render 'users/edit'
   end
@@ -36,5 +39,12 @@ class UsersController < ApplicationController
     else
       render :action => 'edit'
     end
+  end
+
+  def destroy
+    # TODO what if the users has collections or is the last user or last admin?
+    @user.destroy
+    flash[:notice] = 'User was deleted.'
+    redirect_to :action => :index
   end
 end

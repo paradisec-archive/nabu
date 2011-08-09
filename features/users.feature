@@ -172,7 +172,6 @@ Feature: Authentication and Authorisation
       And the "Admin" checkbox should be checked
       And the "Operator" checkbox should be checked
 
-  @wip
   Scenario: A user can only see her own details
     Given a user: "johnf" exists with email: "johnf@robotparade.com.au", first_name: "John"
     And a user: "silvia" exists with email: "silvia@gingertech.net", first_name: "Silvia"
@@ -182,3 +181,37 @@ Feature: Authentication and Authorisation
     When I go to the user "johnf"'s page
     Then I should not see "John"
     And I should see "Not allowed to manage other user accounts."
+
+  Scenario: Admins can see a list of users
+    Given an admin user "johnf" exists with first_name: "John"
+      And an admin user "nick" exists with first_name: "Nick"
+      And a user "silvia" exists with first_name: "Silvia"
+     When I am signed in as user "johnf"
+      And I go to the home page
+      And I follow "Browse Users"
+     Then I should see "John"
+      And I should see "Nick"
+      And I should see "Silvia"
+      # FIXME This is brittle
+      When I follow "Edit" within "tr:nth-child(2)"
+     Then I should be on the edit page for user "johnf"
+
+  Scenario: Admins can delete users
+    Given an admin user "johnf" exists with first_name: "John"
+      And a user "silvia" exists with first_name: "Silvia"
+     When I am signed in as user "johnf"
+      And I go to the home page
+      And I follow "Browse Users"
+      # FIXME This is brittle
+     When I follow "Delete" within "tr:nth-child(3)"
+     Then the user should not exist with first_name: "Silvia"
+
+
+  Scenario: Non admins can't browse users
+    Given a user exists
+      And I am signed in as that user
+     When I go to the home page
+     Then I should not see "Browse Users"
+     When I go to the users page
+     Then I should see "Not allowed to manage other user accounts."
+

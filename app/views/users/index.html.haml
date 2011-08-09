@@ -1,0 +1,25 @@
+%h1 Users
+
+
+%table
+  %tr
+    %th ID
+    %th Name
+    %th Address
+    %th Country
+    %th Email
+    %th Phone
+    %th Admin
+    %th Action
+  - @users.each do |user|
+    %tr
+      %td= user.id
+      %td= user.name
+      %td= user.address
+      %td= user.country
+      %td= user.email
+      %td= user.phone
+      %td= user.admin? ? 'Yes' : 'No'
+      %td
+        =link_to 'Edit', edit_user_path(user)
+        =link_to 'Delete', user, :method => :delete, :confirm => 'Are you sure?'

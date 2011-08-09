@@ -34,6 +34,8 @@
           %li.active= link_to 'Home', '#'
           %li= link_to 'Browse Collections', '#'
           %li= link_to 'Browse Items', '#'
+          - if admin_user_signed_in?
+            %li= link_to 'Browse Users', users_path
           %li= link_to 'Search', '#'
           - if admin_user_signed_in?
             %li= link_to 'Settings', '#'

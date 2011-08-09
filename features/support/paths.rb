@@ -11,6 +11,9 @@ module NavigationHelpers
     when /^the home\s?page$/
       '/'
 
+    when /^the edit page for #{capture_model}$/ 
+      polymorphic_path(model!($1), :action => "edit")
+
     # the following are examples using path_to_pickle
 
     when /^#{capture_model}(?:'s)? page$/                           # eg. the forum's page
