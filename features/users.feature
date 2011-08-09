@@ -104,6 +104,13 @@ Feature: Authentication and Authorisation
      And I press "Resend confirmation instructions"
     Then I should see "Email was already confirmed, please try signing in"
 
+  Scenario: Admin users can see the Settings menu
+    Given an admin user exists
+     When I go to the home page
+     Then I should not see "Settings"
+    Given I am signed in as that user
+     Then I should see "Settings"
+
 #  Scenario: Sign in and view user page
 #    Given a user exists with email: "john@robotparade.com.au", password: "moocow"
 #    When I go to the homepage

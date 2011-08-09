@@ -35,6 +35,8 @@
           %li= link_to 'Browse Collections', '#'
           %li= link_to 'Browse Items', '#'
           %li= link_to 'Search', '#'
+          - if admin_user_signed_in?
+            %li= link_to 'Settings', '#'
           %li= link_to 'Help', '#'
 
     #flash
