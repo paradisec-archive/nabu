@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
          :confirmable, :lockable
 
   attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me
-  attr_accessible :admin, :operator, :as => :admin
+  attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me, :admin, :operator, :as => :admin
 
   validates :first_name, :presence => true
   validates :last_name, :presence => true
