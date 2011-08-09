@@ -33,7 +33,7 @@
 
         %tr
           %td= f.label :phone
-          %td= f.text_field :phone
+          %td= f.text_field :phone, :autocomplete => :off
 
         %tr
           %td
@@ -65,16 +65,16 @@
             = f.label :password
             %br
             %i (leave blank if you don't want to change it)
-          %td= f.password_field :password
+          %td= f.password_field :password, :autocomplete => :off
 
         %tr
           %td= f.label :password_confirmation
-          %td= f.password_field :password_confirmation
+          %td= f.password_field :password_confirmation, :autocomplete => :off
 
         %tr
           %td
             = f.label :current_password
             %br
             %i (we need your current password to confirm your changes)
-          %td= f.password_field :current_password
+          %td= f.password_field :current_password, :autocomplete => :off
 
