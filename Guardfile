@@ -10,7 +10,7 @@ guard 'cucumber', :cli => "--profile guard" do
   # TODO Should we try and be more clever about which features are run?
   watch('config/routes.rb')                          { 'features' }
   watch('app/controllers/application_controller.rb') { 'features' }
-  watch(%r{^app/(.+)\.rb})                           { 'features' }
+  watch(%r{^app/(.+)\.(rb|haml|erb)})                { 'features' }
   watch(%r{^lib/(.+)\.rb})                           { 'features' }
   watch(%r{^app/controllers/(.+)_(controller)\.rb})  { 'features' }
 end
