@@ -1,0 +1,80 @@
+%h1 User Details
+
+.page
+  = form_for @user do |f|
+    - if @user.errors.any?
+      #error_explanation
+        %h2== #{pluralize(@user.errors.count, 'error')} prohibited this post from being saved:
+        %ul
+          - @user.errors.full_messages.each do |msg|
+            %li= msg
+
+    .twoup-1
+      %table
+        %tr
+          %td= f.label :first_name
+          %td= f.text_field :first_name
+
+        %tr
+          %td= f.label :last_name
+          %td= f.text_field :last_name
+
+        %tr
+          %td= f.label :email
+          %td= f.text_field :email
+
+        %tr
+          %td= f.label :address
+          %td= f.text_field :address
+
+        %tr
+          %td= f.label :country
+          %td= f.text_field :country
+
+        %tr
+          %td= f.label :phone
+          %td= f.text_field :phone
+
+        %tr
+          %td
+          %td= f.submit 'Update'
+
+    .twoup-2
+      %table
+        - if admin_user_signed_in?
+          %tr
+            %td
+              Access level:
+            %td
+              = f.check_box :admin
+              = f.label :admin
+
+          %tr
+            %td
+              Also working as:
+            %td
+              = f.check_box :operator
+              = f.label :operator
+
+          %tr
+            %td{:colspan => 2} &nbsp;
+
+
+        %tr
+          %td
+            = f.label :password
+            %br
+            %i (leave blank if you don't want to change it)
+          %td= f.password_field :password
+
+        %tr
+          %td= f.label :password_confirmation
+          %td= f.password_field :password_confirmation
+
+        %tr
+          %td
+            = f.label :current_password
+            %br
+            %i (we need your current password to confirm your changes)
+          %td= f.password_field :current_password
+

@@ -111,58 +111,74 @@ Feature: Authentication and Authorisation
     Given I am signed in as that user
      Then I should see "Settings"
 
-#  Scenario: Sign in and view user page
-#    Given a user exists with email: "john@robotparade.com.au", password: "moocow"
-#    When I go to the homepage
-#    And I follow "Sign in"
-#    And I fill in "Email" with "john@robotparade.com.au"
-#    And I fill in "Password" with "moocow"
-#    And I press "Sign in"
-#    Then I should be on that user's page
-#    And I should see "Sign in successful"
-#    And I should see "John Ferlito" within "#login_info"
-#    And I should see "John Ferlito" within "#user_details"
-#    And I should see "Sign out" within "#login_info"
-#    But I should not see "Sign in" within "#login_info"
-#    And I should not see "Sign up" within "#login_info"
-#
-#  Scenario: Must be signed in to show a users page
-#    Given a user exists with email: "johnf1@robotparade.com.au", first_name: "John"
-#    When I go to that user's page
-#    Then I should not see "John"
-#    And I should see "You must be signed in to access that page"
-#
-#  Scenario: Edit user details
-#    Given a user exists with email: "john@robotparade.com.au", password: "moocow"
-#    When I go to the homepage
-#    And I follow "Sign in"
-#    And I fill in "Email" with "john@robotparade.com.au"
-#    And I fill in "Password" with "moocow"
-#    And I press "Sign in"
-#    Then I should be on that user's page
-#    And I follow "Edit Details"
-#    Then I should be on that user's edit page
-#    And I fill in "First name" with "fred"
-#    And I fill in "Last name" with "freddo"
-#    And I fill in "Email" with "fred@freddo.org"
-#    And I fill in "Change password" with "fredfred"
-#    And I fill in "Password confirmation" with "fredfred"
-#    And I press "Update"
-#    Then I should be on that user's page
-#    And I should see "fred freddo" within "#login_info"
-#    And I should see "fred@freddo.org" within "#user_details"
-#    And I should see "Your account details have been updated, including password."
+  Scenario: Sign in and view user page
+    Given a user exists with first_name: "John", last_name: "Ferlito"
+      And I am signed in as that user
+     When I go to the homepage
+      And I follow "John Ferlito"
+     Then I should be on that user's page
+      And I should see "User Details"
 
+  Scenario: Must be signed in to show a users page
+    Given a user exists with first_name: "John"
+    When I go to that user's page
+    Then I should not see "John"
+    And I should see "Not allowed to manage other user accounts."
 
-# This works but allow-rescue is broken in cucumber-rails
-#  @allow-rescue
-#  Scenario: A user can only see her own details
-#    Given a user: "johnf1" exists with email: "johnf1@robotparade.com.au", first_name: "John"
-#    And a user: "silvia" exists with email: "silvia@gingertech.net", first_name: "Silvia"
-#    And I am signed in as user "silvia"
-#    When I go to the user "silvia"'s page
-#    Then I should see "Silvia" within "#content"
-#    When I go to the user "johnf1"'s page
-#    Then I should not see "John" within "#content"
-#    And I should see "Sorry, the page you were looking for does not exist."
+  Scenario: Edit user details
+    Given a user exists with first_name: "John", last_name: "Ferlito"
+      And I am signed in as that user
+     When I go to that user's page
+     And I fill in "First name" with "fred"
+     And I fill in "Last name" with "freddo"
+     And I fill in "Address" with "1 George St, Sydney"
+     And I fill in "Country" with "Australia"
+     And I fill in "Phone" with "61 2 1234 5678"
+     And I fill in "Email" with "fred@freddo.org"
+     And I fill in "Password" with "fredfred"
+     And I fill in "Password confirmation" with "fredfred"
+     And I fill in "Current password" with "password"
+     And I press "Update"
+    Then I should be on that user's page
+     And I should see "fred freddo"
+     And the "First name" field should contain "fred"
+     And the "Last name" field should contain "freddo"
+     And the "Address" field should contain "1 George St, Sydney"
+     And the "Country" field should contain "Australia"
+     And the "Phone" field should contain "61 2 1234 5678"
+     And the "Email" field should contain "fred@freddo.org"
+     And I should see "User was successfully updated."
 
+#   # TODO How do we test this since the text boxes are hidden if you aren't an admin
+#   Scenario: Non admin can't set admin or operator
+#    Given a user exists with first_name: "John", last_name: "Ferlito"
+#      And I am signed in as that user
+#     When I go to that user's page
+#      And I check "Admin"
+#      And I check "Operator"
+#      And I press "Update"
+#     Then the "Admin" checkbox should not be checked
+#      And the "Operator" checkbox should not be checked
+
+   Scenario: Admin can set admin or operator
+    Given a user "johnf" exists with first_name: "John"
+      And an admin user "admin" exists with first_name: "Admin"
+      And I am signed in as the user "admin"
+     When I go to the user "johnf"'s page
+      And I check "Admin"
+      And I check "Operator"
+      And I press "Update"
+     Then I should see "User was successfully updated."
+      And the "Admin" checkbox should be checked
+      And the "Operator" checkbox should be checked
+
+  @wip
+  Scenario: A user can only see her own details
+    Given a user: "johnf" exists with email: "johnf@robotparade.com.au", first_name: "John"
+    And a user: "silvia" exists with email: "silvia@gingertech.net", first_name: "Silvia"
+    And I am signed in as user "silvia"
+    When I go to the user "silvia"'s page
+    Then I should see "Silvia"
+    When I go to the user "johnf"'s page
+    Then I should not see "John"
+    And I should see "Not allowed to manage other user accounts."

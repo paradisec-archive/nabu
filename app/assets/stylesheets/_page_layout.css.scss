@@ -18,4 +18,11 @@ body.bp {
   }
 }
 
+.twoup-1 {
+  @include column(8);
+}
+
+.twoup-2 {
+  @include column(8, last);
+}
 

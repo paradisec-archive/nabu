@@ -2,6 +2,9 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.1.0.rc5'
 
+# Remove when ://github.com/rails/arel/issues/72 is fixed
+gem 'arel', '2.1.4'
+
 gem 'mysql2'
 # For heroku
 gem 'pg'
@@ -21,6 +24,7 @@ gem 'jquery-rails'
 gem 'haml-rails'
 
 gem 'devise'
+gem 'cancan'
 
 # Use unicorn as the web server
 # gem 'unicorn'
