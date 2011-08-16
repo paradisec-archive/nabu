@@ -215,3 +215,24 @@ Feature: Authentication and Authorisation
      When I go to the users page
      Then I should see "Not allowed to manage other user accounts."
 
+  Scenario: User search
+    Given an admin user exists with first_name: "John", last_name: "Ferlito"
+      And a user exists with first_name: "Silvia", last_name: "Pfeiffer"
+      And a user exists with first_name: "Peter", last_name: "Piper"
+      And I am signed in as that admin user
+     When I go to the users page
+     Then I should see "Ferlito"
+      And I should see "Pfeiffer"
+      And I should see "Piper"
+     When I fill in "search" with "f"
+      And I press "Search"
+     Then I should see "Ferlito"
+      And I should see "Pfeiffer"
+      And I should not see "Piper"
+     When I press "Clear"
+     Then I should see "Ferlito"
+      And I should see "Pfeiffer"
+      And I should see "Piper"
+
+
+

@@ -1,5 +1,11 @@
 %h1 Users
 
+.search
+  = form_tag users_path, :method => :get do
+    %p
+      = text_field_tag :search, params[:search]
+      = submit_tag "Search", :name => nil
+      = submit_tag "Clear", :name => :clear
 
 %table
   %tr

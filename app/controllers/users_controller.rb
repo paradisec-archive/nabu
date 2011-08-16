@@ -3,6 +3,11 @@ class UsersController < ApplicationController
 
   def index
     @users = @users.order(sort_column + ' ' + sort_direction)
+    params.delete(:search) if params[:clear]
+    if params[:search]
+      match = "%#{params[:search]}%"
+      @users = @users.where{ (first_name =~ match) | (last_name =~ match) }
+    end
   end
 
   def show

@@ -26,6 +26,8 @@ gem 'haml-rails'
 gem 'devise'
 gem 'cancan'
 
+gem 'squeel'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
