@@ -38,9 +38,15 @@ body.bp {
   margin-top: 20px;
 }
 
+$blue: #e5ecf9;
+$page_background: $blue;
+$table_header_bg: darken($blue, 25);
+$table_row_odd: darken($blue, 10);
+$table_row_even: $blue;
+
 .page {
   border: #000 solid 4px;
-  background: #e5ecf9;
+  background: $page_background;
   padding-top: 10px;
   padding-left: 10px;
   overflow: hidden;
@@ -79,3 +85,23 @@ body.bp {
   }
 }
 
+
+table {
+
+  border: #000 solid 4px;
+  th { background: $table_header_bg; }
+
+  tr:nth-child(odd) td { background: $table_row_odd; }
+
+  tr:nth-child(even) td { background: $table_row_even; }
+
+  td, th {
+    border-left: #000 solid 4px;
+  }
+
+  td:nth-child(1), th:nth-child(1) {
+    border-left: none;
+  }
+
+
+}
