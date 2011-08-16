@@ -3,18 +3,20 @@
 
 %table
   %tr
-    %th ID
-    %th Name
-    %th Address
-    %th Country
-    %th Email
-    %th Phone
-    %th Admin
+    %th= sortable 'id'
+    %th= sortable 'first_name'
+    %th= sortable 'last_name'
+    %th= sortable 'address'
+    %th= sortable 'country'
+    %th= sortable 'email'
+    %th= sortable 'phone'
+    %th= sortable 'admin'
     %th Action
   - @users.each do |user|
     %tr
       %td= user.id
-      %td= user.name
+      %td= user.first_name
+      %td= user.last_name
       %td= user.address
       %td= user.country
       %td= user.email

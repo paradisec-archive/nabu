@@ -103,5 +103,15 @@ table {
     border-left: none;
   }
 
+  th span.ui-icon {
+    float: right;
+  }
+
+  th a.sortable {
+    color: #000;
+    &:hover { color: #000; }
+    &:visited { color: #000; }
+  }
+
 
 }

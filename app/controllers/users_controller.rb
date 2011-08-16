@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @users = @users.order(sort_column + ' ' + sort_direction)
   end
 
   def show
@@ -46,5 +47,14 @@ class UsersController < ApplicationController
     @user.destroy
     flash[:notice] = 'User was deleted.'
     redirect_to :action => :index
+  end
+
+  private
+  def sort_column
+    User.column_names.include?(params[:sort]) ? params[:sort] : "id"
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
   end
 end
