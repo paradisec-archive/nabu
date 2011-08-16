@@ -8,6 +8,14 @@ class UsersController < ApplicationController
       match = "%#{params[:search]}%"
       @users = @users.where{ (first_name =~ match) | (last_name =~ match) }
     end
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        fields = [:id, :email, :first_name, :last_name, :address, :country, :phone, :admin, :operator, :sign_in_count, :last_sign_in_at, :failed_attempts]
+        send_data @users.to_csv(:only => fields), :type => "text/csv; charset=utf-8; header=present"
+      end
+    end
   end
 
   def show

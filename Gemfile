@@ -28,6 +28,9 @@ gem 'cancan'
 
 gem 'squeel'
 
+gem 'to_csv-rails'
+
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
