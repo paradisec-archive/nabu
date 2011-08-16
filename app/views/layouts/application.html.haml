@@ -31,14 +31,12 @@
     #nav
       #menu
         %ul
-          %li.active= link_to 'Home', '#'
+          %li.active= link_to 'Home', root_path
           %li= link_to 'Browse Collections', '#'
           %li= link_to 'Browse Items', '#'
           - if admin_user_signed_in?
             %li= link_to 'Browse Users', users_path
           %li= link_to 'Search', '#'
-          - if admin_user_signed_in?
-            %li= link_to 'Settings', '#'
           %li= link_to 'Help', '#'
 
     #flash
@@ -54,6 +52,9 @@
         = link_to 'About', '#'
         |
         = link_to 'Contact', '#'
+        - if admin_user_signed_in?
+          |
+          = link_to 'Settings', '#'
 
 
 
