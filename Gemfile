@@ -1,9 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.0.rc5'
-
-# Remove when ://github.com/rails/arel/issues/72 is fixed
-gem 'arel', '2.1.4'
+gem 'rails', '3.1.0.rc6'
 
 gem 'mysql2'
 # For heroku
