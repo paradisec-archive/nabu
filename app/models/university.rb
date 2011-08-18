@@ -3,6 +3,7 @@ class University < ActiveRecord::Base
 
   #has_many :models, :dependent => :restrict
 
-
   validates :name, :presence => true
+
+  paginates_per 10
 end

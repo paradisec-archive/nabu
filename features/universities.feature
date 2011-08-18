@@ -37,7 +37,6 @@ Feature: Universities
      Then I should not see "University of New South Wales"
       And I should see "University of Sydney"
 
-  @wip
   Scenario: Edit University
     Given a university exists with name: "University New South Wales"
      When I go to the home page

@@ -9,6 +9,7 @@ class UniversitiesController < ApplicationController
       @universities = @universities.where{ name =~ match }
     end
 
+    @universities = @universities.page params[:page]
     @university = University.new
   end
 

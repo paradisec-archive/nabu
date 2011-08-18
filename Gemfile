@@ -27,6 +27,8 @@ gem 'squeel'
 
 gem 'to_csv-rails'
 
+gem 'kaminari'
+
 
 # Use unicorn as the web server
 # gem 'unicorn'

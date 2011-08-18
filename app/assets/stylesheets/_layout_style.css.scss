@@ -44,7 +44,7 @@ $table_header_bg: darken($blue, 25);
 $table_row_odd: darken($blue, 10);
 $table_row_even: $blue;
 
-.page {
+.page-box {
   border: #000 solid 4px;
   background: $page_background;
   padding-top: 10px;
@@ -114,4 +114,9 @@ table {
   }
 
 
+}
+
+.pagination {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

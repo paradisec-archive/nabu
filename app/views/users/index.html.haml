@@ -7,6 +7,8 @@
       = submit_tag "Search", :name => nil
       = submit_tag "Clear", :name => :clear
 
+= paginate @users
+
 %table
   %tr
     %th= sortable 'id'
