@@ -15,4 +15,8 @@ FactoryGirl.define do
     end
   end
 
+  factory :university do
+    sequence(:name) {|n| "University of Awesome #{n}"}
+  end
+
 end

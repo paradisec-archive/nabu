@@ -1,0 +1,19 @@
+%h1 University Details
+
+= form_for @university do |f|
+  - if @university.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@university.errors.count, 'error')} prohibited this post from being saved:
+      %ul
+        - @university.errors.full_messages.each do |msg|
+          %li= msg
+
+  %table
+    %tr
+      %td= f.label :name
+      %td= f.text_field :name
+
+    %tr
+      %td
+      %td= f.submit 'Update'
+

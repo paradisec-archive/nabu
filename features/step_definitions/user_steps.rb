@@ -9,6 +9,6 @@ Given /^I am signed in as #{capture_model}$/ do |user|
 end
 
 Given /^I am signed out$/ do
-  When 'I go to the sign out page'
+  Given 'I follow "Sign out"'
 end
 
