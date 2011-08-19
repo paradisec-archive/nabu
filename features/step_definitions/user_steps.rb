@@ -9,6 +9,8 @@ Given /^I am signed in as #{capture_model}$/ do |user|
 end
 
 Given /^I am signed out$/ do
-  Given 'I follow "Sign out"'
+  if page.has_content?('Sign out')
+    Given 'I follow "Sign out"'
+  end
 end
 

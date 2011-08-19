@@ -3,6 +3,14 @@ Feature: Home Page
   As a user
   I want to have a home page
 
-  Scenario: Home page exists
-    Given I am on the home page
-    Then I should see "nabu is a digital media"
+  Scenario: Logged out users get home page
+    Given I am signed out
+      And I go to the home page
+     Then I should see "nabu is a digital media"
+
+  Scenario: Signed in users get dashboard
+    Given a user exists
+      And I am signed in as that user
+      And I go to the home page
+     Then I should see "Dashboard"
+
