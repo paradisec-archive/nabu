@@ -11,7 +11,29 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110817005420) do
+ActiveRecord::Schema.define(:version => 20110819010934) do
+
+  create_table "collections", :force => true do |t|
+    t.string   "identifier",            :null => false
+    t.string   "title",                 :null => false
+    t.text     "description",           :null => false
+    t.integer  "collector_id",          :null => false
+    t.integer  "university_id"
+    t.integer  "field_of_research_id",  :null => false
+    t.integer  "collection_country_id", :null => false
+    t.string   "region"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.integer  "zoom"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "collections", ["collection_country_id"], :name => "index_collections_on_collection_country_id"
+  add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
+  add_index "collections", ["field_of_research_id"], :name => "index_collections_on_field_of_research_id"
+  add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
+  add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
   create_table "universities", :force => true do |t|
     t.string   "name"
