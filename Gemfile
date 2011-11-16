@@ -38,8 +38,16 @@ gem 'capistrano'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
+gem 'execjs'
+gem 'therubyracer'
+
 group :development, :test do
   gem 'sqlite3'
+  # Pretty printed test output
+  gem 'turn', :require => false
+end
+
+group :test do
 
   gem 'cucumber-rails'
   gem 'rspec-rails'
@@ -53,11 +61,9 @@ group :development, :test do
   gem 'guard-cucumber'
   gem 'guard-bundler'
   gem 'guard-rails'
+  gem 'guard-spork'
   gem 'rb-inotify' if RUBY_PLATFORM.downcase.include?('linux')
   gem 'libnotify' if RUBY_PLATFORM.downcase.include?('linux')
   gem 'rb-fsevent' if RUBY_PLATFORM.downcase.include?('darwin')
   gem 'growl' if RUBY_PLATFORM.downcase.include?('darwin')
-
-  # Pretty printed test output
-  gem 'turn', :require => false
 end

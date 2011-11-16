@@ -4,10 +4,13 @@ Feature: Collections
   I want feature
 
 
-
   Background:
     Given a user exists
       And an admin user exists
+      And a university exists with name: "University of Sydney"
+      And a field of research exists with identifier: 420114, name: "Indonesian Languages"
+      And a country exists with name: "Indonesia"
+      And a language exists with code: "ski", name: "Silka"
 
 
   Scenario: Non Admin users can't add collections
@@ -29,8 +32,8 @@ Feature: Collections
      When I fill in "Title" with "Alexander Adelaar Indonesia/Selaako Collection"
       And I fill in "Collection ID" with "AA1"
       And I select "University of Sydney" from "Originating Uni"
-      And I select "420114 - Indonesian Languages" from "Field fo Research"
-      And I select "Inodnesia" from "Countries"
+      And I select "420114 - Indonesian Languages" from "Field of Research"
+      And I select "Indonesia" from "Countries"
       And I select "ski - Silka" from "Languages"
       And I fill in "Region / Village" with "Sasak Village, Samalantan"
       And I fill in "Longitude" with "108.905"

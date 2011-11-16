@@ -19,10 +19,10 @@ body.bp {
 }
 
 .twoup-1 {
-  @include column(8);
+  @include column(10);
 }
 
 .twoup-2 {
-  @include column(8, last);
+  @include column(10, last);
 }
 

@@ -12,72 +12,92 @@
 
     %p.collection
       = f.label :title, 'Collection Title'
+      = f.text_field :title
+
+
     .twoup-1
-      %table
-        %tr
-          %td= f.label :first_name
-          %td= f.text_field :first_name
+      %fieldset
+        %h2 Collection Details
+        %table
+          %tr
+            %td= f.label :identifier, 'Collection ID'
+            %td= f.text_field :identifier
 
-        %tr
-          %td= f.label :last_name
-          %td= f.text_field :last_name
+          %tr
+            %td= f.label :collector_id
+            %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
 
-        %tr
-          %td= f.label :email
-          %td= f.text_field :email
+          %tr
+            %td= f.label :university_id, 'Originating University'
+            %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
 
-        %tr
-          %td= f.label :address
-          %td= f.text_field :address
+          %tr
+            %td= f.label :field_of_research_id, 'Field of Research'
+            %td= f.collection_select :field_of_research_id, FieldOfResearch.all, :id, :name_with_identifier, :prompt => true
 
-        %tr
-          %td= f.label :country
-          %td= f.text_field :country
+          = f.fields_for :collection_countries do |c|
+            %tr
+              %td= c.label :country_id, 'Countries'
+              %td= c.collection_select :country_id, Country.all, :id, :name, :prompt => true
 
-        %tr
-          %td= f.label :phone
-          %td= f.text_field :phone, :autocomplete => :off
+          = f.fields_for :collection_languages do |l|
+            %tr
+              %td= l.label:language_id, 'Languages'
+              %td= l.collection_select :language_id, Language.all, :id, :name_with_code, :prompt => true
 
-        %tr
-          %td
-          %td= f.submit 'Update'
+          %tr
+            %td= f.label :region, 'Region / Village'
+            %td= f.text_field :region
+
+          %tr
+            %td= f.label :latitude
+            %td= f.text_field :latitude
+
+          %tr
+            %td= f.label :longitude
+            %td= f.text_field :longitude
+
+          %tr
+            %td= f.label :zoom
+            %td= f.text_field :zoom
+
+          %tr
+            %td
+              = f.label :description
+              %br
+              %i (publishable)
+            %td= f.text_area :description, :rows => 5
+
+      %fieldset
+        %h2 Access Information
+        %table
+          %tr
+            %td= f.label :users, 'User Access'
+            /%td= f.text_field :identifier
 
     .twoup-2
-      %table
-        - if admin_collection_signed_in?
+      %fieldset
+        %h2 Items in Collection
+        %table
           %tr
-            %td
-              Access level:
-            %td
-              = f.check_box :admin
-              = f.label :admin
+            %td= f.label :users, 'User Access'
+            /%td= f.text_field :identifier
 
+
+      %fieldset
+        %h2 Depositing Information
+        %table
           %tr
-            %td
-              Also working as:
-            %td
-              = f.check_box :operator
-              = f.label :operator
+            %td= f.label :users, 'User Access'
+            /%td= f.text_field :identifier
 
+      %fieldset
+        %h2 Admin Information
+        %table
           %tr
-            %td{:colspan => 2} &nbsp;
+            %td= f.label :users, 'User Access'
+            /%td= f.text_field :identifier
 
 
-        %tr
-          %td
-            = f.label :password
-            %br
-            %i (leave blank if you don't want to change it)
-          %td= f.password_field :password, :autocomplete => :off
 
-        %tr
-          %td= f.label :password_confirmation
-          %td= f.password_field :password_confirmation, :autocomplete => :off
-
-        %tr
-          %td
-            = f.label :current_password
-            %br
-            %i (we need your current password to confirm your changes)
-          %td= f.password_field :current_password, :autocomplete => :off
-
+    = f.submit 'Add Collection'

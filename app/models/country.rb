@@ -1,7 +1,5 @@
-class University < ActiveRecord::Base
+class Country < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
 
   attr_accessible :name
-
-  paginates_per 10
 end

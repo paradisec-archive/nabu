@@ -11,7 +11,28 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110819010934) do
+ActiveRecord::Schema.define(:version => 20111115013030) do
+
+  create_table "collection_countries", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "country_id"
+  end
+
+  add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
+
+  create_table "collection_fields_of_research", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "field_of_research_id"
+  end
+
+  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
+
+  create_table "collection_languages", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "language_id"
+  end
+
+  add_index "collection_languages", ["collection_id", "language_id"], :name => "index_collection_languages_on_collection_id_and_language_id", :unique => true
 
   create_table "collections", :force => true do |t|
     t.string   "identifier",            :null => false
@@ -20,7 +41,6 @@ ActiveRecord::Schema.define(:version => 20110819010934) do
     t.integer  "collector_id",          :null => false
     t.integer  "university_id"
     t.integer  "field_of_research_id",  :null => false
-    t.integer  "collection_country_id", :null => false
     t.string   "region"
     t.float    "latitude"
     t.float    "longitude"
@@ -29,11 +49,29 @@ ActiveRecord::Schema.define(:version => 20110819010934) do
     t.datetime "updated_at"
   end
 
-  add_index "collections", ["collection_country_id"], :name => "index_collections_on_collection_country_id"
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
   add_index "collections", ["field_of_research_id"], :name => "index_collections_on_field_of_research_id"
   add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
+
+  create_table "countries", :force => true do |t|
+    t.string "name"
+  end
+
+  add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
+
+  create_table "fields_of_research", :force => true do |t|
+    t.string "identifier"
+    t.string "name"
+  end
+
+  add_index "fields_of_research", ["identifier"], :name => "index_fields_of_research_on_identifier", :unique => true
+  add_index "fields_of_research", ["name"], :name => "index_fields_of_research_on_name", :unique => true
+
+  create_table "languages", :force => true do |t|
+    t.string "code"
+    t.string "name"
+  end
 
   create_table "universities", :force => true do |t|
     t.string   "name"

@@ -19,4 +19,17 @@ FactoryGirl.define do
     sequence(:name) {|n| "University of Awesome #{n}"}
   end
 
+  factory :country do
+    sequence(:name) {|n| "Country #{n}"}
+  end
+
+  factory :language do
+    sequence(:code) {|n| "sk#{n}"}
+    sequence(:name) {|n| "University of Awesome #{n}"}
+  end
+
+  factory :field_of_research do
+    sequence(:identifier) {|n| n}
+    sequence(:name) {|n| "Moo #{n}"}
+  end
 end
