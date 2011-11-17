@@ -12,7 +12,6 @@ Feature: Collections
       And a country exists with name: "Indonesia"
       And a language exists with code: "ski", name: "Silka"
 
-
   Scenario: Non Admin users can't add collections
     Given I am signed out
      When I go to the home page
@@ -25,7 +24,6 @@ Feature: Collections
      When I go to the new collection page
      Then I should see "Add a Collection"
 
-  @wip
   Scenario: Add a collection
     Given I am signed in as that user
       And I am on the new collection page
@@ -42,3 +40,12 @@ Feature: Collections
       And I fill in "Description" with "This collection is awesome\nMoo"
       And I press "Add Collection"
 
+  @wip
+  Scenario: View collections
+    Given I am signed in as that admin user
+      And a collection exists with identifier: "AA1", title: "Indonesia 1", country: that country, language: that language, university: that university
+     When I go to the collections page
+     Then I should see "AA1"
+      And I should see "Indonesia 1"
+      And I should see "Selako"
+      And I should see "University of New South Wales"

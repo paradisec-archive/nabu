@@ -1,5 +1,5 @@
 class Collection < ActiveRecord::Base
-  belongs_to :collector
+  belongs_to :collector, :class_name => "User"
   belongs_to :university
   belongs_to :field_of_research
 
@@ -24,4 +24,5 @@ class Collection < ActiveRecord::Base
   accepts_nested_attributes_for :collection_languages, :allow_destroy => true
   accepts_nested_attributes_for :collection_countries, :allow_destroy => true
 
+  paginates_per 10
 end

@@ -61,7 +61,6 @@ group :test do
   gem 'guard-cucumber'
   gem 'guard-bundler'
   gem 'guard-rails'
-  gem 'guard-spork'
   gem 'rb-inotify' if RUBY_PLATFORM.downcase.include?('linux')
   gem 'libnotify' if RUBY_PLATFORM.downcase.include?('linux')
   gem 'rb-fsevent' if RUBY_PLATFORM.downcase.include?('darwin')

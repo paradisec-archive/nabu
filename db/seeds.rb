@@ -6,19 +6,22 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+load 'features/support/factory_girl.rb'
+
 u = User.create :email => 'user@example.com',
             :first_name => 'User',
             :last_name => 'Doe',
             :password => 'password',
-            :password_confirmation => 'password',
+            :password_confirmation => 'password'
 u.confirm!
 u = User.create :email => 'admin@example.com',
             :first_name => 'Admin',
             :last_name => 'Doe',
             :password => 'password',
-            :password_confirmation => 'password',
-            :admin => true,
+            :password_confirmation => 'password'
 u.confirm!
+u.admin = true
+u.save!
 
 Country.create :name => 'Australia'
 Country.create :name => 'Germany'
@@ -30,3 +33,7 @@ Language.create :code => 'ski', :name => 'Sika'
 Language.create :code => 'mqy', :name => 'Manggarai'
 
 FieldOfResearch.create :identifier => 420114, :name => 'Indonesian Languages'
+
+20.times do
+  Factory.create(:collection)
+end
