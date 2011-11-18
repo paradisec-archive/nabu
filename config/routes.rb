@@ -2,9 +2,12 @@ Nabu::Application.routes.draw do
   devise_for :users
 
   authenticated :user do
-    root :to => 'home#dashboard'
+    root :to => 'page#dashboard'
   end
-  root :to => 'home#index'
+  root :to => 'page#about'
+
+  match '/about' => 'page#about'
+  match '/contact' => 'page#contact'
 
   resources :users
   resources :universities

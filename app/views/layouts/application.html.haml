@@ -50,9 +50,9 @@
 
     #footer
       %center
-        = link_to 'About', '#'
+        = link_to 'About', about_path
         |
-        = link_to 'Contact', '#'
+        = link_to 'Contact', contact_path
         - if admin_user_signed_in?
           |
           = link_to 'Settings', '#'
