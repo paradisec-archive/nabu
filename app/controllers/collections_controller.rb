@@ -3,7 +3,10 @@ class CollectionsController < ApplicationController
 
   def index
     @collections = @collections.order sort_column + ' ' + sort_direction
-    params.delete(:search) if params[:clear]
+    if params[:clear]
+      params.delete(:search)
+      redirect_to collections_path
+    end
 
     if params[:search]
       match = "%#{params[:search]}%"

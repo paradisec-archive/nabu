@@ -3,9 +3,9 @@
 
 .page-box
   = form_tag collections_path, :method => :get do |f|
-    = text_field_tag :search
-    = submit_tag 'Filter'
-    = submit_tag 'Clear'
+    = text_field_tag :search, params[:search]
+    = submit_tag 'Filter', :name => nil
+    = submit_tag 'Clear', :name => :clear
 
   %table
     %tr
