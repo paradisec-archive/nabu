@@ -21,8 +21,8 @@ class Collection < ActiveRecord::Base
                   :collector_id, :university_id, :field_of_research_id,
                   :collection_languages_attributes, :collection_countries_attributes
 
-  accepts_nested_attributes_for :collection_languages, :allow_destroy => true
-  accepts_nested_attributes_for :collection_countries, :allow_destroy => true
+  accepts_nested_attributes_for :collection_languages, :allow_destroy => true, :reject_if => :all_blank
+  accepts_nested_attributes_for :collection_countries, :allow_destroy => true, :reject_if => :all_blank
 
   paginates_per 10
 end

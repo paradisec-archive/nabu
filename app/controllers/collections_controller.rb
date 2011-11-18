@@ -21,12 +21,29 @@ class CollectionsController < ApplicationController
     @collection.collection_countries.build
   end
 
+  def show
+  end
+
   def create
     if @collection.save
       flash[:notice] = 'Collection was successfully created.'
       redirect_to @collection
     else
       render :action => 'new'
+    end
+  end
+
+  def edit
+    @collection.collection_languages.build
+    @collection.collection_countries.build
+  end
+
+  def update
+    if @collection.update_attributes(params[:collection])
+      flash[:notice] = 'Collection was successfully updated.'
+      redirect_to @collection
+    else
+      render :action => "edit"
     end
   end
 

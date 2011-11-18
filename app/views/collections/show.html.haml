@@ -1,0 +1,79 @@
+%h1 Add a Collection
+
+
+.page-box
+
+  %p.collection
+    Collection Title
+    = @collection.title
+
+
+  .twoup-1
+    %fieldset
+      %h2 Collection Details
+      %table
+        %tr
+          %td Collection ID
+          %td= @collection.identifier
+
+        %tr
+          %td Collector
+          %td= @collection.collector.name
+
+        %tr
+          %td Originating University
+          %td= @collection.university.name
+
+        %tr
+          %td Field of Research
+          %td= @collection.field_of_research.name_with_identifier
+
+        %tr
+          %td Countries
+          %td
+            - @collection.countries.each do |country|
+              = country.name
+              %br
+
+        %tr
+          %td Languages
+          %td
+            - @collection.languages.each do |language|
+              = language.name
+              %br
+
+        %tr
+          %td Region / Village
+          %td= @collection.region
+
+        %tr
+          %td Latitude
+          %td= @collection.latitude
+
+        %tr
+          %td Longitude
+          %td= @collection.longitude
+
+        %tr
+          %td Zoom
+          %td= @collection.zoom
+
+        %tr
+          %td Description
+          %td= @collection.description
+
+    %fieldset
+      %h2 Access Information
+
+  .twoup-2
+    %fieldset
+      %h2 Items in Collection
+
+
+    %fieldset
+      %h2 Depositing Information
+
+    %fieldset
+      %h2 Admin Information
+
+  = link_to 'Edit Collection', edit_collection_path(@collection)

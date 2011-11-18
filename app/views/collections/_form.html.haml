@@ -1,0 +1,107 @@
+%p.collection
+  = f.label :title, 'Collection Title'
+  = f.text_field :title
+
+.twoup-1
+  %fieldset
+    %h2 Collection Details
+    %table
+      %tr
+        %td= f.label :identifier, 'Collection ID'
+        - if @collection.new_record?
+          %td= f.text_field :identifier
+        - else
+          %td @collection.identifier
+
+      %tr
+        %td= f.label :collector_id
+        %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :university_id, 'Originating University'
+        %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :field_of_research_id, 'Field of Research'
+        %td= f.collection_select :field_of_research_id, FieldOfResearch.all, :id, :name_with_identifier, :prompt => true
+
+      %tr
+        %td= f.label :country_id, 'Countries'
+        %td
+          = f.fields_for :collection_countries do |c|
+            %br
+            - if c.object.new_record?
+              = c.collection_select :country_id, Country.all, :id, :name, :prompt => true
+            - else
+              = c.object.country.name
+              = c.check_box :_destroy
+              Delete
+
+      %tr
+        %td= f.label :language_id, 'Languages'
+        %td
+          = f.fields_for :collection_languages do |l|
+            %br
+            - if l.object.new_record?
+              = l.collection_select :language_id, Language.all, :id, :name_with_code, :prompt => true
+            - else
+              = l.object.language.name
+              = l.check_box :_destroy
+              Delete
+
+
+      %tr
+        %td= f.label :region, 'Region / Village'
+        %td= f.text_field :region
+
+      %tr
+        %td= f.label :latitude
+        %td= f.text_field :latitude
+
+      %tr
+        %td= f.label :longitude
+        %td= f.text_field :longitude
+
+      %tr
+        %td= f.label :zoom
+        %td= f.text_field :zoom
+
+      %tr
+        %td
+          = f.label :description
+          %br
+          %i (publishable)
+        %td= f.text_area :description, :rows => 5
+
+  %fieldset
+    %h2 Access Information
+    %table
+      %tr
+        %td= f.label :users, 'User Access'
+        /%td= f.text_field :identifier
+
+.twoup-2
+  %fieldset
+    %h2 Items in Collection
+    %table
+      %tr
+        %td= f.label :users, 'User Access'
+        /%td= f.text_field :identifier
+
+
+  %fieldset
+    %h2 Depositing Information
+    %table
+      %tr
+        %td= f.label :users, 'User Access'
+        /%td= f.text_field :identifier
+
+  %fieldset
+    %h2 Admin Information
+    %table
+      %tr
+        %td= f.label :users, 'User Access'
+        /%td= f.text_field :identifier
+
+
+

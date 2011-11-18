@@ -35,6 +35,7 @@
           %td= 'Map'
           %td
             = link_to 'View', collection
+            = link_to 'Edit', edit_collection_path(collection)
 
   = paginate @collections
 
