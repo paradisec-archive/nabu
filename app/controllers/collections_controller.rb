@@ -2,6 +2,14 @@ class CollectionsController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @collections = @collections.order sort_column + ' ' + sort_direction
+    params.delete(:search) if params[:clear]
+
+    if params[:search]
+      match = "%#{params[:search]}%"
+      @collections = @collections.where{ (title =~ match) | (description =~ match) | (identifier =~ match) }
+    end
+
     @collections = @collections.page(params[:page]).per(params[:per_page])
   end
 

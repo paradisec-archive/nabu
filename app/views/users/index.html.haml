@@ -11,14 +11,14 @@
 
 %table
   %tr
-    %th= sortable 'id'
-    %th= sortable 'first_name'
-    %th= sortable 'last_name'
-    %th= sortable 'address'
-    %th= sortable 'country'
-    %th= sortable 'email'
-    %th= sortable 'phone'
-    %th= sortable 'admin'
+    = sortable 'id'
+    = sortable 'first_name'
+    = sortable 'last_name'
+    = sortable 'address'
+    = sortable 'country'
+    = sortable 'email'
+    = sortable 'phone'
+    = sortable 'admin'
     %th Action
   - @users.each do |user|
     %tr

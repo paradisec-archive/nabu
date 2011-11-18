@@ -1,0 +1,43 @@
+%h1 Collections
+
+
+.page-box
+  = form_tag collections_path, :method => :get do |f|
+    = text_field_tag :search
+    = submit_tag 'Filter'
+    = submit_tag 'Clear'
+
+  %table
+    %tr
+      = sortable :id, 'ID'
+      = sortable :title
+      %th Collector
+      %th Countries
+      %th Languages
+      = sortable :creation_date
+      %th Source Uni
+      %th Map
+      %th Actions
+
+      - @collections.each do |collection|
+        %tr
+          %td= collection.identifier
+          %td= collection.title
+          %td= collection.collector.name
+          %td
+            - collection.countries.each do |country|
+              = country.name
+          %td
+            - collection.languages.each do |language|
+              = language.name
+          %td= collection.created_at.to_date
+          %td= collection.university.name
+          %td= 'Map'
+          %td
+            = link_to 'View', collection
+
+  = paginate @collections
+
+  %button.per_page{:data => {:per => 10}} Show 10
+  %button.per_page{:data => {:per => 50}} Show 50
+  %button.per_page{:data => {:per => 100}} Show 100

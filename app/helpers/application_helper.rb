@@ -16,7 +16,9 @@ module ApplicationHelper
 #  end
 
   def sortable(field, title = nil)
-    title ||= field.to_s.titleize
+    field = field.to_s
+    title ||= field.titleize
+
     css_class = "sortable" + ((field == params[:sort]) ? " current #{params[:direction]}" : '')
     direction = (field == params[:sort] && params[:direction] == "asc") ? "desc" : "asc"
     content_tag :th, :class => css_class, :data => {:direction => direction, :field => field} do
