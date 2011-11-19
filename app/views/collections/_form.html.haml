@@ -2,6 +2,13 @@
   = f.label :title, 'Collection Title'
   = f.text_field :title
 
+= f.check_box :complete
+= f.label :complete, 'Collection completed'
+
+= f.check_box :private
+= f.label :private
+
+
 .twoup-1
   %fieldset
     %h2 Collection Details
@@ -83,31 +90,59 @@
     %h2 Access Information
     %table
       %tr
-        %td= f.label :users, 'User Access'
-        /%td= f.text_field :identifier
+        %td= f.label :user_id, 'User Access'
+        %td
+          = f.fields_for :collection_admins do |a|
+            %br
+            - if a.object.new_record?
+              = a.collection_select :user_id, User.all, :id, :name, :prompt => true
+            - else
+              = a.object.user.name
+              = a.check_box :_destroy
+              Delete
+
+      %tr
+        %td= f.label :access_condition
+        %td= f.collection_select :access_condition_id, AccessCondition.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :access_narrative
+        %td= f.text_area :access_narrative
+
+
+
 
 .twoup-2
   %fieldset
     %h2 Items in Collection
-    %table
-      %tr
-        %td= f.label :users, 'User Access'
-        /%td= f.text_field :identifier
-
-
+    
   %fieldset
     %h2 Depositing Information
     %table
       %tr
-        %td= f.label :users, 'User Access'
-        /%td= f.text_field :identifier
+        %td= f.label :metadata_source
+        %td= f.text_field :metadata_source
+
+      %tr
+        %td= f.label :orthographic_notes
+        %td= f.text_field :orthographic_notes
+
+      %tr
+        %td= f.label :media
+        %td= f.text_field :media
+
+      %tr
+        %td= f.label :comments
+        %td= f.text_field :comments
 
   %fieldset
     %h2 Admin Information
     %table
       %tr
-        %td= f.label :users, 'User Access'
-        /%td= f.text_field :identifier
+        %td= f.label :deposit_form_recieved
+        %td= f.check_box :deposit_form_recieved
 
-
+      %tr
+        %td= f.label :tape_location
+        %td= f.text_field :tape_location
 

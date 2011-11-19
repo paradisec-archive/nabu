@@ -11,7 +11,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111115013030) do
+ActiveRecord::Schema.define(:version => 20111119120735) do
+
+  create_table "access_conditions", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "collection_admins", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "user_id"
+  end
+
+  add_index "collection_admins", ["collection_id"], :name => "index_collection_admins_on_collection_id"
+  add_index "collection_admins", ["user_id"], :name => "index_collection_admins_on_user_id"
 
   create_table "collection_countries", :force => true do |t|
     t.integer "collection_id"
@@ -47,6 +61,16 @@ ActiveRecord::Schema.define(:version => 20111115013030) do
     t.integer  "zoom"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "access_condition_id"
+    t.text     "access_narrative"
+    t.string   "metadata_source"
+    t.string   "orthographic_notes"
+    t.string   "media"
+    t.text     "comments"
+    t.boolean  "complete"
+    t.boolean  "private"
+    t.string   "tape_location"
+    t.boolean  "deposit_form_recieved"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"

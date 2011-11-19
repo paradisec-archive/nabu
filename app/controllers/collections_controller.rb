@@ -17,8 +17,7 @@ class CollectionsController < ApplicationController
   end
 
   def new
-    @collection.collection_languages.build
-    @collection.collection_countries.build
+    build_associations
   end
 
   def show
@@ -34,8 +33,7 @@ class CollectionsController < ApplicationController
   end
 
   def edit
-    @collection.collection_languages.build
-    @collection.collection_countries.build
+    build_associations
   end
 
   def update
@@ -45,6 +43,13 @@ class CollectionsController < ApplicationController
     else
       render :action => "edit"
     end
+  end
+
+  private
+  def build_associations
+    @collection.collection_languages.build
+    @collection.collection_countries.build
+    @collection.collection_admins.build
   end
 
 end

@@ -7,6 +7,11 @@
     Collection Title
     = @collection.title
 
+  = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
+  Collection complete
+
+  = check_box_tag :private, @collection.private, @collection.private, :disabled => true
+  Private
 
   .twoup-1
     %fieldset
@@ -69,6 +74,23 @@
 
     %fieldset
       %h2 Access Information
+      %table
+        %tr
+          %td User Access
+          %td
+            - @collection.admins.each do |admin|
+              = admin.name
+              %br
+
+        %tr
+          %td Access conditions
+          %td= @collection.access_condition
+
+        %tr
+          %td Access Narative
+          %td= @collection.access_narrative
+
+
 
   .twoup-2
     %fieldset
@@ -77,8 +99,43 @@
 
     %fieldset
       %h2 Depositing Information
+      %table
+        %tr
+          %td Metadata Source
+          %td= @collection.metadata_source
+
+        %tr
+          %td Orthographic Notes
+          %td= @collection.orthographic_notes
+
+        %tr
+          %td media
+          %td= @collection.media
+
+        %tr
+          %td Date created
+          %td= @collection.created_at
+
+        %tr
+          %td Date modified
+          %td= @collection.updated_at
+
+        %tr
+          %td Comments
+          %td= @collection.comments
 
     %fieldset
       %h2 Admin Information
+      %table
+
+        %tr
+          %td
+          %td
+            = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
+            Collection complete
+
+        %tr
+          %td Location tapes stored
+          %td= @collection.tape_location
 
   = link_to 'Edit Collection', edit_collection_path(@collection)
