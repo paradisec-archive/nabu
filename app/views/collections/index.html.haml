@@ -32,7 +32,9 @@
               = language.name
           %td= collection.created_at.to_date
           %td= collection.university.name
-          %td= 'Map'
+          %td
+            .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}, :style => "width: 100px; height: 100px;"}
+
           %td
             = link_to 'View', collection
             = link_to 'Edit', edit_collection_path(collection)

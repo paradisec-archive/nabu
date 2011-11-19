@@ -59,6 +59,11 @@
           %td= @collection.zoom
 
         %tr
+          %td{:colspan => 2}
+            .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+
+
+        %tr
           %td Description
           %td= @collection.description
 

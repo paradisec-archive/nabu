@@ -67,6 +67,12 @@
         %td= f.text_field :zoom
 
       %tr
+        %td{:colspan => 2}
+          .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :editable => 'true'}, :style => "width: 100%; height: 200px;"}
+          = label_tag :search
+          = text_field_tag :map_search
+
+      %tr
         %td
           = f.label :description
           %br
