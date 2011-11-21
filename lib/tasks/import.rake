@@ -99,6 +99,19 @@ namespace :legacy do
     end
   end
 
+  desc 'Import universities into NABU from paradisec_legacy DB'
+  task :import_universities => :environment do
+    require 'mysql2'
+    client = Mysql2::Client.new(:host => "localhost", :username => "root")
+    client.query("use paradisec_legacy")
+    universities = client.query("SELECT * FROM universities")
+    universities.each do |uni|
+      next if uni['uni_description'].empty?
+      new_uni = University.new :name => uni['uni_description']
+      new_uni.save!
+    end
+  end
+
 # system ...
 # mysql gem
 # select * from ...
