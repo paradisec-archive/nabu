@@ -62,7 +62,7 @@ namespace :legacy do
         email = user['cont_email'].split(/ /)[0]
       end
       if email.blank?
-        email = user['cont_id'].to_s+'cont@example.com'
+        email = user['cont_id'].to_s + 'cont@example.com'
       end
       address = user['cont_address1']
       if user['cont_address1'] && user['cont_address2']
