@@ -1,0 +1,147 @@
+
+.twoup-1
+  %fieldset
+    %h2 Item Details
+    %table
+      %tr
+        %td= f.label :identifier, 'Item ID'
+        = @item.collection.identifier
+        == -
+        - if @item.new_record?
+          %td= f.text_field :identifier
+        - else
+          %td= @item.identifier
+
+      %tr
+        %td= f.label :title, 'Item Title'
+        %td= f.text_field :title
+
+      %tr
+        %td= f.check_box :private
+        %td= f.label :private
+
+      %tr
+        %td= f.label :url, 'URL'
+        %td= f.text_field :url
+
+      %tr
+        %td= f.label :collector_id
+        %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :university_id, 'Originating University'
+        %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :operator_id
+        %td= f.collection_select :operator_id, User.all, :id, :name, :prompt => true
+
+      %tr
+        %td
+          = f.label :description
+          %br
+          %i (publishable)
+        %td= f.text_area :description, :rows => 5
+
+      %tr
+        %td= f.label :originated_on, 'Origination Date'
+        %td= f.text_field :originated_on, :class => 'datepicker', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %m %Y')
+
+      %tr
+        %td= f.label :country_id, 'Countries'
+        %td
+          = f.fields_for :item_countries do |c|
+            %br
+            - if c.object.new_record?
+              = c.collection_select :country_id, Country.all, :id, :name, :prompt => true
+            - else
+              = c.object.country.name
+              = c.check_box :_destroy
+              Delete
+
+      %tr
+        %td= f.label :language, 'Language as given'
+        %td= f.text_field :language
+
+      %tr
+        %td= f.label :subject_language_id
+        %td= f.collection_select :subject_language_id, Language.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :content_language_id
+        %td= f.collection_select :content_language_id, Language.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :dialect
+        %td= f.text_field :dialect
+
+      %tr
+        %td= f.label :region, 'Region / Village'
+        %td= f.text_field :region
+
+      %tr
+        %td= f.label :latitude
+        %td= f.text_field :latitude
+
+      %tr
+        %td= f.label :longitude
+        %td= f.text_field :longitude
+
+      %tr
+        %td= f.label :zoom
+        %td= f.text_field :zoom
+
+      %tr
+        %td{:colspan => 2}
+          .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :editable => 'true'}, :style => "width: 100%; height: 200px;"}
+          = label_tag :search
+          = text_field_tag :map_search
+
+      %tr
+        %td= f.label :discourse_type_id
+        %td= f.collection_select :discourse_type_id, DiscourseType.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :agent_id, 'Agenys'
+        %td
+          = f.fields_for :item_agents do |c|
+            %br
+            - if c.object.new_record?
+              = c.collection_select :user_id, User.all, :id, :name, :prompt => true
+              = c.collection_select :role_id, AgentRole.all, :id, :name, :prompt => true
+            - else
+              = c.object.user.name
+              == :
+              = c.object.role.name
+              = c.check_box :_destroy
+              Delete
+
+      %tr
+        %td= f.label :citation, 'Cite as'
+        %td= f.text_area :citation, :rows => 5
+
+
+
+.twoup-2
+  %fieldset
+    %h2 Admin Information
+    %table
+      %tr
+        %td= f.label :user_id, 'User Access'
+        %td
+          = f.fields_for :item_admins do |a|
+            %br
+            - if a.object.new_record?
+              = a.collection_select :user_id, User.all, :id, :name, :prompt => true
+            - else
+              = a.object.user.name
+              = a.check_box :_destroy
+              Delete
+
+      %tr
+        %td= f.label :access_condition
+        %td= f.collection_select :access_condition_id, AccessCondition.all, :id, :name, :prompt => true
+
+      %tr
+        %td= f.label :access_narrative
+        %td= f.text_area :access_narrative

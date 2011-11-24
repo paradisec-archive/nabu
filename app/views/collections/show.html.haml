@@ -95,6 +95,24 @@
   .twoup-2
     %fieldset
       %h2 Items in Collection
+      = link_to 'Add Item', new_collection_item_path(@collection)
+      %table
+        %tr
+          %th Item
+          %th Title
+          %th Ready
+          %th Archived
+          %th Actions
+        - @collection.items do |item|
+          %tr
+            %td= item.identifier
+            %td= item.title
+            %td= TBI
+            %td= TBI
+            %td
+              = link_to 'View', item
+              = link_to 'Edit', edit_item_path(item)
+
 
 
     %fieldset

@@ -11,5 +11,7 @@ Nabu::Application.routes.draw do
 
   resources :users
   resources :universities
-  resources :collections
+  resources :collections, :shallow => true do
+    resources :items
+  end
 end

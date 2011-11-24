@@ -18,7 +18,7 @@
         - if @collection.new_record?
           %td= f.text_field :identifier
         - else
-          %td @collection.identifier
+          %td= @collection.identifier
 
       %tr
         %td= f.label :collector_id

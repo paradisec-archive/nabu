@@ -32,6 +32,9 @@ University.create :name => 'University of New South Wales'
 Language.create :code => 'ski', :name => 'Sika'
 Language.create :code => 'mqy', :name => 'Manggarai'
 
+DiscourseType.create :name => 'Drama'
+DiscourseType.create :name => 'Penguin Cultivating'
+
 FieldOfResearch.create :identifier => 420114, :name => 'Indonesian Languages'
 
 20.times do

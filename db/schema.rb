@@ -11,12 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111119120735) do
+ActiveRecord::Schema.define(:version => 20111119235953) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "agent_roles", :force => true do |t|
+    t.string "name", :null => false
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -84,6 +88,12 @@ ActiveRecord::Schema.define(:version => 20111119120735) do
 
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
+  create_table "discourse_types", :force => true do |t|
+    t.string "name"
+  end
+
+  add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
+
   create_table "fields_of_research", :force => true do |t|
     t.string "identifier"
     t.string "name"
@@ -91,6 +101,59 @@ ActiveRecord::Schema.define(:version => 20111119120735) do
 
   add_index "fields_of_research", ["identifier"], :name => "index_fields_of_research_on_identifier", :unique => true
   add_index "fields_of_research", ["name"], :name => "index_fields_of_research_on_name", :unique => true
+
+  create_table "item_admins", :force => true do |t|
+    t.integer "item_id"
+    t.integer "user_id"
+  end
+
+  add_index "item_admins", ["item_id", "user_id"], :name => "index_item_admins_on_item_id_and_user_id", :unique => true
+
+  create_table "item_agents", :force => true do |t|
+    t.integer "item_id"
+    t.integer "user_id"
+    t.integer "agent_role_id"
+  end
+
+  add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
+
+  create_table "item_countries", :force => true do |t|
+    t.integer "item_id"
+    t.integer "country_id"
+  end
+
+  add_index "item_countries", ["item_id", "country_id"], :name => "index_item_countries_on_item_id_and_country_id", :unique => true
+
+  create_table "items", :force => true do |t|
+    t.integer  "collection_id",       :null => false
+    t.string   "identifier",          :null => false
+    t.boolean  "private",             :null => false
+    t.string   "title",               :null => false
+    t.string   "url"
+    t.integer  "collector_id",        :null => false
+    t.integer  "university_id"
+    t.integer  "operator_id",         :null => false
+    t.text     "description",         :null => false
+    t.date     "originated_on",       :null => false
+    t.string   "language"
+    t.integer  "subject_language_id"
+    t.integer  "content_language_id"
+    t.string   "dialect"
+    t.string   "region"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.integer  "zoom"
+    t.integer  "discourse_type_id"
+    t.text     "citation"
+    t.integer  "access_condition_id"
+    t.text     "access_narrative"
+    t.text     "comments"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
+  add_index "items", ["identifier", "collection_id"], :name => "index_items_on_identifier_and_collection_id", :unique => true
 
   create_table "languages", :force => true do |t|
     t.string "code"

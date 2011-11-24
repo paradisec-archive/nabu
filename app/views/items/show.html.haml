@@ -1,0 +1,195 @@
+%h1 Add a Collection
+
+
+.page-box
+
+  .twoup-1
+    %fieldset
+      %h2 Collection Details
+
+      %table
+        %tr
+          %td Item ID
+          %td
+            = @item.identifier
+            == -
+            = @item.identifier
+
+        %tr
+          %td= check_box_tag :checked, @item.private, @item.private, :disabled => true
+          %td Private
+
+        %tr
+          %td Archive Link
+          %td= link_to @item.url, @item.url
+
+        %tr
+          %td Item Title
+          %td= @item.title
+
+        %tr
+          %td URL
+          %td= @item.url
+
+        %tr
+          %td Collector
+          %td= @item.collector.name
+
+        %tr
+          %td Originating University
+          %td= @item.university.name
+
+        %tr
+          %td Operator
+          %td= @item.operator.name
+
+        %tr
+          %td Description
+          %td= @item.description
+
+        %tr
+          %td Origination Date
+          %td= @item.originated_on
+
+        %tr
+          %td Countries
+          %td
+            - @item.countries.each do |country|
+              = country.name
+              %br
+
+        %tr
+          %td Language as given
+          %td= @item.language
+
+        %tr
+          %td Subject Language
+          %td= @item.subject_language.name
+
+        %tr
+          %td Content Language
+          %td= @item.content_language.name
+
+        %tr
+          %td Dialect
+          %td= @item.dialect
+
+        %tr
+          %td Region / Village
+          %td= @item.region
+
+        %tr
+          %td Latitude
+          %td= @item.latitude
+
+        %tr
+          %td Longitude
+          %td= @item.longitude
+
+        %tr
+          %td Zoom
+          %td= @item.zoom
+
+        %tr
+          %td{:colspan => 2}
+            .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+
+        %tr
+          %td Dicsourse Type
+          %td= @item.discourse_type.name
+
+        %tr
+          %td Agents
+          %td
+            - @item.item_agents.each do |item_agent|
+              == #{item_agent.user.name} : #{item_agent.role.name}
+              %br
+        %tr
+          %td Cite as
+          %td= @item.citation
+
+
+  .twoup-2
+    .tabs
+      %ul
+        %li= link_to 'Content Item', '#content'
+        %li= link_to 'Collection Information', '#collection'
+
+      #content
+        %p Content Essence Info goes here
+
+      #collection
+        %table
+          %tr
+            %td Collection Title
+            %td= @item.collection.title
+
+          %tr
+            %td Collection ID
+            %td= @item.collection.identifier
+
+          %tr
+            %td Description
+            %td= @item.collection.description
+
+          %tr
+            %td Countries
+            %td
+              - @item.collection.countries.each do |country|
+                = country.name
+                %br
+
+          %tr
+            %td Latitude
+            %td= @item.collection.latitude
+
+          %tr
+            %td Longitude
+            %td= @item.collection.longitude
+
+          %tr
+            %td Zoom
+            %td= @item.collection.zoom
+
+          %tr
+            %td{:colspan => 2}
+              .map{:data => {:latitude => @item.collection.latitude, :longitude => @item.collection.longitude, :zoom => @item.collection.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+
+
+    .tabs
+      %ul
+        %li= link_to 'Comments', '#comment'
+        %li= link_to 'Archive Information', '#archive'
+        %li= link_to 'Admin Information', '#admin'
+      #comment
+        %p Comments go here
+
+      #archive
+        %p Archive info goes here
+
+      #admin
+        %table
+          %tr
+            %td Record Created
+            %td= @item.created_at.to_date
+          %tr
+            %td Record Modified
+            %td= @item.updated_at.to_date
+
+          %tr
+            %td User Access
+            %td
+              - @item.admins.each do |admin|
+                = admin.name
+                %br
+          %tr
+            %td Access conditions
+            %td= @item.access_condition
+
+          %tr
+            %td Access Narative
+            %td= @item.access_narrative
+
+
+
+  = link_to 'Edit Item', edit_item_path(@item)

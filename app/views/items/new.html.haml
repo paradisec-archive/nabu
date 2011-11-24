@@ -1,0 +1,15 @@
+%h1 Add an Item
+
+
+.page-box
+  = form_for [@collection, @item] do |f|
+    - if @item.errors.any?
+      #error_explanation
+        %h2== #{pluralize(@item.errors.count, 'error')} prohibited this post from being saved:
+        %ul
+          - @item.errors.full_messages.each do |msg|
+            %li= msg
+
+    = render :partial => 'form', :locals => {:f => f}
+
+    = f.submit 'Add Item'
