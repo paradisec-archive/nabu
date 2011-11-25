@@ -1,2 +1,38 @@
 Use this README file to introduce your application and point to useful places in the API for learning more.
 Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
+
+
+## Updating the language & country codes
+
+The language codes in use for NABU are sourced from http://www.ethnologue.com/codes/.
+
+To update them:
+
+* Download the latest version of the three tables from
+
+    http://www.ethnologue.com/codes/default.asp#downloading
+
+* Copy them into the data directory, overwriting the existing files there
+
+* run the different rake tasks to import them
+
+    rake import:countries
+    rake import:languages
+
+Done!
+
+
+
+## Updating the fields of research codes
+
+The fields of research codes in use for NABU are sourced from http://www.abs.gov.au/ausstats/abs@.nsf/0/382A146E83040A1CCA25697E0018FB77?opendocument.
+
+To update them:
+
+* Download the desired list into a text file at data/ANDS_RFCD.txt and format to the given format
+
+* run the rake task to import them
+
+    rake import:fields_of_research
+    
+Done!

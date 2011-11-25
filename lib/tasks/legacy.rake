@@ -1,4 +1,4 @@
-namespace :legacy do
+namespace :import do
 
   desc 'Load database from old PARADISEC system'
   task :load_db do
@@ -8,7 +8,7 @@ namespace :legacy do
   end
 
   desc 'Import users into NABU from paradisec_legacy DB'
-  task :import_users => :environment do
+  task :users => :environment do
     require 'mysql2'
     client = Mysql2::Client.new(:host => "localhost", :username => "root")
     client.query("use paradisec_legacy")
@@ -43,7 +43,7 @@ namespace :legacy do
   end
 
   desc 'Import contacts into NABU from paradisec_legacy DB (do users first)'
-  task :import_contacts => :environment do
+  task :contacts => :environment do
     require 'mysql2'
     client = Mysql2::Client.new(:host => "localhost", :username => "root")
     client.query("use paradisec_legacy")
@@ -100,7 +100,7 @@ namespace :legacy do
   end
 
   desc 'Import universities into NABU from paradisec_legacy DB'
-  task :import_universities => :environment do
+  task :universities => :environment do
     require 'mysql2'
     client = Mysql2::Client.new(:host => "localhost", :username => "root")
     client.query("use paradisec_legacy")
@@ -112,14 +112,57 @@ namespace :legacy do
     end
   end
 
-# system ...
-# mysql gem
-# select * from ...
-# manipulate data magic
-# collection.create hash
-# 5 tasks:
-# - import users
-# - import uiversities
+  desc 'Import countries into NABU from ethnologue DB'
+  task :countries => :environment do
+    require 'iconv'
+    data = File.open("#{Rails.root}/data/CountryCodes.tab", "rb").read
+    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
+    data.each_line do |line|
+      next if line =~ /^CountryID/
+      code, name, area = line.split("\t")
+      Country.create! :name => name
+    end
+  end
+
+  desc 'Import languages into NABU from ethnologue DB'
+  task :languages => :environment do
+    require 'iconv'
+    data = File.open("#{Rails.root}/data/LanguageIndex.tab", "rb").read
+    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
+    data.each_line do |line|
+      next if line =~ /^LangID/
+        code, country_code, name_type, name = line.strip.split("\t")
+      next unless name_type == "L"
+      Language.create! :code => code, :name => name
+    end
+  end
+
+  desc 'Import discourse_types into NABU from paradisec_legacy DB'
+  task :discourse_types => :environment do
+    require 'mysql2'
+    client = Mysql2::Client.new(:host => "localhost", :username => "root")
+    client.query("use paradisec_legacy")
+    discourses = client.query("SELECT * FROM discourse_types")
+    discourses.each do |discourse|
+      disc_type = DiscourseType.new :name => discourse['dt_name']
+      disc_type.save!
+    end
+  end
+
+  desc 'Import fields_of_research into NABU from ANDS DB'
+  task :fields_of_research => :environment do
+    require 'iconv'
+    data = File.open("#{Rails.root}/data/ANDS_RFCD.txt", "rb").read
+    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
+    data.each_line do |line|
+      id, name = line.split("-")
+      id.strip!
+      name.strip!
+      FieldOfResearch.create! :identifier => id, :name => name
+    end
+  end
+
+
 # - import collection
 # - import items
 # - import content essences
