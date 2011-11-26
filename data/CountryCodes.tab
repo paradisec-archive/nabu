@@ -1,0 +1,229 @@
+CountryID	Name	Area
+AD	Andorra	Europe
+AE	United Arab Emirates	Asia
+AF	Afghanistan	Asia
+AG	Antigua and Barbuda	America
+AI	Anguilla	America
+AL	Albania	Europe
+AM	Armenia	Asia
+AN	Netherlands Antilles	America
+AO	Angola	Africa
+AR	Argentina	America
+AS	American Samoa	Pacific
+AT	Austria	Europe
+AU	Australia	Pacific
+AW	Aruba	America
+AZ	Azerbaijan	Asia
+BA	Bosnia and Herzegovina	Europe
+BB	Barbados	America
+BD	Bangladesh	Asia
+BE	Belgium	Europe
+BF	Burkina Faso	Africa
+BG	Bulgaria	Europe
+BH	Bahrain	Asia
+BI	Burundi	Africa
+BJ	Benin	Africa
+BM	Bermuda	America
+BN	Brunei	Asia
+BO	Bolivia	America
+BR	Brazil	America
+BS	Bahamas	America
+BT	Bhutan	Asia
+BW	Botswana	Africa
+BY	Belarus	Europe
+BZ	Belize	America
+CA	Canada	America
+CD	Democratic Republic of the Congo	Africa
+CF	Central African Republic	Africa
+CG	Congo	Africa
+CH	Switzerland	Europe
+CI	Côte d'Ivoire	Africa
+CK	Cook Islands	Pacific
+CL	Chile	America
+CM	Cameroon	Africa
+CN	China	Asia
+CO	Colombia	America
+CR	Costa Rica	America
+CU	Cuba	America
+CV	Cape Verde Islands	Africa
+CY	Cyprus	Asia
+CZ	Czech Republic	Europe
+DE	Germany	Europe
+DJ	Djibouti	Africa
+DK	Denmark	Europe
+DM	Dominica	America
+DO	Dominican Republic	America
+DZ	Algeria	Africa
+EC	Ecuador	America
+EE	Estonia	Europe
+EG	Egypt	Africa
+EH	Western Sahara	Africa
+ER	Eritrea	Africa
+ES	Spain	Europe
+ET	Ethiopia	Africa
+FI	Finland	Europe
+FJ	Fiji	Pacific
+FK	Falkland Islands	America
+FM	Micronesia	Pacific
+FR	France	Europe
+GA	Gabon	Africa
+GB	United Kingdom	Europe
+GD	Grenada	America
+GE	Georgia	Asia
+GF	Guyane française	America
+GH	Ghana	Africa
+GI	Gibraltar	Europe
+GL	Greenland	America
+GM	Gambia	Africa
+GN	Guinea	Africa
+GP	Guadeloupe	America
+GQ	Equatorial Guinea	Africa
+GR	Greece	Europe
+GT	Guatemala	America
+GU	Guam	Pacific
+GW	Guinea-Bissau	Africa
+GY	Guyana	America
+HN	Honduras	America
+HR	Croatia	Europe
+HT	Haiti	America
+HU	Hungary	Europe
+ID	Indonesia	Asia
+IE	Ireland	Europe
+IL	Israel	Asia
+IN	India	Asia
+IO	British Indian Ocean Territory	Africa
+IQ	Iraq	Asia
+IR	Iran	Asia
+IS	Iceland	Europe
+IT	Italy	Europe
+JM	Jamaica	America
+JO	Jordan	Asia
+JP	Japan	Asia
+KE	Kenya	Africa
+KG	Kyrgyzstan	Asia
+KH	Cambodia	Asia
+KI	Kiribati	Pacific
+KM	Comoros	Africa
+KN	Saint Kitts and Nevis	America
+KP	Korea, North	Asia
+KR	Korea, South	Asia
+KW	Kuwait	Asia
+KY	Cayman Islands	America
+KZ	Kazakhstan	Asia
+LA	Laos	Asia
+LB	Lebanon	Asia
+LC	Saint Lucia	America
+LI	Liechtenstein	Europe
+LK	Sri Lanka	Asia
+LR	Liberia	Africa
+LS	Lesotho	Africa
+LT	Lithuania	Europe
+LU	Luxembourg	Europe
+LV	Latvia	Europe
+LY	Libya	Africa
+MA	Morocco	Africa
+MC	Monaco	Europe
+MD	Moldova	Europe
+ME	Montenegro	Europe
+MG	Madagascar	Africa
+MH	Marshall Islands	Pacific
+MK	Macedonia	Europe
+ML	Mali	Africa
+MM	Myanmar	Asia
+MN	Mongolia	Asia
+MP	Northern Mariana Islands	Pacific
+MQ	Martinique	America
+MR	Mauritania	Africa
+MS	Montserrat	America
+MT	Malta	Europe
+MU	Mauritius	Africa
+MV	Maldives	Asia
+MW	Malawi	Africa
+MX	Mexico	America
+MY	Malaysia	Asia
+MZ	Mozambique	Africa
+NA	Namibia	Africa
+NC	New Caledonia	Pacific
+NE	Niger	Africa
+NF	Norfolk Island	Pacific
+NG	Nigeria	Africa
+NI	Nicaragua	America
+NL	Netherlands	Europe
+NO	Norway	Europe
+NP	Nepal	Asia
+NR	Nauru	Pacific
+NU	Niue	Pacific
+NZ	New Zealand	Pacific
+OM	Oman	Asia
+PA	Panama	America
+PE	Peru	America
+PF	French Polynesia	Pacific
+PG	Papua New Guinea	Pacific
+PH	Philippines	Asia
+PK	Pakistan	Asia
+PL	Poland	Europe
+PM	Saint Pierre and Miquelon	America
+PN	Pitcairn	Pacific
+PR	Puerto Rico	America
+PS	Palestinian West Bank and Gaza	Asia
+PT	Portugal	Europe
+PW	Palau	Pacific
+PY	Paraguay	America
+QA	Qatar	Asia
+RE	Réunion	Africa
+RO	Romania	Europe
+RS	Serbia	Europe
+RU	Russian Federation	Europe
+RW	Rwanda	Africa
+SA	Saudi Arabia	Asia
+SB	Solomon Islands	Pacific
+SC	Seychelles	Africa
+SD	Sudan	Africa
+SE	Sweden	Europe
+SG	Singapore	Asia
+SH	Saint Helena	Africa
+SI	Slovenia	Europe
+SK	Slovakia	Europe
+SL	Sierra Leone	Africa
+SM	San Marino	Europe
+SN	Senegal	Africa
+SO	Somalia	Africa
+SR	Suriname	America
+ST	São Tomé e Príncipe	Africa
+SV	El Salvador	America
+SY	Syria	Asia
+SZ	Swaziland	Africa
+TC	Turks and Caicos Islands	America
+TD	Chad	Africa
+TG	Togo	Africa
+TH	Thailand	Asia
+TJ	Tajikistan	Asia
+TK	Tokelau	Pacific
+TL	East Timor	Asia
+TM	Turkmenistan	Asia
+TN	Tunisia	Africa
+TO	Tonga	Pacific
+TR	Turkey	Asia
+TT	Trinidad and Tobago	America
+TV	Tuvalu	Pacific
+TW	Taiwan	Asia
+TZ	Tanzania	Africa
+UA	Ukraine	Europe
+UG	Uganda	Africa
+US	United States	America
+UY	Uruguay	America
+UZ	Uzbekistan	Asia
+VA	Vatican State	Europe
+VC	Saint Vincent and the Grenadines	America
+VE	Venezuela	America
+VG	British Virgin Islands	America
+VI	U.S. Virgin Islands	America
+VN	Viet Nam	Asia
+VU	Vanuatu	Pacific
+WF	Wallis and Futuna	Pacific
+WS	Samoa	Pacific
+YE	Yemen	Asia
+YT	Mayotte	Africa
+ZA	South Africa	Africa
+ZM	Zambia	Africa
+ZW	Zimbabwe	Africa

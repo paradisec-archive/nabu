@@ -152,10 +152,10 @@ namespace :import do
   desc 'Import fields_of_research into NABU from ANDS DB'
   task :fields_of_research => :environment do
     require 'iconv'
-    data = File.open("#{Rails.root}/data/ANDS_RFCD.txt", "rb").read
+    data = File.open("#{Rails.root}/data/ANZSRC.txt", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
     data.each_line do |line|
-      id, name = line.split("-")
+      id, name = line.split(" ", 2)
       id.strip!
       name.strip!
       FieldOfResearch.create! :identifier => id, :name => name
