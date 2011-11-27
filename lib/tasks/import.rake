@@ -191,7 +191,9 @@ namespace :import do
       new_uni = University.new :name => uni['uni_description']
       if !new_uni.valid?
         puts "Error adding university #{uni['uni_description']}"
-        next
+        if Rails.env == "development"
+          next
+        end
       end
       new_uni.save!
       puts "Saved university #{uni['uni-description']}"
@@ -208,8 +210,10 @@ namespace :import do
       code, name, area = line.split("\t")
       country = Country.new :name => name
       if !country.valid?
-        puts "Skipping adding country #{code}, #{name}, #{area}"
-        next
+        puts "Error adding country #{code}, #{name}, #{area}"
+        if Rails.env == "development"
+          next
+        end
       end
       country.save!
       puts "Saved country #{name}"
@@ -227,7 +231,7 @@ namespace :import do
       next unless name_type == "L"
       language = Language.new :code => code, :name => name
       if !language.valid?
-        puts "Error adding language #{code}, #{name}"
+        puts "Skipping adding language #{code}, #{name}"
         next
       end
       language.save!
@@ -247,26 +251,26 @@ namespace :import do
       field = FieldOfResearch.new :identifier => id, :name => name
       if !field.valid?
         puts "Error adding field of research #{id}, #{name}"
-        next
+        if Rails.env == "development"
+          next
+        end
       end
       field.save!
       puts "Saved field of research #{id}, #{name}"
     end
   end
 
-  desc ' Import collections into NABU from paradisec_legacy DB'
+  desc 'Import collections into NABU from paradisec_legacy DB'
   task :collections => :environment do
     client = connect
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
       next if coll['coll_id'].blank?
-      puts "analysing collection #{coll['coll_id']}"
       next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
       collector = User.find_by_pd_contact_id coll['coll_collector_id']
-      puts "Collector = #{collector.id} (contact: #{collector.pd_contact_id}), #{collector.first_name} #{collector.last_name}"
+
       if !coll['coll_original_uni'].blank?
         uni = University.find_by_name coll['coll_original_uni']
-        puts "University = #{uni.name}"
       end
       coll_xmax = coll['coll_xmax']
       coll_xmin = coll['coll_xmin']
@@ -283,7 +287,6 @@ namespace :import do
         zoom = 0
       end
       if !coll['coll_access_conditions'].blank?
-        puts "acces condition #{coll['coll_access_conditions']}"
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
@@ -308,6 +311,10 @@ puts "#{collector.id}, #{uni}"
                                 :tape_location => coll['coll_location']
       if collector
         new_coll.collector_id = collector.id
+      else
+        if !Rails.env == "development"
+          raise "ERROR: #{new_coll} has no collector - can't add to collections"
+        end
       end
       if uni
         new_coll.university_id = uni.id

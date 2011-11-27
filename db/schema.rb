@@ -54,11 +54,11 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
 
   create_table "collections", :force => true do |t|
     t.string   "identifier",            :null => false
-    t.string   "title",                 :null => false
-    t.text     "description",           :null => false
+    t.string   "title"
+    t.text     "description"
     t.integer  "collector_id",          :null => false
     t.integer  "university_id"
-    t.integer  "field_of_research_id",  :null => false
+    t.integer  "field_of_research_id"
     t.string   "region"
     t.float    "latitude"
     t.float    "longitude"
