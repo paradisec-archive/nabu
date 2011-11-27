@@ -16,7 +16,8 @@ class Collection < ActiveRecord::Base
 
   validates :identifier, :presence => true, :uniqueness => true
   validates :title, :description, :region, :presence => true
-  validates :collector_id, :university_id, :field_of_research_id, :presence => true
+  validates :university_id, :field_of_research_id, :presence => true
+  validates :collector_id, :presence => true
   validates :latitude, :presence => true, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
   validates :longitude, :presence => true, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
   validates :zoom, :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
