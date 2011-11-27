@@ -68,12 +68,12 @@ namespace :import do
 
   def fixme(object, field, default = 'FIXME')
     msg = "#{object} has invalid field #{field}"
-    if ENV['IGNORE_ERRORS']
-      $stderr.puts msg
-      default
+    if Rails.env == "development"
+#      $stderr.puts msg + " replacing with " + default
     else
       raise msg
     end
+    default
   end
 
   desc 'Import users into NABU from paradisec_legacy DB'
@@ -82,17 +82,27 @@ namespace :import do
     users = client.query("SELECT * FROM users")
     users.each do |user|
       next if user['usr_deleted'] == 1
+
+      ## user name
       first_name, last_name = user['usr_realname'].split(/ /, 2)
       if last_name.blank?
         first_name = user['usr_realname']
         last_name = 'unknown'
       end
+
+      ## admin access
       access = user['usr_access'] == 'administrator' ? true : false
+
+      ## email
       email = user['usr_email']
       if email.blank?
-        email = user['usr_id'].to_s+'@example.com'
+        email = fixme(user, 'usr_email', user['usr_id'].to_s+'@example.com')
       end
-      password = 'asdfgj'
+
+      ## password
+      password = fixme(user, 'password', 'asdfgj')
+
+      ## create user
       new_user = User.new :first_name => first_name,
                           :last_name => last_name,
                           :email => email,
@@ -102,7 +112,10 @@ namespace :import do
       new_user.admin = access
       if !new_user.valid?
         puts "Error parsing User #{user['usr_id']}"
-        next
+        puts "#{new_user.errors}"
+        if Rails.env == "development"
+          next
+        end
       end
       new_user.save!
       puts "saved new user #{first_name} #{last_name}, #{user['usr_id']}"
@@ -127,7 +140,7 @@ namespace :import do
         email = user['cont_email'].split(/ /)[0]
       end
       if email.blank?
-        email = user['cont_id'].to_s + 'cont@example.com'
+        email = fixme(user, 'cont_email', user['cont_id'].to_s + 'cont@example.com')
       end
       address = user['cont_address1']
       if user['cont_address1'] && user['cont_address2']
@@ -145,7 +158,7 @@ namespace :import do
         cur_user.save!
         puts "saved existing user " + cur_user.email
       else
-        password = 'asdfgj'
+        password = fixme(user, 'password', 'asdfgh')
         new_user = User.new :first_name => first_name,
                             :last_name => last_name,
                             :email => email,
@@ -195,7 +208,7 @@ namespace :import do
       code, name, area = line.split("\t")
       country = Country.new :name => name
       if !country.valid?
-        puts "Error adding country #{code}, #{name}, #{area}"
+        puts "Skipping adding country #{code}, #{name}, #{area}"
         next
       end
       country.save!
