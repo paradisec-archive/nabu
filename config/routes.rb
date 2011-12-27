@@ -14,4 +14,5 @@ Nabu::Application.routes.draw do
   resources :collections, :shallow => true do
     resources :items
   end
+  resources :items, :only => :index
 end
