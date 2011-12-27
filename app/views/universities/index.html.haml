@@ -34,6 +34,9 @@
           - @university.errors.full_messages.each do |msg|
             %li= msg
 
+
+    = paginate @universities
+
     %p
       = f.text_field :name
       = f.submit 'Add'

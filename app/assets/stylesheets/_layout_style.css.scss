@@ -93,7 +93,7 @@ $table_row_even: $blue;
 
 
 table.table {
-  border: #000 solid 4px;
+  border: #000 solid 3px;
   th {
     background: $table_header_bg;
   }
@@ -102,7 +102,7 @@ table.table {
   tr:nth-child(even) td { background: $table_row_even; }
 
   td, th {
-    border-left: #000 solid 4px;
+    border-left: #000 solid 3px;
   }
 
   td:nth-child(1), th:nth-child(1) {
@@ -113,10 +113,12 @@ table.table {
     float: right;
   }
 
-  th a.sortable {
-    color: #000;
-    &:hover { color: #000; }
-    &:visited { color: #000; }
+  th.sortable {
+    &:after { content: " ▲▼"}
+    &.current{
+      &[data-direction="asc"]:after { content: " ▼"}
+      &[data-direction="desc"]:after { content: " ▲"}
+    }
   }
 
   td {
