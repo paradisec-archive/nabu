@@ -47,6 +47,10 @@ class Item < ActiveRecord::Base
     'http://paradisec.org.au/repository/' + collection.identifier + '/' + identifier
   end
 
+  def full_identifier
+    collection.identifier + '-' + identifier
+  end
+
   def prefill
     return unless collection
     return unless new_record?

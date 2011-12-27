@@ -1,8 +1,8 @@
-%h1 Collections
+%h1 Items
 
 
 .page-box
-  = form_tag collections_path, :method => :get do |f|
+  = form_tag items_path, :method => :get do |f|
     = text_field_tag :search, params[:search]
     = submit_tag 'Filter', :name => nil
     = submit_tag 'Clear', :name => :clear
@@ -12,34 +12,26 @@
       = sortable :id, 'ID'
       = sortable :title
       %th Collector
+      %th Language as Given
       %th Countries
-      %th Languages
-      = sortable :creation_date
-      %th Source Uni
-      %th Map
+      = sortable :modification_date
       %th Actions
 
-      - @collections.each do |collection|
+      - @items.each do |item|
         %tr
-          %td= collection.identifier
-          %td= collection.title
-          %td= collection.collector.name
+          %td= item.full_identifier
+          %td= item.title
+          %td= item.collector.name
+          %td= item.language
           %td
-            - collection.countries.each do |country|
+            - item.countries.each do |country|
               = country.name
+          %td= item.updated_at.to_date
           %td
-            - collection.languages.each do |language|
-              = language.name
-          %td= collection.created_at.to_date
-          %td= collection.university.name
-          %td
-            .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}, :style => "width: 100px; height: 100px;"}
+            = link_to 'View', item
+            = link_to 'Edit', edit_item_path(item)
 
-          %td
-            = link_to 'View', collection
-            = link_to 'Edit', edit_collection_path(collection)
-
-  = paginate @collections
+  = paginate @items
 
   %button.per_page{:data => {:per => 10}} Show 10
   %button.per_page{:data => {:per => 50}} Show 50
