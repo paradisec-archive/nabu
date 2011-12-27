@@ -1,19 +1,24 @@
 %h1 University Details
 
-= form_for @university do |f|
-  - if @university.errors.any?
-    #error_explanation
-      %h2== #{pluralize(@university.errors.count, 'error')} prohibited this post from being saved:
-      %ul
-        - @university.errors.full_messages.each do |msg|
-          %li= msg
+.page-box
+  = form_for @university do |f|
+    - if @university.errors.any?
+      #error_explanation
+        %h2== #{pluralize(@university.errors.count, 'error')} prohibited this post from being saved:
+        %ul
+          - @university.errors.full_messages.each do |msg|
+            %li= msg
 
-  %table
-    %tr
-      %td= f.label :name
-      %td= f.text_field :name
+    .twoup-1
+      %table.form
+        %tr
+          %td= f.label :id
+          %td= @university.id
+        %tr
+          %td= f.label :name
+          %td= f.text_field :name
 
-    %tr
-      %td
-      %td= f.submit 'Update'
+        %tr
+          %td
+          %td= f.submit 'Update'
 
