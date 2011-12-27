@@ -113,11 +113,11 @@
               %td TBI
               %td TBI
             %td
-              = link_to 'View', item, if can? :read, item
+              = link_to 'View', item if can? :read, item
               = link_to 'Edit', edit_item_path(item) if can? :update, item
 
 
-    - if can? :manage, @collection
+    - if can? :manage, Collection
       %fieldset
         %h2 Depositing Information
         %table
