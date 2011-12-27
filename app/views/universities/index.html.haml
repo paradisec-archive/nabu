@@ -11,10 +11,10 @@
 
 = paginate @universities
 
-%table
+%table.table
   %tr
-    %th= sortable 'id'
-    %th= sortable 'name'
+    = sortable 'id'
+    = sortable 'name'
     %th Action
   - @universities.each do |university|
     %tr

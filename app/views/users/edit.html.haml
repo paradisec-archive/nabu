@@ -10,7 +10,7 @@
             %li= msg
 
     .twoup-1
-      %table
+      %table.form
         %tr
           %td= f.label :first_name
           %td= f.text_field :first_name
@@ -35,12 +35,6 @@
           %td= f.label :phone
           %td= f.text_field :phone, :autocomplete => :off
 
-        %tr
-          %td
-          %td= f.submit 'Update'
-
-    .twoup-2
-      %table
         - if admin_user_signed_in?
           %tr
             %td
@@ -56,25 +50,31 @@
               = f.check_box :operator
               = f.label :operator
 
-          %tr
-            %td{:colspan => 2} &nbsp;
-
-
         %tr
           %td
-            = f.label :password
-            %br
-            %i (leave blank if you don't want to change it)
+          %td= f.submit 'Update'
+
+    .twoup-2
+      %table.form
+        %tr
+          %td= f.label :password, "New password"
           %td= f.password_field :password, :autocomplete => :off
 
         %tr
-          %td= f.label :password_confirmation
+          %td &nbsp;
+          %td
+            %i (leave blank if you don't want to change it)
+
+        %tr
+          %td= f.label :password_confirmation, "Repeat new password"
           %td= f.password_field :password_confirmation, :autocomplete => :off
 
         %tr
-          %td
-            = f.label :current_password
-            %br
-            %i (we need your current password to confirm your changes)
+          %td= f.label :current_password
           %td= f.password_field :current_password, :autocomplete => :off
+
+        %tr
+          %td &nbsp;
+          %td
+            %i (we need your current password to confirm your changes)
 
