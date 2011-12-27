@@ -2,7 +2,7 @@
 require 'factory_girl'
 
 FactoryGirl.define do
-  factory :user, :aliases => [:collector] do
+  factory :user, :aliases => [:collector, :operator] do
     sequence(:email) {|n| "john#{n}@robotparade.com.au"}
     first_name 'John'
     last_name  'Ferlito'
@@ -23,7 +23,11 @@ FactoryGirl.define do
     sequence(:name) {|n| "Country #{n}"}
   end
 
-  factory :language do
+  factory :discourse_type do
+    sequence(:name) {|n| "Discourse Type #{n}"}
+  end
+
+  factory :language, :aliases => [:subject_language, :content_language] do
     sequence(:code) {|n| "sk#{n}"}
     sequence(:name) {|n| "University of Awesome #{n}"}
   end
@@ -45,4 +49,23 @@ FactoryGirl.define do
     university
     collector
   end
+
+  factory :item do
+    sequence(:identifier) {|n| "%03d" % n}
+    title 'Title of item'
+    description 'The awesome item'
+    region 'East Africa'
+    collector
+    university
+    operator
+    latitude 40.6
+    longitude -60.7
+    zoom 5
+    subject_language
+    content_language
+    discourse_type
+    collection
+    originated_on Time.now
+  end
+
 end

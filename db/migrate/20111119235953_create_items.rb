@@ -3,7 +3,7 @@ class CreateItems < ActiveRecord::Migration
     create_table :items do |t|
       t.belongs_to :collection,  :null => false
       t.string     :identifier,  :null => false
-      t.boolean    :private,     :null => false
+      t.boolean    :private
       t.string     :title,       :null => false
       t.string     :url
       t.belongs_to :collector,   :null => false

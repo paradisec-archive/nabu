@@ -37,6 +37,13 @@ DiscourseType.create :name => 'Penguin Cultivating'
 
 FieldOfResearch.create :identifier => 420114, :name => 'Indonesian Languages'
 
-20.times do
-  Factory.create(:collection)
+AgentRole.create :name => 'recorder'
+AgentRole.create :name => 'researcher'
+AgentRole.create :name => 'speaker'
+
+11.times do
+  collection = Factory.create :collection
+  5.times do
+    Factory.create :item, :collection => collection
+  end
 end

@@ -102,7 +102,7 @@
         %td= f.collection_select :discourse_type_id, DiscourseType.all, :id, :name, :prompt => true
 
       %tr
-        %td= f.label :agent_id, 'Agenys'
+        %td= f.label :agent_id, 'Agents'
         %td
           = f.fields_for :item_agents do |c|
             %br
