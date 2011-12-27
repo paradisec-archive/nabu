@@ -34,4 +34,8 @@ class Collection < ActiveRecord::Base
   accepts_nested_attributes_for :collection_admins, :allow_destroy => true, :reject_if => :all_blank
 
   paginates_per 10
+
+  before_create do |collection|
+    collection.admins << collector
+  end
 end

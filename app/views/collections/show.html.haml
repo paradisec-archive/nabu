@@ -96,12 +96,12 @@
   .twoup-2
     %fieldset
       %h2 Items in Collection
-      = link_to 'Add Item', new_collection_item_path(@collection) if can? :manage, Collection
+      = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build
       %table
         %tr
           %th Item
           %th Title
-          - if can? :manage, Collection
+          - if can? :update, @collection
             %th Ready
             %th Archived
           %th Actions
@@ -109,15 +109,15 @@
           %tr
             %td= item.identifier
             %td= item.title
-            - if can? :manage, Collection
+            - if can? :update, @collection
               %td TBI
               %td TBI
             %td
-              = link_to 'View', item
-              = link_to 'Edit', edit_item_path(item) if can? :manage, Collection
+              = link_to 'View', item, if can? :read, item
+              = link_to 'Edit', edit_item_path(item) if can? :update, item
 
 
-    - if can? :manage, Collection
+    - if can? :manage, @collection
       %fieldset
         %h2 Depositing Information
         %table

@@ -2,7 +2,7 @@ class CollectionsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @collections = @collections.order sort_column + ' ' + sort_direction
+    @collections = @collections.order 'collections.' + sort_column + ' ' + sort_direction
     if params[:clear]
       params.delete(:search)
       redirect_to collections_path

@@ -159,37 +159,41 @@
     .tabs
       %ul
         %li= link_to 'Comments', '#comment'
-        %li= link_to 'Archive Information', '#archive'
-        %li= link_to 'Admin Information', '#admin'
+        - if can? :manage, @item
+          %li= link_to 'Archive Information', '#archive'
+          %li= link_to 'Admin Information', '#admin'
+
       #comment
         %p Comments go here
 
-      #archive
-        %p Archive info goes here
+      - if can? :manage, @item
+        #archive
+          %p Archive info goes here
 
-      #admin
-        %table
-          %tr
-            %td Record Created
-            %td= @item.created_at.to_date
-          %tr
-            %td Record Modified
-            %td= @item.updated_at.to_date
+      - if can? :manage, @item
+        #admin
+          %table
+            %tr
+              %td Record Created
+              %td= @item.created_at.to_date
+            %tr
+              %td Record Modified
+              %td= @item.updated_at.to_date
 
-          %tr
-            %td User Access
-            %td
-              - @item.admins.each do |admin|
-                = admin.name
-                %br
-          %tr
-            %td Access conditions
-            %td= @item.access_condition
+            %tr
+              %td User Access
+              %td
+                - @item.admins.each do |admin|
+                  = admin.name
+                  %br
+            %tr
+              %td Access conditions
+              %td= @item.access_condition
 
-          %tr
-            %td Access Narative
-            %td= @item.access_narrative
+            %tr
+              %td Access Narative
+              %td= @item.access_narrative
 
 
 
-  = link_to 'Edit Item', edit_item_path(@item)
+  = link_to 'Edit Item', edit_item_path(@item) if can? :update, @item

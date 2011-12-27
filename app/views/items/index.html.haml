@@ -29,7 +29,7 @@
           %td= item.updated_at.to_date
           %td
             = link_to 'View', item
-            = link_to 'Edit', edit_item_path(item)
+            = link_to 'Edit', edit_item_path(item) if can? :update, item
 
   = paginate @items
 
