@@ -36,8 +36,8 @@
             .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}, :style => "width: 100px; height: 100px;"}
 
           %td
-            = link_to 'View', collection
-            = link_to 'Edit', edit_collection_path(collection)
+            = link_to 'View', collection if can? :read, Collection
+            = link_to 'Edit', edit_collection_path(collection) if can? :update, Collection
 
   = paginate @collections
 

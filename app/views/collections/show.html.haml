@@ -72,88 +72,91 @@
           %td Description
           %td= @collection.description
 
-    %fieldset
-      %h2 Access Information
-      %table
-        %tr
-          %td User Access
-          %td
-            - @collection.admins.each do |admin|
-              = admin.name
-              %br
+    - if can? :manage, Collection
+      %fieldset
+        %h2 Access Information
+        %table
+          %tr
+            %td User Access
+            %td
+              - @collection.admins.each do |admin|
+                = admin.name
+                %br
 
-        %tr
-          %td Access conditions
-          %td= @collection.access_condition
+          %tr
+            %td Access conditions
+            %td= @collection.access_condition
 
-        %tr
-          %td Access Narative
-          %td= @collection.access_narrative
+          %tr
+            %td Access Narative
+            %td= @collection.access_narrative
 
 
 
   .twoup-2
     %fieldset
       %h2 Items in Collection
-      = link_to 'Add Item', new_collection_item_path(@collection)
+      = link_to 'Add Item', new_collection_item_path(@collection) if can? :manage, Collection
       %table
         %tr
           %th Item
           %th Title
-          %th Ready
-          %th Archived
+          - if can? :manage, Collection
+            %th Ready
+            %th Archived
           %th Actions
         - @collection.items.each do |item|
           %tr
             %td= item.identifier
             %td= item.title
-            %td TBI
-            %td TBI
+            - if can? :manage, Collection
+              %td TBI
+              %td TBI
             %td
               = link_to 'View', item
-              = link_to 'Edit', edit_item_path(item)
+              = link_to 'Edit', edit_item_path(item) if can? :manage, Collection
 
 
+    - if can? :manage, Collection
+      %fieldset
+        %h2 Depositing Information
+        %table
+          %tr
+            %td Metadata Source
+            %td= @collection.metadata_source
 
-    %fieldset
-      %h2 Depositing Information
-      %table
-        %tr
-          %td Metadata Source
-          %td= @collection.metadata_source
+          %tr
+            %td Orthographic Notes
+            %td= @collection.orthographic_notes
 
-        %tr
-          %td Orthographic Notes
-          %td= @collection.orthographic_notes
+          %tr
+            %td media
+            %td= @collection.media
 
-        %tr
-          %td media
-          %td= @collection.media
+          %tr
+            %td Date created
+            %td= @collection.created_at
 
-        %tr
-          %td Date created
-          %td= @collection.created_at
+          %tr
+            %td Date modified
+            %td= @collection.updated_at
 
-        %tr
-          %td Date modified
-          %td= @collection.updated_at
+          %tr
+            %td Comments
+            %td= @collection.comments
 
-        %tr
-          %td Comments
-          %td= @collection.comments
+      %fieldset
+        %h2 Admin Information
+        %table
 
-    %fieldset
-      %h2 Admin Information
-      %table
+          %tr
+            %td
+            %td
+              = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
+              Collection complete
 
-        %tr
-          %td
-          %td
-            = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
-            Collection complete
+          %tr
+            %td Location tapes stored
+            %td= @collection.tape_location
 
-        %tr
-          %td Location tapes stored
-          %td= @collection.tape_location
-
-  = link_to 'Edit Collection', edit_collection_path(@collection)
+      = link_to 'Edit Collection', edit_collection_path(@collection)
