@@ -1,18 +1,20 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.1'
+gem 'rails', '3.1.3'
 
 gem 'mysql2'
 # For heroku
 gem 'pg'
 
+
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.1.4'
+  gem 'sass-rails',   '~> 3.1.5'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
-  gem 'compass', '~> 0.12.alpha'
+  gem 'compass', '~> 0.12.alpha.3'
 end
 
 gem 'jquery-rails'
@@ -27,7 +29,6 @@ gem 'squeel'
 gem 'to_csv-rails'
 
 gem 'kaminari'
-
 
 # Use unicorn as the web server
 gem 'unicorn'
@@ -44,11 +45,10 @@ gem 'therubyracer'
 group :development, :test do
   gem 'sqlite3'
   # Pretty printed test output
-  gem 'turn', :require => false
+  gem 'turn', '~> 0.8.3', :require => false
 end
 
 group :test do
-
   gem 'cucumber-rails'
   gem 'rspec-rails'
   gem 'factory_girl_rails'
