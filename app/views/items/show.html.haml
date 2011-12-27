@@ -1,19 +1,19 @@
-%h1 Add a Collection
-
+%h1 Item
 
 .page-box
 
   .twoup-1
     %fieldset
-      %h2 Collection Details
+      %h2 Item Details
 
       %table
         %tr
           %td Item ID
           %td
-            = @item.identifier
-            == -
-            = @item.identifier
+            = @item.full_identifier
+            (
+            = link_to 'Collection Details', @item.collection
+            )
 
         %tr
           %td= check_box_tag :checked, @item.private, @item.private, :disabled => true

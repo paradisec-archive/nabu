@@ -1,10 +1,10 @@
-%h1 Add a Collection
+%h1 Collection
 
 
 .page-box
 
   %p.collection
-    Collection Title
+    Title
     = @collection.title
 
   = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
@@ -103,12 +103,12 @@
           %th Ready
           %th Archived
           %th Actions
-        - @collection.items do |item|
+        - @collection.items.each do |item|
           %tr
             %td= item.identifier
             %td= item.title
-            %td= TBI
-            %td= TBI
+            %td TBI
+            %td TBI
             %td
               = link_to 'View', item
               = link_to 'Edit', edit_item_path(item)
