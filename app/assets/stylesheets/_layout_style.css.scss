@@ -117,6 +117,10 @@ table.table {
 }
 
 table.form {
+  td {
+    vertical-align: top;
+  }
+  
   td:nth-child(1) {
     text-align: right;
     label:after { content: ":" }

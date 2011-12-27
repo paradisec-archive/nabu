@@ -12,15 +12,15 @@
     .twoup-1
       %table.form
         %tr
-          %td= f.label :first_name
+          %td= f.label :first_name, '* First name'
           %td= f.text_field :first_name
 
         %tr
-          %td= f.label :last_name
+          %td= f.label :last_name, '* Last name'
           %td= f.text_field :last_name
 
         %tr
-          %td= f.label :email
+          %td= f.label :email, '* Email'
           %td= f.text_field :email
 
         %tr
@@ -58,23 +58,22 @@
       %table.form
         %tr
           %td= f.label :password, "New password"
-          %td= f.password_field :password, :autocomplete => :off
-
-        %tr
-          %td &nbsp;
           %td
+            = f.password_field :password, :autocomplete => :off
+            %br
             %i (leave blank if you don't want to change it)
 
+
         %tr
-          %td= f.label :password_confirmation, "Repeat new password"
+          %td= f.label :password_confirmation, "Repeat password"
           %td= f.password_field :password_confirmation, :autocomplete => :off
 
         %tr
           %td= f.label :current_password
-          %td= f.password_field :current_password, :autocomplete => :off
-
-        %tr
-          %td &nbsp;
           %td
-            %i (we need your current password to confirm your changes)
+            = f.password_field :current_password, :autocomplete => :off
+            %br
+            %i (we need your current password
+            %br
+            %i to confirm your changes)
 
