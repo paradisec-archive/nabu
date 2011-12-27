@@ -92,7 +92,9 @@ $table_row_even: $blue;
 
 table.table {
   border: #000 solid 4px;
-  th { background: $table_header_bg; }
+  th {
+    background: $table_header_bg;
+  }
 
   tr:nth-child(odd) td { background: $table_row_odd; }
   tr:nth-child(even) td { background: $table_row_even; }
@@ -114,6 +116,12 @@ table.table {
     &:hover { color: #000; }
     &:visited { color: #000; }
   }
+
+  td {
+    a {
+      padding: 0px 5px;
+    }
+  }
 }
 
 table.form {
@@ -127,7 +135,14 @@ table.form {
   }
 }
 
+input[type="text"] {
+  width: 250px;
+}
+
 .pagination {
   margin-top: 5px;
   margin-bottom: 5px;
+  span {
+    padding: 0px 3px;
+  }
 }
