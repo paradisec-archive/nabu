@@ -1,36 +1,42 @@
 %h1 Universities
 
 
-.search
-  = form_tag universities_path, :method => :get do
-    %p
-      = text_field_tag :search, params[:search]
-      = submit_tag "Search", :name => nil
-      = submit_tag "Clear", :name => :clear
+.page-box
+
+  .search
+    = form_tag universities_path, :method => :get do
+      %p
+        = text_field_tag :search, params[:search]
+        = submit_tag "Search", :name => nil
+        = submit_tag "Clear", :name => :clear
 
 
-= paginate @universities
+  = paginate @universities
 
-%table
-  %tr
-    %th= sortable 'id'
-    %th= sortable 'name'
-    %th Action
-  - @universities.each do |university|
+  %table.table
     %tr
-      %td= university.id
-      %td= university.name
-      %td
-        =link_to 'Edit', edit_university_path(university)
-        =link_to 'Delete', university, :method => :delete, :confirm => 'Are you sure?'
+      = sortable 'id'
+      = sortable 'name'
+      %th Action
+    - @universities.each do |university|
+      %tr
+        %td= university.id
+        %td= university.name
+        %td
+          =link_to 'Edit', edit_university_path(university)
+          =link_to 'Delete', university, :method => :delete, :confirm => 'Are you sure?'
 
-= form_for @university do |f|
-  - if @university.errors.any?
-    #error_explanation
-      %h2== #{pluralize(@university.errors.count, 'error')} prohibited this post from being saved:
-      %ul
-        - @university.errors.full_messages.each do |msg|
-          %li= msg
+  = form_for @university do |f|
+    - if @university.errors.any?
+      #error_explanation
+        %h2== #{pluralize(@university.errors.count, 'error')} prohibited this post from being saved:
+        %ul
+          - @university.errors.full_messages.each do |msg|
+            %li= msg
 
-  = f.text_field :name
-  = f.submit 'Add'
+
+    = paginate @universities
+
+    %p
+      = f.text_field :name
+      = f.submit 'Add'

@@ -23,6 +23,6 @@ body.bp {
 }
 
 .twoup-2 {
-  @include column(10, last);
+  @include column(10);
 }
 

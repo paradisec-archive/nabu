@@ -2,6 +2,9 @@ body.bp {
   a {
     text-decoration: none;
   }
+  p {
+    margin: 0 0 0.5em;
+  }
 }
 
 // TODO move these to partials
@@ -10,7 +13,7 @@ body.bp {
     font-size: 4em;
   }
   .auth {
-    font-size: 2em;
+    font-size: 16px;
     padding-top: 10px;
     .inner {
       float: right;
@@ -24,14 +27,18 @@ body.bp {
     border: #000 solid 4px;
     ul {
       @include horizontal-list(30px);
-      font-size: 2em;
+      font-size: 18px;
     }
   }
 }
 
 #content {
-  margin-top: 20px;
+  margin-top: 5px;
   min-height: 400px;
+  h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+  }
 }
 
 #footer {
@@ -47,8 +54,7 @@ $table_row_even: $blue;
 .page-box {
   border: #000 solid 4px;
   background: $page_background;
-  padding-top: 10px;
-  padding-left: 10px;
+  padding: 10px;
   overflow: hidden;
 }
 
@@ -86,17 +92,17 @@ $table_row_even: $blue;
 }
 
 
-table {
-
-  border: #000 solid 4px;
-  th { background: $table_header_bg; }
+table.table {
+  border: #000 solid 3px;
+  th {
+    background: $table_header_bg;
+  }
 
   tr:nth-child(odd) td { background: $table_row_odd; }
-
   tr:nth-child(even) td { background: $table_row_even; }
 
   td, th {
-    border-left: #000 solid 4px;
+    border-left: #000 solid 3px;
   }
 
   td:nth-child(1), th:nth-child(1) {
@@ -107,16 +113,40 @@ table {
     float: right;
   }
 
-  th a.sortable {
-    color: #000;
-    &:hover { color: #000; }
-    &:visited { color: #000; }
+  th.sortable {
+    &:after { content: " ▲▼"}
+    &.current{
+      &[data-direction="asc"]:after { content: " ▼"}
+      &[data-direction="desc"]:after { content: " ▲"}
+    }
   }
 
+  td {
+    a {
+      padding: 0px 5px;
+    }
+  }
+}
 
+table.form {
+  td {
+    vertical-align: top;
+  }
+  
+  td:nth-child(1) {
+    text-align: right;
+    label:after { content: ":" }
+  }
+}
+
+input[type="text"] {
+  width: 250px;
 }
 
 .pagination {
   margin-top: 5px;
   margin-bottom: 5px;
+  span {
+    padding: 0px 3px;
+  }
 }

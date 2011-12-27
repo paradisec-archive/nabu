@@ -1,4 +1,5 @@
 Use this README file to introduce your application and point to useful places in the API for learning more.
+
 Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
 
 
@@ -25,11 +26,12 @@ Done!
 
 ## Updating the fields of research codes
 
-The fields of research codes in use for NABU are sourced from http://www.abs.gov.au/ausstats/abs@.nsf/0/382A146E83040A1CCA25697E0018FB77?opendocument.
+The fields of research codes in use for NABU are sourced from http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1297.02008?OpenDocument .
+They are an extract from sections 19 and 20, manually formatted.
 
 To update them:
 
-* Download the desired list into a text file at data/ANDS_RFCD.txt and format to the given format
+* Download the desired list into a text file at data/ANZSRC.txt and format to the given format
 
 * run the rake task to import them
 

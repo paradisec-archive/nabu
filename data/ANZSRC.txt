@@ -1,0 +1,84 @@
+190401 Aboriginal and Torres Strait Islander Performing Arts
+190402 Creative Writing (incl. Playwriting)
+190403 Dance
+190404 Drama, Theatre and Performance Studies
+190405 Maori Performing Arts
+190406 Music Composition
+190407 Music Performance
+190408 Music Therapy
+190409 Musicology and Ethnomusicology
+190410 Pacific Peoples Performing Arts
+190499 Performing Arts and Creative Writing not elsewhere classified
+200201 Aboriginal and Torres Strait Islander Cultural Studies
+200202 Asian Cultural Studies
+200203 Consumption and Everyday Life
+200204 Cultural Theory
+200205 Culture, Gender, Sexuality
+200206 Globalisation and Culture
+200207 Maori Cultural Studies
+200208 Migrant Cultural Studies
+200209 Multicultural, Intercultural and Cross-cultural Studies
+200210 Pacific Cultural Studies
+200211 Postcolonial Studies
+200212 Screen and Media Culture
+200299 Cultural Studies not elsewhere classified
+200301 Early English Languages
+200302 English Language
+200303 English as a Second Language
+200304 Central and Eastern European Languages (incl. Russian)
+200305 Latin and Classical Greek Languages
+200306 French Language
+200307 German Language
+200308 Iberian Languages
+200309 Italian Language
+200310 Other European Languages
+200311 Chinese Languages
+200312 Japanese Language
+200313 Indonesian Languages
+200314 South-East Asian Languages (excl. Indonesian)
+200315 Indian Languages
+200316 Korean Language
+200317 Other Asian Languages (excl. South-East Asian)
+200318 Middle Eastern Languages
+200319 Aboriginal and Torres Strait Islander Languages
+200320 Pacific Languages
+200321 Te Reo Maori (Maori Language)
+200322 Comparative Language Studies
+200323 Translation and Interpretation Studies
+200399 Language Studies not elsewhere classified
+200401 Applied Linguistics and Educational Linguistics
+200402 Computational Linguistics
+200403 Discourse and Pragmatics
+200404 Laboratory Phonetics and Speech Science
+200405 Language in Culture and Society (Sociolinguistics)
+200406 Language in Time and Space (incl. Historical Linguistics, Dialectology)
+200407 Lexicography
+200408 Linguistic Structures (incl. Grammar, Phonology, Lexicon, Semantics)
+200499 Linguistics not elsewhere classified
+200501 Aboriginal and Torres Strait Islander Literature
+200502 Australian Literature (excl. Aboriginal and Torres Strait Islander Literature)
+200503 British and Irish Literature
+200504 Maori Literature
+200505 New Zealand Literature (excl. Maori Literature)
+200506 North American Literature
+200507 Pacific Literature
+200508 Other Literatures in English
+200509 Central and Eastern European Literature (incl. Russian)
+200510 Latin and Classical Greek Literature
+200511 Literature in French
+200512 Literature in German
+200513 Literature in Italian
+200514 Literature in Spanish and Portuguese
+200515 Other European Literature
+200516 Indonesian Literature
+200517 Literature in Chinese
+200518 Literature in Japanese
+200519 South-East Asian Literature (excl. Indonesian)
+200520 Indian Literature
+200521 Korean Literature
+200522 Other Asian Literature (excl. South-East Asian)
+200523 Middle Eastern Literature
+200524 Comparative Literature Studies
+200525 Literary Theory
+200526 Stylistics and Textual Analysis
+200599 Literary Studies not elsewhere classified

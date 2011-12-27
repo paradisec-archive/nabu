@@ -1,37 +1,42 @@
 %h1 Users
 
-.search
-  = form_tag users_path, :method => :get do
-    %p
-      = text_field_tag :search, params[:search]
-      = submit_tag "Search", :name => nil
-      = submit_tag "Clear", :name => :clear
+.page-box
 
-= paginate @users
+  .search
+    = form_tag users_path, :method => :get do
+      %p
+        = text_field_tag :search, params[:search]
+        = submit_tag "Search", :name => nil
+        = submit_tag "Clear", :name => :clear
 
-%table
-  %tr
-    = sortable 'id'
-    = sortable 'first_name'
-    = sortable 'last_name'
-    = sortable 'address'
-    = sortable 'country'
-    = sortable 'email'
-    = sortable 'phone'
-    = sortable 'admin'
-    %th Action
-  - @users.each do |user|
+  = paginate @users
+
+  %table.table
     %tr
-      %td= user.id
-      %td= user.first_name
-      %td= user.last_name
-      %td= user.address
-      %td= user.country
-      %td= user.email
-      %td= user.phone
-      %td= user.admin? ? 'Yes' : 'No'
-      %td
-        =link_to 'Edit', edit_user_path(user)
-        =link_to 'Delete', user, :method => :delete, :confirm => 'Are you sure?'
+      = sortable 'id'
+      = sortable 'first_name'
+      = sortable 'last_name'
+      = sortable 'address'
+      = sortable 'country'
+      = sortable 'email'
+      = sortable 'phone'
+      = sortable 'admin'
+      %th Action
+    - @users.each do |user|
+      %tr
+        %td= user.id
+        %td= user.first_name
+        %td= user.last_name
+        %td= user.address
+        %td= user.country
+        %td= user.email
+        %td= user.phone
+        %td= user.admin? ? 'Yes' : 'No'
+        %td
+          =link_to 'Edit', edit_user_path(user)
+          =link_to 'Delete', user, :method => :delete, :confirm => 'Are you sure?'
 
-= link_to 'Export CSV', users_path(:format => :csv)
+  = paginate @users
+
+  %p
+    = link_to 'Export CSV', users_path(:format => :csv)

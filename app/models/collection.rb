@@ -15,11 +15,13 @@ class Collection < ActiveRecord::Base
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
   validates :identifier, :presence => true, :uniqueness => true
-  validates :title, :description, :region, :presence => true
-  validates :collector_id, :university_id, :field_of_research_id, :presence => true
-  validates :latitude, :presence => true, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
-  validates :longitude, :presence => true, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
-  validates :zoom, :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
+#  validates :title, :description, :region, :presence => true
+#  validates :university_id, :field_of_research_id, :presence => true
+  validates :collector_id, :presence => true
+# validates :latitude, :longitude, :zoom, :presence => true
+  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
+  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
+  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
 
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
