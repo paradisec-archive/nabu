@@ -127,7 +127,7 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
   create_table "items", :force => true do |t|
     t.integer  "collection_id",       :null => false
     t.string   "identifier",          :null => false
-    t.boolean  "private",             :null => false
+    t.boolean  "private"
     t.string   "title",               :null => false
     t.string   "url"
     t.integer  "collector_id",        :null => false
