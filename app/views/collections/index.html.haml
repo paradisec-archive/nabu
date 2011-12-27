@@ -8,6 +8,8 @@
       = submit_tag 'Filter', :name => nil
       = submit_tag 'Clear', :name => :clear
 
+  = paginate @collections
+
   %table.table
     %tr
       = sortable :id, 'ID'
