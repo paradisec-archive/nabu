@@ -38,13 +38,6 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
 
   add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
 
-  create_table "collection_fields_of_research", :force => true do |t|
-    t.integer "collection_id"
-    t.integer "field_of_research_id"
-  end
-
-  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
-
   create_table "collection_languages", :force => true do |t|
     t.integer "collection_id"
     t.integer "language_id"
