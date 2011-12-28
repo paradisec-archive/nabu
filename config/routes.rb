@@ -1,4 +1,8 @@
 Nabu::Application.routes.draw do
+  ActiveAdmin.routes(self)
+
+#  devise_for :users, ActiveAdmin::Devise.config
+
   devise_for :users
 
   authenticated :user do
@@ -10,7 +14,6 @@ Nabu::Application.routes.draw do
   match '/contact' => 'page#contact'
 
   resources :users
-  resources :universities
   resources :collections, :shallow => true do
     resources :items
   end

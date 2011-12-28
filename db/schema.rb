@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111119235953) do
+ActiveRecord::Schema.define(:version => 20111228185717) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -19,8 +19,24 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
     t.datetime "updated_at"
   end
 
+  create_table "active_admin_comments", :force => true do |t|
+    t.integer  "resource_id",   :null => false
+    t.string   "resource_type", :null => false
+    t.integer  "author_id"
+    t.string   "author_type"
+    t.text     "body"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "namespace"
+  end
+
+  add_index "active_admin_comments", ["author_type", "author_id"], :name => "index_active_admin_comments_on_author_type_and_author_id"
+  add_index "active_admin_comments", ["namespace"], :name => "index_active_admin_comments_on_namespace"
+  add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
+
   create_table "agent_roles", :force => true do |t|
-    t.string "name", :null => false
+    t.string  "name",       :null => false
+    t.integer "pd_role_id"
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -37,6 +53,13 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
   end
 
   add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
+
+  create_table "collection_fields_of_research", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "field_of_research_id"
+  end
+
+  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
 
   create_table "collection_languages", :force => true do |t|
     t.integer "collection_id"
@@ -68,6 +91,9 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
     t.boolean  "private"
     t.string   "tape_location"
     t.boolean  "deposit_form_recieved"
+    t.integer  "pd_collector_id"
+    t.integer  "pd_operator_id"
+    t.string   "pd_coll_id"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
@@ -82,10 +108,24 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|
-    t.string "name"
+    t.string  "name"
+    t.integer "pd_dt_id"
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
+
+  create_table "essences", :force => true do |t|
+    t.integer "item_id"
+    t.string  "filename"
+    t.string  "mimetype"
+    t.integer "bitrate"
+    t.integer "samplerate"
+    t.integer "size"
+    t.float   "duration"
+    t.integer "channels"
+  end
+
+  add_index "essences", ["item_id"], :name => "index_essences_on_item_id"
 
   create_table "fields_of_research", :force => true do |t|
     t.string "identifier"
@@ -143,6 +183,7 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
     t.text     "comments"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "pd_coll_id"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
@@ -185,6 +226,8 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
+    t.integer  "pd_user_id"
+    t.integer  "pd_contact_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

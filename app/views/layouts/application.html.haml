@@ -35,9 +35,7 @@
           %li.active= link_to 'Home', root_path
           %li= link_to 'Browse Collections', collections_path
           %li= link_to 'Browse Items', items_path
-          - if admin_user_signed_in?
-            %li= link_to 'Browse Users', users_path
-            %li= link_to 'Browse Universities', universities_path
+          %li= link_to 'Browse Users', users_path if can? :manage, User
           %li= link_to 'Search', '#'
           %li= link_to 'Help', '#'
 
@@ -56,7 +54,7 @@
         = link_to 'Contact', contact_path
         - if admin_user_signed_in?
           |
-          = link_to 'Settings', '#'
+          = link_to 'Settings', admin_dashboard_path
 
 
 
