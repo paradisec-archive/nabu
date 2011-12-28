@@ -76,9 +76,11 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
   create_table "countries", :force => true do |t|
+    t.string "code"
     t.string "name"
   end
 
+  add_index "countries", ["code"], :name => "index_countries_on_code", :unique => true
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|

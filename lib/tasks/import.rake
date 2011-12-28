@@ -43,8 +43,6 @@ namespace :import do
       add_column :users, :pd_user_id, :integer
       add_column :users, :pd_contact_id, :integer
 
-      add_column :collections, :pd_coll_id, :string
-
       add_column :items, :pd_coll_id, :string
       add_column :discourse_types, :pd_dt_id, :integer
       add_column :agent_roles, :pd_role_id, :integer
@@ -149,7 +147,7 @@ namespace :import do
         end
       end
       new_user.save!
-      puts "saved new user #{first_name} #{last_name}, #{user['usr_id']}"
+      puts "saved new user #{first_name} #{last_name}, #{email}, #{user['usr_id']}"
     end
   end
 
@@ -208,7 +206,7 @@ namespace :import do
           puts first_name + " " + last_name
         end
         new_user.save!
-        puts "saved new user " + new_user.email
+        puts "saved new user #{first_name} #{last_name}, #{email}, #{user['cont_id']}"
       end
     end
   end
@@ -231,7 +229,7 @@ namespace :import do
         end
       end
       new_uni.save!
-      puts "Saved university #{uni['uni-description']}"
+      puts "Saved university #{uni['uni_description']}"
     end
   end
 
@@ -244,7 +242,7 @@ namespace :import do
     data.each_line do |line|
       next if line =~ /^CountryID/
       code, name, area = line.split("\t")
-      country = Country.new :name => name
+      country = Country.new :name => name, :code => code
       if !country.valid?
         puts "Error adding country #{code}, #{name}, #{area}"
         if Rails.env == "development"
@@ -252,7 +250,7 @@ namespace :import do
         end
       end
       country.save!
-      puts "Saved country #{name}"
+      puts "Saved country #{code} - #{name}"
     end
   end
 
@@ -272,7 +270,7 @@ namespace :import do
         next
       end
       language.save!
-      puts "Saved language #{code}, #{name}"
+      puts "Saved language #{code} - #{name}"
     end
   end
 
@@ -305,12 +303,17 @@ namespace :import do
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
       next if coll['coll_id'].blank?
+
+      ## get collector
       next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
       collector = User.find_by_pd_contact_id coll['coll_collector_id']
 
+      ## get university
       if !coll['coll_original_uni'].blank?
         uni = University.find_by_name coll['coll_original_uni']
       end
+
+      ## get map coordinates
       coll_xmax = coll['coll_xmax']
       coll_xmin = coll['coll_xmin']
       coll_ymax = coll['coll_ymax']
@@ -329,30 +332,33 @@ namespace :import do
         longitude = 0
         zoom = 1
       end
+
+      ## get access conditions
       if !coll['coll_access_conditions'].blank?
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
         end
       end
-puts "creating collection"
-puts "#{coll['coll_id']}, #{coll['coll_description']}, #{coll['coll_note']}"
-puts "#{collector.id}, #{uni}"
-     new_coll = Collection.new :identifier => coll['coll_id'],
-                               :title => coll['coll_description'] || fixme(coll, :title),
-                               :description => coll['coll_note'] || fixme(coll, :description),
-                               :region => coll['coll_region_village'],
-                               :latitude => latitude,
-                               :longitude => longitude,
-                               :zoom => zoom.to_i,
-                               :access_narrative => coll['coll_access_narrative'],
-                               :metadata_source => coll['coll_metadata_source'],
-                               :orthographic_notes => coll['coll_orthographic_notes'],
-                               :media => coll['coll_media'],
-                               :comments => coll['coll_comments'],
-                               :deposit_form_recieved => coll['coll_depform_rcvd'],
-                               :tape_location => coll['coll_location'],
-                               :field_of_research_id => 1
+
+      ## prepare record
+      new_coll = Collection.new :identifier => coll['coll_id'],
+                                :title => coll['coll_description'] || fixme(coll, :title),
+                                :description => coll['coll_note'] || fixme(coll, :description),
+                                :region => coll['coll_region_village'],
+                                :latitude => latitude,
+                                :longitude => longitude,
+                                :zoom => zoom.to_i,
+                                :access_narrative => coll['coll_access_narrative'],
+                                :metadata_source => coll['coll_metadata_source'],
+                                :orthographic_notes => coll['coll_orthographic_notes'],
+                                :media => coll['coll_media'],
+                                :comments => coll['coll_comments'],
+                                :deposit_form_recieved => coll['coll_depform_rcvd'],
+                                :tape_location => coll['coll_location'],
+                                :field_of_research_id => 1
+
+      ## set collector
       if collector
         new_coll.collector_id = collector.id
       else
@@ -360,44 +366,45 @@ puts "#{collector.id}, #{uni}"
           raise "ERROR: #{new_coll} has no collector - can't add to collections"
         end
       end
+
+      ## set university
       if uni
         new_coll.university_id = uni.id
       end
+
+      ## set access rights and private field
+      new_coll.private = false
       if access_cond
         new_coll.access_condition_id = access_cond.id
         if access_cond.name == "not to be listed publicly (temporary)"
           new_coll.private = true
-        else
-          new_coll.private = false
         end
       end
+
+      ## set dates
       new_coll.created_at = coll['coll_date_created']
       new_coll.updated_at = coll['coll_date_modified']
 
-      # save PARADISEC identifier
-      new_coll.pd_coll_id = coll['coll_id']
+      ## TODO: when all items in coll have impl_ready, set complete to true
+      new_coll.complete = false
 
-# missing new fields:
-# - when all items in coll have impl_ready, set complete to true
-#      t.boolean  "complete"
-
+      ## save record
       if !new_coll.valid?
         puts "Error adding collection #{coll['coll_id']} #{coll['coll_note']}"
         puts "#{new_coll.errors}"
       end
       new_coll.save!
-      puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}"
+      puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
 
-      # create entry into collection_admins
+      ## create admin user entry into CollectionAdmin
       if coll['coll_operator_id']
         operator = User.find_by_pd_user_id coll['coll_collector_id']
         if operator
-          new_coll_admin = CollectionAdmin.create! :collection => new_coll,
-                                                   :user => operator
+          CollectionAdmin.create! :collection => new_coll, :user => operator
+          puts "Saved operator #{coll['coll_id']} #{operator.id} #{operator.first_name} #{operator.last_name}"
         end
       end
     end
-
   end
 
   desc 'Import collection_languages into NABU from paradisec_legacy DB'
@@ -412,6 +419,7 @@ puts "#{collector.id}, #{uni}"
       lang_list += langs[1].split"\, " if langs[1]
       language = nil
       lang_list.each do |langl|
+        ## some language fixes
         langl = case langl
         when "MOSINA"
           "Vures"
@@ -425,15 +433,30 @@ puts "#{collector.id}, #{uni}"
         language = Language.find_by_name(langl)
         break if language
       end
-      collection = Collection.find_by_pd_coll_id lang['cl_coll_id']
+      collection = Collection.find_by_identifier lang['cl_coll_id']
       next unless collection
-      coll_lang = CollectionLanguage.create! :collection => collection,
-                                             :language => language
+      CollectionLanguage.create! :collection => collection, :language => language
+      puts "Saved for collection #{collection.identifier}: #{language.code} - #{language.name}"
     end
   end
 
-  # country -> collection_countries
+  desc 'Import collection_countries into NABU from paradisec_legacy DB'
+  task :collection_countries => :environment do
+    puts "Importing countries per collection from PARADISEC legacy DB"
+    client = connect
+    countries = client.query("SELECT * FROM collection_country")
+    countries.each do |country|
+      next if country['cc_countrycode'].blank? || country['cc_coll_id'].blank?
+      cntry = Country.find_by_code country['cc_countrycode']
+      collection = Collection.find_by_identifier country['cc_coll_id']
+      next unless cntry && collection
+      CollectionCountry.create! :collection => collection, :country => cntry
+      puts "Saved for collection #{collection.identifier}: #{cntry.code} - #{cntry.name}"
+    end
+  end
 
+
+# import collection_user_perm
 
   ## FOR ITEMS
 

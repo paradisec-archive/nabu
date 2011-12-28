@@ -34,14 +34,14 @@
         %td Countries
         %td
           - @collection.countries.each do |country|
-            = country.name
+            #{country.code} - #{country.name}
             %br
 
       %tr
         %td Languages
         %td
           - @collection.languages.each do |language|
-            = language.name
+            #{language.code} - #{language.name} 
             %br
 
       %tr
