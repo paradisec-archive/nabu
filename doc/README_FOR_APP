@@ -25,6 +25,8 @@ To update them:
 
     rake import:countries
     rake import:languages
+    
+  The language codes of type "L" will be imported into Nabu.
 
 Done!
 

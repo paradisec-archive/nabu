@@ -40,10 +40,11 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   end
 
   create_table "collection_admins", :force => true do |t|
-    t.integer "collection_id"
-    t.integer "user_id"
+    t.integer "collection_id", :null => false
+    t.integer "user_id",       :null => false
   end
 
+  add_index "collection_admins", ["collection_id", "user_id"], :name => "index_collection_admins_on_collection_id_and_user_id", :unique => true
   add_index "collection_admins", ["collection_id"], :name => "index_collection_admins_on_collection_id"
   add_index "collection_admins", ["user_id"], :name => "index_collection_admins_on_user_id"
 
@@ -102,9 +103,11 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
   create_table "countries", :force => true do |t|
+    t.string "code"
     t.string "name"
   end
 
+  add_index "countries", ["code"], :name => "index_countries_on_code", :unique => true
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|

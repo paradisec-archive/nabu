@@ -1,9 +1,11 @@
 class AddCountryTable < ActiveRecord::Migration
   def change
     create_table :countries do |t|
+      t.string :code
       t.string :name
     end
     add_index :countries, :name, :unique => true
+    add_index :countries, :code, :unique => true
 
     create_table :collection_countries do |t|
       t.belongs_to :collection
