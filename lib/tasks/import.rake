@@ -1,24 +1,24 @@
 namespace :import do
 
   desc 'Setup database from old PARADISEC data & other imports'
-  task :all => [:setup, :import, :dev_users]
+  task :all => [:setup, :import]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:load_db, :add_identifiers]
+  task :setup => [:dev_users, :load_db, :add_identifiers]
 
   desc 'Import data from old PARADISEC DB & other files'
   task :import => [:users, :contacts,
                    :universities,
                    :countries, :languages, :fields_of_research,
                    :discourse_types, :agent_roles,
-                   :collections]
+                   :collections, :collection_languages]
 #                  :items
 
   desc 'Teardown intermediate stuff'
   task :teardown => [:remove_identifiers]
 
 
-##  SUBROUTINES BELOW HERE ##
+##  HELPER ROUTINES ##
 
   ## FOR DB IMPORT
 
@@ -43,33 +43,12 @@ namespace :import do
       add_column :users, :pd_user_id, :integer
       add_column :users, :pd_contact_id, :integer
 
-      add_column :collections, :pd_collector_id, :integer
-      add_column :collections, :pd_operator_id, :integer
       add_column :collections, :pd_coll_id, :string
 
       add_column :items, :pd_coll_id, :string
       add_column :discourse_types, :pd_dt_id, :integer
       add_column :agent_roles, :pd_role_id, :integer
     end
-  end
-
-  desc 'Add some users for the development environment'
-  task :dev_users => :environment do
-    return if Rails.env.production?
-    puts 'Adding development Users'
-    u = User.create :email => 'user@example.com',
-                    :first_name => 'User',
-                    :last_name => 'Doe',
-                    :password => 'password',
-                    :password_confirmation => 'password'
-    u.confirm!
-    u = User.create :email => 'admin@example.com',
-                    :first_name => 'Admin',
-                    :last_name => 'Doe',
-                    :password => 'password',
-                    :password_confirmation => 'password'
-    u.confirm!
-    u.admin!
   end
 
   desc 'Add paradisec_legacy identifier colums to DBs for import tasks'
@@ -105,6 +84,25 @@ namespace :import do
     default
   end
 
+  desc 'Add some users for the development environment'
+  task :dev_users => :environment do
+    return if Rails.env.production?
+    puts 'Adding development Users'
+    u = User.create :email => 'user@example.com',
+                    :first_name => 'User',
+                    :last_name => 'Doe',
+                    :password => 'password',
+                    :password_confirmation => 'password'
+    u.confirm!
+    u = User.create :email => 'admin@example.com',
+                    :first_name => 'Admin',
+                    :last_name => 'Doe',
+                    :password => 'password',
+                    :password_confirmation => 'password'
+    u.confirm!
+    u.admin!
+  end
+
   desc 'Import users into NABU from paradisec_legacy DB'
   task :users => :environment do
     puts "Importing users from PARADISEC legacy DB"
@@ -138,7 +136,10 @@ namespace :import do
                           :email => email,
                           :password => password,
                           :password_confirmation => password
+
+      ## save PARADISEC identifier
       new_user.pd_user_id = user['usr_id']
+
       new_user.admin = access
       if !new_user.valid?
         puts "Error parsing User #{user['usr_id']}"
@@ -198,6 +199,8 @@ namespace :import do
                             :address => address,
                             :country => user['cont_country'],
                             :phone => user['cont_phone']
+
+        ## save PARADISEC identifier
         new_user.pd_contact_id = user['cont_id']
         new_user.admin = false
         if !new_user.valid?
@@ -261,7 +264,7 @@ namespace :import do
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
     data.each_line do |line|
       next if line =~ /^LangID/
-        code, country_code, name_type, name = line.strip.split("\t")
+      code, country_code, name_type, name = line.strip.split("\t")
       next unless name_type == "L"
       language = Language.new :code => code, :name => name
       if !language.valid?
@@ -336,20 +339,20 @@ puts "creating collection"
 puts "#{coll['coll_id']}, #{coll['coll_description']}, #{coll['coll_note']}"
 puts "#{collector.id}, #{uni}"
      new_coll = Collection.new :identifier => coll['coll_id'],
-                                :title => coll['coll_description'] || fixme(coll, :title),
-                                :description => coll['coll_note'] || fixme(coll, :description),
-                                :region => coll['coll_region_village'],
-                                :latitude => latitude,
-                                :longitude => longitude,
-                                :zoom => zoom.to_i,
-                                :access_narrative => coll['coll_access_narrative'],
-                                :metadata_source => coll['coll_metadata_source'],
-                                :orthographic_notes => coll['coll_orthographic_notes'],
-                                :media => coll['coll_media'],
-                                :comments => coll['coll_comments'],
-                                :deposit_form_recieved => coll['coll_depform_rcvd'],
-                                :tape_location => coll['coll_location'],
-                                :field_of_research => 1
+                               :title => coll['coll_description'] || fixme(coll, :title),
+                               :description => coll['coll_note'] || fixme(coll, :description),
+                               :region => coll['coll_region_village'],
+                               :latitude => latitude,
+                               :longitude => longitude,
+                               :zoom => zoom.to_i,
+                               :access_narrative => coll['coll_access_narrative'],
+                               :metadata_source => coll['coll_metadata_source'],
+                               :orthographic_notes => coll['coll_orthographic_notes'],
+                               :media => coll['coll_media'],
+                               :comments => coll['coll_comments'],
+                               :deposit_form_recieved => coll['coll_depform_rcvd'],
+                               :tape_location => coll['coll_location'],
+                               :field_of_research_id => 1
       if collector
         new_coll.collector_id = collector.id
       else
@@ -363,21 +366,20 @@ puts "#{collector.id}, #{uni}"
       if access_cond
         new_coll.access_condition_id = access_cond.id
         if access_cond.name == "not to be listed publicly (temporary)"
-          newcoll.private = true
+          new_coll.private = true
         else
-          newcoll.private = false
+          new_coll.private = false
         end
       end
       new_coll.created_at = coll['coll_date_created']
       new_coll.updated_at = coll['coll_date_modified']
 
+      # save PARADISEC identifier
+      new_coll.pd_coll_id = coll['coll_id']
+
 # missing new fields:
 # - when all items in coll have impl_ready, set complete to true
 #      t.boolean  "complete"
-
-# missing old fields:
-# - add to collection_admins
-# coll_operator_id: int
 
       if !new_coll.valid?
         puts "Error adding collection #{coll['coll_id']} #{coll['coll_note']}"
@@ -386,11 +388,51 @@ puts "#{collector.id}, #{uni}"
       new_coll.save!
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}"
 
-      # language -> collection_languages
-      # country -> collection_countries
+      # create entry into collection_admins
+      if coll['coll_operator_id']
+        operator = User.find_by_pd_user_id coll['coll_collector_id']
+        if operator
+          new_coll_admin = CollectionAdmin.create! :collection => new_coll,
+                                                   :user => operator
+        end
+      end
     end
 
   end
+
+  desc 'Import collection_languages into NABU from paradisec_legacy DB'
+  task :collection_languages => :environment do
+    puts "Importing languages per collection from PARADISEC legacy DB"
+    client = connect
+    languages = client.query("SELECT * FROM collection_language")
+    languages.each do |lang|
+      next if lang['cl_language'].blank? || lang['cl_coll_id'].blank?
+      langs = lang['cl_language'].sub(/\)/, '').split" \("
+      lang_list = [langs[0]]
+      lang_list += langs[1].split"\, " if langs[1]
+      language = nil
+      lang_list.each do |langl|
+        langl = case langl
+        when "MOSINA"
+          "Vures"
+        when "IMANDI"
+          "Wiarumus"
+        when "MUNIWARA"
+          "Juwal"
+        else
+          langl
+        end
+        language = Language.find_by_name(langl)
+        break if language
+      end
+      collection = Collection.find_by_pd_coll_id lang['cl_coll_id']
+      next unless collection
+      coll_lang = CollectionLanguage.create! :collection => collection,
+                                             :language => language
+    end
+  end
+
+  # country -> collection_countries
 
 
   ## FOR ITEMS
