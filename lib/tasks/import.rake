@@ -22,9 +22,14 @@ namespace :import do
 
   desc 'Load database from old PARADISEC system'
   task :load_db do
-    system 'echo "DROP DATABASE paradisec_legacy" | mysql -u root'
+    system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    system "mysql -u root paradisec_legacy < #{Rails.root}/db/legacy/paradisecDump.sql"
+    tables = %w{collection_language15 collection_language16 ethnologue15 ethnologue16 ethnologue_country15 ethnologue_country16 item_language15 item_language16 item_subjectlang15 item_subjectlang16}
+    sed = 's/ TYPE=MyISAM//;'
+    tables.each do |table|
+      sed << "/CREATE TABLE #{table}/,/Table structure for table/d;"
+    end
+    system "sed -e '#{sed}' #{Rails.root}/db/legacy/paradisecDump.sql | mysql -u root paradisec_legacy"
   end
 
 
