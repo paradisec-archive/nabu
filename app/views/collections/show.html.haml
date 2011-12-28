@@ -1,162 +1,159 @@
-%h1 Collection
+.left
+  %h1 #{@collection.title}
 
-
-.page-box
-
-  %p.collection
-    Title
-    = @collection.title
-
+.right
   = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
   Collection complete
 
   = check_box_tag :private, @collection.private, @collection.private, :disabled => true
   Private
+  
+.clear
 
-  .twoup-1
+.twoup-1
+  %fieldset
+    %legend Collection Details
+    %table.form
+      %tr
+        %td Collection ID
+        %td= @collection.identifier
+
+      %tr
+        %td Collector
+        %td= @collection.collector.name
+
+      %tr
+        %td Originating University
+        %td= @collection.university.name
+
+      %tr
+        %td Field of Research
+        %td= @collection.field_of_research.name_with_identifier
+
+      %tr
+        %td Countries
+        %td
+          - @collection.countries.each do |country|
+            = country.name
+            %br
+
+      %tr
+        %td Languages
+        %td
+          - @collection.languages.each do |language|
+            = language.name
+            %br
+
+      %tr
+        %td Region / Village
+        %td= @collection.region
+
+      %tr
+        %td Latitude
+        %td= @collection.latitude
+
+      %tr
+        %td Longitude
+        %td= @collection.longitude
+
+      %tr
+        %td Zoom
+        %td= @collection.zoom
+
+      %tr
+        %td{:colspan => 2}
+          .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+
+
+      %tr
+        %td Description
+        %td= @collection.description
+
+  - if can? :manage, Collection
     %fieldset
-      %h2 Collection Details
-      %table
+      %legend Access Information
+      %table.form
         %tr
-          %td Collection ID
-          %td= @collection.identifier
-
-        %tr
-          %td Collector
-          %td= @collection.collector.name
-
-        %tr
-          %td Originating University
-          %td= @collection.university.name
-
-        %tr
-          %td Field of Research
-          %td= @collection.field_of_research.name_with_identifier
-
-        %tr
-          %td Countries
+          %td User Access
           %td
-            - @collection.countries.each do |country|
-              = country.name
+            - @collection.admins.each do |admin|
+              = admin.name
               %br
 
         %tr
-          %td Languages
-          %td
-            - @collection.languages.each do |language|
-              = language.name
-              %br
+          %td Access conditions
+          %td= @collection.access_condition
 
         %tr
-          %td Region / Village
-          %td= @collection.region
+          %td Access Narative
+          %td= @collection.access_narrative
 
+
+
+.twoup-2
+  %fieldset
+    %legend Items in Collection
+    %table.table
+      %tr
+        %th Item
+        %th Title
+        - if can? :update, @collection
+          %th Ready
+          %th Archived
+        %th Actions
+      - @collection.items.each do |item|
         %tr
-          %td Latitude
-          %td= @collection.latitude
-
-        %tr
-          %td Longitude
-          %td= @collection.longitude
-
-        %tr
-          %td Zoom
-          %td= @collection.zoom
-
-        %tr
-          %td{:colspan => 2}
-            .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}, :style => "width: 100%; height: 200px"}
-
-
-        %tr
-          %td Description
-          %td= @collection.description
-
-    - if can? :manage, Collection
-      %fieldset
-        %h2 Access Information
-        %table
-          %tr
-            %td User Access
-            %td
-              - @collection.admins.each do |admin|
-                = admin.name
-                %br
-
-          %tr
-            %td Access conditions
-            %td= @collection.access_condition
-
-          %tr
-            %td Access Narative
-            %td= @collection.access_narrative
-
-
-
-  .twoup-2
-    %fieldset
-      %h2 Items in Collection
-      %table.table
-        %tr
-          %th Item
-          %th Title
+          %td= item.identifier
+          %td= item.title
           - if can? :update, @collection
-            %th Ready
-            %th Archived
-          %th Actions
-        - @collection.items.each do |item|
-          %tr
-            %td= item.identifier
-            %td= item.title
-            - if can? :update, @collection
-              %td TBI
-              %td TBI
-            %td
-              = link_to 'View', item if can? :read, item
-              = link_to 'Edit', edit_item_path(item) if can? :update, item
-      = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this acutally adds an item to the array is there a better way
+            %td TBI
+            %td TBI
+          %td
+            = link_to 'View', item if can? :read, item
+            = link_to 'Edit', edit_item_path(item) if can? :update, item
+    = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this acutally adds an item to the array is there a better way
 
 
-    - if can? :manage, Collection
-      %fieldset
-        %h2 Depositing Information
-        %table
-          %tr
-            %td Metadata Source
-            %td= @collection.metadata_source
+  - if can? :manage, Collection
+    %fieldset
+      %legend Depositing Information
+      %table.form
+        %tr
+          %td Metadata Source
+          %td= @collection.metadata_source
 
-          %tr
-            %td Orthographic Notes
-            %td= @collection.orthographic_notes
+        %tr
+          %td Orthographic Notes
+          %td= @collection.orthographic_notes
 
-          %tr
-            %td media
-            %td= @collection.media
+        %tr
+          %td media
+          %td= @collection.media
 
-          %tr
-            %td Date created
-            %td= @collection.created_at
+        %tr
+          %td Date created
+          %td= @collection.created_at
 
-          %tr
-            %td Date modified
-            %td= @collection.updated_at
+        %tr
+          %td Date modified
+          %td= @collection.updated_at
 
-          %tr
-            %td Comments
-            %td= @collection.comments
+        %tr
+          %td Comments
+          %td= @collection.comments
 
-      %fieldset
-        %h2 Admin Information
-        %table
+    %fieldset
+      %legend Admin Information
+      %table.form
 
-          %tr
-            %td
-            %td
-              = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
-              Collection complete
+        %tr
+          %td
+          %td
+            = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
+            Collection complete
 
-          %tr
-            %td Location tapes stored
-            %td= @collection.tape_location
+        %tr
+          %td Location tapes stored
+          %td= @collection.tape_location
 
-      = link_to 'Edit Collection', edit_collection_path(@collection)
+    = link_to 'Edit Collection', edit_collection_path(@collection)

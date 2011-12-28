@@ -1,15 +1,15 @@
-%h1 Add a Collection
+.left
+  %h1 Add a Collection
 
 
-.page-box
-  = form_for @collection do |f|
-    - if @collection.errors.any?
-      #error_explanation
-        %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
-        %ul
-          - @collection.errors.full_messages.each do |msg|
-            %li= msg
+= form_for @collection do |f|
+  - if @collection.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
+      %ul
+        - @collection.errors.full_messages.each do |msg|
+          %li= msg
 
-    = render :partial => 'form', :locals => {:f => f}
+  = render :partial => 'form', :locals => {:f => f}
 
-    = f.submit 'Add Collection'
+  = f.submit 'Add Collection'

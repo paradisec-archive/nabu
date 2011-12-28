@@ -62,7 +62,6 @@ $table_row_even: $blue;
   padding-top: 10px;
 }
 
-
 .field_with_errors {
   padding: 2px;
   background-color: red;
@@ -85,12 +84,21 @@ $table_row_even: $blue;
     margin-bottom: 0px;
     background-color: #c00;
     color: #fff;
-}
+  }
   ul li {
     list-style: square;
   }
 }
 
+fieldset {
+  border: #000 solid 3px;
+  background: $page_background;
+  padding: 0px 10px;
+  margin-bottom: 8px;
+  legend {
+    font-size: 18px;
+  }
+}
 
 table.table {
   border: #000 solid 3px;
@@ -141,6 +149,18 @@ table.form {
 
 input[type="text"] {
   width: 250px;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.clear {
+  clear: both;
 }
 
 .pagination {
