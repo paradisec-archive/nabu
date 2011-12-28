@@ -317,10 +317,14 @@ namespace :import do
         latitude = (coll_ymax + coll_ymin) / 2.0
         zoom = 20 - ((coll_xmax - coll_xmin) / 18)
         zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
+      elsif (coll_xmax == 0 && coll_xmin == 0 && coll_ymax == 0 && coll_ymin == 0 )
+        latitude = 0
+        longitude = 0
+        zoom = 1
       else
         latitude = 0
         longitude = 0
-        zoom = 0
+        zoom = 1
       end
       if !coll['coll_access_conditions'].blank?
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
