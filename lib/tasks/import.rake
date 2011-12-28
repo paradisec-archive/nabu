@@ -22,6 +22,7 @@ namespace :import do
 
   desc 'Load database from old PARADISEC system'
   task :load_db do
+    puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
     tables = %w{collection_language15 collection_language16 ethnologue15 ethnologue16 ethnologue_country15 ethnologue_country16 item_language15 item_language16 item_subjectlang15 item_subjectlang16}
@@ -52,11 +53,13 @@ namespace :import do
 
   desc 'Add paradisec_legacy identifier colums to DBs for import tasks'
   task :add_identifiers => :environment do
+    puts "Adding identifiers to DB for import of PARADISEC legacy DB"
     AddIdentifiers.migrate(:up)
   end
 
   desc 'Remove paradisec_legacy identifier colums to DBs for import tasks'
   task :remove_identifiers => :environment do
+    puts "Removing identifiers from DB finalising import of PARADISEC legacy DB"
     AddIdentifiers.migrate(:down)
   end
 
@@ -83,6 +86,7 @@ namespace :import do
 
   desc 'Import users into NABU from paradisec_legacy DB'
   task :users => :environment do
+    puts "Importing users from PARADISEC legacy DB"
     client = connect
     users = client.query("SELECT * FROM users")
     users.each do |user|
@@ -129,6 +133,7 @@ namespace :import do
 
   desc 'Import contacts into NABU from paradisec_legacy DB (do users first)'
   task :contacts => :environment do
+    puts "Importing contacts from PARADISEC legcacy DB"
     client = connect
     users = client.query("SELECT * FROM contacts")
     users.each do |user|
@@ -189,6 +194,7 @@ namespace :import do
 
   desc 'Import universities into NABU from paradisec_legacy DB'
   task :universities => :environment do
+    puts "Importing universities from PARADISEC legacy DB"
     client = connect
     universities = client.query("SELECT * FROM universities")
     universities.each do |uni|
@@ -207,6 +213,7 @@ namespace :import do
 
   desc 'Import countries into NABU from ethnologue DB'
   task :countries => :environment do
+    puts "Importing countries from ethnologue DB"
     require 'iconv'
     data = File.open("#{Rails.root}/data/CountryCodes.tab", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
@@ -227,6 +234,7 @@ namespace :import do
 
   desc 'Import languages into NABU from ethnologue DB'
   task :languages => :environment do
+    puts "Importing languages from ethnologue DB"
     require 'iconv'
     data = File.open("#{Rails.root}/data/LanguageIndex.tab", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
@@ -246,6 +254,7 @@ namespace :import do
 
   desc 'Import fields_of_research into NABU from ANDS DB'
   task :fields_of_research => :environment do
+    puts "Importing fields of research from ANDS DB"
     require 'iconv'
     data = File.open("#{Rails.root}/data/ANZSRC.txt", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
@@ -267,6 +276,7 @@ namespace :import do
 
   desc 'Import collections into NABU from paradisec_legacy DB'
   task :collections => :environment do
+    puts "Importing collections from PARADISEC legacy DB"
     client = connect
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
@@ -356,6 +366,7 @@ puts "#{collector.id}, #{uni}"
 
   desc 'Import discourse_types into NABU from paradisec_legacy DB'
   task :discourse_types => :environment do
+    puts "Importing discrouse types from PARADISEC legacy DB"
     client = connect
     discourses = client.query("SELECT * FROM discourse_types")
     discourses.each do |discourse|
@@ -371,6 +382,7 @@ puts "#{collector.id}, #{uni}"
 
   desc 'Import agent_roles into NABU from paradisec_legacy DB'
   task :agent_roles => :environment do
+    puts "Importing agent roles from PARADISEC legacy DB"
     client = connect
     roles = client.query("SELECT * FROM roles")
     roles.each do |role|

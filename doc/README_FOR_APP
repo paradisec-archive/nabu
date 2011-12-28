@@ -2,6 +2,12 @@ Use this README file to introduce your application and point to useful places in
 
 Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
 
+## Importing all data
+
+Just run "rake import:all" .
+
+Below are descriptions of the individual import tasks.
+
 
 ## Updating the language & country codes
 
@@ -38,3 +44,16 @@ To update them:
     rake import:fields_of_research
     
 Done!
+
+
+## Importing legacy PARADISEC database
+
+* The legacy database has to be at db/legacy/paradisecDump.sql .
+
+* run the rake tasks to import the data
+
+    rake import:setup
+    rake import:users
+    rake import:contacts
+    rake import:universities
+    rake import:collections

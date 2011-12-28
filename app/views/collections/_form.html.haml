@@ -1,24 +1,26 @@
-%p.collection
-  = f.label :title, 'Collection Title'
-  = f.text_field :title
+.right
+  = f.check_box :complete
+  = f.label :complete, 'Collection completed'
 
-= f.check_box :complete
-= f.label :complete, 'Collection completed'
+  = f.check_box :private
+  = f.label :private
 
-= f.check_box :private
-= f.label :private
-
+.clear
 
 .twoup-1
   %fieldset
-    %h2 Collection Details
-    %table
+    %legend Collection Details
+    %table.form
+      %tr
+        %td= f.label :title, 'Collection Title'
+        %td= f.text_field :title
+        
       %tr
         %td= f.label :identifier, 'Collection ID'
         - if @collection.new_record?
           %td= f.text_field :identifier
         - else
-          %td= @collection.identifier
+          %td{:id => :collection_identifier}= @collection.identifier
 
       %tr
         %td= f.label :collector_id
@@ -87,8 +89,8 @@
         %td= f.text_area :description, :rows => 5
 
   %fieldset
-    %h2 Access Information
-    %table
+    %legend Access Information
+    %table.form
       %tr
         %td= f.label :user_id, 'User Access'
         %td
@@ -114,11 +116,11 @@
 
 .twoup-2
   %fieldset
-    %h2 Items in Collection
+    %legend Items in Collection
     
   %fieldset
-    %h2 Depositing Information
-    %table
+    %legend Depositing Information
+    %table.form
       %tr
         %td= f.label :metadata_source
         %td= f.text_field :metadata_source
@@ -136,8 +138,8 @@
         %td= f.text_field :comments
 
   %fieldset
-    %h2 Admin Information
-    %table
+    %legend Admin Information
+    %table.form
       %tr
         %td= f.label :deposit_form_recieved
         %td= f.check_box :deposit_form_recieved
