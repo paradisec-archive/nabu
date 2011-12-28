@@ -18,7 +18,9 @@ DB setup:
  rake db:drop
  rake db:create
  rake db:migrate
- rake db:seed
+
+Importing old PARADISEC data:
+ rake import:all
 
 running:
  script/rails

@@ -9,8 +9,10 @@ namespace :import do
   desc 'Import data from old PARADISEC DB & other files'
   task :import => [:users, :contacts,
                    :universities,
-                   :countries, :languages, :fields_of_research, :collections]
-#                   :discourse_types, :agent_roles, :items
+                   :countries, :languages, :fields_of_research,
+                   :discourse_types, :agent_roles,
+                   :collections]
+#                  :items
 
   desc 'Teardown intermediate stuff'
   task :teardown => [:remove_identifiers]
@@ -312,7 +314,7 @@ puts "#{coll['coll_id']}, #{coll['coll_description']}, #{coll['coll_note']}"
 puts "#{collector.id}, #{uni}"
      new_coll = Collection.new :identifier => coll['coll_id'],
                                 :title => coll['coll_description'] || fixme(coll, :title),
-                                :description => coll['coll_note'],
+                                :description => coll['coll_note'] || fixme(coll, :description),
                                 :region => coll['coll_region_village'],
                                 :latitude => latitude,
                                 :longitude => longitude,
@@ -339,9 +341,11 @@ puts "#{collector.id}, #{uni}"
       end
       new_coll.created_at = coll['coll_date_created']
       new_coll.updated_at = coll['coll_date_modified']
+      new_coll.field_of_research_id = 1
 
 # missing new fields:
-#      t.integer  "field_of_research_id",  :null => false
+# t.integer  "access_condition_id"
+
 #      t.boolean  "complete"
 #      t.boolean  "private"
 
@@ -366,7 +370,7 @@ puts "#{collector.id}, #{uni}"
 
   desc 'Import discourse_types into NABU from paradisec_legacy DB'
   task :discourse_types => :environment do
-    puts "Importing discrouse types from PARADISEC legacy DB"
+    puts "Importing discourse types from PARADISEC legacy DB"
     client = connect
     discourses = client.query("SELECT * FROM discourse_types")
     discourses.each do |discourse|
