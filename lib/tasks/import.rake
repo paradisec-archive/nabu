@@ -4,7 +4,7 @@ namespace :import do
   task :all => [:setup, :import]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:dev_users, :load_db, :add_identifiers]
+  task :setup => [:dev_users, :add_identifiers, :load_db]
 
   desc 'Import data from old PARADISEC DB & other files'
   task :import => [:users, :contacts,
@@ -29,10 +29,10 @@ namespace :import do
     puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    tables = %w{collection_language15 collection_language16 ethnologue15 ethnologue16 ethnologue_country15 ethnologue_country16 item_language15 item_language16 item_subjectlang15 item_subjectlang16}
+    tables = %w{collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language item_subjectlang item_subjectlang15}
     sed = 's/ TYPE=MyISAM//;'
     tables.each do |table|
-      sed << "/CREATE TABLE #{table}/,/Table structure for table/d;"
+      sed << "/CREATE TABLE #{table} /,/Table structure for table/d;"
     end
     system "sed -e '#{sed}' #{Rails.root}/db/legacy/paradisecDump.sql | mysql -u root paradisec_legacy"
   end
@@ -55,6 +55,10 @@ namespace :import do
   task :add_identifiers => :environment do
     puts "Adding identifiers to DB for import of PARADISEC legacy DB"
     AddIdentifiers.migrate(:up)
+    User.reset_column_information
+    Item.reset_column_information
+    DiscourseType.reset_column_information
+    AgentRole.reset_column_information
   end
 
   desc 'Remove paradisec_legacy identifier colums to DBs for import tasks'
@@ -340,6 +344,7 @@ namespace :import do
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
+          put "Saved access condition #{coll['coll_access_conditions']}"
         end
       end
 
@@ -413,30 +418,12 @@ namespace :import do
   task :collection_languages => :environment do
     puts "Importing languages per collection from PARADISEC legacy DB"
     client = connect
-    languages = client.query("SELECT * FROM collection_language")
+    languages = client.query("SELECT * FROM collection_language16")
     languages.each do |lang|
-      next if lang['cl_language'].blank? || lang['cl_coll_id'].blank?
-      langs = lang['cl_language'].sub(/\)/, '').split" \("
-      lang_list = [langs[0]]
-      lang_list += langs[1].split"\, " if langs[1]
-      language = nil
-      lang_list.each do |langl|
-        ## some language fixes
-        langl = case langl
-        when "MOSINA"
-          "Vures"
-        when "IMANDI"
-          "Wiarumus"
-        when "MUNIWARA"
-          "Juwal"
-        else
-          langl
-        end
-        language = Language.find_by_name(langl)
-        break if language
-      end
+      next if lang['cl_eth_code'].blank? || lang['cl_coll_id'].blank?
+      language = Language.find_by_code(lang['cl_eth_code'])
       collection = Collection.find_by_identifier lang['cl_coll_id']
-      next unless collection
+      next unless collection && language
       CollectionLanguage.create! :collection => collection, :language => language
       puts "Saved for collection #{collection.identifier}: #{language.code} - #{language.name}"
     end
@@ -489,6 +476,10 @@ namespace :import do
     discourses = client.query("SELECT * FROM discourse_types")
     discourses.each do |discourse|
       disc_type = DiscourseType.new :name => discourse['dt_name']
+
+      ## save PARADISEC identifier
+      disc_type.pd_dt_id = discourse['dt_id']
+
       if !disc_type.valid?
         puts "Error adding discourse type #{discourse['dt_name']}"
         next
@@ -505,15 +496,18 @@ namespace :import do
     roles = client.query("SELECT * FROM roles")
     roles.each do |role|
       new_role = AgentRole.new :name => role['role_name']
+
+      ## save PARADISEC identifier
+      new_role.pd_role_id = role['role_id']
+
       if !new_role.valid?
-        puts "Error adding agent role #{role['role_name']}"
+        puts "Error adding agent role '#{role['role_name']}'"
         next
       end
       new_role.save!
       puts "Saved agent role #{role['role_name']}"
     end
   end
-
 
 # - import items
 # - import content essences
