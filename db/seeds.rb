@@ -20,8 +20,7 @@ u = User.create :email => 'admin@example.com',
             :password => 'password',
             :password_confirmation => 'password'
 u.confirm!
-u.admin = true
-u.save!
+u.admin!
 
 Country.create :name => 'Australia'
 Country.create :name => 'Germany'
