@@ -1,8 +1,8 @@
 
 .twoup-1
   %fieldset
-    %h2 Item Details
-    %table
+    %legend Item Details
+    %table.form
       %tr
         %td= f.label :identifier, 'Item ID'
         = @item.collection.identifier
@@ -124,8 +124,8 @@
 
 .twoup-2
   %fieldset
-    %h2 Admin Information
-    %table
+    %legend Admin Information
+    %table.form
       %tr
         %td= f.label :user_id, 'User Access'
         %td

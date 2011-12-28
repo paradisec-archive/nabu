@@ -4,7 +4,7 @@ namespace :import do
   task :all => [:setup, :import]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:dev_users, :load_db, :add_identifiers]
+  task :setup => [:dev_users, :add_identifiers, :load_db]
 
   desc 'Import data from old PARADISEC DB & other files'
   task :import => [:users, :contacts,
@@ -12,9 +12,8 @@ namespace :import do
                    :countries, :languages, :fields_of_research,
                    :collections,
                    :collection_languages, :collection_countries, :collection_users,
-                   :discourse_types, :agent_roles
-#                  :items
-                   ]
+                   :discourse_types, :agent_roles,
+                   :items]
 
   desc 'Teardown intermediate stuff'
   task :teardown => [:remove_identifiers]
@@ -29,10 +28,10 @@ namespace :import do
     puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    tables = %w{collection_language15 collection_language16 ethnologue15 ethnologue16 ethnologue_country15 ethnologue_country16 item_language15 item_language16 item_subjectlang15 item_subjectlang16}
+    tables = %w{collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language item_subjectlang item_subjectlang15}
     sed = 's/ TYPE=MyISAM//;'
     tables.each do |table|
-      sed << "/CREATE TABLE #{table}/,/Table structure for table/d;"
+      sed << "/CREATE TABLE #{table} /,/Table structure for table/d;"
     end
     system "sed -e '#{sed}' #{Rails.root}/db/legacy/paradisecDump.sql | mysql -u root paradisec_legacy"
   end
@@ -55,6 +54,10 @@ namespace :import do
   task :add_identifiers => :environment do
     puts "Adding identifiers to DB for import of PARADISEC legacy DB"
     AddIdentifiers.migrate(:up)
+    User.reset_column_information
+    Item.reset_column_information
+    DiscourseType.reset_column_information
+    AgentRole.reset_column_information
   end
 
   desc 'Remove paradisec_legacy identifier colums to DBs for import tasks'
@@ -340,6 +343,7 @@ namespace :import do
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
+          put "Saved access condition #{coll['coll_access_conditions']}"
         end
       end
 
@@ -413,30 +417,12 @@ namespace :import do
   task :collection_languages => :environment do
     puts "Importing languages per collection from PARADISEC legacy DB"
     client = connect
-    languages = client.query("SELECT * FROM collection_language")
+    languages = client.query("SELECT * FROM collection_language16")
     languages.each do |lang|
-      next if lang['cl_language'].blank? || lang['cl_coll_id'].blank?
-      langs = lang['cl_language'].sub(/\)/, '').split" \("
-      lang_list = [langs[0]]
-      lang_list += langs[1].split"\, " if langs[1]
-      language = nil
-      lang_list.each do |langl|
-        ## some language fixes
-        langl = case langl
-        when "MOSINA"
-          "Vures"
-        when "IMANDI"
-          "Wiarumus"
-        when "MUNIWARA"
-          "Juwal"
-        else
-          langl
-        end
-        language = Language.find_by_name(langl)
-        break if language
-      end
+      next if lang['cl_eth_code'].blank? || lang['cl_coll_id'].blank?
+      language = Language.find_by_code(lang['cl_eth_code'])
       collection = Collection.find_by_identifier lang['cl_coll_id']
-      next unless collection
+      next unless collection && language
       CollectionLanguage.create! :collection => collection, :language => language
       puts "Saved for collection #{collection.identifier}: #{language.code} - #{language.name}"
     end
@@ -489,6 +475,10 @@ namespace :import do
     discourses = client.query("SELECT * FROM discourse_types")
     discourses.each do |discourse|
       disc_type = DiscourseType.new :name => discourse['dt_name']
+
+      ## save PARADISEC identifier
+      disc_type.pd_dt_id = discourse['dt_id']
+
       if !disc_type.valid?
         puts "Error adding discourse type #{discourse['dt_name']}"
         next
@@ -505,8 +495,12 @@ namespace :import do
     roles = client.query("SELECT * FROM roles")
     roles.each do |role|
       new_role = AgentRole.new :name => role['role_name']
+
+      ## save PARADISEC identifier
+      new_role.pd_role_id = role['role_id']
+
       if !new_role.valid?
-        puts "Error adding agent role #{role['role_name']}"
+        puts "Error adding agent role '#{role['role_name']}'"
         next
       end
       new_role.save!
@@ -514,7 +508,128 @@ namespace :import do
     end
   end
 
+  desc 'Import items into NABU from paradisec_legacy DB'
+  task :items => :environment do
+    puts "Importing collections from PARADISEC legacy DB"
+    client = connect
+    items = client.query("SELECT * FROM items")
+    items.each do |item|
+      ## get collection
+      next if item['item_collection_id'].blank?
+      collection = Collection.find_by_identifier item['item_collection_id']
+      next unless collection
 
-# - import items
+      ## get identifier
+      identifier = item['item_pid']
+
+      ## prepare record
+      new_item = Item.new :collection => collection,
+                          :identifier => identifier,
+                                :title => coll['coll_description'] || fixme(coll, :title),
+                                :description => coll['coll_note'] || fixme(coll, :description),
+                                :region => coll['coll_region_village'],
+                                :latitude => latitude,
+                                :longitude => longitude,
+                                :zoom => zoom.to_i,
+                                :access_narrative => coll['coll_access_narrative'],
+                                :metadata_source => coll['coll_metadata_source'],
+                                :orthographic_notes => coll['coll_orthographic_notes'],
+                                :media => coll['coll_media'],
+                                :comments => coll['coll_comments'],
+                                :deposit_form_recieved => coll['coll_depform_rcvd'],
+                                :tape_location => coll['coll_location'],
+                                :field_of_research_id => 1
+
+#      t.string   "identifier",          :null => false
+#      t.boolean  "private"
+#      t.string   "title",               :null => false
+#      t.string   "url"
+#      t.integer  "collector_id",        :null => false
+#      t.integer  "university_id"
+#      t.integer  "operator_id",         :null => false
+#      t.text     "description",         :null => false
+#      t.date     "originated_on",       :null => false
+#      t.string   "language"
+#      t.integer  "subject_language_id"
+#      t.integer  "content_language_id"
+#      t.string   "dialect"
+#      t.string   "region"
+#      t.float    "latitude"
+#      t.float    "longitude"
+#      t.integer  "zoom"
+#      t.integer  "discourse_type_id"
+#      t.text     "citation"
+#      t.integer  "access_condition_id"
+#      t.text     "access_narrative"
+#      t.text     "comments"
+#      t.datetime "created_at"
+#      t.datetime "updated_at"
+#      t.string   "pd_coll_id"
+
+#| item_pid                   | varchar(31)  | NO   | PRI |         |       |
+#| item_id                    | varchar(15)  | YES  |     | NULL    |       |
+#| item_collector             | varchar(255) | YES  |     | NULL    |       |
+#| item_collector_id          | int(11)      | YES  |     | NULL    |       |
+#| item_operator              | varchar(255) | YES  |     | NULL    |       |
+#| item_operator_id           | int(11)      | YES  |     | NULL    |       |
+#| item_description           | varchar(255) | YES  |     | NULL    |       |
+#| item_comments              | text         | YES  |     | NULL    |       |
+#| item_note                  | text         | YES  |     | NULL    |       |
+#| item_rights                | varchar(255) | YES  |     | NULL    |       |
+#| item_audio_notes           | text         | YES  |     | NULL    |       |
+#| item_source_language       | varchar(255) | YES  |     | NULL    |       |
+#| item_dialect               | varchar(255) | YES  |     | NULL    |       |
+#| item_region_village        | varchar(255) | YES  |     | NULL    |       |
+#| item_date                  | varchar(255) | YES  |     | NULL    |       |
+#| item_date_iso              | date         | YES  |     | NULL    |       |
+#| item_date_created          | date         | YES  |     | NULL    |       |
+#| item_date_modified         | date         | YES  |     | NULL    |       |
+#| item_time_modified         | datetime     | YES  |     | NULL    |       |
+#| item_new                   | tinyint(1)   | NO   |     | 0       |       |
+#| item_xmax                  | double       | YES  |     | NULL    |       |
+#| item_xmin                  | double       | YES  |     | NULL    |       |
+#| item_ymax                  | double       | YES  |     | NULL    |       |
+#| item_ymin                  | double       | YES  |     | NULL    |       |
+#| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
+#| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
+#| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
+#| item_date_digitised        | date         | YES  |     | NULL    |       |
+#| item_tape_received         | tinyint(1)   | NO   |     | 0       |       |
+#| item_date_received         | date         | YES  |     | NULL    |       |
+#| item_metadata_entered      | tinyint(1)   | NO   |     | 0       |       |
+#| item_hide_metadata         | tinyint(1)   | NO   |     | 0       |       |
+#| item_tracking              | varchar(255) | YES  |     | NULL    |       |
+#| item_media                 | varchar(255) | YES  |     | NULL    |       |
+#| item_id_assigned           | tinyint(1)   | NO   |     | 0       |       |
+#| item_number_of_cassettes   | smallint(6)  | YES  |     | NULL    |       |
+#| item_number_of_rtors       | smallint(6)  | YES  |     | NULL    |       |
+#| item_number_of_videos      | smallint(6)  | YES  |     | NULL    |       |
+#| item_length_cassette       | double       | YES  |     | NULL    |       |
+#| item_length_rtor           | double       | YES  |     | NULL    |       |
+#| item_length_video          | double       | YES  |     | NULL    |       |
+#| item_total_length_cassette | double       | YES  |     | NULL    |       |
+#| item_total_length_rtor     | double       | YES  |     | NULL    |       |
+#| item_total_length_video    | double       | YES  |     | NULL    |       |
+#| item_speed_rtor            | varchar(31)  | YES  |     | NULL    |       |
+#| item_original_uni          | varchar(255) | YES  |     | NULL    |       |
+#| item_radius                | double       | YES  |     | NULL    |       |
+#| item_countries             | varchar(255) | YES  |     | NULL    |       |
+#| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
+#| tmp_item_ymin              | double       | YES  |     | NULL    |       |
+#| tmp_item_ymax              | double       | YES  |     | NULL    |       |
+#| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
+#| tmp_item_xmin              | double       | YES  |     | NULL    |       |
+#| tmp_item_xmax              | double       | YES  |     | NULL    |       |
+#| item_url                   | varchar(255) | YES  |     | NULL    |       |
+#| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
+#| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
+#| item_discourse_type        | smallint(6)  | YES  |     | NULL    |       |
+    end
+  end
+
+# - import item_admins
+# - import item_agents
+# - import item_countries
+
 # - import content essences
 end
