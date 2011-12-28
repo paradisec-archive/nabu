@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
   end
 
   def admin!
-    admin = true
+    self.admin = true
     save!
   end
 end
