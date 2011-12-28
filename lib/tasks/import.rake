@@ -325,7 +325,8 @@ puts "#{collector.id}, #{uni}"
                                 :media => coll['coll_media'],
                                 :comments => coll['coll_comments'],
                                 :deposit_form_recieved => coll['coll_depform_rcvd'],
-                                :tape_location => coll['coll_location']
+                                :tape_location => coll['coll_location'],
+                                :field_of_research => 1
       if collector
         new_coll.collector_id = collector.id
       else
@@ -338,18 +339,21 @@ puts "#{collector.id}, #{uni}"
       end
       if access_cond
         new_coll.access_condition_id = access_cond.id
+        if access_cond.name == "not to be listed publicly (temporary)"
+          newcoll.private = true
+        else
+          newcoll.private = false
+        end
       end
       new_coll.created_at = coll['coll_date_created']
       new_coll.updated_at = coll['coll_date_modified']
-      new_coll.field_of_research_id = 1
 
 # missing new fields:
-# t.integer  "access_condition_id"
-
+# - when all items in coll have impl_ready, set complete to true
 #      t.boolean  "complete"
-#      t.boolean  "private"
 
 # missing old fields:
+# - add to collection_admins
 # coll_operator_id: int
 
       if !new_coll.valid?
@@ -359,8 +363,8 @@ puts "#{collector.id}, #{uni}"
       new_coll.save!
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}"
 
-      # language
-      # country
+      # language -> collection_languages
+      # country -> collection_countries
     end
 
   end
@@ -401,7 +405,6 @@ puts "#{collector.id}, #{uni}"
   end
 
 
-# - import collection
 # - import items
 # - import content essences
 end
