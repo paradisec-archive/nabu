@@ -10,9 +10,11 @@ namespace :import do
   task :import => [:users, :contacts,
                    :universities,
                    :countries, :languages, :fields_of_research,
-                   :discourse_types, :agent_roles,
-                   :collections, :collection_languages]
+                   :collections,
+                   :collection_languages, :collection_countries, :collection_users,
+                   :discourse_types, :agent_roles
 #                  :items
+                   ]
 
   desc 'Teardown intermediate stuff'
   task :teardown => [:remove_identifiers]
@@ -455,8 +457,28 @@ namespace :import do
     end
   end
 
+  desc 'Import collection_user_pem into NABU from paradisec_legacy DB'
+  task :collection_users => :environment do
+    puts "Importing authorized users for collections from PARADISEC legacy DB"
+    client = connect
+    users = client.query("SELECT * FROM collection_user_perm")
+    users.each do |user|
+      next if user['cu_coll_id'].blank? || user['cu_usr_id'].blank?
+      usr = User.find_by_pd_user_id user['cu_usr_id']
+      collection = Collection.find_by_identifier user['cu_coll_id']
+      admin = CollectionAdmin.new :collection => collection, :user => usr
+      if !admin.valid?
+        puts "Error adding admin user #{user['cu_usr_id']} for collection #{user['cu_coll_id']}"
+        next
+      end
+      begin
+        admin.save!
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved admin for collection #{collection.identifier}: #{usr.first_name} #{usr.last_name}"
+    end
+  end
 
-# import collection_user_perm
 
   ## FOR ITEMS
 

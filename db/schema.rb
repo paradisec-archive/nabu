@@ -24,10 +24,11 @@ ActiveRecord::Schema.define(:version => 20111119235953) do
   end
 
   create_table "collection_admins", :force => true do |t|
-    t.integer "collection_id"
-    t.integer "user_id"
+    t.integer "collection_id", :null => false
+    t.integer "user_id",       :null => false
   end
 
+  add_index "collection_admins", ["collection_id", "user_id"], :name => "index_collection_admins_on_collection_id_and_user_id", :unique => true
   add_index "collection_admins", ["collection_id"], :name => "index_collection_admins_on_collection_id"
   add_index "collection_admins", ["user_id"], :name => "index_collection_admins_on_user_id"
 

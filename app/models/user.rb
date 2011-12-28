@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable, :lockable
 
-  attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me
+  attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me, :pd_user_id, :pd_contact_id
   attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me, :pd_user_id, :pd_contact_id, :admin, :operator, :as => :admin
 
   validates :first_name, :presence => true
