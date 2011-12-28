@@ -42,12 +42,12 @@ $(document).ready ->
     $(element).data('map', map)
 
     google.maps.event.addListener map, 'center_changed', ->
-      $('#collection_longitude').val map.getCenter().lng()
-      $('#collection_latitude').val map.getCenter().lat()
-      $('#collection_zoom').val map.getZoom()
+      $('.longitude').val map.getCenter().lng()
+      $('.latitude').val map.getCenter().lat()
+      $('.zoom').val map.getZoom()
 
     google.maps.event.addListener map, 'zoom_changed', ->
-      $('#collection_longitude').val map.getCenter().lng()
-      $('#collection_latitude').val map.getCenter().lat()
-      $('#collection_zoom').val map.getZoom()
+      $('.longitude').val map.getCenter().lng()
+      $('.latitude').val map.getCenter().lat()
+      $('.zoom').val map.getZoom()
 

@@ -2,49 +2,44 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.1.3'
 
+# Databases
 gem 'mysql2'
-# For heroku
-gem 'pg'
+gem 'pg'      # For heroku
 
-
-
-# Gems used only for assets and not required
-# in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.1.5'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
   gem 'compass', '~> 0.12.alpha.3'
 end
 
+# Views
 gem 'jquery-rails'
-
 gem 'haml-rails'
+gem 'to_csv-rails'
+gem 'kaminari'
 
+# Admin
+gem 'activeadmin'
+gem 'sass-rails',  '~> 3.1.5'
+gem "meta_search", '>= 1.1.0.pre'
+
+# Authentications
 gem 'devise'
 gem 'cancan'
 
+# Database improvements
 gem 'squeel'
 
-gem 'to_csv-rails'
-
-gem 'kaminari'
-
-# Use unicorn as the web server
+# Web Server
 gem 'unicorn'
 
-# Deploy with Capistrano
+# Deployment
 gem 'capistrano'
-
-# To use debugger
-# gem 'ruby-debug19', :require => 'ruby-debug'
-
 gem 'execjs'
 gem 'therubyracer'
 
 group :development, :test do
   gem 'sqlite3'
-  # Pretty printed test output
   gem 'turn', '~> 0.8.3', :require => false
 end
 
