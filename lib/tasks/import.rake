@@ -1,7 +1,7 @@
 namespace :import do
 
   desc 'Setup database from old PARADISEC data & other imports'
-  task :all => [:setup, :import]
+  task :all => [:setup, :import, :dev_users]
 
   desc 'Setup database from old PARADISEC'
   task :setup => [:load_db, :add_identifiers]
@@ -51,6 +51,25 @@ namespace :import do
       add_column :discourse_types, :pd_dt_id, :integer
       add_column :agent_roles, :pd_role_id, :integer
     end
+  end
+
+  desc 'Add some users for the development environment'
+  task :dev_users => :environment do
+    return if Rails.env.production?
+    puts 'Adding development Users'
+    u = User.create :email => 'user@example.com',
+                    :first_name => 'User',
+                    :last_name => 'Doe',
+                    :password => 'password',
+                    :password_confirmation => 'password'
+    u.confirm!
+    u = User.create :email => 'admin@example.com',
+                    :first_name => 'Admin',
+                    :last_name => 'Doe',
+                    :password => 'password',
+                    :password_confirmation => 'password'
+    u.confirm!
+    u.admin!
   end
 
   desc 'Add paradisec_legacy identifier colums to DBs for import tasks'
@@ -298,10 +317,14 @@ namespace :import do
         latitude = (coll_ymax + coll_ymin) / 2.0
         zoom = 20 - ((coll_xmax - coll_xmin) / 18)
         zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
+      elsif (coll_xmax == 0 && coll_xmin == 0 && coll_ymax == 0 && coll_ymin == 0 )
+        latitude = 0
+        longitude = 0
+        zoom = 1
       else
         latitude = 0
         longitude = 0
-        zoom = 0
+        zoom = 1
       end
       if !coll['coll_access_conditions'].blank?
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']

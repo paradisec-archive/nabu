@@ -40,4 +40,6 @@ class Collection < ActiveRecord::Base
   before_create do |collection|
     collection.admins << collector
   end
+
+  delegate :name, :to => :university, :prefix => true, :allow_nil => true
 end

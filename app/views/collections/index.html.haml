@@ -34,7 +34,7 @@
             - collection.languages.each do |language|
               = language.name
           %td= collection.created_at.to_date
-          %td= collection.university.name
+          %td= collection.university_name
           %td
             .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}, :style => "width: 100px; height: 100px;"}
 

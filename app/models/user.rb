@@ -18,4 +18,9 @@ class User < ActiveRecord::Base
   def admin?
     admin
   end
+
+  def admin!
+    self.admin = true
+    save!
+  end
 end
