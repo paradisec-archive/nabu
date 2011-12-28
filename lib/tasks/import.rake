@@ -12,9 +12,8 @@ namespace :import do
                    :countries, :languages, :fields_of_research,
                    :collections,
                    :collection_languages, :collection_countries, :collection_users,
-                   :discourse_types, :agent_roles
-#                  :items
-                   ]
+                   :discourse_types, :agent_roles,
+                   :items]
 
   desc 'Teardown intermediate stuff'
   task :teardown => [:remove_identifiers]
@@ -509,6 +508,128 @@ namespace :import do
     end
   end
 
-# - import items
+  desc 'Import items into NABU from paradisec_legacy DB'
+  task :items => :environment do
+    puts "Importing collections from PARADISEC legacy DB"
+    client = connect
+    items = client.query("SELECT * FROM items")
+    items.each do |item|
+      ## get collection
+      next if item['item_collection_id'].blank?
+      collection = Collection.find_by_identifier item['item_collection_id']
+      next unless collection
+
+      ## get identifier
+      identifier = item['item_pid']
+
+      ## prepare record
+      new_item = Item.new :collection => collection,
+                          :identifier => identifier,
+                                :title => coll['coll_description'] || fixme(coll, :title),
+                                :description => coll['coll_note'] || fixme(coll, :description),
+                                :region => coll['coll_region_village'],
+                                :latitude => latitude,
+                                :longitude => longitude,
+                                :zoom => zoom.to_i,
+                                :access_narrative => coll['coll_access_narrative'],
+                                :metadata_source => coll['coll_metadata_source'],
+                                :orthographic_notes => coll['coll_orthographic_notes'],
+                                :media => coll['coll_media'],
+                                :comments => coll['coll_comments'],
+                                :deposit_form_recieved => coll['coll_depform_rcvd'],
+                                :tape_location => coll['coll_location'],
+                                :field_of_research_id => 1
+
+#      t.string   "identifier",          :null => false
+#      t.boolean  "private"
+#      t.string   "title",               :null => false
+#      t.string   "url"
+#      t.integer  "collector_id",        :null => false
+#      t.integer  "university_id"
+#      t.integer  "operator_id",         :null => false
+#      t.text     "description",         :null => false
+#      t.date     "originated_on",       :null => false
+#      t.string   "language"
+#      t.integer  "subject_language_id"
+#      t.integer  "content_language_id"
+#      t.string   "dialect"
+#      t.string   "region"
+#      t.float    "latitude"
+#      t.float    "longitude"
+#      t.integer  "zoom"
+#      t.integer  "discourse_type_id"
+#      t.text     "citation"
+#      t.integer  "access_condition_id"
+#      t.text     "access_narrative"
+#      t.text     "comments"
+#      t.datetime "created_at"
+#      t.datetime "updated_at"
+#      t.string   "pd_coll_id"
+
+#| item_pid                   | varchar(31)  | NO   | PRI |         |       |
+#| item_id                    | varchar(15)  | YES  |     | NULL    |       |
+#| item_collector             | varchar(255) | YES  |     | NULL    |       |
+#| item_collector_id          | int(11)      | YES  |     | NULL    |       |
+#| item_operator              | varchar(255) | YES  |     | NULL    |       |
+#| item_operator_id           | int(11)      | YES  |     | NULL    |       |
+#| item_description           | varchar(255) | YES  |     | NULL    |       |
+#| item_comments              | text         | YES  |     | NULL    |       |
+#| item_note                  | text         | YES  |     | NULL    |       |
+#| item_rights                | varchar(255) | YES  |     | NULL    |       |
+#| item_audio_notes           | text         | YES  |     | NULL    |       |
+#| item_source_language       | varchar(255) | YES  |     | NULL    |       |
+#| item_dialect               | varchar(255) | YES  |     | NULL    |       |
+#| item_region_village        | varchar(255) | YES  |     | NULL    |       |
+#| item_date                  | varchar(255) | YES  |     | NULL    |       |
+#| item_date_iso              | date         | YES  |     | NULL    |       |
+#| item_date_created          | date         | YES  |     | NULL    |       |
+#| item_date_modified         | date         | YES  |     | NULL    |       |
+#| item_time_modified         | datetime     | YES  |     | NULL    |       |
+#| item_new                   | tinyint(1)   | NO   |     | 0       |       |
+#| item_xmax                  | double       | YES  |     | NULL    |       |
+#| item_xmin                  | double       | YES  |     | NULL    |       |
+#| item_ymax                  | double       | YES  |     | NULL    |       |
+#| item_ymin                  | double       | YES  |     | NULL    |       |
+#| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
+#| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
+#| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
+#| item_date_digitised        | date         | YES  |     | NULL    |       |
+#| item_tape_received         | tinyint(1)   | NO   |     | 0       |       |
+#| item_date_received         | date         | YES  |     | NULL    |       |
+#| item_metadata_entered      | tinyint(1)   | NO   |     | 0       |       |
+#| item_hide_metadata         | tinyint(1)   | NO   |     | 0       |       |
+#| item_tracking              | varchar(255) | YES  |     | NULL    |       |
+#| item_media                 | varchar(255) | YES  |     | NULL    |       |
+#| item_id_assigned           | tinyint(1)   | NO   |     | 0       |       |
+#| item_number_of_cassettes   | smallint(6)  | YES  |     | NULL    |       |
+#| item_number_of_rtors       | smallint(6)  | YES  |     | NULL    |       |
+#| item_number_of_videos      | smallint(6)  | YES  |     | NULL    |       |
+#| item_length_cassette       | double       | YES  |     | NULL    |       |
+#| item_length_rtor           | double       | YES  |     | NULL    |       |
+#| item_length_video          | double       | YES  |     | NULL    |       |
+#| item_total_length_cassette | double       | YES  |     | NULL    |       |
+#| item_total_length_rtor     | double       | YES  |     | NULL    |       |
+#| item_total_length_video    | double       | YES  |     | NULL    |       |
+#| item_speed_rtor            | varchar(31)  | YES  |     | NULL    |       |
+#| item_original_uni          | varchar(255) | YES  |     | NULL    |       |
+#| item_radius                | double       | YES  |     | NULL    |       |
+#| item_countries             | varchar(255) | YES  |     | NULL    |       |
+#| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
+#| tmp_item_ymin              | double       | YES  |     | NULL    |       |
+#| tmp_item_ymax              | double       | YES  |     | NULL    |       |
+#| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
+#| tmp_item_xmin              | double       | YES  |     | NULL    |       |
+#| tmp_item_xmax              | double       | YES  |     | NULL    |       |
+#| item_url                   | varchar(255) | YES  |     | NULL    |       |
+#| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
+#| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
+#| item_discourse_type        | smallint(6)  | YES  |     | NULL    |       |
+    end
+  end
+
+# - import item_admins
+# - import item_agents
+# - import item_countries
+
 # - import content essences
 end
