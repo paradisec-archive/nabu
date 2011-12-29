@@ -542,11 +542,22 @@ namespace :import do
         originated_on = item['item_date_iso']
       end
 
+      ## get access conditions
+      if !item['item_rights'].blank?
+        access_cond = AccessCondition.find_by_name item['item_rights']
+        if !access_cond
+          access_cond = AccessCondition.create! :name => item['item_rights']
+          puts "Saved access condition #{item['item_rights']}"
+        end
+      end
+
+      ## get discourse type
+      if !item['item_discourse_type'].blank?
+        discourse_type = DiscourseType.find_by_pd_dt_id(item['item_discourse_type'])
+      end
+
       ## prepare record
       new_item = Item.new :identifier => identifier,
-                          :collector => collector,
-                          :operator => operator,
-                          :university => university,
                           :title => title,
                           :description => description,
                           :region => item['item_region_village'],
@@ -563,6 +574,21 @@ namespace :import do
       new_item.collector = collector
       new_item.operator = operator
       new_item.university = university
+      new_item.discourse_type = discourse_type
+
+      ## set access rights and private field from collection
+      new_item.private = false
+      if access_cond
+        new_item.access_condition_id = access_cond.id
+        if access_cond.name == "not to be listed publicly (temporary)"
+          new_item.private = true
+        end
+      end
+
+
+      ## set dates - TODO: created_at is incorrectly current date
+      new_item.created_at = item['item_date_created']
+      new_item.updated_at = item['item_time_modified']
 
       ## save record
       if !new_item.valid?
@@ -575,28 +601,13 @@ namespace :import do
       puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
     end
 
-#      t.boolean  "private"
-#      t.string   "language"
-#      t.integer  "subject_language_id"
-#      t.integer  "content_language_id"
-#      t.integer  "discourse_type_id"
-#      t.text     "citation"
-#      t.integer  "access_condition_id"
-#      t.text     "comments"
-#      t.datetime "created_at"
-#      t.datetime "updated_at"
-#      t.string   "pd_coll_id"
+## languages for items:
+#      t.string   "language"  // item['item_source_language']
+#      t.integer  "subject_language_id"   // item_subjectlang16 table
+#      t.integer  "content_language_id"   // item_language16 table
 
-#| item_comments              | text         | YES  |     | NULL    |       |
-#| item_rights                | varchar(255) | YES  |     | NULL    |       |
 #| item_audio_notes           | text         | YES  |     | NULL    |       |
 #| item_source_language       | varchar(255) | YES  |     | NULL    |       |
-#| item_dialect               | varchar(255) | YES  |     | NULL    |       |
-#| item_region_village        | varchar(255) | YES  |     | NULL    |       |
-#| item_date_created          | date         | YES  |     | NULL    |       |
-#| item_date_modified         | date         | YES  |     | NULL    |       |
-#| item_time_modified         | datetime     | YES  |     | NULL    |       |
-#| item_new                   | tinyint(1)   | NO   |     | 0       |       |
 #| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
 #| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
 #| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
@@ -621,14 +632,9 @@ namespace :import do
 #| item_radius                | double       | YES  |     | NULL    |       |
 #| item_countries             | varchar(255) | YES  |     | NULL    |       |
 #| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
-#| tmp_item_ymin              | double       | YES  |     | NULL    |       |
-#| tmp_item_ymax              | double       | YES  |     | NULL    |       |
 #| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
-#| tmp_item_xmin              | double       | YES  |     | NULL    |       |
-#| tmp_item_xmax              | double       | YES  |     | NULL    |       |
 #| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
 #| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
-#| item_discourse_type        | smallint(6)  | YES  |     | NULL    |       |
   end
 
 # - import item_admins

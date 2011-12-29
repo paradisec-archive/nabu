@@ -38,7 +38,7 @@ class Item < ActiveRecord::Base
                   :access_condition_id,
                   :access_narrative, :private,
                   :originated_on, :language, :subject_language_id, :content_language_id,
-                  :dialect, :discourse_type_id, :citation
+                  :dialect, :discourse_type_id
 
   accepts_nested_attributes_for :item_countries, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_admins, :allow_destroy => true, :reject_if => :all_blank
@@ -48,12 +48,19 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
-  def url
-    'http://paradisec.org.au/repository/' + collection.identifier + '/' + identifier
-  end
-
   def full_identifier
     collection.identifier + '-' + identifier
+  end
+
+  def citation
+    cite = "#{collector.name} (recorder)"
+    cite += ", #{operator.name} (depositor)" if operator
+    cite += " #{originated_on.year}" if originated_on
+    cite += '; '
+    cite += title
+    cite += " #{url}" if url
+    cite += " #{Date.today}."
+    cite
   end
 
   def prefill

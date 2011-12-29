@@ -20,12 +20,9 @@ class CreateItems < ActiveRecord::Migration
       t.float      :longitude
       t.integer    :zoom
       t.belongs_to :discourse_type
-      t.text       :citation
 
       t.belongs_to :access_condition
       t.text :access_narrative
-
-      t.text :comments
 
       t.timestamps
     end
