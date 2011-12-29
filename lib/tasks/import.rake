@@ -521,7 +521,7 @@ namespace :import do
       collector = User.find_by_pd_contact_id item['item_collector_id']
       collector = collection.collector if !collector
       operator = User.find_by_pd_contact_id item['item_operator_id']
-      operator = collection.operator if !collector
+      operator = collection.operator if !operator
 
       # get university
       university = University.find_by_name item['item_original_uni']
@@ -531,7 +531,7 @@ namespace :import do
       title = item['item_description']
       title = fixme(item, 'item_description', 'PLEASE PROVIDE TITLE') if title.blank?
       description = item['item_note']
-      description = fixme(item, 'item_note', 'PLEASE PROVIDE DESCRIPTION')
+      description = fixme(item, 'item_note', 'PLEASE PROVIDE DESCRIPTION') if description.blank?
 
       ## get map coordinates
       latitude, longitude, zoom = convert_coords(item['item_xmax'], item['item_xmin'],
