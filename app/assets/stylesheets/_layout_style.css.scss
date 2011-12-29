@@ -141,14 +141,52 @@ table.form {
     vertical-align: top;
   }
   
-  td:nth-child(1) {
+  th {
     text-align: right;
-    label:after { content: ":" }
+    &:after { content: ":" }
+  }
+
+  input[type="text"] {
+    width: 295px;
+  }
+
+  input[type="text"].short {
+    width: 200px;
+  }
+  
+  select {
+    max-width: 295px;
   }
 }
 
-input[type="text"] {
-  width: 250px;
+table.form.show {
+  td {
+    background-color: #F3F3F3;
+    padding: 4px;
+  }
+  td.empty {
+    background-color: transparent;
+  }
+}
+
+input[type="submit"] {
+  margin: 5px 0px;
+  font-size: 2em;
+  &:hover {
+    color: #09F;
+  }
+}
+
+.map {
+  width: 100%;
+  height: 200px;
+  border: 1px solid grey;
+}
+
+button {
+  margin: 5px 0px;
+  font-size: 14px;
+  height: 21px;
 }
 
 .left {

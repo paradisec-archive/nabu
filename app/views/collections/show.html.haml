@@ -13,83 +13,87 @@
 .twoup-1
   %fieldset
     %legend Collection Details
-    %table.form
+    %table.form.show
       %tr
-        %td Collection ID
+        %th Collection ID
         %td= @collection.identifier
 
       %tr
-        %td Collector
+        %th Collector
         %td= @collection.collector.name
 
       %tr
-        %td Operator
-        %td= @collection.operator.name
+        %th Operator
+        - if @collection.operator
+          %td= @collection.operator.name
 
       %tr
-        %td Originating University
+        %th Originating University
         %td= @collection.university_name
 
       %tr
-        %td Field of Research
+        %th Field of Research
         %td= @collection.field_of_research.name_with_identifier
 
       %tr
-        %td Countries
+        %th Countries
         %td
           - @collection.countries.each do |country|
             #{country.name_with_code}
             %br
 
       %tr
-        %td Languages
+        %th Languages
         %td
           - @collection.languages.each do |language|
             #{language.name_with_code}
             %br
 
       %tr
-        %td Region / Village
+        %th Region / Village
         %td= @collection.region
 
       %tr
-        %td Latitude
+        %th Latitude
         %td= @collection.latitude
 
       %tr
-        %td Longitude
+        %th Longitude
         %td= @collection.longitude
 
       %tr
-        %td Zoom
+        %th Zoom
         %td= @collection.zoom
 
       %tr
-        %td{:colspan => 2}
-          .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+        %td.empty{:colspan => 2}
+          .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}}
 
 
       %tr
-        %td Description
+        %th Description
         %td= @collection.description
 
   - if can? :manage, Collection
     %fieldset
       %legend Access Information
-      %table.form
+      %table.form.show
         %tr
-          %td User Access
+          %th User Access
           %td
             - @collection.admins.each do |admin|
               = admin.name
               %br
 
         %tr
-          %td Access conditions
-          %td= @collection.access_condition.name
+          %th Access conditions
+          -if @collection.access_condition
+            %td= @collection.access_condition.name
+          -else
+            %td
 
         %tr
-          %td Access Narative
+          %th Access Narative
           %td= @collection.access_narrative
 
 
@@ -97,7 +101,7 @@
 .twoup-2
   %fieldset
     %legend Items in Collection
-    %table.table
+    %table.table.show
       %tr
         %th Item
         %th Title
@@ -115,49 +119,51 @@
           %td
             = link_to 'View', item if can? :read, item
             = link_to 'Edit', edit_item_path(item) if can? :update, item
-    = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this acutally adds an item to the array is there a better way
+    %button
+      = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this acutally adds an item to the array is there a better way
 
 
   - if can? :manage, Collection
     %fieldset
       %legend Depositing Information
-      %table.form
+      %table.form.show
         %tr
-          %td Metadata Source
+          %th Metadata Source
           %td= @collection.metadata_source
 
         %tr
-          %td Orthographic Notes
+          %th Orthographic Notes
           %td= @collection.orthographic_notes
 
         %tr
-          %td media
+          %th media
           %td= @collection.media
 
         %tr
-          %td Date created
+          %th Date created
           %td= @collection.created_at
 
         %tr
-          %td Date modified
+          %th Date modified
           %td= @collection.updated_at
 
         %tr
-          %td Comments
+          %th Comments
           %td= @collection.comments
 
     %fieldset
       %legend Admin Information
-      %table.form
+      %table.form.show
 
         %tr
-          %td
+          %td.empty
           %td
             = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
             Collection complete
 
         %tr
-          %td Location tapes stored
+          %th Location tapes stored
           %td= @collection.tape_location
 
-    = link_to 'Edit Collection', edit_collection_path(@collection)
+    %button
+      = link_to 'Edit Collection', edit_collection_path(@collection)
