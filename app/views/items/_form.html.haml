@@ -45,7 +45,7 @@
 
       %tr
         %td= f.label :originated_on, 'Origination Date'
-        %td= f.text_field :originated_on, :class => 'datepicker', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %m %Y')
+        %td= f.text_field :originated_on, :class => 'dateinput', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
         %td= f.label :country_id, 'Countries'

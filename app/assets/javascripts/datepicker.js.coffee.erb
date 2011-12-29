@@ -2,11 +2,11 @@ $(document).ready ->
   options = {
     dateFormat:      'dd MM yy',
     buttonImageOnly: true,
-    buttonImage:     '<%= asset_path('iconDatePicker.gif') %>',
+    buttonImage:     '<%= asset_path('calendar.png') %>',
     showOn:          'both',
     changeMonth:     true,
     changeYear:      true,
     yearRange:       'c-40:c+1'
   }
 
-  $('.datepicker').datepicker options
+  $('.dateinput').datepicker options

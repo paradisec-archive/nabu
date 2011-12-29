@@ -16,6 +16,7 @@ FactoryGirl.define do
   end
 
   factory :essence do
+    item
     factory :sound_essence do
       filename 'moo.wav'
       mimetype 'audio/mp3'

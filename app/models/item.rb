@@ -17,6 +17,8 @@ class Item < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
 
+  has_many :essences, :dependent => :destroy
+
   validates :identifier, :presence => true, :uniqueness => true
   validates :title, :description, :region, :presence => true
   validates :collector_id, :university_id, :operator_id, :presence => true
@@ -54,21 +56,24 @@ class Item < ActiveRecord::Base
   def prefill
     return unless collection
     return unless new_record?
-    self.university_id = collection.university_id
-    self.collector_id = collection.collector_id
-    self.region = collection.region
-    self.latitude = collection.latitude
-    self.longitude = collection.longitude
-    self.zoom = collection.zoom
-    collection.collection_countries.each do |collection_country|
-      self.item_countries.build :country_id => collection_country.country_id
+    self.university_id ||= collection.university_id
+    self.collector_id ||= collection.collector_id
+    self.region ||= collection.region
+    self.latitude ||= collection.latitude
+    self.longitude ||= collection.longitude
+    self.zoom ||= collection.zoom
+    if self.item_countries.empty?
+      collection.collection_countries.each do |collection_country|
+        self.item_countries.build :country_id => collection_country.country_id
+      end
     end
 
-    self.access_condition_id = collection.access_condition_id
-    self.access_narrative = collection.access_narrative
-    collection.collection_admins.each do |collection_admin|
-      self.item_admins.build :user_id => collection_admin.user_id
+    self.access_condition_id ||= collection.access_condition_id
+    self.access_narrative ||= collection.access_narrative
+    if self.item_admins.empty?
+      collection.collection_admins.each do |collection_admin|
+        self.item_admins.build :user_id => collection_admin.user_id
+      end
     end
-
   end
 end
