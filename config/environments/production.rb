@@ -57,4 +57,7 @@ Nabu::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+
+  # Don't talk to the DB when compiling assets (Works around heroku/devise issue)
+  config.assets.initialize_on_precompile = false
 end
