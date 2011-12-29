@@ -391,10 +391,6 @@ namespace :import do
         end
       end
 
-      ## set dates
-      new_coll.created_at = coll['coll_date_created']
-      new_coll.updated_at = coll['coll_date_modified']
-
       ## TODO: when all items in coll have impl_ready, set complete to true
       new_coll.complete = false
 
@@ -403,6 +399,10 @@ namespace :import do
         puts "Error adding collection #{coll['coll_id']} #{coll['coll_note']}"
         puts "#{new_coll.errors}"
       end
+      new_coll.save!
+
+      ## fix date (updated at is now)
+      new_coll.created_at = coll['coll_date_created']
       new_coll.save!
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
     end
@@ -586,10 +586,6 @@ namespace :import do
       end
 
 
-      ## set dates - TODO: created_at is incorrectly current date
-      new_item.created_at = item['item_date_created']
-      new_item.updated_at = item['item_time_modified']
-
       ## save record
       if !new_item.valid?
         puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
@@ -597,6 +593,10 @@ namespace :import do
         p new_item.errors
         break
       end
+      new_item.save!
+
+      ## fix created_at (updated_at is now)
+      new_item.created_at = item['item_date_created']
       new_item.save!
       puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
     end

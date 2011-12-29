@@ -207,7 +207,45 @@
 
     - if can? :manage, @item
       #archive
-        %p Archive info goes here
+        %table.form.show
+          %tr
+            %th Ready for metadata export
+            %td= check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
+          %tr
+            %th Born Digital
+            %td= check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
+
+          %tr
+            %th Tapes returned to depositor
+            %td= check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
+
+          %tr
+            %th Original Media
+            %td= @item.original_media
+
+          %tr
+            %th Data recieved
+            %td= @item.received_on
+
+          %tr
+            %th Date digitised
+            %td= @item.digitised_on
+
+          %tr
+            %th Ingest Notes
+            %td= @item.ingest_notes
+
+          %tr
+            %th Metadata emported
+            %td= @item.metadata_imported_on
+
+          %tr
+            %th Metadata exported
+            %td= @item.metadata_exported_on
+
+          %tr
+            %th Tracking
+            %td= @item.tracking
 
     - if can? :manage, @item
       #admin
