@@ -23,6 +23,9 @@ gem 'activeadmin', :git => 'git://github.com/gregbell/active_admin.git' # remove
 gem 'sass-rails',  '~> 3.1.5'
 gem "meta_search", '>= 1.1.0.pre'
 
+# Comments
+#https://github.com/Draiken/opinio
+
 # Authentications
 gem 'devise'
 gem 'cancan'
