@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111228185717) do
+ActiveRecord::Schema.define(:version => 20111229095014) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
 
   create_table "agent_roles", :force => true do |t|
     t.string  "name",       :null => false
-    t.integer "pd_role_id"
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -54,6 +53,13 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   end
 
   add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
+
+  create_table "collection_fields_of_research", :force => true do |t|
+    t.integer "collection_id"
+    t.integer "field_of_research_id"
+  end
+
+  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
 
   create_table "collection_languages", :force => true do |t|
     t.integer "collection_id"
@@ -104,7 +110,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
 
   create_table "discourse_types", :force => true do |t|
     t.string  "name"
-    t.integer "pd_dt_id"
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
@@ -154,15 +159,15 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   add_index "item_countries", ["item_id", "country_id"], :name => "index_item_countries_on_item_id_and_country_id", :unique => true
 
   create_table "items", :force => true do |t|
-    t.integer  "collection_id",       :null => false
-    t.string   "identifier",          :null => false
+    t.integer  "collection_id",        :null => false
+    t.string   "identifier",           :null => false
     t.boolean  "private"
-    t.string   "title",               :null => false
+    t.string   "title",                :null => false
     t.string   "url"
-    t.integer  "collector_id",        :null => false
+    t.integer  "collector_id",         :null => false
     t.integer  "university_id"
     t.integer  "operator_id"
-    t.text     "description",         :null => false
+    t.text     "description",          :null => false
     t.date     "originated_on"
     t.string   "language"
     t.integer  "subject_language_id"
@@ -179,7 +184,16 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.text     "comments"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "pd_coll_id"
+    t.boolean  "metadata_exportable"
+    t.boolean  "born_digital"
+    t.boolean  "tapes_returned"
+    t.text     "original_media"
+    t.datetime "received_on"
+    t.datetime "digitised_on"
+    t.text     "ingest_notes"
+    t.datetime "metadata_imported_on"
+    t.datetime "metadata_exported_on"
+    t.text     "tracking"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
@@ -222,8 +236,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
-    t.integer  "pd_user_id"
-    t.integer  "pd_contact_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
