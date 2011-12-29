@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
 
   create_table "agent_roles", :force => true do |t|
     t.string  "name",       :null => false
-    t.integer "pd_role_id"
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -104,7 +103,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
 
   create_table "discourse_types", :force => true do |t|
     t.string  "name"
-    t.integer "pd_dt_id"
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
@@ -177,7 +175,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.text     "access_narrative"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "pd_coll_id"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
@@ -220,8 +217,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
-    t.integer  "pd_user_id"
-    t.integer  "pd_contact_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
