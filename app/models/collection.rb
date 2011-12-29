@@ -1,5 +1,6 @@
 class Collection < ActiveRecord::Base
   belongs_to :collector, :class_name => "User"
+  belongs_to :operator, :class_name => "User"
   belongs_to :university
   belongs_to :field_of_research
   belongs_to :access_condition
@@ -15,9 +16,11 @@ class Collection < ActiveRecord::Base
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
   validates :identifier, :presence => true, :uniqueness => true
-# FIXME: re-activate these after import
-#  validates :title, :description, :region, :presence => true
-#  validates :university_id, :field_of_research_id, :presence => true
+  validates :title, :description, :presence => true
+  validates :field_of_research_id, :presence => true
+# FIXME: possibly re-activate these after import
+#  validates :region, :presence => true
+#  validates :university_id, :presence => true
 #  validates :latitude, :longitude, :zoom, :presence => true
   validates :collector_id, :presence => true
   validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
@@ -26,7 +29,7 @@ class Collection < ActiveRecord::Base
 
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
-                  :collector_id, :university_id, :field_of_research_id,
+                  :collector_id, :operator_id, :university_id, :field_of_research_id,
                   :collection_languages_attributes, :collection_countries_attributes, :collection_admins_attributes,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
@@ -40,6 +43,9 @@ class Collection < ActiveRecord::Base
 
   before_create do |collection|
     collection.admins << collector
+    if operator && collector.id != operator.id
+      collection.admins << operator
+    end
   end
 
   delegate :name, :to => :university, :prefix => true, :allow_nil => true

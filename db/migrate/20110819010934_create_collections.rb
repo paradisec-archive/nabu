@@ -5,6 +5,7 @@ class CreateCollections < ActiveRecord::Migration
       t.string     :title, :null => false
       t.text       :description, :null => false
       t.belongs_to :collector, :null => false
+      t.belongs_to :operator
       t.belongs_to :university
       t.belongs_to :field_of_research, :null => false
       t.string     :region
@@ -16,6 +17,7 @@ class CreateCollections < ActiveRecord::Migration
     end
     add_index :collections, :identifier, :unique => true
     add_index :collections, :collector_id
+    add_index :collections, :operator_id
     add_index :collections, :university_id
     add_index :collections, :field_of_research_id
   end

@@ -35,8 +35,7 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
   create_table "agent_roles", :force => true do |t|
-    t.string  "name",       :null => false
-    t.integer "pd_role_id"
+    t.string "name", :null => false
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -55,13 +54,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
 
   add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
 
-  create_table "collection_fields_of_research", :force => true do |t|
-    t.integer "collection_id"
-    t.integer "field_of_research_id"
-  end
-
-  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
-
   create_table "collection_languages", :force => true do |t|
     t.integer "collection_id"
     t.integer "language_id"
@@ -74,6 +66,7 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.string   "title",                 :null => false
     t.text     "description",           :null => false
     t.integer  "collector_id",          :null => false
+    t.integer  "operator_id"
     t.integer  "university_id"
     t.integer  "field_of_research_id",  :null => false
     t.string   "region"
@@ -92,14 +85,12 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.boolean  "private"
     t.string   "tape_location"
     t.boolean  "deposit_form_recieved"
-    t.integer  "pd_collector_id"
-    t.integer  "pd_operator_id"
-    t.string   "pd_coll_id"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
   add_index "collections", ["field_of_research_id"], :name => "index_collections_on_field_of_research_id"
   add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
+  add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
   create_table "countries", :force => true do |t|
@@ -111,24 +102,10 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|
-    t.string  "name"
-    t.integer "pd_dt_id"
+    t.string "name"
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
-
-  create_table "essences", :force => true do |t|
-    t.integer "item_id"
-    t.string  "filename"
-    t.string  "mimetype"
-    t.integer "bitrate"
-    t.integer "samplerate"
-    t.integer "size"
-    t.float   "duration"
-    t.integer "channels"
-  end
-
-  add_index "essences", ["item_id"], :name => "index_essences_on_item_id"
 
   create_table "fields_of_research", :force => true do |t|
     t.string "identifier"
@@ -168,9 +145,9 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.string   "url"
     t.integer  "collector_id",        :null => false
     t.integer  "university_id"
-    t.integer  "operator_id",         :null => false
+    t.integer  "operator_id"
     t.text     "description",         :null => false
-    t.date     "originated_on",       :null => false
+    t.date     "originated_on"
     t.string   "language"
     t.integer  "subject_language_id"
     t.integer  "content_language_id"
@@ -186,7 +163,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.text     "comments"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "pd_coll_id"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
@@ -229,8 +205,6 @@ ActiveRecord::Schema.define(:version => 20111228185717) do
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
-    t.integer  "pd_user_id"
-    t.integer  "pd_contact_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

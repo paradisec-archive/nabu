@@ -8,9 +8,9 @@ class CreateItems < ActiveRecord::Migration
       t.string     :url
       t.belongs_to :collector,   :null => false
       t.belongs_to :university
-      t.belongs_to :operator,    :null => false
+      t.belongs_to :operator
       t.text       :description, :null => false
-      t.date       :originated_on, :null => false
+      t.date       :originated_on
       t.string     :language
       t.belongs_to :subject_language
       t.belongs_to :content_language

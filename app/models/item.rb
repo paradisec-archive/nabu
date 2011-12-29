@@ -16,17 +16,20 @@ class Item < ActiveRecord::Base
 
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
-
   has_many :essences, :dependent => :destroy
 
-  validates :identifier, :presence => true, :uniqueness => true
-  validates :title, :description, :region, :presence => true
-  validates :collector_id, :university_id, :operator_id, :presence => true
-  validates :latitude, :presence => true, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
-  validates :longitude, :presence => true, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
-  validates :zoom, :presence => true, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
-  validates :subject_language_id, :content_language_id, :discourse_type_id, :presence => true
-  validates :originated_on, :presence => true
+  validates :identifier, :presence => true, :uniqueness => {:scope => [:collection_id, :identifier]}
+  validates :title, :description, :presence => true
+  validates :collector_id, :presence => true
+# FIXME: possibly re-activate these after import
+#  validates :region, :presence => true
+#  validates :university_id, :operator_id, :presence => true
+#  validates :latitude, :longitude, :zoom, :presence => true
+#  validates :subject_language_id, :content_language_id, :discourse_type_id, :presence => true
+#  validates :originated_on, :presence => true
+  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
+  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
+  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
 
   attr_accessible :identifier, :title, :url, :description, :region,
                   :latitude, :longitude, :zoom,
@@ -56,8 +59,11 @@ class Item < ActiveRecord::Base
   def prefill
     return unless collection
     return unless new_record?
+
     self.university_id ||= collection.university_id
     self.collector_id ||= collection.collector_id
+    self.operator_id ||= collection.operator_id
+
     self.region ||= collection.region
     self.latitude ||= collection.latitude
     self.longitude ||= collection.longitude
