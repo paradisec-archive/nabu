@@ -140,6 +140,7 @@
 
 
     #collection
+      =link_to 'Open Collection', @item.collection
       %table.form
         %tr
           %td Collection Title
@@ -158,6 +159,13 @@
           %td
             - @item.collection.countries.each do |country|
               = country.name
+              %br
+
+        %tr
+          %td Languages
+          %td
+            - @item.collection.languages.each do |language|
+              = language.name
               %br
 
         %tr

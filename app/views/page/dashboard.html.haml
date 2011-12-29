@@ -1,3 +1,51 @@
 %h1 Dashboard
 
-= link_to 'Add Collection', new_collection_path if can? :create, Collection
+#mycontent
+
+#actions
+  = link_to 'Add Collection', new_collection_path if can? :create, Collection
+
+
+- if admin_user_signed_in?
+
+  #system
+    %h2 System Monitoring
+
+    #comments
+      Comments
+
+    #metadata
+      Items with incomplete metadata:
+
+    #activities.twoup-1
+      Recent System Activities on essence data:
+
+    #statistics.twoup-2
+      Content Statistics:
+      %br
+      %table
+        %tr
+          %td= number_to_human @num_collections
+          %td collections
+          %td 12
+          %td comments
+        %tr
+          %td= number_to_human @num_items
+          %td items
+          %td 12
+          %td approved
+        %tr
+          %td= number_to_human @num_essences
+          %td essence objects
+          %td 0
+          %td pending
+        %tr
+          %td= number_to_human @num_users
+          %td users
+          %td
+          %td
+        %tr
+          %td= number_to_human @num_universities
+          %td universities
+          %td
+          %td
