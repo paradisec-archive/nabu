@@ -27,6 +27,10 @@
         %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
 
       %tr
+        %td= f.label :operator_id
+        %td= f.collection_select :operator_id, User.all, :id, :name, :prompt => true
+
+      %tr
         %td= f.label :university_id, 'Originating University'
         %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
 

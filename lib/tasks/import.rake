@@ -11,7 +11,7 @@ namespace :import do
                    :universities,
                    :countries, :languages, :fields_of_research,
                    :collections,
-                   :collection_languages, :collection_countries, :collection_users,
+                   :collection_languages, :collection_countries, :collection_admins,
                    :discourse_types, :agent_roles,
                    :items]
 
@@ -219,6 +219,24 @@ namespace :import do
 
   ## FOR COLLECTIONS
 
+  def convert_coords(xmax, xmin, ymax, ymin)
+    if (xmax && xmin && ymax && ymin)
+      longitude = (xmax + xmin) / 2.0
+      latitude = (ymax + ymin) / 2.0
+      zoom = 20 - ((xmax - xmin) / 18)
+      zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
+    elsif (xmax == 0 && xmin == 0 && ymax == 0 && ymin == 0 )
+      latitude = 0
+      longitude = 0
+      zoom = 1
+    else
+      latitude = 0
+      longitude = 0
+      zoom = 1
+    end
+    return [latitude, longitude, zoom]
+  end
+
   desc 'Import universities into NABU from paradisec_legacy DB'
   task :universities => :environment do
     puts "Importing universities from PARADISEC legacy DB"
@@ -309,48 +327,43 @@ namespace :import do
     collections.each do |coll|
       next if coll['coll_id'].blank?
 
-      ## get collector
+      ## get collector & operator
       next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
       collector = User.find_by_pd_contact_id coll['coll_collector_id']
+      if !collector
+        if !Rails.env == "development"
+          raise "ERROR: #{new_coll} has no collector - can't add to collections"
+        end
+        next
+      end
+      operator = User.find_by_pd_contact_id coll['coll_operator_id']
 
       ## get university
-      if !coll['coll_original_uni'].blank?
-        uni = University.find_by_name coll['coll_original_uni']
-      end
+      university = University.find_by_name coll['coll_original_uni']
 
       ## get map coordinates
-      coll_xmax = coll['coll_xmax']
-      coll_xmin = coll['coll_xmin']
-      coll_ymax = coll['coll_ymax']
-      coll_ymin = coll['coll_ymin']
-      if (coll_xmax && coll_xmin && coll_ymax && coll_ymin)
-        longitude = (coll_xmax + coll_xmin) / 2.0
-        latitude = (coll_ymax + coll_ymin) / 2.0
-        zoom = 20 - ((coll_xmax - coll_xmin) / 18)
-        zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
-      elsif (coll_xmax == 0 && coll_xmin == 0 && coll_ymax == 0 && coll_ymin == 0 )
-        latitude = 0
-        longitude = 0
-        zoom = 1
-      else
-        latitude = 0
-        longitude = 0
-        zoom = 1
-      end
+      latitude, longitude, zoom = convert_coords(coll['coll_xmax'], coll['coll_xmin'],
+                                                 coll['coll_ymax'], coll['coll_ymin'])
 
       ## get access conditions
       if !coll['coll_access_conditions'].blank?
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
-          put "Saved access condition #{coll['coll_access_conditions']}"
+          puts "Saved access condition #{coll['coll_access_conditions']}"
         end
       end
 
+      ## make sure title and description aren't blank
+      title = coll['coll_description']
+      title = fixme(coll, 'coll_description', 'PLEASE PROVIDE TITLE') if title.blank?
+      description = coll['coll_note']
+      description = fixme(coll, 'coll_note', 'PLEASE PROVIDE DESCRIPTION')
+
       ## prepare record
       new_coll = Collection.new :identifier => coll['coll_id'],
-                                :title => coll['coll_description'] || fixme(coll, :title),
-                                :description => coll['coll_note'] || fixme(coll, :description),
+                                :title => title,
+                                :description => description,
                                 :region => coll['coll_region_village'],
                                 :latitude => latitude,
                                 :longitude => longitude,
@@ -364,19 +377,10 @@ namespace :import do
                                 :tape_location => coll['coll_location'],
                                 :field_of_research_id => 1
 
-      ## set collector
-      if collector
-        new_coll.collector_id = collector.id
-      else
-        if !Rails.env == "development"
-          raise "ERROR: #{new_coll} has no collector - can't add to collections"
-        end
-      end
-
-      ## set university
-      if uni
-        new_coll.university_id = uni.id
-      end
+      ## set collector, operator and university
+      new_coll.collector = collector
+      new_coll.operator = operator
+      new_coll.university = university
 
       ## set access rights and private field
       new_coll.private = false
@@ -401,15 +405,6 @@ namespace :import do
       end
       new_coll.save!
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
-
-      ## create admin user entry into CollectionAdmin
-      if coll['coll_operator_id']
-        operator = User.find_by_pd_user_id coll['coll_collector_id']
-        if operator
-          CollectionAdmin.create! :collection => new_coll, :user => operator
-          puts "Saved operator #{coll['coll_id']} #{operator.id} #{operator.first_name} #{operator.last_name}"
-        end
-      end
     end
   end
 
@@ -444,7 +439,7 @@ namespace :import do
   end
 
   desc 'Import collection_user_pem into NABU from paradisec_legacy DB'
-  task :collection_users => :environment do
+  task :collection_admins => :environment do
     puts "Importing authorized users for collections from PARADISEC legacy DB"
     client = connect
     users = client.query("SELECT * FROM collection_user_perm")
@@ -510,7 +505,7 @@ namespace :import do
 
   desc 'Import items into NABU from paradisec_legacy DB'
   task :items => :environment do
-    puts "Importing collections from PARADISEC legacy DB"
+    puts "Importing items from PARADISEC legacy DB"
     client = connect
     items = client.query("SELECT * FROM items")
     items.each do |item|
@@ -519,77 +514,89 @@ namespace :import do
       collection = Collection.find_by_identifier item['item_collection_id']
       next unless collection
 
-      ## get identifier
-      identifier = item['item_pid']
+      ## get identifier (item_pid has full string, item_id may be truncated)
+      coll_id, identifier = item['item_pid'].split /-/
+
+      ## get collector and operator
+      collector = User.find_by_pd_contact_id item['item_collector_id']
+      collector = collection.collector if !collector
+      operator = User.find_by_pd_contact_id item['item_operator_id']
+      operator = collection.operator if !collector
+
+      # get university
+      university = University.find_by_name item['item_original_uni']
+      university = collection.university if !university
+
+      ## make sure title and description aren't blank
+      title = item['item_description']
+      title = fixme(item, 'item_description', 'PLEASE PROVIDE TITLE') if title.blank?
+      description = item['item_note']
+      description = fixme(item, 'item_note', 'PLEASE PROVIDE DESCRIPTION')
+
+      ## get map coordinates
+      latitude, longitude, zoom = convert_coords(item['item_xmax'], item['item_xmin'],
+                                                 item['item_ymax'], item['item_ymin'])
+
+      ## origination date
+      if item['item_date_iso'] != 0
+        originated_on = item['item_date_iso']
+      end
 
       ## prepare record
-      new_item = Item.new :collection => collection,
-                          :identifier => identifier,
-                                :title => coll['coll_description'] || fixme(coll, :title),
-                                :description => coll['coll_note'] || fixme(coll, :description),
-                                :region => coll['coll_region_village'],
-                                :latitude => latitude,
-                                :longitude => longitude,
-                                :zoom => zoom.to_i,
-                                :access_narrative => coll['coll_access_narrative'],
-                                :metadata_source => coll['coll_metadata_source'],
-                                :orthographic_notes => coll['coll_orthographic_notes'],
-                                :media => coll['coll_media'],
-                                :comments => coll['coll_comments'],
-                                :deposit_form_recieved => coll['coll_depform_rcvd'],
-                                :tape_location => coll['coll_location'],
-                                :field_of_research_id => 1
+      new_item = Item.new :identifier => identifier,
+                          :collector => collector,
+                          :operator => operator,
+                          :university => university,
+                          :title => title,
+                          :description => description,
+                          :region => item['item_region_village'],
+                          :dialect => item['item_dialect'],
+                          :latitude => latitude,
+                          :longitude => longitude,
+                          :zoom => zoom.to_i,
+                          :url => item['item_url'],
+                          :access_narrative => item['item_comments'],
+                          :originated_on => originated_on
 
-#      t.string   "identifier",          :null => false
+      ## set collection, collector, operator and university
+      new_item.collection = collection
+      new_item.collector = collector
+      new_item.operator = operator
+      new_item.university = university
+
+      ## save record
+      if !new_item.valid?
+        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        p item
+        p new_item.errors
+        break
+      end
+      new_item.save!
+      puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
+    end
+
 #      t.boolean  "private"
-#      t.string   "title",               :null => false
-#      t.string   "url"
-#      t.integer  "collector_id",        :null => false
-#      t.integer  "university_id"
-#      t.integer  "operator_id",         :null => false
-#      t.text     "description",         :null => false
-#      t.date     "originated_on",       :null => false
 #      t.string   "language"
 #      t.integer  "subject_language_id"
 #      t.integer  "content_language_id"
-#      t.string   "dialect"
-#      t.string   "region"
-#      t.float    "latitude"
-#      t.float    "longitude"
-#      t.integer  "zoom"
 #      t.integer  "discourse_type_id"
 #      t.text     "citation"
 #      t.integer  "access_condition_id"
-#      t.text     "access_narrative"
 #      t.text     "comments"
 #      t.datetime "created_at"
 #      t.datetime "updated_at"
 #      t.string   "pd_coll_id"
 
-#| item_pid                   | varchar(31)  | NO   | PRI |         |       |
-#| item_id                    | varchar(15)  | YES  |     | NULL    |       |
-#| item_collector             | varchar(255) | YES  |     | NULL    |       |
-#| item_collector_id          | int(11)      | YES  |     | NULL    |       |
-#| item_operator              | varchar(255) | YES  |     | NULL    |       |
-#| item_operator_id           | int(11)      | YES  |     | NULL    |       |
-#| item_description           | varchar(255) | YES  |     | NULL    |       |
 #| item_comments              | text         | YES  |     | NULL    |       |
-#| item_note                  | text         | YES  |     | NULL    |       |
 #| item_rights                | varchar(255) | YES  |     | NULL    |       |
 #| item_audio_notes           | text         | YES  |     | NULL    |       |
 #| item_source_language       | varchar(255) | YES  |     | NULL    |       |
 #| item_dialect               | varchar(255) | YES  |     | NULL    |       |
 #| item_region_village        | varchar(255) | YES  |     | NULL    |       |
-#| item_date                  | varchar(255) | YES  |     | NULL    |       |
-#| item_date_iso              | date         | YES  |     | NULL    |       |
 #| item_date_created          | date         | YES  |     | NULL    |       |
 #| item_date_modified         | date         | YES  |     | NULL    |       |
 #| item_time_modified         | datetime     | YES  |     | NULL    |       |
 #| item_new                   | tinyint(1)   | NO   |     | 0       |       |
-#| item_xmax                  | double       | YES  |     | NULL    |       |
-#| item_xmin                  | double       | YES  |     | NULL    |       |
-#| item_ymax                  | double       | YES  |     | NULL    |       |
-#| item_ymin                  | double       | YES  |     | NULL    |       |
 #| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
 #| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
 #| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
@@ -611,7 +618,6 @@ namespace :import do
 #| item_total_length_rtor     | double       | YES  |     | NULL    |       |
 #| item_total_length_video    | double       | YES  |     | NULL    |       |
 #| item_speed_rtor            | varchar(31)  | YES  |     | NULL    |       |
-#| item_original_uni          | varchar(255) | YES  |     | NULL    |       |
 #| item_radius                | double       | YES  |     | NULL    |       |
 #| item_countries             | varchar(255) | YES  |     | NULL    |       |
 #| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
@@ -620,11 +626,9 @@ namespace :import do
 #| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
 #| tmp_item_xmin              | double       | YES  |     | NULL    |       |
 #| tmp_item_xmax              | double       | YES  |     | NULL    |       |
-#| item_url                   | varchar(255) | YES  |     | NULL    |       |
 #| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
 #| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
 #| item_discourse_type        | smallint(6)  | YES  |     | NULL    |       |
-    end
   end
 
 # - import item_admins

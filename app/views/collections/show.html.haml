@@ -23,6 +23,10 @@
         %td= @collection.collector.name
 
       %tr
+        %td Operator
+        %td= @collection.operator.name
+
+      %tr
         %td Originating University
         %td= @collection.university_name
 
@@ -34,14 +38,14 @@
         %td Countries
         %td
           - @collection.countries.each do |country|
-            #{country.code} - #{country.name}
+            #{country.name_with_code}
             %br
 
       %tr
         %td Languages
         %td
           - @collection.languages.each do |language|
-            #{language.code} - #{language.name} 
+            #{language.name_with_code}
             %br
 
       %tr
