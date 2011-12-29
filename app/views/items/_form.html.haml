@@ -108,7 +108,7 @@
             %br
             - if c.object.new_record?
               = c.collection_select :user_id, User.all, :id, :name, :prompt => true
-              = c.collection_select :role_id, AgentRole.all, :id, :name, :prompt => true
+              = c.collection_select :agent_role_id, AgentRole.all, :id, :name, :prompt => true
             - else
               = c.object.user.name
               == :

@@ -100,7 +100,7 @@
         %td Agents
         %td
           - @item.item_agents.each do |item_agent|
-            == #{item_agent.user.name} : #{item_agent.role.name}
+            == #{item_agent.user.name} : #{item_agent.agent_role.name}
             %br
       %tr
         %td Cite as
