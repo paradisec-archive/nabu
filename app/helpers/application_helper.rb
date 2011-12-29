@@ -25,4 +25,28 @@ module ApplicationHelper
       title
     end
   end
+
+  def number_to_human_rate(bits)
+    return nil if bits.nil?
+
+    number_to_human_size(bits).gsub(/B/, 'bps')
+  end
+
+  def number_to_human_channels(channels)
+   case channels
+   when 1 then 'Mono'
+   when 2 then 'Stereo'
+   else nil
+   end
+  end
+
+  def number_to_human_duration(t)
+    return nil if t.nil?
+
+    ms = t - t.to_i
+
+    mm, ss = t.divmod(60)
+    hh, mm = mm.divmod(60)
+    "%02d:%02d:%02d.%d" % [hh, mm, ss, ms * 1000]
+  end
 end

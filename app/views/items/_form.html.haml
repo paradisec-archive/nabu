@@ -45,7 +45,7 @@
 
       %tr
         %td= f.label :originated_on, 'Origination Date'
-        %td= f.text_field :originated_on, :class => 'datepicker', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %m %Y')
+        %td= f.text_field :originated_on, :class => 'dateinput', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
         %td= f.label :country_id, 'Countries'
@@ -108,7 +108,7 @@
             %br
             - if c.object.new_record?
               = c.collection_select :user_id, User.all, :id, :name, :prompt => true
-              = c.collection_select :role_id, AgentRole.all, :id, :name, :prompt => true
+              = c.collection_select :agent_role_id, AgentRole.all, :id, :name, :prompt => true
             - else
               = c.object.user.name
               == :

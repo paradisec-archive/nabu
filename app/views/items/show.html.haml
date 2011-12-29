@@ -100,7 +100,7 @@
         %td Agents
         %td
           - @item.item_agents.each do |item_agent|
-            == #{item_agent.user.name} : #{item_agent.role.name}
+            == #{item_agent.user.name} : #{item_agent.agent_role.name}
             %br
       %tr
         %td Cite as
@@ -110,11 +110,34 @@
 .twoup-2
   .tabs
     %ul
-      %li= link_to 'Content Item', '#content'
+      %li= link_to 'Content Item', '#content_item'
       %li= link_to 'Collection Information', '#collection'
 
-    #content
-      %p Content Essence Info goes here
+    #content_item
+      #media This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
+      %table.table
+        %tr
+          %th Filename
+          %th Type
+          %th Bitrate
+          %th Sampling Rate/FPS
+          %th Channels
+          %th File Size
+          %th Duration
+        - @item.essences.each do |essence|
+          %tr
+            %td= essence.filename
+            %td= essence.mimetype
+            %td= number_to_human_rate essence.bitrate
+            %td
+              - if essence.samplerate
+                == #{essence.samplerate} Hz 
+              - if essence.fps
+                == / #{essence.fps} FPS
+            %td= number_to_human_channels essence.channels
+            %td= number_to_human_size essence.size
+            %td= number_to_human_duration essence.duration
+
 
     #collection
       %table.form
@@ -186,7 +209,7 @@
                 %br
           %tr
             %td Access conditions
-            %td= @item.access_condition
+            %td= @item.access_condition.name
 
           %tr
             %td Access Narative

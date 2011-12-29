@@ -50,6 +50,7 @@ class ItemsController < ApplicationController
   def build_associations
     @item.item_countries.build
     @item.item_admins.build
+    @item.item_agents.build
   end
 
 end

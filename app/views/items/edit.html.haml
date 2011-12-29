@@ -1,13 +1,13 @@
-%h1 Add a Collection
+%h1 Add an Item
 
 
-= form_for @collection, :method => :put do |f|
-  - if @collection.errors.any?
+= form_for [@collection, @item], :method => :put do |f|
+  - if @item.errors.any?
     #error_explanation
-      %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
+      %h2== #{pluralize(@item.errors.count, 'error')} prohibited this post from being saved:
       %ul
-        - @collection.errors.full_messages.each do |msg|
+        - @item.errors.full_messages.each do |msg|
           %li= msg
   = render :partial => 'form', :locals => {:f => f}
 
-  = f.submit 'Update Collection'
+  = f.submit 'Update Item'
