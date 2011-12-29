@@ -1,109 +1,119 @@
-%h1 Item
-
 .twoup-1
   %fieldset
     %legend Item Details
 
-    %table.form
+    %table.form.show
       %tr
-        %td Item ID
+        %th Item ID
         %td
           = @item.full_identifier
-          (
-          = link_to 'Collection Details', @item.collection
-          )
+          .right
+            (
+            = link_to 'Collection Details', @item.collection
+            )
 
       %tr
-        %td= check_box_tag :checked, @item.private, @item.private, :disabled => true
-        %td Private
+        %td.empty
+        %td
+          = check_box_tag :checked, @item.private, @item.private, :disabled => true
+          Private
 
       %tr
-        %td Archive Link
+        %th Archive Link
         %td= link_to @item.url, @item.url
 
       %tr
-        %td Item Title
+        %th Item Title
         %td= @item.title
 
       %tr
-        %td URL
+        %th URL
         %td= @item.url
 
       %tr
-        %td Collector
+        %th Collector
         %td= @item.collector.name
 
       %tr
-        %td Originating University
+        %th Originating University
         %td= @item.university.name
 
       %tr
-        %td Operator
+        %th Operator
         %td= @item.operator.name
 
       %tr
-        %td Description
+        %th Description
         %td= @item.description
 
       %tr
-        %td Origination Date
+        %th Origination Date
         %td= @item.originated_on
 
       %tr
-        %td Countries
+        %th Countries
         %td
           - @item.countries.each do |country|
             = country.name
             %br
 
       %tr
-        %td Language as given
+        %th Language as given
         %td= @item.language
 
       %tr
-        %td Subject Language
-        %td= @item.subject_language.name
+        %th Subject Language
+        -if @item.subject_language
+          %td= @item.subject_language.name
+        -else
+          %td
 
       %tr
-        %td Content Language
-        %td= @item.content_language.name
+        %th Content Language
+        -if @item.content_language
+          %td= @item.content_language.name
+        -else
+          %td
 
       %tr
-        %td Dialect
+        %th Dialect
         %td= @item.dialect
 
       %tr
-        %td Region / Village
+        %th Region / Village
         %td= @item.region
 
       %tr
-        %td Latitude
+        %th Latitude
         %td= @item.latitude
 
       %tr
-        %td Longitude
+        %th Longitude
         %td= @item.longitude
 
       %tr
-        %td Zoom
+        %th Zoom
         %td= @item.zoom
 
       %tr
-        %td{:colspan => 2}
-          .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}, :style => "width: 100%; height: 200px"}
+        %td.empty{:colspan => 2}
+          .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}}
 
       %tr
-        %td Dicsourse Type
-        %td= @item.discourse_type.name
+        %th Dicsourse Type
+        -if @item.discourse_type
+          %td= @item.discourse_type.name
+        -else
+          %td
 
       %tr
-        %td Agents
+        %th Agents
         %td
           - @item.item_agents.each do |item_agent|
             == #{item_agent.user.name} : #{item_agent.agent_role.name}
             %br
       %tr
-        %td Cite as
+        %th Cite as
         %td= @item.citation
 
 
@@ -141,43 +151,43 @@
 
     #collection
       =link_to 'Open Collection', @item.collection
-      %table.form
+      %table.form.show
         %tr
-          %td Collection Title
+          %th Collection Title
           %td= @item.collection.title
 
         %tr
-          %td Collection ID
+          %th Collection ID
           %td= @item.collection.identifier
 
         %tr
-          %td Description
+          %th Description
           %td= @item.collection.description
 
         %tr
-          %td Countries
+          %th Countries
           %td
             - @item.collection.countries.each do |country|
               = country.name
               %br
 
         %tr
-          %td Languages
+          %th Languages
           %td
             - @item.collection.languages.each do |language|
               = language.name
               %br
 
         %tr
-          %td Latitude
+          %th Latitude
           %td= @item.collection.latitude
 
         %tr
-          %td Longitude
+          %th Longitude
           %td= @item.collection.longitude
 
         %tr
-          %td Zoom
+          %th Zoom
           %td= @item.collection.zoom
 
         %tr
@@ -201,28 +211,31 @@
 
     - if can? :manage, @item
       #admin
-        %table.form
+        %table.form.show
           %tr
-            %td Record Created
+            %th Record Created
             %td= @item.created_at.to_date
           %tr
-            %td Record Modified
+            %th Record Modified
             %td= @item.updated_at.to_date
 
           %tr
-            %td User Access
+            %th User Access
             %td
               - @item.admins.each do |admin|
                 = admin.name
                 %br
-          %tr
-            %td Access conditions
-            %td= @item.access_condition.name
 
           %tr
-            %td Access Narative
+            %th Access conditions
+            -if @item.access_condition
+              %td= @item.access_condition.name
+
+          %tr
+            %th Access Narative
             %td= @item.access_narrative
 
 
 
-= link_to 'Edit Item', edit_item_path(@item) if can? :update, @item
+%button
+  = link_to 'Edit Item', edit_item_path(@item) if can? :update, @item

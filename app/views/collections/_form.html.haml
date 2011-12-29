@@ -1,3 +1,7 @@
+
+.left
+  = f.text_field :title, {:style => "font-size: 38px;"}
+
 .right
   = f.check_box :complete
   = f.label :complete, 'Collection completed'
@@ -12,34 +16,30 @@
     %legend Collection Details
     %table.form
       %tr
-        %td= f.label :title, 'Collection Title'
-        %td= f.text_field :title
-        
-      %tr
-        %td= f.label :identifier, 'Collection ID'
+        %th= f.label :identifier, 'Collection ID'
         - if @collection.new_record?
           %td= f.text_field :identifier
         - else
           %td{:id => :collection_identifier}= @collection.identifier
 
       %tr
-        %td= f.label :collector_id
+        %th= f.label :collector_id
         %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
 
       %tr
-        %td= f.label :operator_id
+        %th= f.label :operator_id
         %td= f.collection_select :operator_id, User.all, :id, :name, :prompt => true
 
       %tr
-        %td= f.label :university_id, 'Originating University'
+        %th= f.label :university_id, 'Originating University'
         %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
 
       %tr
-        %td= f.label :field_of_research_id, 'Field of Research'
+        %th= f.label :field_of_research_id, 'Field of Research'
         %td= f.collection_select :field_of_research_id, FieldOfResearch.all, :id, :name_with_identifier, :prompt => true
 
       %tr
-        %td= f.label :country_id, 'Countries'
+        %th= f.label :country_id, 'Countries'
         %td
           = f.fields_for :collection_countries do |c|
             %br
@@ -51,7 +51,7 @@
               Delete
 
       %tr
-        %td= f.label :language_id, 'Languages'
+        %th= f.label :language_id, 'Languages'
         %td
           = f.fields_for :collection_languages do |l|
             %br
@@ -64,19 +64,19 @@
 
 
       %tr
-        %td= f.label :region, 'Region / Village'
+        %th= f.label :region, 'Region / Village'
         %td= f.text_field :region
 
       %tr
-        %td= f.label :latitude
+        %th= f.label :latitude
         %td= f.text_field :latitude, :class => 'latitude'
 
       %tr
-        %td= f.label :longitude
+        %th= f.label :longitude
         %td= f.text_field :longitude, :class => 'longitude'
 
       %tr
-        %td= f.label :zoom
+        %th= f.label :zoom
         %td= f.text_field :zoom, :class => 'zoom'
 
       %tr
@@ -86,7 +86,7 @@
           = text_field_tag :map_search
 
       %tr
-        %td
+        %th
           = f.label :description
           %br
           %i (publishable)
@@ -96,7 +96,7 @@
     %legend Access Information
     %table.form
       %tr
-        %td= f.label :user_id, 'User Access'
+        %th= f.label :user_id, 'User Access'
         %td
           = f.fields_for :collection_admins do |a|
             %br
@@ -108,11 +108,11 @@
               Delete
 
       %tr
-        %td= f.label :access_condition
+        %th= f.label :access_condition
         %td= f.collection_select :access_condition_id, AccessCondition.all, :id, :name, :prompt => true
 
       %tr
-        %td= f.label :access_narrative
+        %th= f.label :access_narrative
         %td= f.text_area :access_narrative
 
 
@@ -126,29 +126,29 @@
     %legend Depositing Information
     %table.form
       %tr
-        %td= f.label :metadata_source
+        %th= f.label :metadata_source
         %td= f.text_field :metadata_source
 
       %tr
-        %td= f.label :orthographic_notes
+        %th= f.label :orthographic_notes
         %td= f.text_field :orthographic_notes
 
       %tr
-        %td= f.label :media
+        %th= f.label :media
         %td= f.text_field :media
 
       %tr
-        %td= f.label :comments
+        %th= f.label :comments
         %td= f.text_field :comments
 
   %fieldset
     %legend Admin Information
     %table.form
       %tr
-        %td= f.label :deposit_form_recieved
+        %th= f.label :deposit_form_recieved
         %td= f.check_box :deposit_form_recieved
 
       %tr
-        %td= f.label :tape_location
+        %th= f.label :tape_location
         %td= f.text_field :tape_location
 
