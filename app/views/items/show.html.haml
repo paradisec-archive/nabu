@@ -201,7 +201,8 @@
         %li= link_to 'Admin Information', '#admin'
 
     #comment
-      %p Comments go here
+      = render_comments_form @item
+      = render_comments @item
 
     - if can? :manage, @item
       #archive
