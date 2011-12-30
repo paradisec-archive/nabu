@@ -14,7 +14,8 @@ namespace :import do
                    :collection_languages, :collection_countries, :collection_admins,
                    :discourse_types, :agent_roles,
                    :items,
-                   :item_admins]
+                   :item_admins,
+                   :essences]
 
   desc 'Teardown intermediate stuff'
   task :clean => [:remove_identifiers]
@@ -666,11 +667,59 @@ namespace :import do
     end
   end
 
-# - import item_admins // item_user_perm
 # - import item_agents  // item_role
 # - import item_country
 # - import item_subjectlang16
 # - import item_language16
 
-# - import content essences
+  desc 'Import essences into NABU from paradisec_legacy DB'
+  task :essences => :environment do
+    puts "Importing essences from PARADISEC legacy DB"
+    client = connect
+    essences = client.query("SELECT * FROM files")
+    essences.each do |essence|
+      ## get item
+      next if essence['file_pid'].blank?
+
+      coll_id, identifier = essence['file_pid'].split /-/
+      collection = Collection.find_by_identifier coll_id
+      next unless collection
+
+      item = collection.items.find_by_identifier identifier
+      next unless item
+
+      mimetype = essence['file_type']
+      next if mimetype =~ /~/
+      mimetype.sub! /^(wav|mp3|eaf)$/, 'audio/\1'
+      mimetype.sub! /^(jpg|tif|img)$/, 'image/\1'
+      mimetype.sub! /^(mov|mpg|mp4|dv)$/, 'video/\1'
+      mimetype.sub! /^(pdf|mxf|gpk|lex|lng|typ|cha)$/, 'application/\1'
+      mimetype.sub! /^(rtf|xml|trs)$/, 'text/\1'
+      mimetype.sub! /^(txt)$/, 'text/plain'
+      mimetype.sub! /^(001)$/, 'audio/eaf'
+
+      essence['file_bitrate'] = nil if essence['file_bitrate'] == 0
+      essence['file_trackcount'] = nil if essence['file_trackcount'] == 0
+      if essence['file_time'].nil?
+        seconds = nil
+      elsif essence['file_time'] == '00:00:00.00'
+        seconds = nil
+      else
+        rest, ms = essence['file_time'].split '.'
+        hh, mm, ss = rest.split ':'
+        seconds = hh.to_i*60*60 + mm.to_i*60 + ss.to_i + "0.#{ms}".to_f
+      end
+      ## prepare record
+      new_essence = Essence.create! :item => item,
+                                   :filename => essence['file_filename'],
+                                   :mimetype => mimetype,
+                                   :bitrate => essence['file_bitrate'],
+                                   :samplerate => essence['samplerate'],
+                                   :size => 1,
+                                   :duration => seconds,
+                                   :channels => essence['file_trackcount']
+
+    end
+  end
+
 end
