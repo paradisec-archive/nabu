@@ -609,7 +609,8 @@ namespace :import do
       if access_cond
         new_item.access_condition_id = access_cond.id
       end
-      if item['item_hide_metadata']
+      new_item.private = false
+      if item['item_hide_metadata'] == 1
           new_item.private = true
       end
 
@@ -704,7 +705,7 @@ namespace :import do
         ItemCountry.create! :item => item, :country => cntry
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved for collection #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
+      puts "Saved for item #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
     end
   end
 
@@ -728,6 +729,52 @@ namespace :import do
       rescue ActiveRecord::RecordNotUnique
       end
       puts "Saved admin for item #{user['iu_item_pid']}: #{usr.first_name} #{usr.last_name}"
+    end
+  end
+
+  desc 'Import item_roles into NABU from paradisec_legacy DB'
+  task :item_agents => :environment do
+    puts "Importing agents per item from PARADISEC legacy DB"
+    client = connect
+    agents = client.query("SELECT * FROM item_role")
+    agents.each do |agent|
+      next if agent['ir_role_content'] == "unknown" || agent['ir_role_content'].blank? || agent['ir_role_content'] == "test"
+      item = get_item(agent['ir_item_pid'])
+      agent_role = AgentRole.find_by_pd_role_id agent['ir_role_id']
+      next unless agent_role && item
+
+      ## get of create a user
+      results = agent['ir_role_content'].split(', ')
+      if results.length > 2
+        p agent
+        next
+      end
+      last_name, first_name = agent['ir_role_content'].split(', ', 2)
+      if first_name.blank?
+        first_name, space, last_name = agent['ir_role_content'].rpartition(' ')
+      end
+      user = User.find_by_first_name_and_last_name(first_name, last_name)
+      if !user
+        ## let's create a ew user
+        email = 'agent'+agent['ir_id'].to_s+'@example.com'
+        password = 'asdfgj'
+        begin
+          if first_name.blank?
+            first_name = last_name
+          end
+          new_user = User.create! :first_name => first_name.strip,
+                                  :last_name => last_name.strip,
+                                  :email => email,
+                                  :password => password,
+                                  :password_confirmation => password
+        end
+        puts "saved new user #{first_name} #{last_name}, #{email}"
+      end
+      begin
+        ItemAgent.create! :item => item, :agent_role => agent_role, :user => user
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for item #{agent['ir_item_pid']}: #{agent['ir_role_content']} - #{agent_role.name}"
     end
   end
 
@@ -775,6 +822,7 @@ namespace :import do
                                    :duration => seconds,
                                    :channels => essence['file_trackcount']
 
+      puts "Saved essence #{essence['file_filename']} for item #{essence['file_pid']}"
     end
   end
 

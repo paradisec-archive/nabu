@@ -136,6 +136,10 @@ table.table {
   }
 }
 
+input[type="text"] {
+  width: 295px;
+}
+
 table.form {
   td {
     vertical-align: top;
@@ -144,10 +148,6 @@ table.form {
   th {
     text-align: right;
     &:after { content: ":" }
-  }
-
-  input[type="text"] {
-    width: 295px;
   }
 
   input[type="text"].short {
@@ -187,6 +187,9 @@ button {
   margin: 5px 0px;
   font-size: 14px;
   height: 21px;
+  &:hover {
+    color: #09F;
+  }
 }
 
 .left {
@@ -199,6 +202,11 @@ button {
 
 .clear {
   clear: both;
+}
+
+.citation {
+  font-size: 12px;
+  font-style: italic;
 }
 
 .pagination {

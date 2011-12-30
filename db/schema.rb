@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
     t.integer "item_id"
     t.integer "user_id"
     t.integer "agent_role_id"
+    t.string  "comment"
   end
 
   add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
@@ -177,8 +178,6 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
     t.text     "description",          :null => false
     t.date     "originated_on"
     t.string   "language"
-    t.integer  "subject_language_id"
-    t.integer  "content_language_id"
     t.string   "dialect"
     t.string   "region"
     t.float    "latitude"

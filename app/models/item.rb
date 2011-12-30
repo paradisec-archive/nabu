@@ -10,10 +10,10 @@ class Item < ActiveRecord::Base
   has_many :countries, :through => :item_countries, :validate => true
 
   has_many :item_subject_languages, :dependent => :destroy
-  has_many :subject_languages, :through => :item_subject_languages, :validate => true
+  has_many :subject_languages, :through => :item_subject_languages, :source => :language, :validate => true
 
   has_many :item_content_languages, :dependent => :destroy
-  has_many :content_languages, :through => :item_content_languages, :validate => true
+  has_many :content_languages, :through => :item_content_languages, :source => :language, :validate => true
 
   has_many :item_admins, :dependent => :destroy
   has_many :admins, :through => :item_admins, :validate => true, :source => :user

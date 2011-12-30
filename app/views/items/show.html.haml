@@ -1,3 +1,5 @@
+%h1= @item.title
+
 .twoup-1
   %fieldset
     %legend Item Details
@@ -23,10 +25,6 @@
         %td= link_to @item.url, @item.url
 
       %tr
-        %th Item Title
-        %td= @item.title
-
-      %tr
         %th URL
         %td= @item.url
 
@@ -40,7 +38,8 @@
 
       %tr
         %th Operator
-        %td= @item.operator.name
+        -if @item.operator
+          %td= @item.operator.name
 
       %tr
         %th Description
@@ -113,7 +112,7 @@
             %br
       %tr
         %th Cite as
-        %td= @item.citation
+        %td.citation= @item.citation
 
 
 .twoup-2

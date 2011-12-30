@@ -1,3 +1,4 @@
+= f.text_field :title, {:style => "font-size: 38px; width: 100%"}
 
 .twoup-1
   %fieldset
@@ -12,10 +13,6 @@
             = f.text_field :identifier, :class => 'short'
           - else
             = @item.identifier
-
-      %tr
-        %th= f.label :title, 'Item Title'
-        %td= f.text_field :title
 
       %tr
         %td
@@ -80,7 +77,15 @@
 
       %tr
         %th= f.label :content_language_id, 'Content Language'
-        %td [need a table]
+        %td
+          = f.fields_for :item_content_languages do |c|
+            %br
+            - if c.object.new_record?
+              = c.collection_select :language_id, Language.all, :id, :name, :prompt => true
+            - else
+              = c.object.language.name
+              = c.check_box :_destroy
+              Delete
 
       %tr
         %th= f.label :dialect
@@ -131,7 +136,7 @@
 
       %tr
         %th= f.label :citation, 'Cite as'
-        %td= @item.citation
+        %td.citation= @item.citation
 
 
 

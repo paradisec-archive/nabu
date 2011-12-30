@@ -1,5 +1,5 @@
 .left
-  %h1 #{@collection.title}
+  %h1= @collection.title
 
 .right
   = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
@@ -120,7 +120,7 @@
             = link_to 'View', item if can? :read, item
             = link_to 'Edit', edit_item_path(item) if can? :update, item
     %button
-      = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this acutally adds an item to the array is there a better way
+      = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this actually adds an item to the array is there a better way
 
 
   - if can? :manage, Collection
