@@ -62,19 +62,18 @@
         %td= @item.language
 
       %tr
-        %th Subject Language
-        -if @item.subject_language
-          %td= @item.subject_language.name
-        -else
-          %td
+        %th Subject Language(s)
+        %td
+          - @item.subject_languages.each do |language|
+            = language.name
+            %br
 
       %tr
-        %th Content Language
-        -if @item.content_language
-          %td= @item.content_language.name
-        -else
-          %td
-
+        %th Content Language(s)
+        %td
+          - @item.content_languages.each do |language|
+            = language.name
+            %br
       %tr
         %th Dialect
         %td= @item.dialect

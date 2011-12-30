@@ -67,12 +67,20 @@
         %td= f.text_field :language
 
       %tr
-        %th= f.label :subject_language_id
-        %td= f.collection_select :subject_language_id, Language.all, :id, :name, :prompt => true
+        %th= f.label :subject_language_id, 'Subject Language'
+        %td
+          = f.fields_for :item_subject_languages do |c|
+            %br
+            - if c.object.new_record?
+              = c.collection_select :language_id, Language.all, :id, :name, :prompt => true
+            - else
+              = c.object.language.name
+              = c.check_box :_destroy
+              Delete
 
       %tr
-        %th= f.label :content_language_id
-        %td= f.collection_select :content_language_id, Language.all, :id, :name, :prompt => true
+        %th= f.label :content_language_id, 'Content Language'
+        %td [need a table]
 
       %tr
         %th= f.label :dialect

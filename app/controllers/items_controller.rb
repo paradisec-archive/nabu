@@ -49,6 +49,8 @@ class ItemsController < ApplicationController
   private
   def build_associations
     @item.item_countries.build
+    @item.item_subject_languages.build
+    @item.item_content_languages.build
     @item.item_admins.build
     @item.item_agents.build
   end

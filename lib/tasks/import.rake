@@ -7,16 +7,23 @@ namespace :import do
   task :setup => [:dev_users, :add_identifiers, :load_db]
 
   desc 'Import data from old PARADISEC DB & other files'
-  task :import => [:users, :contacts,
+  task :import => [# for users
+                   :users, :contacts,
+                   # for collections
                    :universities,
                    :countries, :languages, :fields_of_research,
                    :collections,
                    :collection_languages, :collection_countries, :collection_admins,
+                   # for items
                    :discourse_types, :agent_roles,
-                   :items, :essences]
+                   :items,
+                   :item_content_languages, :item_subject_languages,
+                   :item_countries, :item_admins,
+                   # for essence files
+                   :essences]
 
   desc 'Teardown intermediate stuff'
-  task :teardown => [:remove_identifiers]
+  task :clean => [:remove_identifiers]
 
 
 ##  HELPER ROUTINES ##
@@ -28,7 +35,7 @@ namespace :import do
     puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    tables = %w{collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language item_subjectlang item_subjectlang15}
+    tables = %w{Retired_Codes Update_Mappings collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language item_subjectlang item_subjectlang15}
     sed = 's/ TYPE=MyISAM//;'
     tables.each do |table|
       sed << "/CREATE TABLE #{table} /,/Table structure for table/d;"
@@ -73,6 +80,10 @@ namespace :import do
     client.query("use paradisec_legacy")
     client.query("set names utf8")
     client
+  end
+
+  def nilify(object)
+    (object.blank? ? nil : object)
   end
 
   ## FOR USERS
@@ -177,7 +188,7 @@ namespace :import do
       if email.blank?
         email = fixme(user, 'cont_email', user['cont_id'].to_s + 'cont@example.com')
       end
-      address = user['cont_address1']
+      address = nilify(user['cont_address1'])
       if user['cont_address1'] && user['cont_address2']
         address = user['cont_address1'] + ',' + user['cont_address2']
       end
@@ -200,8 +211,8 @@ namespace :import do
                             :password => password,
                             :password_confirmation => password,
                             :address => address,
-                            :country => user['cont_country'],
-                            :phone => user['cont_phone']
+                            :country => nilify(user['cont_country']),
+                            :phone => nilify(user['cont_phone'])
 
         ## save PARADISEC identifier
         new_user.pd_contact_id = user['cont_id']
@@ -227,17 +238,14 @@ namespace :import do
     elsif xmax==xmin || ymax==ymin
       longitude = xmin.to_i
       latitude = ymin.to_i
-      zoom = 11
+      zoom = 11 # see below
     elsif (xmax && xmin && ymax && ymin)
-      p xmax, xmin, ymax, ymin
       longitude = (xmax + xmin) / 2.0
       latitude = (ymax + ymin) / 2.0
-      #zoom = 20 - ((xmax - xmin) / 18)
-      #zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
-
-      mapdisplay = 322; #min of height and width of element which contains the map
+      # copied from:
+      # http://stackoverflow.com/questions/5939983/how-does-this-google-maps-zoom-level-calculation-work
+      mapdisplay = 200; # min of height and width of element which contains the map
       dist = (6371 * Math.acos(Math.sin(ymin / 57.2958) * Math.sin(ymax / 57.2958) + (Math.cos(ymin / 57.2958) * Math.cos(ymax / 57.2958) * Math.cos((xmax / 57.2958) - (xmin / 57.2958)))))
-
       zoom = (8 - Math.log(1.6446 * dist / Math.sqrt(2 * (mapdisplay * mapdisplay))) / Math.log(2)).floor
     else
       latitude = 0
@@ -253,7 +261,7 @@ namespace :import do
     client = connect
     universities = client.query("SELECT * FROM universities")
     universities.each do |uni|
-      next if uni['uni_description'].empty?
+      next if uni['uni_description'].blank?
       new_uni = University.new :name => uni['uni_description']
       if !new_uni.valid?
         puts "Error adding university #{uni['uni_description']}"
@@ -374,17 +382,17 @@ namespace :import do
       new_coll = Collection.new :identifier => coll['coll_id'],
                                 :title => title,
                                 :description => description,
-                                :region => coll['coll_region_village'],
+                                :region => nilify(coll['coll_region_village']),
                                 :latitude => latitude,
                                 :longitude => longitude,
                                 :zoom => zoom.to_i,
-                                :access_narrative => coll['coll_access_narrative'],
-                                :metadata_source => coll['coll_metadata_source'],
-                                :orthographic_notes => coll['coll_orthographic_notes'],
-                                :media => coll['coll_media'],
-                                :comments => coll['coll_comments'],
-                                :deposit_form_recieved => coll['coll_depform_rcvd'],
-                                :tape_location => coll['coll_location'],
+                                :access_narrative => nilify(coll['coll_access_narrative']),
+                                :metadata_source => nilify(coll['coll_metadata_source']),
+                                :orthographic_notes => nilify(coll['coll_orthographic_notes']),
+                                :media => nilify(coll['coll_media']),
+                                :comments => nilify(coll['coll_comments']),
+                                :deposit_form_recieved => nilify(coll['coll_depform_rcvd']),
+                                :tape_location => nilify(coll['coll_location']),
                                 :field_of_research_id => 1
 
       ## set collector, operator and university
@@ -412,8 +420,10 @@ namespace :import do
       new_coll.save!
 
       ## fix date (updated at is now)
-      new_coll.created_at = coll['coll_date_created']
-      new_coll.save!
+      if coll['coll_date_created'] != nil
+        new_coll.created_at = coll['coll_date_created'].to_date
+        new_coll.save!
+      end
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
     end
   end
@@ -448,7 +458,7 @@ namespace :import do
     end
   end
 
-  desc 'Import collection_user_pem into NABU from paradisec_legacy DB'
+  desc 'Import collection_user_prem into NABU from paradisec_legacy DB'
   task :collection_admins => :environment do
     puts "Importing authorized users for collections from PARADISEC legacy DB"
     client = connect
@@ -479,6 +489,7 @@ namespace :import do
     client = connect
     discourses = client.query("SELECT * FROM discourse_types")
     discourses.each do |discourse|
+      next if discourse['dt_name'].blank?
       disc_type = DiscourseType.new :name => discourse['dt_name']
 
       ## save PARADISEC identifier
@@ -499,6 +510,7 @@ namespace :import do
     client = connect
     roles = client.query("SELECT * FROM roles")
     roles.each do |role|
+      next if role['role_name'].blank?
       new_role = AgentRole.new :name => role['role_name']
 
       ## save PARADISEC identifier
@@ -548,8 +560,8 @@ namespace :import do
                                                  item['item_ymax'], item['item_ymin'])
 
       ## origination date
-      if item['item_date_iso'] != 0
-        originated_on = item['item_date_iso']
+      if item['item_date_iso'] != nil
+        originated_on = item['item_date_iso'].to_date
       end
 
       ## get access conditions
@@ -570,14 +582,21 @@ namespace :import do
       new_item = Item.new :identifier => identifier,
                           :title => title,
                           :description => description,
-                          :region => item['item_region_village'],
-                          :dialect => item['item_dialect'],
+                          :region => nilify(item['item_region_village']),
+                          :language => nilify(item['item_source_language']),
+                          :dialect => nilify(item['item_dialect']),
                           :latitude => latitude,
                           :longitude => longitude,
                           :zoom => zoom.to_i,
-                          :url => item['item_url'],
-                          :access_narrative => item['item_comments'],
-                          :originated_on => originated_on
+                          :url => nilify(item['item_url']),
+                          :access_narrative => nilify(item['item_comments']),
+                          :originated_on => originated_on,
+                          :metadata_exportable => item['item_impxml_ready'],
+                          :born_digital => item['item_born_digital'],
+                          :tapes_returned => item['item_tapes_returned'],
+                          :original_media => nilify(item['item_media']),
+                          :ingest_notes => nilify(item['item_audio_notes']),
+                          :tracking => nilify(item['item_tracking'])
 
       ## set collection, collector, operator and university
       new_item.collection = collection
@@ -587,14 +606,26 @@ namespace :import do
       new_item.discourse_type = discourse_type
 
       ## set access rights and private field from collection
-      new_item.private = false
       if access_cond
         new_item.access_condition_id = access_cond.id
-        if access_cond.name == "not to be listed publicly (temporary)"
+      end
+      if item['item_hide_metadata']
           new_item.private = true
-        end
       end
 
+      ## set dates
+      if item['item_date_received'] != nil
+        new_item.received_on = item['item_date_received'].to_date
+      end
+      if item['item_date_digitised'] != nil
+        new_item.digitised_on = item['item_date_digitised'].to_date
+      end
+      if item['item_metadata_entered'] == true
+        metadata_imported_on = Date.today
+      end
+      if item['item_impxml_done'] == true
+        metadata_exported_on = Date.today
+      end
 
       ## save record
       if !new_item.valid?
@@ -606,46 +637,101 @@ namespace :import do
       new_item.save!
 
       ## fix created_at (updated_at is now)
-      new_item.created_at = item['item_date_created']
-      new_item.save!
+      if item['item_date_created'] != nil
+        new_item.created_at = item['item_date_created'].to_date
+        new_item.save!
+      end
       puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
     end
-
-## languages for items:
-#      t.string   "language"  // item['item_source_language']
-#      t.integer  "subject_language_id"   // item_subjectlang16 table
-#      t.integer  "content_language_id"   // item_language16 table
-
-#| item_audio_notes           | text         | YES  |     | NULL    |       |
-#| item_source_language       | varchar(255) | YES  |     | NULL    |       |
-#| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
-#| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
-#| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
-#| item_date_digitised        | date         | YES  |     | NULL    |       |
-#| item_tape_received         | tinyint(1)   | NO   |     | 0       |       |
-#| item_date_received         | date         | YES  |     | NULL    |       |
-#| item_metadata_entered      | tinyint(1)   | NO   |     | 0       |       |
-#| item_hide_metadata         | tinyint(1)   | NO   |     | 0       |       |
-#| item_tracking              | varchar(255) | YES  |     | NULL    |       |
-#| item_media                 | varchar(255) | YES  |     | NULL    |       |
-#| item_id_assigned           | tinyint(1)   | NO   |     | 0       |       |
-#| item_number_of_cassettes   | smallint(6)  | YES  |     | NULL    |       |
-#| item_number_of_rtors       | smallint(6)  | YES  |     | NULL    |       |
-#| item_number_of_videos      | smallint(6)  | YES  |     | NULL    |       |
-#| item_length_cassette       | double       | YES  |     | NULL    |       |
-#| item_length_rtor           | double       | YES  |     | NULL    |       |
-#| item_length_video          | double       | YES  |     | NULL    |       |
-#| item_total_length_cassette | double       | YES  |     | NULL    |       |
-#| item_total_length_rtor     | double       | YES  |     | NULL    |       |
-#| item_total_length_video    | double       | YES  |     | NULL    |       |
-#| item_speed_rtor            | varchar(31)  | YES  |     | NULL    |       |
-#| item_radius                | double       | YES  |     | NULL    |       |
-#| item_countries             | varchar(255) | YES  |     | NULL    |       |
-#| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
-#| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
-#| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
-#| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
   end
+
+  def get_item(item_pid)
+    coll_id, identifier = item_pid.split /-/
+    collection = Collection.find_by_identifier coll_id
+    return nil if !collection
+
+    item = collection.items.find_by_identifier identifier
+    item
+  end
+
+  desc 'Import item_content_languages into NABU from paradisec_legacy DB'
+  task :item_content_languages => :environment do
+    puts "Importing languages per item from PARADISEC legacy DB"
+    client = connect
+    languages = client.query("SELECT * FROM item_language16")
+    languages.each do |lang|
+      next if lang['il_eth_code'].blank? || lang['il_item_pid'].blank?
+      language = Language.find_by_code(lang['il_eth_code'])
+      item = get_item(lang['il_item_pid'])
+      next unless item && language
+      begin
+        ItemContentLanguage.create! :item => item, :language => language
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for item #{lang['il_item_pid']}: #{language.code} - #{language.name}"
+    end
+  end
+
+  desc 'Import item_subject_languages into NABU from paradisec_legacy DB'
+  task :item_subject_languages => :environment do
+    puts "Importing languages per item from PARADISEC legacy DB"
+    client = connect
+    languages = client.query("SELECT * FROM item_subjectlang16")
+    languages.each do |lang|
+      next if lang['is_eth_code'].blank? || lang['is_item_pid'].blank?
+      language = Language.find_by_code(lang['is_eth_code'])
+      item = get_item(lang['is_item_pid'])
+      next unless item && language
+      begin
+        ItemSubjectLanguage.create! :item => item, :language => language
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for item #{lang['is_item_pid']}: #{language.code} - #{language.name}"
+    end
+  end
+
+  desc 'Import item_countries into NABU from paradisec_legacy DB'
+  task :item_countries => :environment do
+    puts "Importing countries per item from PARADISEC legacy DB"
+    client = connect
+    countries = client.query("SELECT * FROM item_country")
+    countries.each do |country|
+      next if country['ic_countrycode'].blank? || country['ic_item_pid'].blank?
+      cntry = Country.find_by_code country['ic_countrycode']
+      item = get_item(country['ic_item_pid'])
+      next unless cntry && item
+      begin
+        ItemCountry.create! :item => item, :country => cntry
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for collection #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
+    end
+  end
+
+  desc 'Import item_user_perm into NABU from paradisec_legacy DB'
+  task :item_admins => :environment do
+    puts "Importing authorized users for items from PARADISEC legacy DB"
+    client = connect
+    users = client.query("SELECT * FROM item_user_perm")
+    users.each do |user|
+      next if user['iu_item_pid'].blank? || user['iu_usr_id'].blank?
+      usr = User.find_by_pd_user_id user['iu_usr_id']
+      item = get_item(user['iu_item_pid'])
+      next unless item && usr
+      admin = ItemAdmin.new :item => item, :user => usr
+      if !admin.valid?
+        puts "Error adding admin user #{user['iu_usr_id']} for item #{user['iu_item_id']}"
+        next
+      end
+      begin
+        admin.save!
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved admin for item #{user['iu_item_pid']}: #{usr.first_name} #{usr.last_name}"
+    end
+  end
+
+# - import item_agents  // item_role
 
   desc 'Import essences into NABU from paradisec_legacy DB'
   task :essences => :environment do
@@ -655,12 +741,7 @@ namespace :import do
     essences.each do |essence|
       ## get item
       next if essence['file_pid'].blank?
-
-      coll_id, identifier = essence['file_pid'].split /-/
-      collection = Collection.find_by_identifier coll_id
-      next unless collection
-
-      item = collection.items.find_by_identifier identifier
+      item = get_item(essence['file_pid'])
       next unless item
 
       mimetype = essence['file_type']
@@ -697,10 +778,4 @@ namespace :import do
     end
   end
 
-
-# - import item_admins
-# - import item_agents
-# - import item_countries
-
-# - import content essences
 end
