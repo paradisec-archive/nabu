@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
   add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
   create_table "agent_roles", :force => true do |t|
-    t.string  "name",       :null => false
+    t.string "name", :null => false
   end
 
   create_table "collection_admins", :force => true do |t|
@@ -53,13 +53,6 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
   end
 
   add_index "collection_countries", ["collection_id", "country_id"], :name => "index_collection_countries_on_collection_id_and_country_id", :unique => true
-
-  create_table "collection_fields_of_research", :force => true do |t|
-    t.integer "collection_id"
-    t.integer "field_of_research_id"
-  end
-
-  add_index "collection_fields_of_research", ["collection_id", "field_of_research_id"], :name => "collection_fields_of_research_idx", :unique => true
 
   create_table "collection_languages", :force => true do |t|
     t.integer "collection_id"
@@ -109,7 +102,7 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|
-    t.string  "name"
+    t.string "name"
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
@@ -151,12 +144,26 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
 
   add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
 
+  create_table "item_content_languages", :force => true do |t|
+    t.integer "item_id"
+    t.integer "language_id"
+  end
+
+  add_index "item_content_languages", ["item_id", "language_id"], :name => "index_item_content_languages_on_item_id_and_language_id", :unique => true
+
   create_table "item_countries", :force => true do |t|
     t.integer "item_id"
     t.integer "country_id"
   end
 
   add_index "item_countries", ["item_id", "country_id"], :name => "index_item_countries_on_item_id_and_country_id", :unique => true
+
+  create_table "item_subject_languages", :force => true do |t|
+    t.integer "item_id"
+    t.integer "language_id"
+  end
+
+  add_index "item_subject_languages", ["item_id", "language_id"], :name => "index_item_subject_languages_on_item_id_and_language_id", :unique => true
 
   create_table "items", :force => true do |t|
     t.integer  "collection_id",        :null => false

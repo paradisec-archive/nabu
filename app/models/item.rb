@@ -4,12 +4,16 @@ class Item < ActiveRecord::Base
   belongs_to :operator, :class_name => 'User'
   belongs_to :university
   belongs_to :access_condition
-  belongs_to :subject_language, :class_name => 'Language'
-  belongs_to :content_language, :class_name => 'Language'
   belongs_to :discourse_type
 
   has_many :item_countries, :dependent => :destroy
   has_many :countries, :through => :item_countries, :validate => true
+
+  has_many :item_subject_languages, :dependent => :destroy
+  has_many :subject_languages, :through => :item_subject_languages, :validate => true
+
+  has_many :item_content_languages, :dependent => :destroy
+  has_many :content_languages, :through => :item_content_languages, :validate => true
 
   has_many :item_admins, :dependent => :destroy
   has_many :admins, :through => :item_admins, :validate => true, :source => :user
@@ -34,13 +38,17 @@ class Item < ActiveRecord::Base
   attr_accessible :identifier, :title, :url, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :university_id, :operator_id,
-                  :item_countries_attributes, :item_admins_attributes, :item_agents_attributes,
+                  :item_countries_attributes,
+                  :item_content_languages_attributes, :item_subject_languages_attributes,
+                  :item_admins_attributes, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
-                  :originated_on, :language, :subject_language_id, :content_language_id,
+                  :originated_on, :language,
                   :dialect, :discourse_type_id
 
   accepts_nested_attributes_for :item_countries, :allow_destroy => true, :reject_if => :all_blank
+  accepts_nested_attributes_for :item_subject_languages, :allow_destroy => true, :reject_if => :all_blank
+  accepts_nested_attributes_for :item_content_languages, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_admins, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 
@@ -78,6 +86,16 @@ class Item < ActiveRecord::Base
     if self.item_countries.empty?
       collection.collection_countries.each do |collection_country|
         self.item_countries.build :country_id => collection_country.country_id
+      end
+    end
+    if self.item_subject_languages.empty?
+      collection.collection_languages.each do |collection_language|
+        self.item_subject_languages.build :language_id => collection_language.language_id
+      end
+    end
+    if self.item_content_languages.empty?
+      collection.collection_languages.each do |collection_language|
+        self.item_content_languages.build :language_id => collection_language.language_id
       end
     end
 

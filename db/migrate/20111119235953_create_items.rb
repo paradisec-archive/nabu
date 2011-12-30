@@ -12,8 +12,6 @@ class CreateItems < ActiveRecord::Migration
       t.text       :description, :null => false
       t.date       :originated_on
       t.string     :language
-      t.belongs_to :subject_language
-      t.belongs_to :content_language
       t.string     :dialect
       t.string     :region
       t.float      :latitude
@@ -35,6 +33,18 @@ class CreateItems < ActiveRecord::Migration
       t.belongs_to :country
     end
     add_index :item_countries, [:item_id, :country_id], :unique => :true
+
+    create_table :item_subject_languages do |t|
+      t.belongs_to :item
+      t.belongs_to :language
+    end
+    add_index :item_subject_languages, [:item_id, :language_id], :unique => :true
+
+    create_table :item_content_languages do |t|
+      t.belongs_to :item
+      t.belongs_to :language
+    end
+    add_index :item_content_languages, [:item_id, :language_id], :unique => :true
 
     create_table :item_admins do |t|
       t.belongs_to :item

@@ -16,7 +16,7 @@ namespace :import do
                    :items]
 
   desc 'Teardown intermediate stuff'
-  task :teardown => [:remove_identifiers]
+  task :clean => [:remove_identifiers]
 
 
 ##  HELPER ROUTINES ##
@@ -567,7 +567,15 @@ namespace :import do
                           :zoom => zoom.to_i,
                           :url => item['item_url'],
                           :access_narrative => item['item_comments'],
-                          :originated_on => originated_on
+                          :originated_on => originated_on,
+                          :metadata_exportable => item['item_impxml_ready'],
+                          :born_digital => item['item_born_digital'],
+                          :received_on => item['item_date_received'],
+                          :digitised_on => item['item_date_digitised'],
+                          :tapes_returned => item['item_tapes_returned'],
+                          :original_media => item['item_media'],
+                          :ingest_notes => item['item_audio_notes'],
+                          :tracking => item['item_tracking']
 
       ## set collection, collector, operator and university
       new_item.collection = collection
@@ -605,19 +613,16 @@ namespace :import do
 #      t.string   "language"  // item['item_source_language']
 #      t.integer  "subject_language_id"   // item_subjectlang16 table
 #      t.integer  "content_language_id"   // item_language16 table
+#t.datetime "metadata_imported_on"  // item_metadata_entered <- but a date
+#t.datetime "metadata_exported_on"  // item_impxml_done <- but a date
 
-#| item_audio_notes           | text         | YES  |     | NULL    |       |
+
 #| item_source_language       | varchar(255) | YES  |     | NULL    |       |
 #| item_cd_burnt              | tinyint(1)   | NO   |     | 0       |       |
 #| item_cd_id                 | varchar(255) | YES  |     | NULL    |       |
-#| item_digitised             | tinyint(1)   | NO   |     | 0       |       |
-#| item_date_digitised        | date         | YES  |     | NULL    |       |
 #| item_tape_received         | tinyint(1)   | NO   |     | 0       |       |
-#| item_date_received         | date         | YES  |     | NULL    |       |
 #| item_metadata_entered      | tinyint(1)   | NO   |     | 0       |       |
 #| item_hide_metadata         | tinyint(1)   | NO   |     | 0       |       |
-#| item_tracking              | varchar(255) | YES  |     | NULL    |       |
-#| item_media                 | varchar(255) | YES  |     | NULL    |       |
 #| item_id_assigned           | tinyint(1)   | NO   |     | 0       |       |
 #| item_number_of_cassettes   | smallint(6)  | YES  |     | NULL    |       |
 #| item_number_of_rtors       | smallint(6)  | YES  |     | NULL    |       |
@@ -631,15 +636,14 @@ namespace :import do
 #| item_speed_rtor            | varchar(31)  | YES  |     | NULL    |       |
 #| item_radius                | double       | YES  |     | NULL    |       |
 #| item_countries             | varchar(255) | YES  |     | NULL    |       |
-#| item_impxml_ready          | tinyint(1)   | NO   |     | 0       |       |
 #| item_impxml_done           | tinyint(1)   | NO   |     | 0       |       |
-#| item_born_digital          | tinyint(1)   | NO   |     | 0       |       |
-#| item_tapes_returned        | tinyint(1)   | NO   |     | 0       |       |
   end
 
 # - import item_admins
 # - import item_agents
-# - import item_countries
+# - import item_country
+# - import item_subjectlang16
+# - import item_language16
 
 # - import content essences
 end
