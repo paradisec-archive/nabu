@@ -5,8 +5,8 @@
 // the compiled file.
 //
 // The next three are already included by active admin
-//= require_ignore jquery
-//= require_ignore jquery_ujs
-//= require_ignore jquery-ui
+//= require jquery
+//= require jquery_ujs
+//= require jquery-ui
 //= require jquery-query
 //= require_tree .
