@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111229095014) do
+ActiveRecord::Schema.define(:version => 20111230040538) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -99,6 +99,15 @@ ActiveRecord::Schema.define(:version => 20111229095014) do
   add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
   add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
+
+  create_table "comments", :force => true do |t|
+    t.integer  "owner_id",         :null => false
+    t.integer  "commentable_id",   :null => false
+    t.string   "commentable_type", :null => false
+    t.text     "body",             :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "countries", :force => true do |t|
     t.string "code"

@@ -48,6 +48,8 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
+  opinio_subjectum
+
   def full_identifier
     collection.identifier + '-' + identifier
   end

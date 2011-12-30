@@ -1,4 +1,6 @@
 Nabu::Application.routes.draw do
+  opinio_model
+
   # The ActiveAdmin routes cause Rails to set up a connection to the
   # production database, which isn't available during
   # assets:precompile on Heroku, so the following unless block skips
@@ -23,7 +25,9 @@ Nabu::Application.routes.draw do
 
   resources :users
   resources :collections, :shallow => true do
-    resources :items
+    resources :items do
+      opinio
+    end
   end
   resources :items, :only => :index
 end

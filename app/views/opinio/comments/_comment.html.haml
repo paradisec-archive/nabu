@@ -1,0 +1,4 @@
+%div{:id => "#comment_#{comment.id}"}
+  %p= comment.body
+  %p== by #{comment.owner.name} - #{comment.created_at}
+  = link_to 'Destroy', comment_path(comment), :method => :delete, :remote => true if can? :destroy, Comment

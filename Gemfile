@@ -17,14 +17,12 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
+gem 'opinio'
 
 # Admin
 gem 'activeadmin', :git => 'git://github.com/gregbell/active_admin.git' # remove after 0.4.0 is released (jquery issue)
 gem 'sass-rails',  '~> 3.1.5'
-gem "meta_search", '>= 1.1.0.pre'
-
-# Comments
-#https://github.com/Draiken/opinio
+gem 'meta_search', '>= 1.1.0.pre'
 
 # Authentications
 gem 'devise'

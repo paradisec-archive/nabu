@@ -4,8 +4,9 @@
 // It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
 // the compiled file.
 //
-//= require jquery
-//= require jquery_ujs
-//= require jquery-ui
+// The next three are already included by active admin
+//= require_ignore jquery
+//= require_ignore jquery_ujs
+//= require_ignore jquery-ui
 //= require jquery-query
 //= require_tree .
