@@ -44,8 +44,8 @@ Nabu::Application.configure do
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
-  # Don't compile partials
-  config.assets.precompile += [ /(^[^_]|\/[^_])[^\/]*/ ]
+  config.assets.precompile += %w[active_admin.css active_admin.js]
+  config.assets.precompile += %w[screen.css print.css ie.css]
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
@@ -59,4 +59,7 @@ Nabu::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+
+  # Don't talk to the DB when compiling assets (Works around heroku/devise issue)
+  config.assets.initialize_on_precompile = false
 end

@@ -220,15 +220,25 @@ namespace :import do
   ## FOR COLLECTIONS
 
   def convert_coords(xmax, xmin, ymax, ymin)
-    if (xmax && xmin && ymax && ymin)
+    if (xmax == 0 && xmin == 0 && ymax == 0 && ymin == 0 )
+      longitude = 0
+      latitude = 0
+      zoom = 1
+    elsif xmax==xmin || ymax==ymin
+      longitude = xmin.to_i
+      latitude = ymin.to_i
+      zoom = 11
+    elsif (xmax && xmin && ymax && ymin)
+      p xmax, xmin, ymax, ymin
       longitude = (xmax + xmin) / 2.0
       latitude = (ymax + ymin) / 2.0
-      zoom = 20 - ((xmax - xmin) / 18)
-      zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
-    elsif (xmax == 0 && xmin == 0 && ymax == 0 && ymin == 0 )
-      latitude = 0
-      longitude = 0
-      zoom = 1
+      #zoom = 20 - ((xmax - xmin) / 18)
+      #zoom =  zoom < 0 ? 0 : (zoom > 20 ? 20 : zoom)
+
+      mapdisplay = 322; #min of height and width of element which contains the map
+      dist = (6371 * Math.acos(Math.sin(ymin / 57.2958) * Math.sin(ymax / 57.2958) + (Math.cos(ymin / 57.2958) * Math.cos(ymax / 57.2958) * Math.cos((xmax / 57.2958) - (xmin / 57.2958)))))
+
+      zoom = (8 - Math.log(1.6446 * dist / Math.sqrt(2 * (mapdisplay * mapdisplay))) / Math.log(2)).floor
     else
       latitude = 0
       longitude = 0
