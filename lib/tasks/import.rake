@@ -7,14 +7,19 @@ namespace :import do
   task :setup => [:dev_users, :add_identifiers, :load_db]
 
   desc 'Import data from old PARADISEC DB & other files'
-  task :import => [:users, :contacts,
+  task :import => [# for users
+                   :users, :contacts,
+                   # for collections
                    :universities,
                    :countries, :languages, :fields_of_research,
                    :collections,
                    :collection_languages, :collection_countries, :collection_admins,
+                   # for items
                    :discourse_types, :agent_roles,
                    :items,
-                   :item_admins,
+                   :item_content_languages, :item_subject_languages,
+                   :item_countries, :item_admins,
+                   # for essence files
                    :essences]
 
   desc 'Teardown intermediate stuff'
@@ -640,6 +645,66 @@ namespace :import do
     end
   end
 
+  def get_item(item_pid)
+    coll_id, identifier = item_pid.split /-/
+    collection = Collection.find_by_identifier coll_id
+    return nil if !collection
+
+    item = collection.items.find_by_identifier identifier
+    item
+  end
+
+  desc 'Import item_content_languages into NABU from paradisec_legacy DB'
+  task :item_content_languages => :environment do
+    puts "Importing languages per item from PARADISEC legacy DB"
+    client = connect
+    languages = client.query("SELECT * FROM item_language16")
+    languages.each do |lang|
+      next if lang['il_eth_code'].blank? || lang['il_item_pid'].blank?
+      language = Language.find_by_code(lang['il_eth_code'])
+      item = get_item(lang['il_item_pid'])
+      next unless item && language
+      begin
+        ItemContentLanguage.create! :item => item, :language => language
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for item #{lang['il_item_pid']}: #{language.code} - #{language.name}"
+    end
+  end
+
+  desc 'Import item_subject_languages into NABU from paradisec_legacy DB'
+  task :item_subject_languages => :environment do
+    puts "Importing languages per item from PARADISEC legacy DB"
+    client = connect
+    languages = client.query("SELECT * FROM item_subjectlang16")
+    languages.each do |lang|
+      next if lang['is_eth_code'].blank? || lang['is_item_pid'].blank?
+      language = Language.find_by_code(lang['is_eth_code'])
+      item = get_item(lang['is_item_pid'])
+      next unless item && language
+      begin
+        ItemSubjectLanguage.create! :item => item, :language => language
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved for item #{lang['is_item_pid']}: #{language.code} - #{language.name}"
+    end
+  end
+
+  desc 'Import item_countries into NABU from paradisec_legacy DB'
+  task :item_countries => :environment do
+    puts "Importing countries per item from PARADISEC legacy DB"
+    client = connect
+    countries = client.query("SELECT * FROM item_country")
+    countries.each do |country|
+      next if country['ic_countrycode'].blank? || country['ic_item_pid'].blank?
+      cntry = Country.find_by_code country['cc_countrycode']
+      item = get_item(country['ic_item_pid'])
+      next unless cntry && item
+      ItemCountry.create! :item => item, :country => cntry
+      puts "Saved for collection #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
+    end
+  end
+
   desc 'Import item_user_perm into NABU from paradisec_legacy DB'
   task :item_admins => :environment do
     puts "Importing authorized users for items from PARADISEC legacy DB"
@@ -648,12 +713,8 @@ namespace :import do
     users.each do |user|
       next if user['iu_item_pid'].blank? || user['iu_usr_id'].blank?
       usr = User.find_by_pd_user_id user['iu_usr_id']
-      next unless usr
-      coll_id, item_id = user['iu_item_pid'].split /-/
-      collection = Collection.find_by_identifier coll_id
-      next unless collection
-      item = collection.items.find_by_identifier item_id
-      next unless item
+      item = get_item(user['iu_item_pid'])
+      next unless item && usr
       admin = ItemAdmin.new :item => item, :user => usr
       if !admin.valid?
         puts "Error adding admin user #{user['iu_usr_id']} for item #{user['iu_item_id']}"
@@ -668,9 +729,6 @@ namespace :import do
   end
 
 # - import item_agents  // item_role
-# - import item_country
-# - import item_subjectlang16
-# - import item_language16
 
   desc 'Import essences into NABU from paradisec_legacy DB'
   task :essences => :environment do
@@ -680,12 +738,7 @@ namespace :import do
     essences.each do |essence|
       ## get item
       next if essence['file_pid'].blank?
-
-      coll_id, identifier = essence['file_pid'].split /-/
-      collection = Collection.find_by_identifier coll_id
-      next unless collection
-
-      item = collection.items.find_by_identifier identifier
+      item = get_item(essence['file_pid'])
       next unless item
 
       mimetype = essence['file_type']
