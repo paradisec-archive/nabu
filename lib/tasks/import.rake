@@ -697,10 +697,13 @@ namespace :import do
     countries = client.query("SELECT * FROM item_country")
     countries.each do |country|
       next if country['ic_countrycode'].blank? || country['ic_item_pid'].blank?
-      cntry = Country.find_by_code country['cc_countrycode']
+      cntry = Country.find_by_code country['ic_countrycode']
       item = get_item(country['ic_item_pid'])
       next unless cntry && item
-      ItemCountry.create! :item => item, :country => cntry
+      begin
+        ItemCountry.create! :item => item, :country => cntry
+      rescue ActiveRecord::RecordNotUnique
+      end
       puts "Saved for collection #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
     end
   end
