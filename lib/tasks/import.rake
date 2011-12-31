@@ -18,7 +18,7 @@ namespace :import do
                    :discourse_types, :agent_roles,
                    :items,
                    :item_content_languages, :item_subject_languages,
-                   :item_countries, :item_admins,
+                   :item_countries, :item_admins, :item_agents,
                    # for essence files
                    :essences]
 
