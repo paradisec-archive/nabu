@@ -29,33 +29,33 @@ class CreateItems < ActiveRecord::Migration
     add_index :items, :collection_id
 
     create_table :item_countries do |t|
-      t.belongs_to :item
-      t.belongs_to :country
+      t.belongs_to :item,   :null => false
+      t.belongs_to :country,   :null => false
     end
     add_index :item_countries, [:item_id, :country_id], :unique => :true
 
     create_table :item_subject_languages do |t|
-      t.belongs_to :item
-      t.belongs_to :language
+      t.belongs_to :item,   :null => false
+      t.belongs_to :language,   :null => false
     end
     add_index :item_subject_languages, [:item_id, :language_id], :unique => :true
 
     create_table :item_content_languages do |t|
-      t.belongs_to :item
-      t.belongs_to :language
+      t.belongs_to :item,   :null => false
+      t.belongs_to :language,   :null => false
     end
     add_index :item_content_languages, [:item_id, :language_id], :unique => :true
 
     create_table :item_admins do |t|
-      t.belongs_to :item
-      t.belongs_to :user
+      t.belongs_to :item,   :null => false
+      t.belongs_to :user,   :null => false
     end
     add_index :item_admins, [:item_id, :user_id], :unique => :true
 
     create_table :item_agents do |t|
-      t.belongs_to :item
-      t.belongs_to :user
-      t.belongs_to :agent_role
+      t.belongs_to :item,   :null => false
+      t.belongs_to :user,   :null => false
+      t.belongs_to :agent_role,   :null => false
       t.string     :comment
     end
     add_index :item_agents, [:item_id, :user_id, :agent_role_id], :unique => :true
@@ -65,7 +65,7 @@ class CreateItems < ActiveRecord::Migration
     end
 
     create_table :discourse_types do |t|
-      t.string :name
+      t.string :name,   :null => false
     end
     add_index :discourse_types, :name, :unique => true
   end
