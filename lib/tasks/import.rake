@@ -743,7 +743,7 @@ namespace :import do
       agent_role = AgentRole.find_by_pd_role_id agent['ir_role_id']
       next unless agent_role && item
 
-      ## get of create a user
+      ## get or create a user
       results = agent['ir_role_content'].split(', ')
       if results.length > 2
         p agent
@@ -767,6 +767,7 @@ namespace :import do
                                   :email => email,
                                   :password => password,
                                   :password_confirmation => password
+          user = new_user
         end
         puts "saved new user #{first_name} #{last_name}, #{email}"
       end
