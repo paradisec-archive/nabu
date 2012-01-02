@@ -1,9 +1,9 @@
 $(document).ready ->
-  $('#map_search').keypress (event) ->
+  $('.map_search').keypress (event) ->
     return unless event.keyCode == 13
 
 
-    query = $('#map_search').val()
+    query = $('.map_search').val()
 
     map = $('.map').data('map')
 
