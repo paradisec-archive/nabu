@@ -101,24 +101,26 @@
 .twoup-2
   %fieldset
     %legend Items in Collection
-    %table.table.show
-      %tr
-        %th Item
-        %th Title
-        - if can? :update, @collection
-          %th Ready
-          %th Archived
-        %th Actions
-      - @collection.items.each do |item|
+    %table.table.show.scrollable
+      %thead
         %tr
-          %td= item.identifier
-          %td= item.title
+          %th Item
+          %th Title
           - if can? :update, @collection
-            %td TBI
-            %td TBI
-          %td
-            = link_to 'View', item if can? :read, item
-            = link_to 'Edit', edit_item_path(item) if can? :update, item
+            %th Ready
+            %th Archived
+          %th Actions
+      %tbody
+        - @collection.items.each do |item|
+          %tr
+            %td= item.identifier
+            %td= item.title
+            - if can? :update, @collection
+              %td TBI
+              %td TBI
+            %td
+              = link_to 'View', item if can? :read, item
+              = link_to 'Edit', edit_item_path(item) if can? :update, item
     %button
       = link_to 'Add Item', new_collection_item_path(@collection) if can? :create, @collection.items.build # TODO this actually adds an item to the array is there a better way
 
@@ -136,7 +138,7 @@
           %td= @collection.orthographic_notes
 
         %tr
-          %th media
+          %th Media
           %td= @collection.media
 
         %tr
@@ -159,11 +161,22 @@
           %td.empty
           %td
             = check_box_tag :deposit_form_recieved, @collection.deposit_form_recieved, @collection.deposit_form_recieved, :disabled => true
-            Collection complete
+            Deposit form received
 
         %tr
           %th Location tapes stored
           %td= @collection.tape_location
+          
+        %tr
+          %th #Items in collections
+          %td= number_to_human @num_items
+        %tr
+          %th #Items ready for XML export
+          %td= number_to_human @num_items_ready
+        %tr
+          %th #Essence objects in items of collection
+          %td= number_to_human @num_essences
+        
 
     %button
       = link_to 'Edit Collection', edit_collection_path(@collection)

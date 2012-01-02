@@ -136,6 +136,18 @@ table.table {
   }
 }
 
+// scrollable table
+.fht-table-wrapper {
+  border: #000 solid 3px;
+  table.fht-table {
+    border-bottom: #000 solid 3px;
+    margin-bottom: 0;
+  }
+  table.fht-table-init {
+    border: none;
+  }
+}
+
 input[type="text"] {
   width: 295px;
 }

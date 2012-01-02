@@ -9,4 +9,7 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require jquery-query
+// The next two are for making scrollable tables
+//= require jquery-mousewheel
+//= require jquery-fixedheadertable
 //= require_tree .

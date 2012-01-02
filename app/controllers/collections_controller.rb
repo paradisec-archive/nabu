@@ -21,6 +21,9 @@ class CollectionsController < ApplicationController
   end
 
   def show
+    @num_items = @collection.items.count
+    @num_items_ready = @collection.items.where{ digitised_on != nil }.count
+    @num_essences = Essence.where(:item_id => @collection.items).count
   end
 
   def create
