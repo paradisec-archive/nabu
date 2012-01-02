@@ -315,7 +315,7 @@ namespace :import do
       next unless name_type == "L"
       language = Language.new :code => code, :name => name
       if !language.valid?
-        puts "Skipping adding language #{code}, #{name}"
+        puts "Skipping adding language #{code}, #{name}" if @verbose
         next
       end
       language.save!
@@ -423,7 +423,7 @@ namespace :import do
       ## save record
       if !new_coll.valid?
         puts "Error adding collection #{coll['coll_id']} #{coll['coll_note']}"
-        puts "#{new_coll.errors}"
+        puts "#{new_coll.errors.to_a}"
       end
       new_coll.save!
 

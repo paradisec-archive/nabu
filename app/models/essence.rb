@@ -10,4 +10,6 @@ class Essence < ActiveRecord::Base
   validates :duration, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :channels, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
+
+  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps
 end
