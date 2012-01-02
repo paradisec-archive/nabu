@@ -8,5 +8,6 @@ class PageController < ApplicationController
     @num_essences = Essence.count
     @num_users = User.count
     @num_universities = University.count
+    @num_comments = Comment.count
   end
 end
