@@ -8,7 +8,7 @@
 ## Milestones
 * Help pages (CMS?)
 * Import Media Essence Information (needs whole archive on server, use exisiting scripts?)
-* Comments with moderation
+* Comment moderation
 * Basic search
 * Faceted search
 * Advanced search
