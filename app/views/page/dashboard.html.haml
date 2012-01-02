@@ -25,27 +25,27 @@
       %br
       %table
         %tr
-          %td= number_to_human @num_collections
+          %td= number_with_delimiter @num_collections
           %td collections
           %td 12
           %td comments
         %tr
-          %td= number_to_human @num_items
+          %td= number_with_delimiter @num_items
           %td items
           %td 12
           %td approved
         %tr
-          %td= number_to_human @num_essences
+          %td= number_with_delimiter @num_essences
           %td essence objects
           %td 0
           %td pending
         %tr
-          %td= number_to_human @num_users
+          %td= number_with_delimiter @num_users
           %td users
           %td
           %td
         %tr
-          %td= number_to_human @num_universities
+          %td= number_with_delimiter @num_universities
           %td universities
           %td
           %td
