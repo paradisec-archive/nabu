@@ -4,7 +4,15 @@ namespace :import do
   task :all => [:setup, :import]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:dev_users, :add_identifiers, :load_db]
+  task :setup => [:quiet, :dev_users, :add_identifiers, :load_db]
+
+  task :quiet do
+    if ENV['DEBUG'].nil?
+      @verbose = false
+    else
+      @verbose = true
+    end
+  end
 
   desc 'Import data from old PARADISEC DB & other files'
   task :import => [# for users
@@ -163,7 +171,7 @@ namespace :import do
         end
       end
       new_user.save!
-      puts "saved new user #{first_name} #{last_name}, #{email}, #{user['usr_id']}"
+      puts "saved new user #{first_name} #{last_name}, #{email}, #{user['usr_id']}" if @verbose
     end
   end
 
@@ -202,7 +210,7 @@ namespace :import do
         cur_user.phone = user['cont_phone']
         cur_user.pd_contact_id = user['cont_id']
         cur_user.save!
-        puts "saved existing user " + cur_user.email
+        puts "saved existing user " + cur_user.email if @verbose
       else
         password = fixme(user, 'password', 'asdfgh')
         new_user = User.new :first_name => first_name,
@@ -222,7 +230,7 @@ namespace :import do
           puts first_name + " " + last_name
         end
         new_user.save!
-        puts "saved new user #{first_name} #{last_name}, #{email}, #{user['cont_id']}"
+        puts "saved new user #{first_name} #{last_name}, #{email}, #{user['cont_id']}" if @verbose
       end
     end
   end
@@ -270,7 +278,7 @@ namespace :import do
         end
       end
       new_uni.save!
-      puts "Saved university #{uni['uni_description']}"
+      puts "Saved university #{uni['uni_description']}" if @verbose
     end
   end
 
@@ -291,7 +299,7 @@ namespace :import do
         end
       end
       country.save!
-      puts "Saved country #{code} - #{name}"
+      puts "Saved country #{code} - #{name}" if @verbose
     end
   end
 
@@ -311,7 +319,7 @@ namespace :import do
         next
       end
       language.save!
-      puts "Saved language #{code} - #{name}"
+      puts "Saved language #{code} - #{name}" if @verbose
     end
   end
 
@@ -333,7 +341,7 @@ namespace :import do
         end
       end
       field.save!
-      puts "Saved field of research #{id}, #{name}"
+      puts "Saved field of research #{id}, #{name}" if @verbose
     end
   end
 
@@ -368,7 +376,7 @@ namespace :import do
         access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
         if !access_cond
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
-          puts "Saved access condition #{coll['coll_access_conditions']}"
+          puts "Saved access condition #{coll['coll_access_conditions']}" if @verbose
         end
       end
 
@@ -424,7 +432,7 @@ namespace :import do
         new_coll.created_at = coll['coll_date_created'].to_date
         new_coll.save!
       end
-      puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
+      puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}" if @verbose
     end
   end
 
@@ -439,7 +447,7 @@ namespace :import do
       collection = Collection.find_by_identifier lang['cl_coll_id']
       next unless collection && language
       CollectionLanguage.create! :collection => collection, :language => language
-      puts "Saved for collection #{collection.identifier}: #{language.code} - #{language.name}"
+      puts "Saved for collection #{collection.identifier}: #{language.code} - #{language.name}" if @verbose
     end
   end
 
@@ -454,7 +462,7 @@ namespace :import do
       collection = Collection.find_by_identifier country['cc_coll_id']
       next unless cntry && collection
       CollectionCountry.create! :collection => collection, :country => cntry
-      puts "Saved for collection #{collection.identifier}: #{cntry.code} - #{cntry.name}"
+      puts "Saved for collection #{collection.identifier}: #{cntry.code} - #{cntry.name}" if @verbose
     end
   end
 
@@ -476,7 +484,7 @@ namespace :import do
         admin.save!
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved admin for collection #{collection.identifier}: #{usr.first_name} #{usr.last_name}"
+      puts "Saved admin for collection #{collection.identifier}: #{usr.first_name} #{usr.last_name}" if @verbose
     end
   end
 
@@ -500,7 +508,7 @@ namespace :import do
         next
       end
       disc_type.save!
-      puts "Saved discourse type #{discourse['dt_name']}"
+      puts "Saved discourse type #{discourse['dt_name']}" if @verbose
     end
   end
 
@@ -521,7 +529,7 @@ namespace :import do
         next
       end
       new_role.save!
-      puts "Saved agent role #{role['role_name']}"
+      puts "Saved agent role #{role['role_name']}" if @verbose
     end
   end
 
@@ -569,7 +577,7 @@ namespace :import do
         access_cond = AccessCondition.find_by_name item['item_rights']
         if !access_cond
           access_cond = AccessCondition.create! :name => item['item_rights']
-          puts "Saved access condition #{item['item_rights']}"
+          puts "Saved access condition #{item['item_rights']}" if @verbose
         end
       end
 
@@ -642,7 +650,7 @@ namespace :import do
         new_item.created_at = item['item_date_created'].to_date
         new_item.save!
       end
-      puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}"
+      puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}" if @verbose
     end
   end
 
@@ -669,7 +677,7 @@ namespace :import do
         ItemContentLanguage.create! :item => item, :language => language
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved for item #{lang['il_item_pid']}: #{language.code} - #{language.name}"
+      puts "Saved for item #{lang['il_item_pid']}: #{language.code} - #{language.name}" if @verbose
     end
   end
 
@@ -687,7 +695,7 @@ namespace :import do
         ItemSubjectLanguage.create! :item => item, :language => language
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved for item #{lang['is_item_pid']}: #{language.code} - #{language.name}"
+      puts "Saved for item #{lang['is_item_pid']}: #{language.code} - #{language.name}" if @verbose
     end
   end
 
@@ -705,7 +713,7 @@ namespace :import do
         ItemCountry.create! :item => item, :country => cntry
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved for item #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}"
+      puts "Saved for item #{country['ic_item_pid']}: #{cntry.code} - #{cntry.name}" if @verbose
     end
   end
 
@@ -728,7 +736,7 @@ namespace :import do
         admin.save!
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved admin for item #{user['iu_item_pid']}: #{usr.first_name} #{usr.last_name}"
+      puts "Saved admin for item #{user['iu_item_pid']}: #{usr.first_name} #{usr.last_name}" if @verbose
     end
   end
 
@@ -769,13 +777,13 @@ namespace :import do
                                   :password_confirmation => password
           user = new_user
         end
-        puts "saved new user #{first_name} #{last_name}, #{email}"
+        puts "saved new user #{first_name} #{last_name}, #{email}" if @verbose
       end
       begin
         ItemAgent.create! :item => item, :agent_role => agent_role, :user => user
       rescue ActiveRecord::RecordNotUnique
       end
-      puts "Saved for item #{agent['ir_item_pid']}: #{agent['ir_role_content']} - #{agent_role.name}"
+      puts "Saved for item #{agent['ir_item_pid']}: #{agent['ir_role_content']} - #{agent_role.name}" if @verbose
     end
   end
 
@@ -823,7 +831,7 @@ namespace :import do
                                    :duration => seconds,
                                    :channels => essence['file_trackcount']
 
-      puts "Saved essence #{essence['file_filename']} for item #{essence['file_pid']}"
+      puts "Saved essence #{essence['file_filename']} for item #{essence['file_pid']}" if @verbose
     end
   end
 
