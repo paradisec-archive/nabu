@@ -754,6 +754,7 @@ namespace :import do
       ## get or create a user
       results = agent['ir_role_content'].split(', ')
       if results.length > 2
+        print "Invalid agent: "
         p agent
         next
       end
