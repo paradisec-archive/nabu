@@ -12,4 +12,9 @@
 // The next two are for making scrollable tables
 //= require jquery-mousewheel
 //= require jquery-fixedheadertable
-//= require_tree .
+//= require collection
+//= require datepicker
+//= require maps
+//= require scrollable-table
+//= require sortable
+//= require tabs
