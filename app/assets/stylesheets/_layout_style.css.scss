@@ -159,6 +159,12 @@ input[type="text"] {
 table.form {
   td {
     vertical-align: top;
+
+    .map {
+      width: 100%;
+      height: 200px;
+      border: 1px solid grey;
+    }
   }
   
   th {
@@ -179,12 +185,6 @@ table.form.show {
   td {
     background-color: #F3F3F3;
     padding: 4px;
-    
-    .map {
-      width: 100%;
-      height: 200px;
-      border: 1px solid grey;
-    }
   }
   td.empty {
     background-color: transparent;
