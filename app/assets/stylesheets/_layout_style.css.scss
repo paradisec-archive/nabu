@@ -236,3 +236,42 @@ button {
 #statistics tr td:first-child {
   text-align: right
 }
+
+
+// tabs for items show page
+.tabs {
+	padding: 0px;
+	background: none;
+	border: none;
+}
+.tabs .ui-tabs-nav {
+  padding-left: 0px;
+  background: transparent;
+  border: none;
+  li {
+    margin-top: 0.6em;
+  	font-size: 80%;
+  }
+  li.ui-tabs-selected {
+  	margin-top: 0em;
+  	font-size: 100%;  
+    a {
+      color: black;
+    }
+  }
+}
+.tabs .ui-tabs-nav .tab {
+	padding-left: 0px;
+  border: #000 solid 3px;
+  background: $page_background;
+}
+.tabs .ui-tabs-panel {
+  border: #000 solid 3px;
+  background: $page_background;
+  padding: 0px 10px;
+}
+.tabs .ui-corner-all, .tabs .ui-corner-bottom {
+  border-radius: 0px;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+}

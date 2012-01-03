@@ -22,7 +22,7 @@
         - if @collection.new_record?
           %td= f.text_field :identifier
         - else
-          %td{:id => :collection_identifier}= @collection.identifier
+          %td#collection_identifier= @collection.identifier
 
       %tr
         %th= f.label :collector_id
