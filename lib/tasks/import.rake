@@ -770,6 +770,7 @@ namespace :import do
         begin
           if first_name.blank?
             first_name = last_name
+            last_name = ''
           end
           new_user = User.create! :first_name => first_name.strip,
                                   :last_name => last_name.strip,

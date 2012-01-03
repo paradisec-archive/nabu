@@ -7,7 +7,6 @@ class User < ActiveRecord::Base
   attr_accessible :email, :first_name, :last_name, :address, :country, :phone, :password, :password_confirmation, :remember_me, :admin, :operator, :as => :admin
 
   validates :first_name, :presence => true
-  validates :last_name, :presence => true
 
   paginates_per 10
 
