@@ -248,15 +248,19 @@ button {
   padding-left: 0px;
   background: transparent;
   border: none;
+  border-bottom: #000 solid 3px;
   li {
     margin-top: 0.6em;
   	font-size: 80%;
   }
   li.ui-tabs-selected {
   	margin-top: 0em;
-  	font-size: 100%;  
+  	font-size: 100%; 
+  	border-bottom: none; 
+  	top: 4px;
     a {
       color: black;
+      font-weight: normal;
     }
   }
 }
@@ -267,6 +271,7 @@ button {
 }
 .tabs .ui-tabs-panel {
   border: #000 solid 3px;
+  border-top: none;
   background: $page_background;
   padding: 0px 10px;
 }
