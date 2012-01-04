@@ -22,4 +22,8 @@ class User < ActiveRecord::Base
     self.admin = true
     save!
   end
+
+  def time_zone
+    'Sydney'
+  end
 end

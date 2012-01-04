@@ -1,4 +1,13 @@
 %div{:id => "#comment_#{comment.id}"}
-  %p= comment.body
-  %p== by #{comment.owner.name} - #{comment.created_at}
-  = link_to 'Destroy', comment_path(comment), :method => :delete, :remote => true if can? :destroy, Comment
+  %p.comment_body
+    = comment.body
+    %button
+      = link_to 'Delete', comment_path(comment), :method => :delete, :remote => true if can? :destroy, comment
+  %p.comment_who
+    = 'by '
+    - if can? :manage, comment.owner
+      = link_to comment.owner.name, comment.owner
+    - else
+      = comment.owner.name
+    == - #{comment.created_at.strftime("on %d/%m/%Y at %I:%M %p")}
+  %hr

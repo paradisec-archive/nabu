@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery
 
   before_filter :make_action_mailer_use_request_host
+  before_filter :set_timezone
 
 
   private
@@ -13,7 +14,10 @@ class ApplicationController < ActionController::Base
     redirect_to root_url, :alert => exception.message
   end
 
-  private
+  def set_timezone
+    Time.zone = current_user.time_zone if current_user
+  end
+
   def sort_column
     model = params[:controller].sub("Controller", "").singularize.camelize.constantize
     model.column_names.include?(params[:sort]) ? params[:sort] : "id"

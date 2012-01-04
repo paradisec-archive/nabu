@@ -5,300 +5,317 @@ body.bp {
   p {
     margin: 0 0 0.5em;
   }
-}
 
-// TODO move these to partials
-#header {
-  .name {
-    font-size: 4em;
-  }
-  .auth {
-    font-size: 16px;
-    padding-top: 10px;
-    .inner {
-      float: right;
+  // TODO move these to partials
+  #header {
+    .name {
+      font-size: 4em;
     }
-  }
-}
-
-#nav {
-  #menu {
-    padding-left: 10px;
-    border: #000 solid 4px;
-    ul {
-      @include horizontal-list(30px);
-      font-size: 18px;
-    }
-  }
-}
-
-#content {
-  margin-top: 5px;
-  min-height: 400px;
-  h1 {
-    font-size: 38px;
-    margin-bottom: 10px;
-  }
-}
-
-#footer {
-  margin-top: 20px;
-}
-
-$blue: #e5ecf9;
-$page_background: $blue;
-$table_header_bg: darken($blue, 25);
-$table_row_odd: darken($blue, 10);
-$table_row_even: $blue;
-
-.page-box {
-  border: #000 solid 4px;
-  background: $page_background;
-  padding: 10px;
-  overflow: hidden;
-}
-
-#flash {
-  padding-top: 10px;
-}
-
-.field_with_errors {
-  padding: 2px;
-  background-color: red;
-  display: table;
-}
-
-#error_explanation {
-  width: 450px;
-  border: 3px solid red;
-  padding: 7px;
-  padding-bottom: 0;
-  margin-bottom: 20px;
-  background-color: #f0f0f0;
-  h2 {
-    text-align: left;
-    font-weight: bold;
-    padding: 5px 5px 5px 15px;
-    font-size: 12px;
-    margin: -7px;
-    margin-bottom: 0px;
-    background-color: #c00;
-    color: #fff;
-  }
-  ul li {
-    list-style: square;
-  }
-}
-
-fieldset {
-  border: #000 solid 3px;
-  background: $page_background;
-  padding: 0px 10px;
-  margin-bottom: 8px;
-  legend {
-    font-size: 18px;
-  }
-}
-
-table.table {
-  border: #000 solid 3px;
-  th {
-    background: $table_header_bg;
-  }
-
-  tr:nth-child(odd) td { background: $table_row_odd; }
-  tr:nth-child(even) td { background: $table_row_even; }
-
-  td, th {
-    border-left: #000 solid 3px;
-  }
-
-  td:nth-child(1), th:nth-child(1) {
-    border-left: none;
-  }
-
-  th span.ui-icon {
-    float: right;
-  }
-
-  th.sortable {
-    &:after { content: " ▲▼"}
-    &.current{
-      &[data-direction="asc"]:after { content: " ▼"}
-      &[data-direction="desc"]:after { content: " ▲"}
-    }
-  }
-
-  td {
-    a {
-      padding: 0px 5px;
-    }
-    .map {
-      width: 100px;
-      height: 70px;
-    }
-  }
-}
-
-// scrollable tables
-.fht-table-wrapper {
-  border: #000 solid 3px;
-  table.fht-table {
-    border-bottom: #000 solid 3px;
-    margin-bottom: 0;
-  }
-  table.fht-table-init {
-    border: none;
-  }
-}
-// TODO fix the headertable.js jquery plugin to deal with size change.
-// This is a terrible hack.
-.small_table {
-  font-size: 11px;
-  .fht-thead table.fht-table {
-    width: 569px;
-  }
-  table.fht-table-init {
-    margin-top: -44px !important;
-  }
-}
-
-input[type="text"] {
-  width: 295px;
-}
-
-table.form {
-  border-spacing: 2px;
-  td {
-    vertical-align: top;
-
-    .map {
-      width: 100%;
-      height: 200px;
-      border: 1px solid grey;
-    }
-  }
-  
-  th {
-    text-align: right;
-    &:after { content: ":" }
-  }
-
-  input[type="text"].short {
-    width: 200px;
-  }
-  
-  select {
-    max-width: 295px;
-  }
-}
-
-table.form.show {
-  td {
-    background-color: #F3F3F3;
-    padding: 4px;
-  }
-  td.empty {
-    background-color: transparent;
-  }
-}
-
-input[type="submit"] {
-  margin: 5px 0px;
-  font-size: 2em;
-  &:hover {
-    color: #09F;
-  }
-}
-
-button {
-  margin: 5px 0px;
-  font-size: 14px;
-  height: 21px;
-  &:hover {
-    color: #09F;
-  }
-}
-
-.left {
-  float: left;
-}
-
-.right {
-  float: right;
-}
-
-.clear {
-  clear: both;
-}
-
-.citation {
-  font-size: 12px;
-  font-style: italic;
-}
-
-.pagination {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  span {
-    padding: 0px 4px;
-  }
-}
-
-#statistics tr td:first-child {
-  text-align: right
-}
-
-#media {
-  height: 200px;
-  margin: 8px;
-  border: 2px solid grey;
-  text-align: justify;
-}
-
-// tabs for items show page
-.tabs {
-	padding: 0px;
-	background: none;
-	border: none;
-
-  .ui-tabs-nav {
-    padding-left: 0px;
-    background: transparent;
-    border: none;
-    border-bottom: #000 solid 3px;
-    li {
-      margin-top: 0.6em;
-    	font-size: 80%;
-    }
-    li.ui-tabs-selected {
-    	margin-top: 0em;
-    	font-size: 100%; 
-    	border-bottom: none; 
-    	top: 4px;
-      a {
-        color: black;
-        font-weight: normal;
+    .auth {
+      font-size: 16px;
+      padding-top: 10px;
+      .inner {
+        float: right;
       }
     }
   }
 
-  .ui-tabs-nav .tab {
-  	padding-left: 0px;
-    border: #000 solid 3px;
-    background: $page_background;
+  #nav {
+    #menu {
+      padding-left: 10px;
+      border: #000 solid 4px;
+      ul {
+        @include horizontal-list(30px);
+        font-size: 18px;
+      }
+    }
   }
 
-  .ui-tabs-panel {
-    border: #000 solid 3px;
-    border-top: none;
+  #content {
+    margin-top: 5px;
+    min-height: 400px;
+    h1 {
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+  }
+
+  #footer {
+    margin-top: 20px;
+  }
+
+  $blue: #e5ecf9;
+  $page_background: $blue;
+  $table_header_bg: darken($blue, 25);
+  $table_row_odd: darken($blue, 10);
+  $table_row_even: $blue;
+
+  .page-box {
+    border: #000 solid 4px;
     background: $page_background;
     padding: 10px;
+    overflow: hidden;
   }
 
-  .ui-corner-all, .tabs .ui-corner-bottom {
-    border-radius: 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
+  #flash {
+    padding-top: 10px;
   }
-}
+
+  .field_with_errors {
+    padding: 2px;
+    background-color: red;
+    display: table;
+  }
+
+  #error_explanation {
+    width: 450px;
+    border: 3px solid red;
+    padding: 7px;
+    padding-bottom: 0;
+    margin-bottom: 20px;
+    background-color: #f0f0f0;
+    h2 {
+      text-align: left;
+      font-weight: bold;
+      padding: 5px 5px 5px 15px;
+      font-size: 12px;
+      margin: -7px;
+      margin-bottom: 0px;
+      background-color: #c00;
+      color: #fff;
+    }
+    ul li {
+      list-style: square;
+    }
+  }
+
+  fieldset {
+    border: #000 solid 3px;
+    background: $page_background;
+    padding: 0px 10px;
+    margin-bottom: 8px;
+    legend {
+      font-size: 18px;
+    }
+  }
+
+  table.table {
+    border: #000 solid 3px;
+    th {
+      background: $table_header_bg;
+    }
+
+    tr:nth-child(odd) td { background: $table_row_odd; }
+    tr:nth-child(even) td { background: $table_row_even; }
+
+    td, th {
+      border-left: #000 solid 3px;
+    }
+
+    td:nth-child(1), th:nth-child(1) {
+      border-left: none;
+    }
+
+    th span.ui-icon {
+      float: right;
+    }
+
+    th.sortable {
+      &:after { content: " ▲▼"}
+      &.current{
+        &[data-direction="asc"]:after { content: " ▼"}
+        &[data-direction="desc"]:after { content: " ▲"}
+      }
+    }
+
+    td {
+      a {
+        padding: 0px 5px;
+      }
+      .map {
+        width: 100px;
+        height: 70px;
+      }
+    }
+  }
+
+  // scrollable tables
+  .fht-table-wrapper {
+    border: #000 solid 3px;
+    table.fht-table {
+      border-bottom: #000 solid 3px;
+      margin-bottom: 0;
+    }
+    table.fht-table-init {
+      border: none;
+    }
+  }
+  // TODO fix the headertable.js jquery plugin to deal with size change.
+  // This is a terrible hack.
+  .small_table {
+    font-size: 11px;
+    .fht-thead table.fht-table {
+      width: 569px;
+    }
+    table.fht-table-init {
+      margin-top: -44px !important;
+    }
+  }
+
+  input[type="text"] {
+    width: 295px;
+  }
+
+  table.form {
+    border-spacing: 2px;
+    margin-bottom: 0;
+    td {
+      vertical-align: top;
+
+      .map {
+        width: 100%;
+        height: 200px;
+        border: 1px solid grey;
+      }
+    }
+  
+    th {
+      text-align: right;
+      &:after { content: ":" }
+    }
+
+    input[type="text"].short {
+      width: 200px;
+    }
+  
+    select {
+      max-width: 295px;
+    }
+  }
+
+  table.form.show {
+    td {
+      background-color: #F3F3F3;
+      padding: 4px;
+    }
+    td.empty {
+      background-color: transparent;
+    }
+  }
+
+  input[type="submit"] {
+    margin: 5px 0px;
+    font-size: 2em;
+    &:hover {
+      color: #09F;
+    }
+  }
+
+  button {
+    margin: 5px 0px;
+    font-size: 14px;
+    height: 21px;
+    &:hover {
+      color: #09F;
+    }
+  }
+
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
+  }
+
+  .clear {
+    clear: both;
+  }
+
+  .citation {
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .pagination {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    span {
+      padding: 0px 4px;
+    }
+  }
+
+  #statistics tr td:first-child {
+    text-align: right
+  }
+
+  // audio / video
+  #media {
+    height: 200px;
+    margin: 8px;
+    border: 2px solid grey;
+    text-align: justify;
+  }
+  
+  // comments
+  #no_comments {
+    font-style: italic;
+  }
+  .comment_body {
+    font-family: 'Lucida Console',monospace;
+    button {
+      float: right;
+    }
+  }
+  .comment_who {
+    font-style: italic;
+  }
+
+  // tabs for items show page
+  .tabs {
+  	padding: 0px;
+  	background: none;
+  	border: none;
+
+    .ui-tabs-nav {
+      padding-left: 0px;
+      background: transparent;
+      border: none;
+      border-bottom: #000 solid 3px;
+      li {
+        margin-top: 0.6em;
+      	font-size: 80%;
+      }
+      li.ui-tabs-selected {
+      	margin-top: 0em;
+      	font-size: 100%; 
+      	border-bottom: none; 
+      	top: 4px;
+        a {
+          color: black;
+          font-weight: normal;
+        }
+      }
+    }
+
+    .ui-tabs-nav .tab {
+    	padding-left: 0px;
+      border: #000 solid 3px;
+      background: $page_background;
+    }
+
+    .ui-tabs-panel {
+      border: #000 solid 3px;
+      border-top: none;
+      background: $page_background;
+      padding: 10px;
+    }
+
+    .ui-corner-all, .tabs .ui-corner-bottom {
+      border-radius: 0px;
+      -moz-border-radius: 0px;
+      -webkit-border-radius: 0px;
+    }
+  }
+
+} // body.bp
