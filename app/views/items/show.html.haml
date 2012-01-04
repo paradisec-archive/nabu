@@ -13,11 +13,12 @@
               = surround '(', ')' do
                 = link_to 'Collection Details', @item.collection
 
-      %tr
-        %td.empty
-        %td
-          = check_box_tag :checked, @item.private, @item.private, :disabled => true
-          Private
+      - if user_signed_in?
+        %tr
+          %td.empty
+          %td
+            = check_box_tag :checked, @item.private, @item.private, :disabled => true
+            Private
 
       %tr
         %th Archive Link
