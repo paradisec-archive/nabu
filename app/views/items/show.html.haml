@@ -7,12 +7,11 @@
     %table.form.show
       %tr
         %th Item ID
-        %td
-          = @item.full_identifier
-          .right
-            (
-            = link_to 'Collection Details', @item.collection
-            )
+        %td<
+          = precede @item.full_identifier do
+            .right<
+              = surround '(', ')' do
+                = link_to 'Collection Details', @item.collection
 
       %tr
         %td.empty
@@ -275,6 +274,6 @@
             %td= @item.access_narrative
 
 
-
-%button
-  = link_to 'Edit Item', edit_item_path(@item) if can? :update, @item
+- if can? :update, @item
+  %button
+    = link_to 'Edit Item', edit_item_path(@item) 
