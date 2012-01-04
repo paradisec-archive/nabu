@@ -34,7 +34,9 @@
 
       %tr
         %th Originating University
-        %td= @item.university.name
+        %td
+          - if @item.university
+            = @item.university.name
 
       %tr
         %th Operator
