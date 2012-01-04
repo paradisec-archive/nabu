@@ -1,7 +1,7 @@
 namespace :import do
 
   desc 'Setup database from old PARADISEC data & other imports'
-  task :all => [:setup, :import]
+  task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
   task :setup => [:quiet, :dev_users, :add_identifiers, :load_db]
@@ -20,7 +20,7 @@ namespace :import do
                    # for collections
                    :universities,
                    :countries, :languages, :fields_of_research,
-                   :collections,
+                   :collections, :csv,
                    :collection_languages, :collection_countries, :collection_admins,
                    # for items
                    :discourse_types, :agent_roles,
@@ -433,6 +433,36 @@ namespace :import do
         new_coll.save!
       end
       puts "Saved collection #{coll['coll_id']} #{coll['coll_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}" if @verbose
+    end
+  end
+
+  desc 'Import csv file into NABU from PARADISEC'
+  task :csv => :environment do
+    puts "Importing csv file from PARADISEC"
+    require 'csv'
+    CSV.foreach("#{Rails.root}/db/legacy/collectionsNEW.csv", :col_sep => "\t", :headers => true) do |row|
+      orthographic_notes    = row[6]
+      conditions_of_storage = row[7]
+      location              = row[8]
+      access_conditions     = row[9]
+      access_narrative      = row[10]
+      metadata_source       = row[11]
+      region_village        = row[12]
+      date_assessed         = row[13]
+      date_created          = row[14]
+      date_modified         = row[15]
+      depform_rcvd          = row[16]
+      digitised             = row[17]
+      country               = row[18]
+      language              = row[19]
+      collection = Collection.find_by_identifier row['coll_id']
+      if collection
+        collection.title = row['coll_description'] unless row['coll_description'].blank?
+        collection.description = row['coll_note']  unless row['coll_note'].blank?
+        collection.comments = row['coll_comments'] if collection.comments.blank?
+        collection.save!
+        puts "Updated collection #{row['coll_id']} #{row['coll_description']}, #{row['coll_note']}, #{row['coll_comments']}" if @verbose
+      end
     end
   end
 
