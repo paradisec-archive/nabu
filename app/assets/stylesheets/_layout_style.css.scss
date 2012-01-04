@@ -151,10 +151,12 @@ table.table {
     border: none;
   }
 }
+// TODO fix the headertable.js jquery plugin to deal with size change.
+// This is a terrible hack.
 .small_table {
   font-size: 11px;
   .fht-thead table.fht-table {
-    width: 554px;
+    width: 569px;
   }
   table.fht-table-init {
     margin-top: -44px !important;
