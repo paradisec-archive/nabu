@@ -171,7 +171,6 @@ body.bp {
     margin-bottom: 0;
     td {
       vertical-align: top;
-      min-width: 200px;
 
       .map {
         width: 100%;
@@ -182,6 +181,7 @@ body.bp {
   
     th {
       text-align: right;
+      vertical-align: top;
       &:after { content: ":" }
     }
 
@@ -198,6 +198,7 @@ body.bp {
     td {
       background-color: #F3F3F3;
       padding: 4px;
+      min-width: 200px;
     }
     td.empty {
       background-color: transparent;
@@ -236,6 +237,7 @@ body.bp {
   .citation {
     font-size: 12px;
     font-style: italic;
+    width: 295px;
   }
 
   .pagination {
@@ -247,7 +249,7 @@ body.bp {
   }
 
   #statistics tr td:first-child {
-    text-align: right
+    text-align: right;
   }
 
   // audio / video
@@ -318,6 +320,16 @@ body.bp {
       border-radius: 0px;
       -moz-border-radius: 0px;
       -webkit-border-radius: 0px;
+    }
+  }
+  
+  // datepicker
+  .ui-datepicker {
+    table {
+      font-size: 0.8em;
+    }
+    .ui-datepicker-calendar {
+      margin-bottom: 5px;
     }
   }
 

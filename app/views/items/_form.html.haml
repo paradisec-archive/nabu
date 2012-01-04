@@ -51,13 +51,13 @@
         %th= f.label :country_id, 'Countries'
         %td
           = f.fields_for :item_countries do |c|
-            %br
             - if c.object.new_record?
               = c.collection_select :country_id, Country.all, :id, :name, :prompt => true
             - else
               = c.object.country.name
               = c.check_box :_destroy
               Delete
+            %br
 
       %tr
         %th= f.label :language, 'Language as given'
@@ -67,25 +67,25 @@
         %th= f.label :subject_language_id, 'Subject Language'
         %td
           = f.fields_for :item_subject_languages do |c|
-            %br
             - if c.object.new_record?
               = c.collection_select :language_id, Language.all, :id, :name, :prompt => true
             - else
               = c.object.language.name
               = c.check_box :_destroy
               Delete
+            %br
 
       %tr
         %th= f.label :content_language_id, 'Content Language'
         %td
           = f.fields_for :item_content_languages do |c|
-            %br
             - if c.object.new_record?
               = c.collection_select :language_id, Language.all, :id, :name, :prompt => true
             - else
               = c.object.language.name
               = c.check_box :_destroy
               Delete
+            %br
 
       %tr
         %th= f.label :dialect
@@ -148,13 +148,13 @@
         %th= f.label :user_id, 'User Access'
         %td
           = f.fields_for :item_admins do |a|
-            %br
             - if a.object.new_record?
               = a.collection_select :user_id, User.all, :id, :name, :prompt => true
             - else
               = a.object.user.name
               = a.check_box :_destroy
               Delete
+            %br
 
       %tr
         %th= f.label :access_condition
@@ -162,4 +162,4 @@
 
       %tr
         %th= f.label :access_narrative
-        %td= f.text_area :access_narrative
+        %td= f.text_area :access_narrative, :rows => 5
