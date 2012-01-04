@@ -171,6 +171,7 @@ body.bp {
     margin-bottom: 0;
     td {
       vertical-align: top;
+      min-width: 200px;
 
       .map {
         width: 100%;
@@ -276,6 +277,7 @@ body.bp {
   	padding: 0px;
   	background: none;
   	border: none;
+  	font: inherit;
 
     .ui-tabs-nav {
       padding-left: 0px;
@@ -285,12 +287,13 @@ body.bp {
       li {
         margin-top: 0.6em;
       	font-size: 80%;
+      	top: 3px
       }
       li.ui-tabs-selected {
       	margin-top: 0em;
       	font-size: 100%; 
       	border-bottom: none; 
-      	top: 4px;
+      	top: 3px;
         a {
           color: black;
           font-weight: normal;
