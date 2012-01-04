@@ -122,29 +122,32 @@
       %li.tab= link_to 'Collection Information', '#collection'
 
     #content_item
-      #media This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
-      %table.table
-        %tr
-          %th Filename
-          %th Type
-          %th Bitrate
-          %th Sampling Rate/FPS
-          %th Channels
-          %th File Size
-          %th Duration
-        - @item.essences.each do |essence|
-          %tr
-            %td= essence.filename
-            %td= essence.mimetype
-            %td= number_to_human_rate essence.bitrate
-            %td
-              - if essence.samplerate
-                == #{essence.samplerate} Hz 
-              - if essence.fps
-                == / #{essence.fps} FPS
-            %td= number_to_human_channels essence.channels
-            %td= number_to_human_size essence.size
-            %td= number_to_human_duration essence.duration
+      #media [video here] This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
+      .small_table
+        %table.table.scrollable_short
+          %thead
+            %tr
+              %th Filename
+              %th Type
+              %th Bitrate
+              %th Sampling Rate/FPS
+              %th Channels
+              %th File Size
+              %th Duration
+          %tbody
+            - @item.essences.each do |essence|
+              %tr
+                %td= essence.filename
+                %td= essence.mimetype
+                %td= number_to_human_rate essence.bitrate
+                %td
+                  - if essence.samplerate
+                    == #{essence.samplerate} Hz 
+                  - if essence.fps
+                    == / #{essence.fps} FPS
+                %td= number_to_human_channels essence.channels
+                %td= number_to_human_size essence.size
+                %td= number_to_human_duration essence.duration
 
 
     #collection

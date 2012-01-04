@@ -140,7 +140,7 @@ table.table {
   }
 }
 
-// scrollable table
+// scrollable tables
 .fht-table-wrapper {
   border: #000 solid 3px;
   table.fht-table {
@@ -151,12 +151,22 @@ table.table {
     border: none;
   }
 }
+.small_table {
+  font-size: 11px;
+  .fht-thead table.fht-table {
+    width: 554px;
+  }
+  table.fht-table-init {
+    margin-top: -44px !important;
+  }
+}
 
 input[type="text"] {
   width: 295px;
 }
 
 table.form {
+  border-spacing: 2px;
   td {
     vertical-align: top;
 
@@ -237,46 +247,56 @@ button {
   text-align: right
 }
 
+#media {
+  height: 200px;
+  margin: 8px;
+  border: 2px solid grey;
+  text-align: justify;
+}
 
 // tabs for items show page
 .tabs {
 	padding: 0px;
 	background: none;
 	border: none;
-}
-.tabs .ui-tabs-nav {
-  padding-left: 0px;
-  background: transparent;
-  border: none;
-  border-bottom: #000 solid 3px;
-  li {
-    margin-top: 0.6em;
-  	font-size: 80%;
-  }
-  li.ui-tabs-selected {
-  	margin-top: 0em;
-  	font-size: 100%; 
-  	border-bottom: none; 
-  	top: 4px;
-    a {
-      color: black;
-      font-weight: normal;
+
+  .ui-tabs-nav {
+    padding-left: 0px;
+    background: transparent;
+    border: none;
+    border-bottom: #000 solid 3px;
+    li {
+      margin-top: 0.6em;
+    	font-size: 80%;
+    }
+    li.ui-tabs-selected {
+    	margin-top: 0em;
+    	font-size: 100%; 
+    	border-bottom: none; 
+    	top: 4px;
+      a {
+        color: black;
+        font-weight: normal;
+      }
     }
   }
-}
-.tabs .ui-tabs-nav .tab {
-	padding-left: 0px;
-  border: #000 solid 3px;
-  background: $page_background;
-}
-.tabs .ui-tabs-panel {
-  border: #000 solid 3px;
-  border-top: none;
-  background: $page_background;
-  padding: 0px 10px;
-}
-.tabs .ui-corner-all, .tabs .ui-corner-bottom {
-  border-radius: 0px;
-  -moz-border-radius: 0px;
-  -webkit-border-radius: 0px;
+
+  .ui-tabs-nav .tab {
+  	padding-left: 0px;
+    border: #000 solid 3px;
+    background: $page_background;
+  }
+
+  .ui-tabs-panel {
+    border: #000 solid 3px;
+    border-top: none;
+    background: $page_background;
+    padding: 10px;
+  }
+
+  .ui-corner-all, .tabs .ui-corner-bottom {
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+  }
 }

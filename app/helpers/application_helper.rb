@@ -29,7 +29,7 @@ module ApplicationHelper
   def number_to_human_rate(bits)
     return nil if bits.nil?
 
-    number_to_human_size(bits).gsub(/B/, 'bps')
+    number_to_human_size(bits).gsub(/Bytes/, 'bps')
   end
 
   def number_to_human_channels(channels)

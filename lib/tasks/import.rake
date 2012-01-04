@@ -43,7 +43,7 @@ namespace :import do
     puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    tables = %w{Retired_Codes Update_Mappings collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language item_subjectlang item_subjectlang15}
+    tables = %w{Retired_Codes Update_Mappings collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language15 item_subjectlang item_subjectlang15}
     sed = 's/ TYPE=MyISAM//;'
     tables.each do |table|
       sed << "/CREATE TABLE #{table} /,/Table structure for table/d;"
@@ -789,8 +789,6 @@ namespace :import do
     end
   end
 
-# - import item_agents  // item_role
-
   desc 'Import essences into NABU from paradisec_legacy DB'
   task :essences => :environment do
     puts "Importing essences from PARADISEC legacy DB"
@@ -814,6 +812,7 @@ namespace :import do
 
       essence['file_bitrate'] = nil if essence['file_bitrate'] == 0
       essence['file_trackcount'] = nil if essence['file_trackcount'] == 0
+      essence['file_samplerate'] = nil if essence['file_samplerate'] == 0
       if essence['file_time'].nil?
         seconds = nil
       elsif essence['file_time'] == '00:00:00.00'
@@ -825,13 +824,13 @@ namespace :import do
       end
       ## prepare record
       new_essence = Essence.create! :item => item,
-                                   :filename => essence['file_filename'],
-                                   :mimetype => mimetype,
-                                   :bitrate => essence['file_bitrate'],
-                                   :samplerate => essence['samplerate'],
-                                   :size => 1,
-                                   :duration => seconds,
-                                   :channels => essence['file_trackcount']
+                                    :filename => essence['file_filename'],
+                                    :mimetype => mimetype,
+                                    :bitrate => essence['file_bitrate'],
+                                    :samplerate => essence['file_samplerate'],
+                                    :size => (rand 1_000_000_000),
+                                    :duration => seconds,
+                                    :channels => essence['file_trackcount']
 
       puts "Saved essence #{essence['file_filename']} for item #{essence['file_pid']}" if @verbose
     end
