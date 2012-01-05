@@ -8,10 +8,10 @@
       %tr
         %th Item ID
         %td<
-          = precede @item.full_identifier do
-            .right<
-              = surround '(', ')' do
-                = link_to 'Collection Details', @item.collection
+          %span= @item.full_identifier
+          .right<
+            = surround '(', ')' do
+              = link_to 'Collection Details', @item.collection
 
       - if user_signed_in?
         %tr
