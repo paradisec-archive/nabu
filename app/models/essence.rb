@@ -12,4 +12,9 @@ class Essence < ActiveRecord::Base
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
 
   attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps
+
+  def type
+    types = mimetype.split("/",2)
+    types[1].upcase
+  end
 end

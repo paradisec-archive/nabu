@@ -22,7 +22,7 @@
 
       %tr
         %th Archive link
-        %td= link_to @item.url, @item.url
+        %td= link_to item_url(@item), item_url(@item)
 
       %tr
         %th URL
@@ -109,7 +109,7 @@
             %br
       %tr
         %th Cite as
-        %td.citation= @item.citation
+        %td.citation= citation @item
 
 
 .twoup-2

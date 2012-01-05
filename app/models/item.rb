@@ -68,14 +68,9 @@ class Item < ActiveRecord::Base
     collection.identifier + '-' + identifier
   end
 
-  def citation
-    cite = "#{collector.name} (recorder)"
-    cite += " #{originated_on.year}" if originated_on
-    cite += '; '
-    cite += title
-    cite += " #{url}" if url
-    cite += " #{Date.today}."
-    cite
+  def essence_types
+    essence_types = essences.inject([]) { |result, h| result << h.type unless result.include?(h.type); result }
+    essence_types
   end
 
   def prefill
