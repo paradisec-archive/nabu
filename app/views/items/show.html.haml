@@ -2,7 +2,7 @@
 
 .twoup-1
   %fieldset
-    %legend Item Details
+    %legend Item details
 
     %table.form.show
       %tr
@@ -21,7 +21,7 @@
             Private
 
       %tr
-        %th Archive Link
+        %th Archive link
         %td= link_to @item.url, @item.url
 
       %tr
@@ -33,7 +33,7 @@
         %td= @item.collector_name
 
       %tr
-        %th Originating University
+        %th Originating university
         %td= @item.university_name
 
       %tr
@@ -46,7 +46,7 @@
         %td= @item.description
 
       %tr
-        %th Origination Date
+        %th Origination date
         %td= @item.originated_on
 
       %tr
@@ -61,14 +61,14 @@
         %td= @item.language
 
       %tr
-        %th Subject Language(s)
+        %th Subject language(s)
         %td
           - @item.subject_languages.each do |language|
             = language.name
             %br
 
       %tr
-        %th Content Language(s)
+        %th Content language(s)
         %td
           - @item.content_languages.each do |language|
             = language.name
@@ -78,7 +78,7 @@
         %td= @item.dialect
 
       %tr
-        %th Region / Village
+        %th Region / village
         %td= @item.region
 
       %tr
@@ -98,7 +98,7 @@
           .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}}
 
       %tr
-        %th Dicsourse Type
+        %th Dicsourse type
         %td= @item.discourse_type_name
 
       %tr
@@ -127,9 +127,9 @@
               %th Filename
               %th Type
               %th Bitrate
-              %th Sampling Rate/FPS
+              %th Sampling rate/FPS
               %th Channels
-              %th File Size
+              %th File size
               %th Duration
           %tbody
             - @item.essences.each do |essence|
@@ -150,7 +150,7 @@
     #collection
       %table.form.show
         %tr
-          %th Collection Title
+          %th Collection title
           %td= @item.collection.title
 
         %tr
@@ -196,8 +196,8 @@
     %ul
       %li.tab= link_to 'Comments', '#comment'
       - if can? :manage, @item
-        %li.tab= link_to 'Archive Information', '#archive'
-        %li.tab= link_to 'Admin Information', '#admin'
+        %li.tab= link_to 'Archive information', '#archive'
+        %li.tab= link_to 'Admin information', '#admin'
 
     #comment
       = render_comments_form @item
@@ -210,7 +210,7 @@
             %th Ready for metadata export
             %td= check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
           %tr
-            %th Born Digital
+            %th Born digital
             %td= check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
 
           %tr
@@ -218,11 +218,11 @@
             %td= check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
 
           %tr
-            %th Original Media
+            %th Original media
             %td= @item.original_media
 
           %tr
-            %th Data recieved
+            %th Data received
             %td= @item.received_on
 
           %tr
@@ -230,11 +230,11 @@
             %td= @item.digitised_on
 
           %tr
-            %th Ingest Notes
+            %th Ingest notes
             %td= @item.ingest_notes
 
           %tr
-            %th Metadata emported
+            %th Metadata imported
             %td= @item.metadata_imported_on
 
           %tr
@@ -249,14 +249,14 @@
       #admin
         %table.form.show
           %tr
-            %th Record Created
+            %th Record created
             %td= @item.created_at.to_date
           %tr
-            %th Record Modified
+            %th Record modified
             %td= @item.updated_at.to_date
 
           %tr
-            %th User Access
+            %th User access
             %td
               - @item.admins.each do |admin|
                 = admin.name
@@ -267,10 +267,10 @@
             %td= @item.access_condition_name
 
           %tr
-            %th Access Narative
+            %th Access narrative
             %td= @item.access_narrative
 
 
 - if can? :update, @item
   %button
-    = link_to 'Edit Item', edit_item_path(@item) 
+    = link_to 'Edit item', edit_item_path(@item) 

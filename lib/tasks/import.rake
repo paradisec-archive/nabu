@@ -759,7 +759,7 @@ namespace :import do
       next unless item && usr
       admin = ItemAdmin.new :item => item, :user => usr
       if !admin.valid?
-        puts "Error adding admin user #{user['iu_usr_id']} for item #{user['iu_item_id']}"
+        puts "Error adding admin user #{user['iu_usr_id']} for item #{user['iu_item_pid']}"
         next
       end
       begin

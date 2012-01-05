@@ -2,7 +2,7 @@
 
 .twoup-1
   %fieldset
-    %legend Item Details
+    %legend Item details
     %table.form
       %tr
         %th= f.label :identifier, 'Item ID'
@@ -29,7 +29,7 @@
         %td= f.collection_select :collector_id, User.all, :id, :name, :prompt => true
 
       %tr
-        %th= f.label :university_id, 'Originating University'
+        %th= f.label :university_id, 'Originating university'
         %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
 
       %tr
@@ -44,7 +44,7 @@
         %td= f.text_area :description, :rows => 5
 
       %tr
-        %th= f.label :originated_on, 'Origination Date'
+        %th= f.label :originated_on, 'Origination date'
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
@@ -64,7 +64,7 @@
         %td= f.text_field :language
 
       %tr
-        %th= f.label :subject_language_id, 'Subject Language'
+        %th= f.label :subject_language_id, 'Subject language'
         %td
           = f.fields_for :item_subject_languages do |c|
             - if c.object.new_record?
@@ -76,7 +76,7 @@
             %br
 
       %tr
-        %th= f.label :content_language_id, 'Content Language'
+        %th= f.label :content_language_id, 'Content language'
         %td
           = f.fields_for :item_content_languages do |c|
             - if c.object.new_record?
@@ -92,7 +92,7 @@
         %td= f.text_field :dialect
 
       %tr
-        %th= f.label :region, 'Region / Village'
+        %th= f.label :region, 'Region / village'
         %td= f.text_field :region
 
       %tr
@@ -142,10 +142,10 @@
 
 .twoup-2
   %fieldset
-    %legend Admin Information
+    %legend Admin information
     %table.form
       %tr
-        %th= f.label :user_id, 'User Access'
+        %th= f.label :user_id, 'User access'
         %td
           = f.fields_for :item_admins do |a|
             - if a.object.new_record?

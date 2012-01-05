@@ -5,13 +5,13 @@
 - if can? :create, Collection
   #actions
     %button
-      = link_to 'Add Collection', new_collection_path
+      = link_to 'Add collection', new_collection_path
 
 
 - if admin_user_signed_in?
 
   #system
-    %h2 System Monitoring
+    %h2 System monitoring
 
     #comments
     %fieldset
@@ -23,11 +23,11 @@
 
     #activities.twoup-1
       %fieldset
-        %legend Recent System Activities on essence data
+        %legend Recent system activities on essence data
 
     #statistics.twoup-2
       %fieldset
-        %legend Content Statistics
+        %legend Content statistics
         %table
           %tr
             %td= number_with_delimiter @num_collections

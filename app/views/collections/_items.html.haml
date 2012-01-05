@@ -16,14 +16,14 @@
           %td= item.identifier
           %td= item.title
           - if can? :update, @collection
-            %td TBI
-            %td TBI
+            %td TBD
+            %td TBD
           %td
             = link_to 'View', item if can? :read, item
             = link_to 'Edit', edit_item_path(item) if can? :update, item
 
   - if can? :create, @collection.items.build # TODO this actually adds an item to the array is there a better way
     %button
-      = link_to 'Add Item', new_collection_item_path(@collection)
+      = link_to 'Add item', new_collection_item_path(@collection)
   - else
     %br

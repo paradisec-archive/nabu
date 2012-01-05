@@ -33,9 +33,9 @@
       #menu
         %ul
           %li.active= link_to 'Home', root_path
-          %li= link_to 'Browse Collections', collections_path
-          %li= link_to 'Browse Items', items_path
-          %li= link_to 'Browse Users', users_path if can? :manage, User
+          %li= link_to 'Browse collections', collections_path
+          %li= link_to 'Browse items', items_path
+          %li= link_to 'Browse users', users_path if can? :manage, User
           %li= link_to 'Search', '#'
           %li= link_to 'Help', '#'
 

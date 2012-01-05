@@ -15,7 +15,7 @@
 
 .twoup-1
   %fieldset
-    %legend Collection Details
+    %legend Collection details
     %table.form
       %tr
         %th= f.label :identifier, 'Collection ID'
@@ -33,11 +33,11 @@
         %td= f.collection_select :operator_id, User.all, :id, :name, :prompt => true
 
       %tr
-        %th= f.label :university_id, 'Originating University'
+        %th= f.label :university_id, 'Originating university'
         %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
 
       %tr
-        %th= f.label :field_of_research_id, 'Field of Research'
+        %th= f.label :field_of_research_id, 'Field of research'
         %td= f.collection_select :field_of_research_id, FieldOfResearch.all, :id, :name_with_identifier, :prompt => true
 
       %tr
@@ -66,7 +66,7 @@
 
 
       %tr
-        %th= f.label :region, 'Region / Village'
+        %th= f.label :region, 'Region / village'
         %td= f.text_field :region
 
       %tr
@@ -100,7 +100,7 @@
     %legend Access Information
     %table.form
       %tr
-        %th= f.label :user_id, 'User Access'
+        %th= f.label :user_id, 'User access'
         %td
           = f.fields_for :collection_admins do |a|
             %br
@@ -127,7 +127,7 @@
     = render :partial => 'items'
     
   %fieldset
-    %legend Depositing Information
+    %legend Depositing information
     %table.form
       %tr
         %th= f.label :metadata_source
@@ -146,7 +146,7 @@
         %td= f.text_field :comments
 
   %fieldset
-    %legend Admin Information
+    %legend Admin information
     %table.form
       %tr
         %th= f.label :deposit_form_recieved

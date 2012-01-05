@@ -12,7 +12,7 @@
 
 .twoup-1
   %fieldset
-    %legend Collection Details
+    %legend Collection details
     %table.form.show
       %tr
         %th Collection ID
@@ -28,11 +28,11 @@
           %td= @collection.operator_name
 
       %tr
-        %th Originating University
+        %th Originating university
         %td= @collection.university_name
 
       %tr
-        %th Field of Research
+        %th Field of research
         %td= @collection.field_of_research.name_with_identifier
 
       %tr
@@ -50,7 +50,7 @@
             %br
 
       %tr
-        %th Region / Village
+        %th Region / village
         %td= @collection.region
 
       %tr
@@ -76,10 +76,10 @@
 
   - if can? :manage, Collection
     %fieldset
-      %legend Access Information
+      %legend Access information
       %table.form.show
         %tr
-          %th User Access
+          %th User access
           %td
             - @collection.admins.each do |admin|
               = admin.name
@@ -90,7 +90,7 @@
           %td= @collection.access_condition_name
 
         %tr
-          %th Access Narative
+          %th Access narrative
           %td= @collection.access_narrative
 
 
@@ -100,14 +100,14 @@
 
   - if can? :manage, Collection
     %fieldset
-      %legend Depositing Information
+      %legend Depositing information
       %table.form.show
         %tr
-          %th Metadata Source
+          %th Metadata source
           %td= @collection.metadata_source
 
         %tr
-          %th Orthographic Notes
+          %th Orthographic notes
           %td= @collection.orthographic_notes
 
         %tr
@@ -127,7 +127,7 @@
           %td= @collection.comments
 
     %fieldset
-      %legend Admin Information
+      %legend Admin information
       %table.form.show
 
         %tr
@@ -152,4 +152,4 @@
         
 
     %button
-      = link_to 'Edit Collection', edit_collection_path(@collection)
+      = link_to 'Edit collection', edit_collection_path(@collection)
