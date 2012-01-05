@@ -600,6 +600,8 @@ namespace :import do
       ## origination date
       if item['item_date_iso'] != nil
         originated_on = item['item_date_iso'].to_date
+      else
+        originated_on = item['item_date'].to_date
       end
 
       ## get access conditions

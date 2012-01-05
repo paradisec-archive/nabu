@@ -70,7 +70,6 @@ class Item < ActiveRecord::Base
 
   def citation
     cite = "#{collector.name} (recorder)"
-    cite += ", #{operator.name} (depositor)" if operator
     cite += " #{originated_on.year}" if originated_on
     cite += '; '
     cite += title
