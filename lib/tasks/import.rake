@@ -196,10 +196,6 @@ namespace :import do
       if email.blank?
         email = fixme(user, 'cont_email', user['cont_id'].to_s + 'cont@example.com')
       end
-      address = nilify(user['cont_address1'])
-      if user['cont_address1'] && user['cont_address2']
-        address = user['cont_address1'] + ',' + user['cont_address2']
-      end
 
       # identify if this user already exists in DB
       cur_user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
@@ -218,7 +214,8 @@ namespace :import do
                             :email => email,
                             :password => password,
                             :password_confirmation => password,
-                            :address => address,
+                            :address => nilify(user['cont_address1']),
+                            :address2 => nilify(user['cont_address2']),
                             :country => nilify(user['cont_country']),
                             :phone => nilify(user['cont_phone'])
 
@@ -598,10 +595,14 @@ namespace :import do
                                                  item['item_ymax'], item['item_ymin'])
 
       ## origination date
-      if item['item_date_iso'] != nil
-        originated_on = item['item_date_iso'].to_date
+      if item['item_date_iso'].blank?
+        begin
+          originated_on = item['item_date'].to_date unless item['item_date'].blank?
+        rescue
+          puts "Error importing item_date #{item['item_date']} for item #{item['item_pid']}"
+        end
       else
-        originated_on = item['item_date'].to_date
+        originated_on = item['item_date_iso'].to_date
       end
 
       ## get access conditions

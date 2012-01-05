@@ -69,8 +69,7 @@ class Item < ActiveRecord::Base
   end
 
   def essence_types
-    essence_types = essences.inject([]) { |result, h| result << h.type unless result.include?(h.type); result }
-    essence_types
+    essences.map(&:type).uniq
   end
 
   def prefill

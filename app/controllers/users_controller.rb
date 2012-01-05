@@ -14,7 +14,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        fields = [:id, :email, :first_name, :last_name, :address, :country, :phone, :admin, :operator, :sign_in_count, :last_sign_in_at, :failed_attempts]
+        fields = [:id, :email, :first_name, :last_name, :address, :address2, :country, :phone, :admin, :operator, :sign_in_count, :last_sign_in_at, :failed_attempts]
         send_data @users.to_csv(:only => fields), :type => "text/csv; charset=utf-8; header=present"
       end
     end

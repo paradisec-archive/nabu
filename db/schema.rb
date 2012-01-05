@@ -246,6 +246,7 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
     t.datetime "updated_at"
     t.boolean  "admin",                                 :default => false, :null => false
     t.string   "address"
+    t.string   "address2"
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
