@@ -52,6 +52,12 @@ class Item < ActiveRecord::Base
   accepts_nested_attributes_for :item_admins, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 
+  delegate :name, :to => :collector, :prefix => true, :allow_nil => true
+  delegate :name, :to => :operator, :prefix => true, :allow_nil => true
+  delegate :name, :to => :university, :prefix => true, :allow_nil => true
+  delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
+  delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
+
   paginates_per 10
 
   after_initialize :prefill

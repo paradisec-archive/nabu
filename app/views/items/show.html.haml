@@ -30,18 +30,16 @@
 
       %tr
         %th Collector
-        %td= @item.collector.name
+        %td= @item.collector_name
 
       %tr
         %th Originating University
-        %td
-          - if @item.university
-            = @item.university.name
+        %td= @item.university_name
 
       %tr
         %th Operator
         -if @item.operator
-          %td= @item.operator.name
+          %td= @item.operator_name
 
       %tr
         %th Description
@@ -101,10 +99,7 @@
 
       %tr
         %th Dicsourse Type
-        -if @item.discourse_type
-          %td= @item.discourse_type.name
-        -else
-          %td
+        %td= @item.discourse_type_name
 
       %tr
         %th Agents
@@ -269,8 +264,7 @@
 
           %tr
             %th Access conditions
-            -if @item.access_condition
-              %td= @item.access_condition.name
+            %td= @item.access_condition_name
 
           %tr
             %th Access Narative

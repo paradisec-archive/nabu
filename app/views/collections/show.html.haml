@@ -20,12 +20,12 @@
 
       %tr
         %th Collector
-        %td= @collection.collector.name
+        %td= @collection.collector_name
 
       %tr
         %th Operator
         - if @collection.operator
-          %td= @collection.operator.name
+          %td= @collection.operator_name
 
       %tr
         %th Originating University
@@ -87,10 +87,7 @@
 
         %tr
           %th Access conditions
-          -if @collection.access_condition
-            %td= @collection.access_condition.name
-          -else
-            %td
+          %td= @collection.access_condition_name
 
         %tr
           %th Access Narative

@@ -49,4 +49,7 @@ class Collection < ActiveRecord::Base
   end
 
   delegate :name, :to => :university, :prefix => true, :allow_nil => true
+  delegate :name, :to => :collector, :prefix => true, :allow_nil => true
+  delegate :name, :to => :operator, :prefix => true, :allow_nil => true
+  delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 end
