@@ -201,7 +201,8 @@ namespace :import do
       cur_user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
       if cur_user
         cur_user.email = email
-        cur_user.address = address
+        cur_user.address = nilify(user['cont_address1'])
+        cur_user.address2 = nilify(user['cont_address2'])
         cur_user.country = user['cont_country']
         cur_user.phone = user['cont_phone']
         cur_user.pd_contact_id = user['cont_id']
