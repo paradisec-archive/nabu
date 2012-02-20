@@ -1,11 +1,11 @@
 GIT
   remote: git@github.com:johnf/opinio.git
-  revision: 41268d7df12d870f5557d9a519f053d45c16027d
+  revision: 7388f0742135aada695bf4750cfd588d96f716c8
   specs:
-    opinio (0.3.3)
+    opinio (0.4)
       jquery-rails
       kaminari
-      rails (~> 3.0)
+      rails (~> 3)
 
 GEM
   remote: http://rubygems.org/

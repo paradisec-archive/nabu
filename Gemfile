@@ -21,8 +21,7 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
-gem 'opinio', :git => 'git@github.com:johnf/opinio.git' # awaiting pull request ???
-
+gem 'opinio', :git => 'git@github.com:johnf/opinio.git' # awaiting pull request https://github.com/Draiken/opinio/pull/6
 
 # Admin
 gem 'activeadmin'
