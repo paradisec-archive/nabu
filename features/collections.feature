@@ -15,22 +15,22 @@ Feature: Collections
   Scenario: Non Admin users can't add collections
     Given I am signed out
      When I go to the home page
-     Then I should not see "Add Collection"
+     Then I should not see "Add collection"
      When I go to the new collection page
      Then I should see "You need to sign in or sign up before continuing."
      When I am signed in as that user
       And I go to the home page
-     Then I should see "Add Collection"
+     Then I should see "Add collection"
      When I go to the new collection page
-     Then I should see "Add a Collection"
+     Then I should see "Deposit form recieved"
 
   Scenario: Add a collection
     Given I am signed in as that user
       And I am on the new collection page
-     When I fill in "Title" with "Alexander Adelaar Indonesia/Selaako Collection"
+     When I fill in "collection_title" with "Alexander Adelaar Indonesia/Selaako Collection"
       And I fill in "Collection ID" with "AA1"
-      And I select "University of Sydney" from "Originating Uni"
-      And I select "420114 - Indonesian Languages" from "Field of Research"
+      And I select "University of Sydney" from "Originating university"
+      And I select "420114 - Indonesian Languages" from "Field of research"
       And I select "Indonesia" from "Countries"
       And I select "ski - Silka" from "Languages"
       And I fill in "Region / Village" with "Sasak Village, Samalantan"

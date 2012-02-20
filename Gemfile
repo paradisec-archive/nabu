@@ -8,7 +8,7 @@ gem 'pg'      # For heroku
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'
-  gem 'compass', '~> 0.12.rc.1'
+  gem 'compass-rails'
 
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   gem 'therubyracer'

@@ -17,7 +17,7 @@ Feature: Authentication and Authorisation
     And I fill in "Password" with "moocow"
     And I fill in "Password confirmation" with "moocow"
     And I press "Sign up" within "form"
-    Then I should see "You have signed up successfully. However, we could not sign you in because your account is unconfirmed."
+    Then I should see "A message with a confirmation link has been sent to your email address. Please open the link to activate your account."
     And "john@robotparade.com.au" should receive an email
     When I open the email
     Then I should see "Confirm my account" in the email body
@@ -43,7 +43,7 @@ Feature: Authentication and Authorisation
     And I fill in "Password" with "moocow"
     And I fill in "Password confirmation" with "moocow"
     And I press "Sign up"
-    Then I should see "You have signed up successfully. However, we could not sign you in because your account is unconfirmed."
+    Then I should see "A message with a confirmation link has been sent to your email address. Please open the link to activate your account."
     And I should not see "Sign out"
     When I follow "Sign in"
     And I fill in "Email" with "john@robotparade.com.au"
@@ -117,7 +117,7 @@ Feature: Authentication and Authorisation
      When I go to the homepage
       And I follow "John Ferlito"
      Then I should be on that user's page
-      And I should see "User Details"
+      And I should see "User details"
 
   Scenario: Must be signed in to show a users page
     Given a user exists with first_name: "John"
@@ -135,8 +135,8 @@ Feature: Authentication and Authorisation
      And I fill in "Country" with "Australia"
      And I fill in "Phone" with "61 2 1234 5678"
      And I fill in "Email" with "fred@freddo.org"
-     And I fill in "Password" with "fredfred"
-     And I fill in "Password confirmation" with "fredfred"
+     And I fill in "New password" with "fredfred"
+     And I fill in "Repeat password" with "fredfred"
      And I fill in "Current password" with "password"
      And I press "Update"
     Then I should be on that user's page
@@ -188,7 +188,7 @@ Feature: Authentication and Authorisation
       And a user "silvia" exists with first_name: "Silvia"
      When I am signed in as user "johnf"
       And I go to the home page
-      And I follow "Browse Users"
+      And I follow "Browse users"
      Then I should see "John"
       And I should see "Nick"
       And I should see "Silvia"
@@ -201,7 +201,7 @@ Feature: Authentication and Authorisation
       And a user "silvia" exists with first_name: "Silvia"
      When I am signed in as user "johnf"
       And I go to the home page
-      And I follow "Browse Users"
+      And I follow "Browse users"
       # FIXME This is brittle
      When I follow "Delete" within "tr:nth-child(3)"
      Then the user should not exist with first_name: "Silvia"
@@ -225,7 +225,7 @@ Feature: Authentication and Authorisation
       And I should see "Pfeiffer"
       And I should see "Piper"
      When I fill in "search" with "f"
-      And I press "Search"
+      And I press "Filter"
      Then I should see "Ferlito"
       And I should see "Pfeiffer"
       And I should not see "Piper"

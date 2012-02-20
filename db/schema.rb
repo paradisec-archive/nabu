@@ -15,8 +15,8 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "active_admin_comments", :force => true do |t|
@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
     t.integer  "author_id"
     t.string   "author_type"
     t.text     "body"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
     t.string   "namespace"
   end
 
@@ -73,8 +73,8 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
     t.float    "latitude"
     t.float    "longitude"
     t.integer  "zoom"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.integer  "access_condition_id"
     t.text     "access_narrative"
     t.string   "metadata_source"
@@ -98,8 +98,8 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
     t.integer  "commentable_id",   :null => false
     t.string   "commentable_type", :null => false
     t.text     "body",             :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "countries", :force => true do |t|
@@ -111,7 +111,7 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
 
   create_table "discourse_types", :force => true do |t|
-    t.string "name"
+    t.string "name", :null => false
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
@@ -139,38 +139,38 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
   add_index "fields_of_research", ["name"], :name => "index_fields_of_research_on_name", :unique => true
 
   create_table "item_admins", :force => true do |t|
-    t.integer "item_id"
-    t.integer "user_id"
+    t.integer "item_id", :null => false
+    t.integer "user_id", :null => false
   end
 
   add_index "item_admins", ["item_id", "user_id"], :name => "index_item_admins_on_item_id_and_user_id", :unique => true
 
   create_table "item_agents", :force => true do |t|
-    t.integer "item_id"
-    t.integer "user_id"
-    t.integer "agent_role_id"
+    t.integer "item_id",       :null => false
+    t.integer "user_id",       :null => false
+    t.integer "agent_role_id", :null => false
     t.string  "comment"
   end
 
   add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
 
   create_table "item_content_languages", :force => true do |t|
-    t.integer "item_id"
-    t.integer "language_id"
+    t.integer "item_id",     :null => false
+    t.integer "language_id", :null => false
   end
 
   add_index "item_content_languages", ["item_id", "language_id"], :name => "index_item_content_languages_on_item_id_and_language_id", :unique => true
 
   create_table "item_countries", :force => true do |t|
-    t.integer "item_id"
-    t.integer "country_id"
+    t.integer "item_id",    :null => false
+    t.integer "country_id", :null => false
   end
 
   add_index "item_countries", ["item_id", "country_id"], :name => "index_item_countries_on_item_id_and_country_id", :unique => true
 
   create_table "item_subject_languages", :force => true do |t|
-    t.integer "item_id"
-    t.integer "language_id"
+    t.integer "item_id",     :null => false
+    t.integer "language_id", :null => false
   end
 
   add_index "item_subject_languages", ["item_id", "language_id"], :name => "index_item_subject_languages_on_item_id_and_language_id", :unique => true
@@ -195,8 +195,8 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
     t.integer  "discourse_type_id"
     t.integer  "access_condition_id"
     t.text     "access_narrative"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
     t.boolean  "metadata_exportable"
     t.boolean  "born_digital"
     t.boolean  "tapes_returned"
@@ -219,37 +219,38 @@ ActiveRecord::Schema.define(:version => 20111230040538) do
 
   create_table "universities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                                 :default => "",    :null => false
-    t.string   "encrypted_password",     :limit => 128, :default => "",    :null => false
+    t.string   "email",                  :default => "",    :null => false
+    t.string   "encrypted_password",     :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                         :default => 0
+    t.integer  "sign_in_count",          :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
+    t.string   "password_salt"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",                       :default => 0
+    t.integer  "failed_attempts",        :default => 0
     t.string   "unlock_token"
     t.datetime "locked_at"
-    t.string   "first_name",                                               :null => false
-    t.string   "last_name",                                                :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "admin",                                 :default => false, :null => false
+    t.string   "first_name",                                :null => false
+    t.string   "last_name"
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+    t.boolean  "admin",                  :default => false, :null => false
     t.string   "address"
     t.string   "address2"
     t.string   "country"
     t.string   "phone"
-    t.boolean  "operator",                              :default => false
+    t.boolean  "operator",               :default => false
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

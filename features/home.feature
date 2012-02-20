@@ -6,7 +6,7 @@ Feature: Home Page
   Scenario: Logged out users get home page
     Given I am signed out
       And I go to the home page
-     Then I should see "nabu is a digital media"
+     Then I should see "Nabu is a digital media"
 
   Scenario: Signed in users get dashboard
     Given a user exists
