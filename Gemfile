@@ -1,15 +1,19 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.3'
+gem 'rails', '3.2.1'
 
 # Databases
 gem 'mysql2'
 gem 'pg'      # For heroku
 
 group :assets do
-  gem 'coffee-rails', '~> 3.1.1'
+  gem 'coffee-rails', '~> 3.2.1'
+  gem 'compass', '~> 0.12.rc.1'
+
+  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
+  gem 'therubyracer'
+
   gem 'uglifier', '>= 1.0.3'
-  gem 'compass', '~> 0.12.alpha.3'
 end
 
 # Views
@@ -21,8 +25,8 @@ gem 'opinio', :git => 'git@github.com:johnf/opinio.git' # awaiting pull request 
 
 
 # Admin
-gem 'activeadmin', :git => 'git://github.com/gregbell/active_admin.git' # remove after 0.4.0 is released (jquery issue)
-gem 'sass-rails',  '~> 3.1.5'
+gem 'activeadmin'
+gem 'sass-rails',  '~> 3.2.3'
 gem 'meta_search', '>= 1.1.0.pre'
 
 # Authentications
@@ -37,8 +41,6 @@ gem 'unicorn'
 
 # Deployment
 gem 'capistrano'
-gem 'execjs'
-gem 'therubyracer'
 
 group :development, :test do
   gem 'sqlite3'
