@@ -60,11 +60,11 @@
     %tr
       = sortable :id, 'ID'
       = sortable :title
-      %th Collector
-      %th Countries
-      %th Languages
+      = sortable :collector
+      = sortable :countries
+      = sortable :languages
       = sortable :creation_date
-      %th Source university
+      = sortable :university, 'Source university'
       %th Map
       %th Actions
 
@@ -88,7 +88,7 @@
             = link_to 'View', collection if can? :read, collection
             = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
 
-  = paginate @search.hits
+  = paginate @search
 
   %p
     %button.per_page{:data => {:per => 10}} Show 10

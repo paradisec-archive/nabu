@@ -37,6 +37,7 @@ gem 'squeel'
 
 # Search
 gem 'sunspot_rails'
+gem 'sunspot_with_kaminari'
 
 # Web Server
 gem 'unicorn'
