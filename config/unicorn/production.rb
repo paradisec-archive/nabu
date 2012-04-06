@@ -1,4 +1,4 @@
-app_path = '/srv/www/nabu'
+app_path = '/srv/www/nabu/current'
 
 # Set unicorn options
 worker_processes 5
