@@ -18,8 +18,8 @@ class ApplicationController < ActionController::Base
   end
 
   def sort_column
-    model = params[:controller].sub("Controller", "").singularize.camelize.constantize
-    model.column_names.include?(params[:sort]) ? params[:sort] : "id"
+    model = params[:controller].sub(/Controller/, '').singularize.camelize.constantize
+    model.sortable_columns.include?(params[:sort]) ? params[:sort] : 'id'
   end
 
   def sort_direction

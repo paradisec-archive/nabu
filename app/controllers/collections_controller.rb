@@ -2,11 +2,11 @@ class CollectionsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    #@collections = @collections.order 'collections.' + sort_column + ' ' + sort_direction
     if params[:clear]
       params.delete(:search)
       redirect_to collections_path
     end
+
 
     @search = Collection.solr_search do
       fulltext params[:search]

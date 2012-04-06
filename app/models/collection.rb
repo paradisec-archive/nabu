@@ -1,4 +1,6 @@
 class Collection < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :collector, :class_name => "User"
   belongs_to :operator, :class_name => "User"
   belongs_to :university
@@ -53,28 +55,28 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :operator, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
+  def self.sortable_columns
+    %w{identifier title university_name collector_name created_at}
+  end
+
   searchable do
     integer :id
-    string :identifier
-    string :identifier
-    text :identifier, :title, :description, :university_name
+
+    # Thins we want to perform full text search on
+    text :title
+    text :identifier
+    text :university_name
     text :collector_name
+    text :region
+    text :description
     text :operator_name
-    integer :university_id, :references => University
     text :access_condition_name
     text :field_of_research do
       field_of_research.name
     end
-    string :title
-    string :region
-    float :latitude
-    float :longitude
-    integer :zoom
-    integer :language_ids, :references => Language, :multiple => true
     text :languages do
       languages.map(&:name)
     end
-    integer :country_ids, :references => Country, :multiple => true
     text :countries do
       countries.map(&:name)
     end
@@ -83,9 +85,31 @@ class Collection < ActiveRecord::Base
     text :orthographic_notes
     text :media
     text :comments
+    text :tape_location
+
+    # Link models for faceting
+    integer :university_id, :references => University
+    integer :language_ids, :references => Language, :multiple => true
+    integer :country_ids, :references => Country, :multiple => true
+
+    # Things we want to sort or use :with on
+    string :title
+    string :identifier
+    string :university_name
+    string :collector_name
+    string :region
+    string :languages, :multiple => true do
+      languages.map(&:name)
+    end
+    string :countries, :multiple => true do
+      countries.map(&:name)
+    end
+    float :latitude
+    float :longitude
+    integer :zoom
     boolean :complete
     boolean :private
-    text :tape_location
     boolean :deposit_form_recieved
+    time :created_at
   end
 end

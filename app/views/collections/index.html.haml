@@ -58,13 +58,13 @@
 
   %table.table
     %tr
-      = sortable :id, 'ID'
+      = sortable :identifier, 'ID'
       = sortable :title
-      = sortable :collector
-      = sortable :countries
-      = sortable :languages
-      = sortable :creation_date
-      = sortable :university, 'Source university'
+      = sortable :collector_name, 'Collector'
+      %th Countries
+      %th Languages
+      = sortable :created_at, 'Creation Date'
+      = sortable :university_name, 'Source university'
       %th Map
       %th Actions
 
