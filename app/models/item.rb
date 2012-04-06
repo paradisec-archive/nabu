@@ -1,4 +1,6 @@
 class Item < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :collection
   belongs_to :collector, :class_name => 'User'
   belongs_to :operator, :class_name => 'User'
