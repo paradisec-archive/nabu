@@ -4,7 +4,6 @@ gem 'rails', '3.2.3'
 
 # Databases
 gem 'mysql2'
-gem 'pg'      # For heroku
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'
@@ -44,6 +43,7 @@ gem 'unicorn'
 
 # Deployment
 gem 'capistrano'
+gem 'capistrano-unicorn'
 
 # Misc
 gem 'progress_bar'

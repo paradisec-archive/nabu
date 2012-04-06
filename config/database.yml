@@ -16,6 +16,7 @@ production:
   adapter: mysql2
   host: localhost
   database: nabu
+  user: root
 
 test: &test
   <<: *COMMON
