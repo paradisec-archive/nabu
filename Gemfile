@@ -35,14 +35,21 @@ gem 'cancan'
 # Database improvements
 gem 'squeel'
 
+# Search
+gem 'sunspot_rails'
+
 # Web Server
 gem 'unicorn'
 
 # Deployment
 gem 'capistrano'
 
+# Misc
+gem 'progress_bar'
+
 group :development, :test do
   gem 'sqlite3'
+  gem 'sunspot_solr'
   gem 'turn', '~> 0.8.3', :require => false
 end
 

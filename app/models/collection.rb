@@ -52,4 +52,40 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :collector, :prefix => true, :allow_nil => true
   delegate :name, :to => :operator, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
+
+  searchable do
+    integer :id
+    string :identifier
+    string :identifier
+    text :identifier, :title, :description, :university_name
+    text :collector_name
+    text :operator_name
+    integer :university_id, :references => University
+    text :access_condition_name
+    text :field_of_research do
+      field_of_research.name
+    end
+    string :title
+    string :region
+    float :latitude
+    float :longitude
+    integer :zoom
+    integer :language_ids, :references => Language, :multiple => true
+    text :languages do
+      languages.map(&:name)
+    end
+    integer :country_ids, :references => Country, :multiple => true
+    text :countries do
+      countries.map(&:name)
+    end
+    text :access_narrative
+    text :metadata_source
+    text :orthographic_notes
+    text :media
+    text :comments
+    boolean :complete
+    boolean :private
+    text :tape_location
+    boolean :deposit_form_recieved
+  end
 end

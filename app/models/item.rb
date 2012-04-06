@@ -108,4 +108,36 @@ class Item < ActiveRecord::Base
       end
     end
   end
+
+  searchable do
+    string :collection_identifier do
+      collection.identifier
+    end
+    string :identifier
+    boolean :private
+    text :title
+    text :collector_name
+    text :university_name
+    text :operator_name
+    text :description
+    date :originated_on
+    text :language
+    text :dialect
+    text :region
+    float :latitude
+    float :longitude
+    integer :zoom
+    text :discourse_type_name
+    text :access_condition_name
+    text :access_narrative
+    boolean :metadata_exportable
+    boolean :born_digital
+    boolean :tapes_returned
+    text :original_media
+    date :received_on
+    date :digitised_on
+    text :ingest_notes
+    text :tracking
+  end
+
 end

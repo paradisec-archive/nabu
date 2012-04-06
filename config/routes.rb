@@ -23,6 +23,8 @@ Nabu::Application.routes.draw do
   match '/about' => 'page#about'
   match '/contact' => 'page#contact'
 
+  match '/search' => 'search#index', :as => :search
+
   resources :users
   resources :collections, :shallow => true do
     resources :items do

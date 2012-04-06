@@ -8,7 +8,53 @@
       = submit_tag 'Filter', :name => nil
       = submit_tag 'Clear', :name => :clear
 
-  = paginate @collections
+  %p== #{@search.total} search results
+
+  = paginate @search.hits
+
+  #facets
+    %table
+      %tr
+        %td
+          %fieldset
+            %legend Language
+            .fix-scroll-height
+              %table
+                - @search.facet(:language_ids).rows.each do |row|
+                  - language, count = row.instance, row.count
+                  - params_with_facet = params.merge(:language_id => language.id)
+                  %tr
+                    %td
+                      = link_to language.name, params_with_facet
+                      == (#{row.count})
+        %td
+          %fieldset
+            %legend University
+            .fix-scroll-height
+              %table
+                - @search.facet(:university_id).rows.each do |row|
+                  - university, count = row.instance, row.count
+                  - params_with_facet = params.merge(:university_id => university.id)
+                  %tr
+                    %td
+                      = link_to university.name, params_with_facet
+                      == (#{count})
+        %td
+          %fieldset
+            %legend Country
+            .fix-scroll-height
+              %table
+                - @search.facet(:country_ids).rows.each do |row|
+                  - country, count = row.instance, row.count
+                  - params_with_facet = params.merge(:country_id => country.id)
+                  %tr
+                    %td
+                      = link_to country.name, params_with_facet
+                      == (#{row.count})
+
+
+
+
 
   %table.table
     %tr
@@ -22,7 +68,7 @@
       %th Map
       %th Actions
 
-      - @collections.each do |collection|
+      - @search.each_hit_with_result do |hit, collection|
         %tr
           %td= collection.identifier
           %td= collection.title
@@ -42,7 +88,7 @@
             = link_to 'View', collection if can? :read, collection
             = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
 
-  = paginate @collections
+  = paginate @search.hits
 
   %p
     %button.per_page{:data => {:per => 10}} Show 10

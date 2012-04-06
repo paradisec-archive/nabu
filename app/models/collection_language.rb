@@ -5,5 +5,5 @@ class CollectionLanguage < ActiveRecord::Base
   attr_accessible :language_id, :language, :collection_id, :collection
 
   validates :language_id, :presence => true
-  validates :collection_id, :presence => true
+  #validates :collection_id, :presence => true
 end

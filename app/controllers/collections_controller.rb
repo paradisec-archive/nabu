@@ -2,18 +2,23 @@ class CollectionsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @collections = @collections.order 'collections.' + sort_column + ' ' + sort_direction
+    #@collections = @collections.order 'collections.' + sort_column + ' ' + sort_direction
     if params[:clear]
       params.delete(:search)
       redirect_to collections_path
     end
 
-    if params[:search]
-      match = "%#{params[:search]}%"
-      @collections = @collections.where{ (title =~ match) | (description =~ match) | (identifier =~ match) }
-    end
+    @search = Collection.solr_search do
+      fulltext params[:search]
+      facet :language_ids, :country_ids, :university_id
 
-    @collections = @collections.page(params[:page]).per(params[:per_page])
+      with(:university_id, params[:university_id]) if params[:university_id].present?
+      with(:language_ids, params[:language_id]) if params[:language_id].present?
+      with(:country_ids, params[:country_id]) if params[:country_id].present?
+
+      order_by sort_column, sort_direction
+      paginate :page => params[:page], :per_page => params[:per_page]
+    end
   end
 
   def new

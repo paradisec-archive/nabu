@@ -334,3 +334,14 @@ body.bp {
   }
 
 } // body.bp
+
+#facets {
+  .fix-scroll-height {
+    overflow: auto;
+    height: 200px;
+    overflow-x: hidden;
+  }
+  td {
+    width: 20%;
+  }
+}
