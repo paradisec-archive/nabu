@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.1'
+gem 'rails', '3.2.3'
 
 # Databases
 gem 'mysql2'
@@ -21,7 +21,7 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
-gem 'opinio', :git => 'git@github.com:johnf/opinio.git' # awaiting pull request https://github.com/Draiken/opinio/pull/6
+gem 'opinio'
 
 # Admin
 gem 'activeadmin'
