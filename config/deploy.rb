@@ -15,25 +15,37 @@ set :use_sudo, false
 set :deploy_via, :remote_cache
 
 set :ssh_options, {
-    :forward_agent => true,
-    :port => 22,
-    :paranoid => false
+  :forward_agent => true,
+  :port          => 22,
+  :paranoid      => false
 }
 
 set :default_shell, "/bin/bash --login"
 
-namespace :app do
-  namespace :solr do
-    desc 'Symlink in-progress deployment to a shared Solr index.'
-    task :symlink, :except => { :no_release => true } do
-      rails_env = fetch(:rails_env, 'production')
-      run "mkdir -p #{release_path}/solr/data && ln -nfs #{shared_path}/solr/data/#{rails_env} #{release_path}/solr/data/#{rails_env}"
-    end
+namespace :sunspot do
+  task :symlink, :except => { :no_release => true } do
+    rails_env = fetch(:rails_env, 'production')
+    run "mkdir -p #{release_path}/solr/data && ln -nfs #{shared_path}/solr/data/#{rails_env} #{release_path}/solr/data/#{rails_env}"
   end
+
+  task :start do
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:start RAILS_ENV=production"
+  end
+
+  task :stop do
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=production"
+  end
+
+  task :restart do
+    stop
+    start
+  end
+
 end
 
 # Install after hooks for deployment.
-after "deploy:symlink", "app:solr:symlink"
+after "deploy:symlink", "sunspot:symlink"
+after "deploy:restart", "sunspot:restart"
 
 require 'bundler/capistrano'
 require 'capistrano-unicorn'

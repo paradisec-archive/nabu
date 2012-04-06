@@ -33,8 +33,6 @@
     # Remove unneeded packages
     sudo aptitude purge ubuntu-serverguide wpasupplicant landscape-client wireless-tools libnl1 libiw30
 
-
-
 # Basic Setup
     sudo dpkg-reconfigure tzdata
     sudo locale-gen en_AU en_AU.UTF-8
@@ -107,13 +105,16 @@
         export RBENV_ROOT="/opt/rbenv"
         eval "$(rbenv init -)"
     /usr/bin/git clone git://github.com/sstephenson/ruby-build.git /opt/rbenv/plugins/ruby-build
-    sudo apt-get install zlib1g-dev libmysqlclient-dev libxml2-dev libxslt1-dev libssl-dev
+    sudo apt-get install zlib1g-dev libmysqlclient-dev libxml2-dev libxslt1-dev libssl-dev g++
     sudo -i
     rbenv install 1.9.3-p125
     rbenv global 1.9.3-p125
     gem install bundler
 
 
+# Java
+
+    sudo apt-get install openjdk-6-jre-headless
 
 
 
