@@ -177,6 +177,8 @@ GEM
     options (2.3.0)
       fattr
     orm_adapter (0.0.7)
+    paper_trail (2.6.2)
+      rails (~> 3)
     pg (0.13.2)
     pickle (0.4.10)
       cucumber (>= 0.8)
@@ -308,6 +310,7 @@ DEPENDENCIES
   meta_search (>= 1.1.0.pre)
   mysql2
   opinio
+  paper_trail (~> 2)
   pg
   pickle
   progress_bar

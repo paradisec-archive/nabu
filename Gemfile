@@ -46,6 +46,7 @@ gem 'capistrano'
 
 # Misc
 gem 'progress_bar'
+gem 'paper_trail', '~> 2'
 
 group :development, :test do
   gem 'sqlite3'
