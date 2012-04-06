@@ -60,8 +60,6 @@ class Collection < ActiveRecord::Base
   end
 
   searchable do
-    integer :id
-
     # Thins we want to perform full text search on
     text :title
     text :identifier
@@ -93,6 +91,7 @@ class Collection < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
 
     # Things we want to sort or use :with on
+    integer :id
     string :title
     string :identifier
     string :university_name

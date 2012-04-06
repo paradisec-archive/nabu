@@ -3,18 +3,21 @@ class ItemsController < ApplicationController
   load_and_authorize_resource :item, :through => :collection, :shallow => true
 
   def index
-    @items = @items.order sort_column + ' ' + sort_direction
     if params[:clear]
       params.delete(:search)
       redirect_to items_path
     end
+    @search = Item.solr_search do
+      fulltext params[:search]
+      facet :content_language_ids, :country_ids, :university_id
 
-    if params[:search]
-      match = "%#{params[:search]}%"
-      @items = @items.where{ (title =~ match) | (description =~ match) | (identifier =~ match) }
+      with(:university_id, params[:university_id]) if params[:university_id].present?
+      with(:content_language_ids, params[:content_language_id]) if params[:language_id].present?
+      with(:country_ids, params[:country_id]) if params[:country_id].present?
+
+      order_by sort_column, sort_direction
+      paginate :page => params[:page], :per_page => params[:per_page]
     end
-
-    @items = @items.page(params[:page]).per(params[:per_page])
   end
 
   def new

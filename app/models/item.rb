@@ -111,35 +111,77 @@ class Item < ActiveRecord::Base
     end
   end
 
+  def self.sortable_columns
+    %w{identifier title university_name collector_name updated_at language}
+  end
   searchable do
-    string :collection_identifier do
+    # Things we want to perform full text search on
+    text :title
+    text :identifier
+    text :collection_identifier do
       collection.identifier
     end
-    string :identifier
-    boolean :private
-    text :title
+    text :identifier
     text :collector_name
     text :university_name
     text :operator_name
     text :description
-    date :originated_on
     text :language
     text :dialect
     text :region
-    float :latitude
-    float :longitude
-    integer :zoom
     text :discourse_type_name
     text :access_condition_name
     text :access_narrative
+    text :ingest_notes
+    text :tracking
+    text :original_media
+    text :content_languages do
+      content_languages.map(&:name)
+    end
+    text :subject_languages do
+      subject_languages.map(&:name)
+    end
+    text :countries do
+      countries.map(&:name)
+    end
+
+    # Things we want to sort or use :with on
+    integer :id
+    string :title
+    string :identifier
+    string :university_name
+    string :collector_name
+    string :region
+    string :identifier
+    string :collection_identifier do
+      collection.identifier
+    end
+    boolean :private
+    date :originated_on
+    float :latitude
+    float :longitude
+    integer :zoom
     boolean :metadata_exportable
     boolean :born_digital
     boolean :tapes_returned
-    text :original_media
     date :received_on
     date :digitised_on
-    text :ingest_notes
-    text :tracking
-  end
+    date :created_at
+    date :updated_at
+    string :content_languages, :multiple => true do
+      content_languages.map(&:name)
+    end
+    string :subject_languages, :multiple => true do
+      subject_languages.map(&:name)
+    end
+    string :countries, :multiple => true do
+      countries.map(&:name)
+    end
 
+    # Link models for faceting
+    integer :university_id, :references => University
+    integer :content_language_ids, :references => Language, :multiple => true
+    integer :subject_language_ids, :references => Language, :multiple => true
+    integer :country_ids, :references => Country, :multiple => true
+  end
 end

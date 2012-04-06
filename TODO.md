@@ -2,15 +2,13 @@
 
 ## General
 
+* Add auth back to Items and Collections Search
 * Move CSS for ,map in collection/{show/form/index} to stylesheet
 * Display video, audio image etc in item page
 
 ## Milestones
 * Help pages (CMS?)
 * Import Media Essence Information (needs whole archive on server, use exisiting scripts?)
-* Comment moderation
-* Basic search
-* Faceted search
 * Advanced search
 * Harvesting Interface Implementation OLAC & ANDS
 * CSV & METS Metadata Import Implementation for Collection and Items
