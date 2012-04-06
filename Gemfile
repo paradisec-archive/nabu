@@ -37,6 +37,8 @@ gem 'squeel'
 # Search
 gem 'sunspot_rails'
 gem 'sunspot_with_kaminari'
+# FIXME move back to development once solr is running standalone on the server
+gem 'sunspot_solr'
 
 # Web Server
 gem 'unicorn'
@@ -52,7 +54,6 @@ gem 'paper_trail', '~> 2'
 group :development, :test do
   gem 'thin'
   gem 'sqlite3'
-  gem 'sunspot_solr'
   gem 'turn', '~> 0.8.3', :require => false
 end
 
