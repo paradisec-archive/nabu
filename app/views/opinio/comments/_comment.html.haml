@@ -1,8 +1,9 @@
-%div{:id => "#comment_#{comment.id}"}
+%div{:id => "comment_#{comment.id}"}
   %p.comment_body
     = comment.body
-    %button
-      = link_to 'Delete', comment_path(comment), :method => :delete, :remote => true if can? :destroy, comment
+    - if can? :destroy, comment
+      %button
+        = link_to 'Delete', comment_path(comment), :method => :delete, :remote => true
   %p.comment_who
     = 'by '
     - if can? :manage, comment.owner
