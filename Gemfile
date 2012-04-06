@@ -50,6 +50,7 @@ gem 'progress_bar'
 gem 'paper_trail', '~> 2'
 
 group :development, :test do
+  gem 'thin'
   gem 'sqlite3'
   gem 'sunspot_solr'
   gem 'turn', '~> 0.8.3', :require => false
