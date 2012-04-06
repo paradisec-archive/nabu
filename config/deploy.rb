@@ -33,7 +33,7 @@ namespace :sunspot do
   end
 
   task :stop do
-    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=production"
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=production || true"
   end
 
   task :restart do
