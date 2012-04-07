@@ -53,6 +53,8 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
+    capistrano-unicorn (0.1.6)
+      capistrano
     capybara (1.1.2)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -102,10 +104,10 @@ GEM
     eventmachine (0.12.10)
     execjs (1.3.0)
       multi_json (~> 1.0)
-    factory_girl (3.0.0)
+    factory_girl (3.1.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (3.0.0)
-      factory_girl (~> 3.0.0)
+    factory_girl_rails (3.1.0)
+      factory_girl (~> 3.1.0)
       railties (>= 3.0.0)
     fastercsv (1.5.4)
     fattr (2.2.1)
@@ -182,7 +184,6 @@ GEM
     paper_trail (2.6.3)
       activerecord (~> 3.0)
       railties (~> 3.0)
-    pg (0.13.2)
     pickle (0.4.10)
       cucumber (>= 0.8)
       rake
@@ -303,6 +304,7 @@ DEPENDENCIES
   activeadmin
   cancan
   capistrano
+  capistrano-unicorn
   coffee-rails (~> 3.2.1)
   compass-rails
   cucumber-rails
@@ -321,7 +323,6 @@ DEPENDENCIES
   mysql2
   opinio
   paper_trail (~> 2)
-  pg
   pickle
   progress_bar
   rails (= 3.2.3)

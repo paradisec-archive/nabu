@@ -4,7 +4,6 @@ gem 'rails', '3.2.3'
 
 # Databases
 gem 'mysql2'
-gem 'pg'      # For heroku
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'
@@ -38,12 +37,15 @@ gem 'squeel'
 # Search
 gem 'sunspot_rails'
 gem 'sunspot_with_kaminari'
+# FIXME move back to development once solr is running standalone on the server
+gem 'sunspot_solr'
 
 # Web Server
 gem 'unicorn'
 
 # Deployment
 gem 'capistrano'
+gem 'capistrano-unicorn'
 
 # Misc
 gem 'progress_bar'
@@ -52,7 +54,6 @@ gem 'paper_trail', '~> 2'
 group :development, :test do
   gem 'thin'
   gem 'sqlite3'
-  gem 'sunspot_solr'
   gem 'turn', '~> 0.8.3', :require => false
 end
 
