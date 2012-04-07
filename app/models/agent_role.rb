@@ -1,5 +1,6 @@
 class AgentRole < ActiveRecord::Base
-  validates :name, :presence => true, :uniqueness => true
-
+  scope :alpha, order(:name)
   attr_accessible :name
+
+  validates :name, :presence => true, :uniqueness => true
 end

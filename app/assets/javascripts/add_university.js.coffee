@@ -5,7 +5,6 @@ $ ->
     $(this).replaceWith input
 
     $('#add-university-form button').click ->
-      console.log 'moo'
       value = $('#university_name').val()
       $.post '/universities', 'university[name]=' + value, (data) ->
         $('#collection_university_id').append($('<option></option>').attr('selected', 'selected').attr('value', data['id']).text(data['name']))

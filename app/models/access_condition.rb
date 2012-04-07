@@ -1,5 +1,7 @@
 class AccessCondition < ActiveRecord::Base
-  validates :name, :presence => true
+  scope :alpha, order(:name)
 
   attr_accessible :name
+
+  validates :name, :presence => true
 end
