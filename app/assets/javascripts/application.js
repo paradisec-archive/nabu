@@ -23,3 +23,4 @@
 //= require scrollable-table
 //= require sortable
 //= require tabs
+//= require remove_empty_fields

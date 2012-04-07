@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
 
   paginates_per 10
 
+  scope :alpha, order(:first_name, :last_name)
   def name
     "#{first_name} #{last_name}"
   end
