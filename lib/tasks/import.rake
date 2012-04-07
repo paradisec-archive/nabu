@@ -311,9 +311,9 @@ namespace :import do
       next if line =~ /^LangID/
       code, country_code, name_type, name = line.strip.split("\t")
       next unless name_type == "L"
-      language = Language.new :code => code, :name => name
+      language = Language.new :code => code, :name => name, :country_id => Country.where(:code => country_code).first.id
       if !language.valid?
-        puts "Skipping adding language #{code}, #{name}" if @verbose
+        puts "Skipping adding language #{code}, #{name} errors: #{language.errors}" if @verbose
         next
       end
       language.save!

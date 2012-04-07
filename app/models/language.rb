@@ -1,8 +1,11 @@
 class Language < ActiveRecord::Base
-  validates :name, :code, :presence => true
-  validates :name, :code, :uniqueness => true
+  belongs_to :country
 
-  attr_accessible :name, :code
+  validates :name, :presence => true, :uniqueness => true
+  validates :code, :presence => true, :uniqueness => true
+  validates :country, :presence => true, :associated => true
+
+  attr_accessible :name, :code, :country_id
 
   scope :alpha, order(:name)
   def name_with_code

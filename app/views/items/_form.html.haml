@@ -52,7 +52,7 @@
         %td
           = f.fields_for :item_countries do |c|
             - if c.object.new_record?
-              = c.collection_select :country_id, Country.alpha, :id, :name, {:prompt => true}, :class => 'addable'
+              = c.collection_select :country_id, Country.alpha, :id, :name, {:prompt => true}, :class => 'addable country'
             - else
               = c.object.country.name
               = c.check_box :_destroy
@@ -68,7 +68,8 @@
         %td
           = f.fields_for :item_subject_languages do |c|
             - if c.object.new_record?
-              = c.collection_select :language_id, Language.alpha, :id, :name, {:prompt => true}, :class => 'addable'
+              - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+              = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
               = c.object.language.name
               = c.check_box :_destroy
@@ -80,7 +81,8 @@
         %td
           = f.fields_for :item_content_languages do |c|
             - if c.object.new_record?
-              = c.collection_select :language_id, Language.alpha, :id, :name, {:prompt => true}, :class => 'addable'
+              - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+              = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
               = c.object.language.name
               = c.check_box :_destroy
