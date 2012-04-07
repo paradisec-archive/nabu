@@ -25,3 +25,4 @@
 //= require tabs
 //= require remove_empty_fields
 //= require add_university
+//= require addable_list

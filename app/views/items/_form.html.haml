@@ -52,7 +52,7 @@
         %td
           = f.fields_for :item_countries do |c|
             - if c.object.new_record?
-              = c.collection_select :country_id, Country.alpha, :id, :name, :prompt => true
+              = c.collection_select :country_id, Country.alpha, :id, :name, {:prompt => true}, :class => 'addable'
             - else
               = c.object.country.name
               = c.check_box :_destroy
@@ -68,7 +68,7 @@
         %td
           = f.fields_for :item_subject_languages do |c|
             - if c.object.new_record?
-              = c.collection_select :language_id, Language.alpha, :id, :name, :prompt => true
+              = c.collection_select :language_id, Language.alpha, :id, :name, {:prompt => true}, :class => 'addable'
             - else
               = c.object.language.name
               = c.check_box :_destroy
@@ -80,7 +80,7 @@
         %td
           = f.fields_for :item_content_languages do |c|
             - if c.object.new_record?
-              = c.collection_select :language_id, Language.alpha, :id, :name, :prompt => true
+              = c.collection_select :language_id, Language.alpha, :id, :name, {:prompt => true}, :class => 'addable'
             - else
               = c.object.language.name
               = c.check_box :_destroy
@@ -144,7 +144,7 @@
         %td
           = f.fields_for :item_admins do |a|
             - if a.object.new_record?
-              = a.collection_select :user_id, User.alpha, :id, :name, :prompt => true
+              = a.collection_select :user_id, User.alpha, :id, :name, {:prompt => true}, :class => 'addable'
             - else
               = a.object.user.name
               = a.check_box :_destroy
