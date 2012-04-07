@@ -41,19 +41,10 @@ class CollectionsController < ApplicationController
           with field.name, params[field.name] == 'true' ? true : false
         end
       end
+
+      order_by sort_column, sort_direction
+      paginate :page => params[:page], :per_page => params[:per_page]
     end
-
-      #fulltext params[:search]
-      #facet :language_ids, :country_ids, :university_id
-#
-#      with(:university_id, params[:university_id]) if params[:university_id].present?
-#      with(:language_ids, params[:language_id]) if params[:language_id].present?
-#      with(:country_ids, params[:country_id]) if params[:country_id].present?
-#
-#      order_by sort_column, sort_direction
-#      paginate :page => params[:page], :per_page => params[:per_page]
-#    end
-
   end
 
   def new
