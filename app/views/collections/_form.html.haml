@@ -34,7 +34,9 @@
 
       %tr
         %th= f.label :university_id, 'Originating university'
-        %td= f.collection_select :university_id, University.all, :id, :name, :prompt => true
+        %td
+          = f.collection_select :university_id, University.all, :id, :name, :prompt => true
+          = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
         %th= f.label :field_of_research_id, 'Field of research'

@@ -32,4 +32,5 @@ Nabu::Application.routes.draw do
     end
   end
   resources :items, :only => :index
+  resources :universities, :only => :create
 end

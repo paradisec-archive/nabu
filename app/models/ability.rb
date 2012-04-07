@@ -12,6 +12,7 @@ class Ability
     else
       can :manage, User, :id => user.id
       cannot :index, User
+      can :create, University
       can :create, Collection
       can :read, Collection, :private => false
       can :manage, Collection, :collection_admins => { :user_id => user.id }

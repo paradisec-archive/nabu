@@ -7,7 +7,7 @@
       - if params[:per_page]
         = hidden_field_tag :per_page, params[:per_page]
 
-      - @text_fields.each do |field| 
+      - @text_fields.each do |field|
         %p
           = label_tag field.name
           = text_field_tag field.name, params[field.name]
@@ -30,4 +30,3 @@
       = submit_tag 'Clear', :name => :clear
 
   = render 'search_results'
-
