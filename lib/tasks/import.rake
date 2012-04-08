@@ -1,4 +1,6 @@
 namespace :import do
+  
+  @verbose = true
 
   desc 'Setup database from old PARADISEC data & other imports'
   task :all => [:setup, :import, :clean]
@@ -182,6 +184,7 @@ namespace :import do
     users = client.query("SELECT * FROM contacts")
     users.each do |user|
       next if user['cont_collector'].blank? && user['cont_collector_surname'].blank?
+      next if user['cont_address1'] == 'DELETE THIS RECORD'
       last_name, first_name = user['cont_collector'].split(/, /, 2)
       if first_name.blank?
         first_name, last_name = user['cont_collector'].split(/ /, 2)
@@ -225,9 +228,14 @@ namespace :import do
         new_user.admin = false
         if !new_user.valid?
           puts "Error parsing contact #{user['cont_id']}"
-          puts first_name + " " + last_name
+          puts user['cont_id'] + ": " + last_name + ", " + first_name + " " + email
         end
-        new_user.save!
+        begin
+          new_user.save!
+        rescue => e
+          puts "Error importing contact: #{user['cont_id']} : #{user['cont_collector']}, #{user['cont_address1']}, #{user['cont_address2']}, #{user['cont_country']}, #{user['cont_email']}, #{user['cont_phone']}"
+          puts e.message
+        end
         puts "saved new user #{first_name} #{last_name}, #{email}, #{user['cont_id']}" if @verbose
       end
     end
@@ -503,6 +511,7 @@ namespace :import do
       next if user['cu_coll_id'].blank? || user['cu_usr_id'].blank?
       usr = User.find_by_pd_user_id user['cu_usr_id']
       collection = Collection.find_by_identifier user['cu_coll_id']
+      next if collection.nil?
       admin = CollectionAdmin.new :collection => collection, :user => usr
       if !admin.valid?
         puts "Error adding admin user #{user['cu_usr_id']} for collection #{user['cu_coll_id']}"

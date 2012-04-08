@@ -9,21 +9,25 @@ plugins/gems/bundles:
  bundle update
  bundle install
 
-rvm:
- ruby -v
- rvm list known
- rvm install ruby-xxx
+Installing ruby:
+  rbenv install [TAB][TAB] 
+  rbenv install 1.9.3-XXX
+  rbenv global 1.9.3-XXX
+  gem install bundler --no-ri --no-rdoc
 
 DB setup:
  rake db:drop
  rake db:create
  rake db:migrate
 
+Running solr:
+ rake sunspot:solr:start
+
 Importing old PARADISEC data:
  rake import:all
 
 running:
- script/rails
+ script/rails s
 
 test:
  rake cucumber:wip
