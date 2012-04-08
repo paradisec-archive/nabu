@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
   has_paper_trail
+  nilify_blanks
 
   belongs_to :collection
   belongs_to :collector, :class_name => 'User'

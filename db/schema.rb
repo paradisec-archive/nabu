@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120407092004) do
+ActiveRecord::Schema.define(:version => 20120408001624) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -234,7 +234,7 @@ ActiveRecord::Schema.define(:version => 20120407092004) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                                 :default => "",    :null => false
+    t.string   "email"
     t.string   "encrypted_password",     :limit => 128, :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -260,6 +260,7 @@ ActiveRecord::Schema.define(:version => 20120407092004) do
     t.string   "country"
     t.string   "phone"
     t.boolean  "operator",                              :default => false
+    t.boolean  "contact_only",                          :default => false
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
