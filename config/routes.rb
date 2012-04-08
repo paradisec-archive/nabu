@@ -26,8 +26,12 @@ Nabu::Application.routes.draw do
   resources :users
   resources :collections, :shallow => true do
     get 'advanced_search', :on => :collection
+    match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
+    match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
     resources :items do
       get 'advanced_search', :on => :collection
+      match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
+      match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
       opinio
     end
   end

@@ -70,6 +70,33 @@ class CollectionsController < ApplicationController
     build_associations
   end
 
+  def bulk_edit
+    @collection = Collection.new
+    build_associations
+
+    @fields = Sunspot::Setup.for(Collection).fields
+    @text_fields = Sunspot::Setup.for(Collection).all_text_fields
+    @search = Collection.solr_search do
+      Sunspot::Setup.for(Collection).all_text_fields.each do |field|
+        next if params[field.name].blank?
+        keywords params[field.name], :fields => [field.name]
+      end
+
+      Sunspot::Setup.for(Collection).fields.each do |field|
+        next if params[field.name].blank?
+        case field.type
+        when Sunspot::Type::StringType
+          # Do nothing. Should be covered by text field above
+        when Sunspot::Type::IntegerType
+          with field.name, params[field.name]
+        when Sunspot::Type::BooleanType
+          with field.name, params[field.name] == 'true' ? true : false
+        end
+      end
+
+    end
+  end
+
   def update
     if @collection.update_attributes(params[:collection])
       flash[:notice] = 'Collection was successfully updated.'
