@@ -25,7 +25,7 @@ set :default_shell, "/bin/bash --login"
 namespace :sunspot do
   task :symlink, :except => { :no_release => true } do
     rails_env = fetch(:rails_env, 'production')
-    run "mkdir -p #{release_path}/solr/data && ln -nfs #{shared_path}/solr/data/#{rails_env} #{release_path}/solr/data/#{rails_env}"
+    run "ln -nfs #{shared_path}/solr #{release_path}/solr"
   end
 
   task :start do

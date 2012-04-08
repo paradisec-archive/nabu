@@ -3,5 +3,6 @@ class University < ActiveRecord::Base
 
   attr_accessible :name
 
+  scope :alpha, order(:name)
   paginates_per 10
 end

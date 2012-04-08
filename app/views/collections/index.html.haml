@@ -4,13 +4,11 @@
 .page-box
   = form_tag collections_path, :method => :get do |f|
     %p
+      - if params[:per_page]
+        = hidden_field_tag :per_page, params[:per_page]
       = text_field_tag :search, params[:search]
       = submit_tag 'Filter', :name => nil
       = submit_tag 'Clear', :name => :clear
-
-  %p== #{@search.total} search results
-
-  = paginate @search
 
   #facets
     %table
@@ -54,43 +52,5 @@
 
 
 
+  = render 'search_results'
 
-
-  %table.table
-    %tr
-      = sortable :identifier, 'ID'
-      = sortable :title
-      = sortable :collector_name, 'Collector'
-      %th Countries
-      %th Languages
-      = sortable :created_at, 'Creation Date'
-      = sortable :university_name, 'Source university'
-      %th Map
-      %th Actions
-
-      - @search.each_hit_with_result do |hit, collection|
-        %tr
-          %td= collection.identifier
-          %td= collection.title
-          %td= collection.collector.name
-          %td
-            - collection.countries.each do |country|
-              = country.name
-          %td
-            - collection.languages.each do |language|
-              = language.name
-          %td= collection.created_at.to_date
-          %td= collection.university_name
-          %td
-            .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}}
-
-          %td
-            = link_to 'View', collection if can? :read, collection
-            = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
-
-  = paginate @search
-
-  %p
-    %button.per_page{:data => {:per => 10}} Show 10
-    %button.per_page{:data => {:per => 50}} Show 50
-    %button.per_page{:data => {:per => 100}} Show 100

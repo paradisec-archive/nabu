@@ -3,6 +3,8 @@ class Country < ActiveRecord::Base
 
   attr_accessible :name, :code
 
+  scope :alpha, order(:name)
+
   def name_with_code
     "#{code} - #{name}"
   end

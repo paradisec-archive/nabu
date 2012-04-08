@@ -23,13 +23,14 @@ Nabu::Application.routes.draw do
   match '/about' => 'page#about'
   match '/contact' => 'page#contact'
 
-  match '/search' => 'search#index', :as => :search
-
   resources :users
   resources :collections, :shallow => true do
+    get 'advanced_search', :on => :collection
     resources :items do
+      get 'advanced_search', :on => :collection
       opinio
     end
   end
   resources :items, :only => :index
+  resources :universities, :only => :create
 end

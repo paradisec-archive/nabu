@@ -87,6 +87,7 @@ class Collection < ActiveRecord::Base
 
     # Link models for faceting
     integer :university_id, :references => University
+    integer :collector_id, :references => User
     integer :language_ids, :references => Language, :multiple => true
     integer :country_ids, :references => Country, :multiple => true
 

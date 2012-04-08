@@ -4,6 +4,8 @@
 .page-box
   = form_tag items_path, :method => :get do |f|
     %p
+      - if params[:per_page]
+        = hidden_field_tag :per_page, params[:per_page]
       = text_field_tag :search, params[:search]
       = submit_tag 'Filter', :name => nil
       = submit_tag 'Clear', :name => :clear
