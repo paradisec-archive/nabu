@@ -291,6 +291,7 @@ namespace :import do
       new_uni = University.new :name => uni['uni_description']
       if !new_uni.valid?
         puts "Error adding university #{uni['uni_description']}"
+        new_uni.errors.each {|field, msg| puts "#{field}: #{msg}"}
         if Rails.env == "development"
           next
         end
@@ -312,6 +313,7 @@ namespace :import do
       country = Country.new :name => name, :code => code
       if !country.valid?
         puts "Error adding country #{code}, #{name}, #{area}"
+        country.errors.each {|field, msg| puts "#{field}: #{msg}"}
         if Rails.env == "development"
           next
         end
@@ -354,6 +356,7 @@ namespace :import do
       field = FieldOfResearch.new :identifier => id, :name => name
       if !field.valid?
         puts "Error adding field of research #{id}, #{name}"
+        field.errors.each {|field, msg| puts "#{field}: #{msg}"}        
         if Rails.env == "development"
           next
         end
@@ -441,7 +444,7 @@ namespace :import do
       ## save record
       if !new_coll.valid?
         puts "Error adding collection #{coll['coll_id']} #{coll['coll_note']}"
-        puts "#{new_coll.errors.to_a}"
+        new_coll.errors.each {|field, msg| puts "#{field}: #{msg}"}
       end
       new_coll.save!
 
@@ -523,10 +526,13 @@ namespace :import do
       next if user['cu_coll_id'].blank? || user['cu_usr_id'].blank?
       usr = User.find_by_pd_user_id user['cu_usr_id']
       collection = Collection.find_by_identifier user['cu_coll_id']
-      next if collection.nil?
+      next if collection.nil? || usr.nil?
+      admin = CollectionAdmin.find_by_collection_id_and_user_id collection.id, usr.id
+      next if admin
       admin = CollectionAdmin.new :collection => collection, :user => usr
       if !admin.valid?
         puts "Error adding admin user #{user['cu_usr_id']} for collection #{user['cu_coll_id']}"
+        admin.errors.each {|field, msg| puts "#{field}: #{msg}"}
         next
       end
       begin
@@ -554,6 +560,7 @@ namespace :import do
 
       if !disc_type.valid?
         puts "Error adding discourse type #{discourse['dt_name']}"
+        disc_type.errors.each {|field, msg| puts "#{field}: #{msg}"}
         next
       end
       disc_type.save!
@@ -575,6 +582,7 @@ namespace :import do
 
       if !new_role.valid?
         puts "Error adding agent role '#{role['role_name']}'"
+        new_role.errors.each {|field, msg| puts "#{field}: #{msg}"}
         next
       end
       new_role.save!
@@ -702,8 +710,7 @@ namespace :import do
       ## save record
       if !new_item.valid?
         puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
-        p item
-        p new_item.errors
+        new_item.errors.each {|field, msg| puts "#{field}: #{msg}"}
         break
       end
       new_item.save!
@@ -793,6 +800,7 @@ namespace :import do
       admin = ItemAdmin.new :item => item, :user => usr
       if !admin.valid?
         puts "Error adding admin user #{user['iu_usr_id']} for item #{user['iu_item_pid']}"
+        admin.errors.each {|field, msg| puts "#{field}: #{msg}"}
         next
       end
       begin
