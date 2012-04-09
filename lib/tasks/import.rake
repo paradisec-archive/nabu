@@ -619,12 +619,20 @@ namespace :import do
       ## origination date
       if item['item_date_iso'].blank?
         begin
-          originated_on = item['item_date'].to_date unless item['item_date'].blank?
+          if item['item_date'] == "date unknown" || item['item_date'] == "unknown"
+            originated_on = nil
+          else
+            originated_on = item['item_date'].to_date unless item['item_date'].blank?
+          end
         rescue
           puts "Error importing item_date #{item['item_date']} for item #{item['item_pid']}"
         end
       else
-        originated_on = item['item_date_iso'].to_date
+        if item['item_date_iso'] == "1999-11-30"
+          originated_on = nil
+        else
+          originated_on = item['item_date_iso'].to_date
+        end
       end
 
       ## get access conditions
