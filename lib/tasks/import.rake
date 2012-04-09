@@ -142,22 +142,23 @@ namespace :import do
       access = user['usr_access'] == 'administrator' ? true : false
 
       ## email
-      email = user['usr_email']
-      contact_only = false
-      if email.blank?
-        contact_only = true
+      email = nil
+      contact_only = true
+      if !user['usr_email'].blank?
+        email = user['usr_email'].strip
+        contact_only = false
       end
 
       ## password
       password = fixme(user, 'password', 'asdfgj')
 
       ## create user
-      new_user = User.new :first_name => first_name,
+      new_user = User.new({:first_name => first_name,
                           :last_name => last_name,
                           :email => email,
                           :password => password,
                           :password_confirmation => password,
-                          :contact_only => contact_only
+                          :contact_only => contact_only}, :as => :admin)
 
       ## save PARADISEC identifier
       new_user.pd_user_id = user['usr_id']
@@ -165,13 +166,13 @@ namespace :import do
       new_user.admin = access
       if !new_user.valid?
         puts "Error parsing User #{user['usr_id']}"
-        puts "#{new_user.errors}"
+        new_user.errors.each {|field, msg| puts "#{field}: #{msg}"}
         if Rails.env == "development"
           next
         end
       end
       new_user.save!
-      puts "saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['usr_id']}" if @verbose
+      puts "Saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['usr_id']}" if @verbose
     end
   end
 
@@ -191,27 +192,33 @@ namespace :import do
         first_name = user['cont_collector']
         last_name = user['cont_collector_surname']
       end
+      email = nil
       contact_only = true
-      if user['cont_email']
-        email = user['cont_email'].split(/ /)[0]
+      if !user['cont_email'].blank?
+        email = user['cont_email'].strip.split(/ /)[0]
         contact_only = false
       end
 
       # identify if this user already exists in DB
       cur_user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
       if cur_user
-        cur_user.email = email
-        cur_user.contact_only = false if !contact_only # overwrite only if we have an email
+        cur_user.email = email if email # overwrite only if we have an email
+        cur_user.contact_only = false if email # overwrite only if we have an email
         cur_user.address = user['cont_address1']
         cur_user.address2 = user['cont_address2']
         cur_user.country = user['cont_country']
         cur_user.phone = user['cont_phone']
         cur_user.pd_contact_id = user['cont_id']
-        cur_user.save!
-        puts "saved existing user " + cur_user.email if @verbose
+        begin
+          cur_user.save!
+        rescue => e
+          puts "Error updating contact: #{user['cont_id']} : #{user['cont_collector']}, #{user['cont_address1']}, #{user['cont_address2']}, #{user['cont_country']}, #{user['cont_email']}, #{user['cont_phone']}"
+          puts e.message
+        end
+        puts "Saved existing user " + cur_user.last_name + ", " + cur_user.first_name if @verbose
       else
         password = fixme(user, 'password', 'asdfgh')
-        new_user = User.new :first_name => first_name,
+        new_user = User.new({:first_name => first_name,
                             :last_name => last_name,
                             :email => email,
                             :contact_only => contact_only,
@@ -220,13 +227,14 @@ namespace :import do
                             :address => user['cont_address1'],
                             :address2 => user['cont_address2'],
                             :country => user['cont_country'],
-                            :phone => user['cont_phone']
+                            :phone => user['cont_phone']}, :as => :admin)
 
         ## save PARADISEC identifier
         new_user.pd_contact_id = user['cont_id']
         new_user.admin = false
         if !new_user.valid?
           puts "Error parsing contact #{user['cont_id']}"
+          new_user.errors.each {|field, msg| puts "#{field}: #{msg}"}
           if Rails.env == "development"
             if !new_user.errors[:email].empty? # duplicate email
               new_user.email = nil 
@@ -240,7 +248,7 @@ namespace :import do
           puts "Error importing contact: #{user['cont_id']} : #{user['cont_collector']}, #{user['cont_address1']}, #{user['cont_address2']}, #{user['cont_country']}, #{user['cont_email']}, #{user['cont_phone']}"
           puts e.message
         end
-        puts "saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['cont_id']}" if @verbose
+        puts "Saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['cont_id']}" if @verbose
       end
     end
   end
@@ -818,11 +826,11 @@ namespace :import do
             first_name = last_name
             last_name = ''
           end
-          new_user = User.create! :first_name => first_name.strip,
+          new_user = User.create!({:first_name => first_name.strip,
                                   :last_name => last_name.strip,
                                   :contact_only => true,
                                   :password => password,
-                                  :password_confirmation => password
+                                  :password_confirmation => password}, :as => :admin)
           user = new_user
         end
         puts "Saved new user #{first_name} #{last_name}" if @verbose
