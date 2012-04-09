@@ -228,7 +228,9 @@ namespace :import do
         new_user.admin = false
         if !new_user.valid?
           puts "Error parsing contact #{user['cont_id']}"
-          new_user.email = nil if !new_user.errors[:email].empty?
+          if Rails.env == "development"
+            new_user.email = nil if !new_user.errors[:email].empty?
+          end
         end
         begin
           new_user.save!
