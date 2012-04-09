@@ -6,7 +6,7 @@ namespace :import do
   task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:quiet, :dev_users, :add_identifiers, :load_db]
+  task :setup => [:dev_users, :add_identifiers, :load_db]
 
   task :quiet do
     if ENV['DEBUG'].nil?
@@ -228,7 +228,7 @@ namespace :import do
         new_user.admin = false
         if !new_user.valid?
           puts "Error parsing contact #{user['cont_id']}"
-          puts user['cont_id'] + ": " + last_name + ", " + first_name + " " + email
+          new_user.email = nil if !new_user.errors[:email].empty?
         end
         begin
           new_user.save!
