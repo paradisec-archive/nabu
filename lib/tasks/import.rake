@@ -833,7 +833,11 @@ namespace :import do
       if first_name.blank?
         first_name, space, last_name = agent['ir_role_content'].rpartition(' ')
       end
-      user = User.find_by_first_name_and_last_name(first_name, last_name)
+      if last_name.blank?
+        user = User.find_by_first_name first_name
+      else
+        user = User.find_by_first_name_and_last_name(first_name, last_name)
+      end
       if !user
         ## let's create a new user without email
         password = fixme(user, 'password', 'asdfgj')
