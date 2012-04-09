@@ -9,5 +9,7 @@ class PageController < ApplicationController
     @num_users = User.count
     @num_universities = University.count
     @num_comments = Comment.count
+
+    @comments = Comment.order('id desc').limit(5)
   end
 end
