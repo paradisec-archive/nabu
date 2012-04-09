@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
   has_paper_trail
+  nilify_blanks
 
   belongs_to :collection
   belongs_to :collector, :class_name => 'User'
@@ -46,7 +47,9 @@ class Item < ActiveRecord::Base
                   :access_condition_id,
                   :access_narrative, :private,
                   :originated_on, :language,
-                  :dialect, :discourse_type_id
+                  :dialect, :discourse_type_id,
+                  :metadata_exportable, :born_digital, :tapes_returned,
+                  :original_media, :ingest_notes, :tracking
 
   accepts_nested_attributes_for :item_countries, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_subject_languages, :allow_destroy => true, :reject_if => :all_blank

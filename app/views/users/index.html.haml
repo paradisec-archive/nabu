@@ -13,15 +13,16 @@
 
   %table.table
     %tr
-      = sortable 'id'
-      = sortable 'first_name'
-      = sortable 'last_name'
-      = sortable 'address'
-      = sortable 'address2'
-      = sortable 'country'
-      = sortable 'email'
-      = sortable 'phone'
-      = sortable 'admin'
+      = sortable :id
+      = sortable :first_name
+      = sortable :last_name
+      = sortable :address
+      = sortable :address2
+      = sortable :country
+      = sortable :email
+      = sortable :phone
+      = sortable :contact_only
+      = sortable :admin
       %th Action
     - @users.each do |user|
       %tr
@@ -33,6 +34,7 @@
         %td= user.country
         %td= user.email
         %td= user.phone
+        %td= user.contact_only? ? 'Yes' : 'No'
         %td= user.admin? ? 'Yes' : 'No'
         %td
           =link_to 'Edit', edit_user_path(user)

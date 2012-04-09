@@ -1,7 +1,7 @@
 
 .left
   - if @collection.new_record?
-    - @collection.title = 'Enter title'
+    %strong= f.label :title
   = f.text_field :title, {:style => "font-size: 38px; width: 800px;"}
 
 .right

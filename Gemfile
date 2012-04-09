@@ -33,6 +33,8 @@ gem 'cancan'
 
 # Database improvements
 gem 'squeel'
+gem 'nilify_blanks'
+
 
 # Search
 gem 'sunspot_rails'

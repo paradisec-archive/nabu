@@ -1,5 +1,6 @@
 class Collection < ActiveRecord::Base
   has_paper_trail
+  nilify_blanks
 
   belongs_to :collector, :class_name => "User"
   belongs_to :operator, :class_name => "User"

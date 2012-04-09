@@ -2,7 +2,7 @@
 
 
 .page-box
-  = form_tag items_path, :method => :get do |f|
+  = form_tag items_path, :method => :get, :class => 'no-empty-submit' do |f|
     %p
       - if params[:per_page]
         = hidden_field_tag :per_page, params[:per_page]

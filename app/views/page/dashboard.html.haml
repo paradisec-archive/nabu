@@ -15,7 +15,19 @@
 
     #comments
     %fieldset
-      %legend Comments
+      %legend Last 5 Comments
+
+      %table
+        %tr
+          %th Item
+          %th User
+          %th Comment
+        - @comments.each do |comment|
+          %tr
+            %td= link_to comment.commentable.full_identifier, comment.commentable
+            %td= comment.owner.name
+            %td= comment.body
+
 
     #metadata
     %fieldset
