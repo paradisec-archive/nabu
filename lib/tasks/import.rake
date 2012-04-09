@@ -833,8 +833,8 @@ namespace :import do
       if first_name.blank?
         first_name, space, last_name = agent['ir_role_content'].rpartition(' ')
       end
-      if last_name.blank?
-        user = User.find_by_first_name first_name
+      if first_name.blank?
+        user = User.find_by_first_name last_name
       else
         user = User.find_by_first_name_and_last_name(first_name, last_name)
       end
