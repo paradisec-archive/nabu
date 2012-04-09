@@ -39,10 +39,6 @@
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
-        %th= f.label :field_of_research_id, 'Field of research'
-        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, :prompt => true
-
-      %tr
         %th= f.label :country_id, 'Countries'
         %td
           = f.fields_for :collection_countries do |c|
@@ -158,4 +154,9 @@
       %tr
         %th= f.label :tape_location
         %td= f.text_field :tape_location
+
+      %tr
+        %th= f.label :field_of_research_id, 'Field of research'
+        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, :prompt => true
+
 

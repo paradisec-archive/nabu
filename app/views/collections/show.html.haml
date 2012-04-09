@@ -32,10 +32,6 @@
         %td= @collection.university_name
 
       %tr
-        %th Field of research
-        %td= @collection.field_of_research.name_with_identifier
-
-      %tr
         %th Countries
         %td
           - @collection.countries.each do |country|
@@ -139,6 +135,10 @@
         %tr
           %th Location tapes stored
           %td= @collection.tape_location
+
+        %tr
+          %th Field of research
+          %td= @collection.field_of_research.name_with_identifier
           
         %tr
           %th #Items in collections
