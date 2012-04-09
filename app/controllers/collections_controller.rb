@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource #:except => [:advanced_search]
 
   def index
     if params[:clear]
@@ -22,6 +22,7 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
+#    authorize! :advanced_search, Collection
     @fields = Sunspot::Setup.for(Collection).fields
     @text_fields = Sunspot::Setup.for(Collection).all_text_fields
     @search = Collection.solr_search do
@@ -69,11 +70,56 @@ class CollectionsController < ApplicationController
   def edit
     build_associations
   end
+  def update
+    if @collection.update_attributes(params[:collection])
+      flash[:notice] = 'Collection was successfully updated.'
+      redirect_to @collection
+    else
+      render :action => "edit"
+    end
+  end
 
   def bulk_edit
     @collection = Collection.new
     build_associations
 
+    do_search
+  end
+
+
+  def bulk_update
+    @collections = Collection.where :id => params[:collection_ids].split(' ')
+
+    update_params = params[:collection].delete_if {|k, v| v.blank?}
+
+    invalid_record = false
+    @collections.each do |collection|
+      # TODO Allow association deletion
+#      associations_to_delete = update_params.select {|k, v| k =~ /^delete_assoc
+      unless collection.update_attributes(params[:collection])
+        invalid_record = true
+        @collection = collection
+        break
+      end
+    end
+
+    if invalid_record
+      do_search
+      render :action => "bulk_edit"
+    else
+      flash[:notice] = 'Collections where successfully updated.'
+      redirect_to advanced_search_collections_path + "?#{params[:original_search_params]}"
+    end
+  end
+
+  private
+  def build_associations
+    @collection.collection_languages.build
+    @collection.collection_countries.build
+    @collection.collection_admins.build
+  end
+
+  def do_search
     @fields = Sunspot::Setup.for(Collection).fields
     @text_fields = Sunspot::Setup.for(Collection).all_text_fields
     @search = Collection.solr_search do
@@ -93,24 +139,6 @@ class CollectionsController < ApplicationController
           with field.name, params[field.name] == 'true' ? true : false
         end
       end
-
     end
   end
-
-  def update
-    if @collection.update_attributes(params[:collection])
-      flash[:notice] = 'Collection was successfully updated.'
-      redirect_to @collection
-    else
-      render :action => "edit"
-    end
-  end
-
-  private
-  def build_associations
-    @collection.collection_languages.build
-    @collection.collection_countries.build
-    @collection.collection_admins.build
-  end
-
 end

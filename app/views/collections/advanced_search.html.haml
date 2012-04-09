@@ -2,7 +2,7 @@
 
 
 .page-box
-  = form_tag advanced_search_collections_path, :method => :get, :class => 'no-empty-submit' do |f|
+  = form_tag advanced_search_collections_path, :method => :get, :class => 'no-empty-submit' do
     %p
       - if params[:per_page]
         = hidden_field_tag :per_page, params[:per_page]
@@ -30,3 +30,5 @@
       = submit_tag 'Clear', :name => :clear
 
   = render 'search_results'
+
+  = link_to 'Bulk Update results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
