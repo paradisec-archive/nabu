@@ -20,13 +20,16 @@ DB setup:
  rake db:create
  rake db:migrate
 
-Running solr:
- rake sunspot:solr:start
-
 Importing old PARADISEC data:
  rake import:all
 
-running:
+Running solr:
+ rake sunspot:solr:start
+
+After import:
+ rake sunspot:reindex
+
+Running the app:
  script/rails s
 
 test:

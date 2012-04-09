@@ -6,7 +6,7 @@ namespace :import do
   task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:dev_users, :add_identifiers, :load_db]
+  task :setup => [:quiet, :dev_users, :add_identifiers, :load_db]
 
   task :quiet do
     if ENV['DEBUG'].nil?
@@ -92,10 +92,6 @@ namespace :import do
     client
   end
 
-  def nilify(object)
-    (object.blank? ? nil : object)
-  end
-
   ## FOR USERS
 
   def fixme(object, field, default = 'FIXME')
@@ -147,8 +143,9 @@ namespace :import do
 
       ## email
       email = user['usr_email']
+      contact_only = false
       if email.blank?
-        email = fixme(user, 'usr_email', user['usr_id'].to_s+'@example.com')
+        contact_only = true
       end
 
       ## password
@@ -159,7 +156,8 @@ namespace :import do
                           :last_name => last_name,
                           :email => email,
                           :password => password,
-                          :password_confirmation => password
+                          :password_confirmation => password,
+                          :contact_only => contact_only
 
       ## save PARADISEC identifier
       new_user.pd_user_id = user['usr_id']
@@ -173,7 +171,7 @@ namespace :import do
         end
       end
       new_user.save!
-      puts "saved new user #{first_name} #{last_name}, #{email}, #{user['usr_id']}" if @verbose
+      puts "saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['usr_id']}" if @verbose
     end
   end
 
@@ -193,19 +191,19 @@ namespace :import do
         first_name = user['cont_collector']
         last_name = user['cont_collector_surname']
       end
+      contact_only = true
       if user['cont_email']
         email = user['cont_email'].split(/ /)[0]
-      end
-      if email.blank?
-        email = fixme(user, 'cont_email', user['cont_id'].to_s + 'cont@example.com')
+        contact_only = false
       end
 
       # identify if this user already exists in DB
       cur_user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
       if cur_user
         cur_user.email = email
-        cur_user.address = nilify(user['cont_address1'])
-        cur_user.address2 = nilify(user['cont_address2'])
+        cur_user.contact_only = false if !contact_only # overwrite only if we have an email
+        cur_user.address = user['cont_address1']
+        cur_user.address2 = user['cont_address2']
         cur_user.country = user['cont_country']
         cur_user.phone = user['cont_phone']
         cur_user.pd_contact_id = user['cont_id']
@@ -216,12 +214,13 @@ namespace :import do
         new_user = User.new :first_name => first_name,
                             :last_name => last_name,
                             :email => email,
+                            :contact_only => contact_only,
                             :password => password,
                             :password_confirmation => password,
-                            :address => nilify(user['cont_address1']),
-                            :address2 => nilify(user['cont_address2']),
-                            :country => nilify(user['cont_country']),
-                            :phone => nilify(user['cont_phone'])
+                            :address => user['cont_address1'],
+                            :address2 => user['cont_address2'],
+                            :country => user['cont_country'],
+                            :phone => user['cont_phone']
 
         ## save PARADISEC identifier
         new_user.pd_contact_id = user['cont_id']
@@ -229,7 +228,10 @@ namespace :import do
         if !new_user.valid?
           puts "Error parsing contact #{user['cont_id']}"
           if Rails.env == "development"
-            new_user.email = nil if !new_user.errors[:email].empty?
+            if !new_user.errors[:email].empty? # duplicate email
+              new_user.email = nil 
+              new_user.contact_only = true
+            end
           end
         end
         begin
@@ -238,7 +240,7 @@ namespace :import do
           puts "Error importing contact: #{user['cont_id']} : #{user['cont_collector']}, #{user['cont_address1']}, #{user['cont_address2']}, #{user['cont_country']}, #{user['cont_email']}, #{user['cont_phone']}"
           puts e.message
         end
-        puts "saved new user #{first_name} #{last_name}, #{email}, #{user['cont_id']}" if @verbose
+        puts "saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['cont_id']}" if @verbose
       end
     end
   end
@@ -398,17 +400,17 @@ namespace :import do
       new_coll = Collection.new :identifier => coll['coll_id'],
                                 :title => title,
                                 :description => description,
-                                :region => nilify(coll['coll_region_village']),
+                                :region => coll['coll_region_village'],
                                 :latitude => latitude,
                                 :longitude => longitude,
                                 :zoom => zoom.to_i,
-                                :access_narrative => nilify(coll['coll_access_narrative']),
-                                :metadata_source => nilify(coll['coll_metadata_source']),
-                                :orthographic_notes => nilify(coll['coll_orthographic_notes']),
-                                :media => nilify(coll['coll_media']),
-                                :comments => nilify(coll['coll_comments']),
-                                :deposit_form_recieved => nilify(coll['coll_depform_rcvd']),
-                                :tape_location => nilify(coll['coll_location']),
+                                :access_narrative => coll['coll_access_narrative'],
+                                :metadata_source => coll['coll_metadata_source'],
+                                :orthographic_notes => coll['coll_orthographic_notes'],
+                                :media => coll['coll_media'],
+                                :comments => coll['coll_comments'],
+                                :deposit_form_recieved => coll['coll_depform_rcvd'],
+                                :tape_location => coll['coll_location'],
                                 :field_of_research_id => 1
 
       ## set collector, operator and university
@@ -635,21 +637,21 @@ namespace :import do
       new_item = Item.new :identifier => identifier,
                           :title => title,
                           :description => description,
-                          :region => nilify(item['item_region_village']),
-                          :language => nilify(item['item_source_language']),
-                          :dialect => nilify(item['item_dialect']),
+                          :region => item['item_region_village'],
+                          :language => item['item_source_language'],
+                          :dialect => item['item_dialect'],
                           :latitude => latitude,
                           :longitude => longitude,
                           :zoom => zoom.to_i,
-                          :url => nilify(item['item_url']),
-                          :access_narrative => nilify(item['item_comments']),
+                          :url => item['item_url'],
+                          :access_narrative => item['item_comments'],
                           :originated_on => originated_on,
                           :metadata_exportable => item['item_impxml_ready'],
                           :born_digital => item['item_born_digital'],
                           :tapes_returned => item['item_tapes_returned'],
-                          :original_media => nilify(item['item_media']),
-                          :ingest_notes => nilify(item['item_audio_notes']),
-                          :tracking => nilify(item['item_tracking'])
+                          :original_media => item['item_media'],
+                          :ingest_notes => item['item_audio_notes'],
+                          :tracking => item['item_tracking']
 
       ## set collection, collector, operator and university
       new_item.collection = collection
@@ -809,9 +811,8 @@ namespace :import do
       end
       user = User.find_by_first_name_and_last_name(first_name, last_name)
       if !user
-        ## let's create a ew user
-        email = 'agent'+agent['ir_id'].to_s+'@example.com'
-        password = 'asdfgj'
+        ## let's create a new user without email
+        password = fixme(user, 'password', 'asdfgj')
         begin
           if first_name.blank?
             first_name = last_name
@@ -819,12 +820,12 @@ namespace :import do
           end
           new_user = User.create! :first_name => first_name.strip,
                                   :last_name => last_name.strip,
-                                  :email => email,
+                                  :contact_only => true,
                                   :password => password,
                                   :password_confirmation => password
           user = new_user
         end
-        puts "saved new user #{first_name} #{last_name}, #{email}" if @verbose
+        puts "Saved new user #{first_name} #{last_name}" if @verbose
       end
       begin
         ItemAgent.create! :item => item, :agent_role => agent_role, :user => user
