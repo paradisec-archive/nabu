@@ -106,21 +106,22 @@ namespace :import do
 
   desc 'Add some users for the development environment'
   task :dev_users => :environment do
-    return if Rails.env.production?
-    puts 'Adding development Users'
-    u = User.create :email => 'user@example.com',
-                    :first_name => 'User',
-                    :last_name => 'Doe',
-                    :password => 'password',
-                    :password_confirmation => 'password'
-    u.confirm!
-    u = User.create :email => 'admin@example.com',
-                    :first_name => 'Admin',
-                    :last_name => 'Doe',
-                    :password => 'password',
-                    :password_confirmation => 'password'
-    u.confirm!
-    u.admin!
+    unless if Rails.env.production?
+      puts 'Adding development Users'
+      u = User.create :email => 'user@example.com',
+        :first_name => 'User',
+        :last_name => 'Doe',
+        :password => 'password',
+        :password_confirmation => 'password'
+      u.confirm!
+      u = User.create :email => 'admin@example.com',
+        :first_name => 'Admin',
+        :last_name => 'Doe',
+        :password => 'password',
+        :password_confirmation => 'password'
+      u.confirm!
+      u.admin!
+    end
   end
 
   desc 'Import users into NABU from paradisec_legacy DB'
