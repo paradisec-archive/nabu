@@ -106,7 +106,7 @@ namespace :import do
 
   desc 'Add some users for the development environment'
   task :dev_users => :environment do
-    unless if Rails.env.production?
+    unless Rails.env.production?
       puts 'Adding development Users'
       u = User.create :email => 'user@example.com',
         :first_name => 'User',
