@@ -68,7 +68,7 @@
         %td
           = f.fields_for :item_subject_languages do |c|
             - if c.object.new_record?
-              - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+              - options_for_select = Language.alpha.map { |l| "<option data-language_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
               = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
               = c.object.language.name
@@ -81,7 +81,7 @@
         %td
           = f.fields_for :item_content_languages do |c|
             - if c.object.new_record?
-              - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+              - options_for_select = Language.alpha.map { |l| "<option data-language_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
               = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
               = c.object.language.name
