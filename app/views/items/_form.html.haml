@@ -71,7 +71,7 @@
               - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
               = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
-              = c.object.subject_language.name
+              = c.object.language.name
               = c.check_box :_destroy
               Delete
             %br
@@ -84,7 +84,7 @@
               - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
               = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
             - else
-              = c.object.content_language.name
+              = c.object.language.name
               = c.check_box :_destroy
               Delete
             %br
