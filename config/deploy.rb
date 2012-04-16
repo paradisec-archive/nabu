@@ -28,14 +28,17 @@ namespace :sunspot do
     run "ln -nfs #{shared_path}/solr #{release_path}/solr"
   end
 
+  desc 'Start solr'
   task :start do
     run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:start RAILS_ENV=production"
   end
 
+  desc 'Stop solr'
   task :stop do
     run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=production || true"
   end
 
+  desc 'Restart solr'
   task :restart do
     stop
     start
