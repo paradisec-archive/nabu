@@ -75,18 +75,18 @@
       %legend Access information
       %table.form.show
         %tr
-          %th User access
+          %th Edit access
           %td
             - @collection.admins.each do |admin|
               = admin.name
               %br
 
         %tr
-          %th Access conditions
+          %th Data access conditions
           %td= @collection.access_condition_name
 
         %tr
-          %th Access narrative
+          %th Data access details
           %td= @collection.access_narrative
 
 

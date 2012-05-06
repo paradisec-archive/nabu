@@ -99,7 +99,7 @@
     %legend Access Information
     %table.form
       %tr
-        %th= f.label :user_id, 'User access'
+        %th= f.label :user_id, 'Edit access'
         %td
           = f.fields_for :collection_admins do |a|
             %br
@@ -111,11 +111,11 @@
               Delete
 
       %tr
-        %th= f.label :access_condition
+        %th= f.label :access_condition, 'Data access conditions'
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, :prompt => true
 
       %tr
-        %th= f.label :access_narrative
+        %th= f.label :access_narrative, 'Data access details'
         %td= f.text_area :access_narrative, :rows => 5
 
 
