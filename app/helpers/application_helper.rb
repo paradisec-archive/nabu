@@ -56,4 +56,8 @@ module ApplicationHelper
     cite
   end
 
+  def current_link_to label, path, cname
+    link_to label, path, ({:class => 'active'} if controller.controller_name == cname)
+  end
+
 end

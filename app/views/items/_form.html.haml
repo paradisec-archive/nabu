@@ -1,4 +1,7 @@
-= f.text_field :title, {:style => "font-size: 38px; width: 100%"}
+.left
+  = f.text_field :title, {:style => "width: 800px", :placeholder => "Please enter a title for the item"}
+
+.clear
 
 .twoup-1
   %fieldset
@@ -40,7 +43,7 @@
         %th
           = f.label :description
           %br
-          %i (publishable)
+          %i (published)
         %td= f.text_area :description, :rows => 5
 
       %tr
@@ -142,7 +145,7 @@
     %legend Admin information
     %table.form
       %tr
-        %th= f.label :user_id, 'User access'
+        %th= f.label :user_id, 'Edit access'
         %td
           = f.fields_for :item_admins do |a|
             - if a.object.new_record?
@@ -154,9 +157,9 @@
             %br
 
       %tr
-        %th= f.label :access_condition
+        %th= f.label :access_condition, 'Data access conditions'
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, :prompt => true
 
       %tr
-        %th= f.label :access_narrative
+        %th= f.label :access_narrative, 'Data access details'
         %td= f.text_area :access_narrative, :rows => 5

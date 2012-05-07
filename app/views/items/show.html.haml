@@ -256,21 +256,21 @@
             %td= @item.updated_at.to_date
 
           %tr
-            %th User access
+            %th Edit access
             %td
               - @item.admins.each do |admin|
                 = admin.name
                 %br
 
           %tr
-            %th Access conditions
+            %th Data access conditions
             %td= @item.access_condition_name
 
           %tr
-            %th Access narrative
+            %th Data access narrative
             %td= @item.access_narrative
 
 
-- if can? :update, @item
-  %button
-    = link_to 'Edit item', edit_item_path(@item) 
+  - if can? :update, @item
+    %button
+      = link_to 'Edit item', edit_item_path(@item)

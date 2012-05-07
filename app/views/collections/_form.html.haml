@@ -1,8 +1,6 @@
 
 .left
-  - if @collection.new_record?
-    %strong= f.label :title
-  = f.text_field :title, {:style => "font-size: 38px; width: 800px;"}
+  = f.text_field :title, {:style => "width: 800px;", :placeholder => "Please enter a title for the collection"}
 
 .right
   = f.check_box :complete
@@ -92,7 +90,7 @@
         %th
           = f.label :description
           %br
-          %i (publishable)
+          %i (published)
         %td= f.text_area :description, :rows => 5
 
   %fieldset

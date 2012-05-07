@@ -30,13 +30,12 @@
             = link_to 'Sign in', new_user_session_path
 
     #nav
-      #menu
-        %ul
-          %li.active= link_to 'Home', root_path
-          %li= link_to 'Collections', collections_path
-          %li= link_to 'Items', items_path
-          %li= link_to 'Users', users_path if can? :manage, User
-          %li= link_to 'Help', '#'
+      %ul{:id => 'menu', :role => 'navigation'}
+        %li= current_link_to 'Home', root_path, 'page'
+        %li= current_link_to 'Collections', collections_path, 'collections'
+        %li= current_link_to 'Items', items_path, 'items'
+        %li= current_link_to 'Users', users_path, 'users' if can? :manage, User
+        %li= link_to 'Help', '#'
 
     #flash
       - flash.each do |name, msg|
