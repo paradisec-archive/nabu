@@ -44,7 +44,6 @@
   = render 'search_results'
 
   .right
-    %button
-      = link_to 'Bulk Update results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+    = link_to 'Bulk Update results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
 
   .clear
