@@ -207,10 +207,11 @@ body.bp {
   }
 
   table.form {
-    border-spacing: 2px;
+    border-spacing: 5px;
     margin-bottom: 0;
     td {
       vertical-align: top;
+      min-width: 200px;
 
       .map {
         width: 100%;
@@ -222,11 +223,19 @@ body.bp {
     th {
       text-align: right;
       vertical-align: top;
+      min-wdith: 200px;
       &:after { content: ":" }
+      &.no_colon:after { content: none }
     }
 
     select {
       width: 295px;
+      height: 28px;
+      padding: 4px 0;
+      border: solid 1px #E5E5E5;
+      box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+      background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+      background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     }
   }
 
@@ -320,7 +329,7 @@ body.bp {
   }
 
   // audio / video
-  #media {
+  #media_item {
     height: 200px;
     margin: 8px;
     border: 2px solid grey;

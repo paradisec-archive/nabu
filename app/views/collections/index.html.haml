@@ -3,12 +3,17 @@
 
 .page-box
   = form_tag collections_path, :method => :get, :class => 'no-empty-submit' do |f|
-    %p
+    .left
       - if params[:per_page]
         = hidden_field_tag :per_page, params[:per_page]
       = text_field_tag :search, params[:search], {:placeholder => "Please enter search terms to filter collections"}
       = submit_tag 'Search', :name => nil
       = submit_tag 'Clear', :name => :clear
+
+    .right
+      = link_to 'Advanced Search', advanced_search_collections_path
+
+    .clear
 
     %p== #{@search.total} search results
 
