@@ -8,9 +8,12 @@
     - if params[:per_page]
       = hidden_field_tag :per_page, params[:per_page]
 
+    .right
+      = link_to 'Faceted Search', collections_path
+
     .twoup-1
       %fieldset
-        %legend Search Collection
+        %legend Advanced Search
         %table.form
           - @text_fields.each do |field|
             %tr
@@ -19,7 +22,6 @@
 
     .twoup-2
       %fieldset
-        %legend &nbsp;
         %table.form
           - @fields.each do |field|
             %tr
@@ -41,4 +43,8 @@
 
   = render 'search_results'
 
-  = link_to 'Bulk Update results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+  .right
+    %button
+      = link_to 'Bulk Update results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+  .clear
