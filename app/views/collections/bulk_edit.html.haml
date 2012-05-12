@@ -1,6 +1,9 @@
+%h1 Collections Bulk Update
 
 
 .page-box
+  %p== #{@search.total} search results
+
   = render 'search_results'
 
 = form_for @collection, :url => bulk_update_collections_path, :method => :put do |f|
