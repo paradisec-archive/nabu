@@ -40,13 +40,6 @@ class Collection < ActiveRecord::Base
 
   paginates_per 10
 
-  before_create do |collection|
-    collection.admins << collector
-    if operator && collector.id != operator.id
-      collection.admins << operator
-    end
-  end
-
   delegate :name, :to => :university, :prefix => true, :allow_nil => true
   delegate :name, :to => :collector, :prefix => true, :allow_nil => true
   delegate :name, :to => :operator, :prefix => true, :allow_nil => true

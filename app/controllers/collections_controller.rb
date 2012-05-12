@@ -72,6 +72,10 @@ class CollectionsController < ApplicationController
   end
   def update
     if @collection.update_attributes(params[:collection])
+      unless @collection.admins.include? current_user
+        @collection.admins << current_user
+        @collection.save!
+      end
       flash[:notice] = 'Collection was successfully updated.'
       redirect_to @collection
     else
