@@ -200,8 +200,8 @@
         %li.tab= link_to 'Admin information', '#admin'
 
     #comment
-      = render_comments_form @item
-      = render_comments @item
+      = render :partial => 'comments/new', :locals => { :item => @item }
+      = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
 
     - if can? :manage, @item
       #archive

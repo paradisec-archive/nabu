@@ -14,24 +14,43 @@
     %h2 System monitoring
 
     #comments
-    %fieldset
-      %legend Last 5 Comments
+      %fieldset
+        %legend Last 5 Comments
 
-      %table
-        %tr
-          %th Item
-          %th User
-          %th Comment
-        - @comments.each do |comment|
+        %table
           %tr
-            %td= link_to comment.commentable.full_identifier, comment.commentable
-            %td= comment.owner.name
-            %td= comment.body
+            %th Item
+            %th User
+            %th Comment
+          - @comments.each do |comment|
+            %tr
+              %td= link_to comment.commentable.full_identifier, comment.commentable
+              %td= comment.owner.name
+              %td= comment.body
+
+    #moderation
+      %fieldset
+        %legend Unmoderated Comments
+
+        %table
+          %tr
+            %th Item
+            %th User
+            %th Comment
+            %th Actions
+          - @unapproved_comments.each do |comment|
+            %tr
+              %td= link_to comment.commentable.full_identifier, comment.commentable
+              %td= comment.owner.name
+              %td= comment.body
+              %td
+                = link_to 'approve', approve_comment_path(comment), :method => :post
+                = link_to 'spam',    spam_comment_path(comment), :method => :post
 
 
     #metadata
-    %fieldset
-      %legend Items with incomplete metadata
+      %fieldset
+        %legend Items with incomplete metadata
 
     #activities.twoup-1
       %fieldset

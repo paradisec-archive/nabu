@@ -11,5 +11,6 @@ class PageController < ApplicationController
     @num_comments = Comment.count
 
     @comments = Comment.order('id desc').limit(5)
+    @unapproved_comments = Comment.unapproved.limit(5)
   end
 end

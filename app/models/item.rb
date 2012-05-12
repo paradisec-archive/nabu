@@ -24,6 +24,7 @@ class Item < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
   has_many :essences, :dependent => :destroy
+  has_many :comments, :as => :commentable, :dependent => :destroy
 
   validates :identifier, :presence => true, :uniqueness => {:scope => [:collection_id, :identifier]}
   validates :title, :description, :presence => true
@@ -63,7 +64,6 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
-  opinio_subjectum
 
   def full_identifier
     collection.identifier + '-' + identifier
