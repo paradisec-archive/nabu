@@ -1,5 +1,5 @@
 $ ->
-  $('select.country').live 'change', ->
+  $('#collection_country_ids').change ->
     ids = []
     $('select.country option:selected').each ->
       ids.push $(this).attr('value')
@@ -9,3 +9,5 @@ $ ->
       for id in ids
         $(this).find('option[data-country_id=' + id + ']').removeAttr('disabled').insertBefore($(this).children().first())
       $(this).find('option:selected').insertBefore($(this).children().first())
+      # Tell chosen we changed the list
+      $(this).trigger('liszt:updated')

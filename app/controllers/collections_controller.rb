@@ -16,6 +16,7 @@ class CollectionsController < ApplicationController
       with(:language_ids, params[:language_id]) if params[:language_id].present?
       with(:country_ids, params[:country_id]) if params[:country_id].present?
 
+      with(:private, false) unless current_user.admin?
       order_by sort_column, sort_direction
       paginate :page => params[:page], :per_page => params[:per_page]
     end
@@ -43,6 +44,7 @@ class CollectionsController < ApplicationController
         end
       end
 
+      with(:private, false) unless current_user.admin?
       order_by sort_column, sort_direction
       paginate :page => params[:page], :per_page => params[:per_page]
     end
@@ -72,6 +74,11 @@ class CollectionsController < ApplicationController
   end
   def update
     if @collection.update_attributes(params[:collection])
+      # Make the depositor an admin
+      unless @collection.admins.include? current_user
+        @collection.admins << current_user
+        @collection.save!
+      end
       flash[:notice] = 'Collection was successfully updated.'
       redirect_to @collection
     else

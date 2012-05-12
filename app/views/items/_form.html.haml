@@ -29,15 +29,15 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :university_id, 'Originating university'
-        %td= f.collection_select :university_id, University.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a univeristy...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a operator...'}, :class => 'chzn-select'
 
       %tr
         %th
@@ -51,46 +51,24 @@
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
-        %th= f.label :country_id, 'Countries'
-        %td
-          = f.fields_for :item_countries do |c|
-            - if c.object.new_record?
-              = c.collection_select :country_id, Country.alpha, :id, :name, {:prompt => true}, :class => 'addable country'
-            - else
-              = c.object.country.name
-              = c.check_box :_destroy
-              Delete
-            %br
+        %th= f.label :country_ids, 'Countries'
+        %td= f.select :country_ids, Country.alpha.map {|c| [c.name, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
 
       %tr
         %th= f.label :language, 'Language as given'
         %td= f.text_field :language
 
       %tr
-        %th= f.label :subject_language_id, 'Subject language'
+        %th= f.label :subject_language_ids, 'Subject languages'
         %td
-          = f.fields_for :item_subject_languages do |c|
-            - if c.object.new_record?
-              - options_for_select = Language.alpha.map { |l| "<option data-language_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
-              = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
-            - else
-              = c.object.language.name
-              = c.check_box :_destroy
-              Delete
-            %br
+          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+          = f.select :subject_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
 
       %tr
-        %th= f.label :content_language_id, 'Content language'
+        %th= f.label :content_language_ids, 'Content language'
         %td
-          = f.fields_for :item_content_languages do |c|
-            - if c.object.new_record?
-              - options_for_select = Language.alpha.map { |l| "<option data-language_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
-              = c.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
-            - else
-              = c.object.language.name
-              = c.check_box :_destroy
-              Delete
-            %br
+          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+          = f.select :content_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
 
       %tr
         %th= f.label :dialect
@@ -115,22 +93,22 @@
       %tr
         %td{:colspan => 2}
           .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :editable => 'true'}}
-      
+
       %tr
         %th= label_tag :search
         %td= text_field_tag :map_search
 
       %tr
         %th= f.label :discourse_type_id
-        %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :agent_id, 'Agents'
         %td
           = f.fields_for :item_agents do |c|
             - if c.object.new_record?
-              = c.collection_select :user_id, User.alpha, :id, :name, :prompt => true
-              = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, :prompt => true
+              = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
+              = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'chzn-select'
             - else
               = c.object.user.name
               == :
@@ -145,20 +123,12 @@
     %legend Admin information
     %table.form
       %tr
-        %th= f.label :user_id, 'Edit access'
-        %td
-          = f.fields_for :item_admins do |a|
-            - if a.object.new_record?
-              = a.collection_select :user_id, User.alpha, :id, :name, {:prompt => true}, :class => 'addable'
-            - else
-              = a.object.user.name
-              = a.check_box :_destroy
-              Delete
-            %br
+        %th= f.label :admin_ids, 'Edit access'
+        %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :access_narrative, 'Data access details'

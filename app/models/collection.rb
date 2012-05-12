@@ -33,23 +33,12 @@ class Collection < ActiveRecord::Base
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
-                  :collection_languages_attributes, :collection_countries_attributes, :collection_admins_attributes,
+                  :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
                   :complete, :private, :tape_location, :deposit_form_recieved
 
-  accepts_nested_attributes_for :collection_languages, :allow_destroy => true, :reject_if => :all_blank
-  accepts_nested_attributes_for :collection_countries, :allow_destroy => true, :reject_if => :all_blank
-  accepts_nested_attributes_for :collection_admins, :allow_destroy => true, :reject_if => :all_blank
-
   paginates_per 10
-
-  before_create do |collection|
-    collection.admins << collector
-    if operator && collector.id != operator.id
-      collection.admins << operator
-    end
-  end
 
   delegate :name, :to => :university, :prefix => true, :allow_nil => true
   delegate :name, :to => :collector, :prefix => true, :allow_nil => true
