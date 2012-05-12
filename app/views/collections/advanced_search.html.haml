@@ -2,32 +2,42 @@
 
 
 .page-box
+
   = form_tag advanced_search_collections_path, :method => :get, :class => 'no-empty-submit' do
-    %p
-      - if params[:per_page]
-        = hidden_field_tag :per_page, params[:per_page]
 
-      - @text_fields.each do |field|
-        %p
-          = label_tag field.name
-          = text_field_tag field.name, params[field.name]
+    - if params[:per_page]
+      = hidden_field_tag :per_page, params[:per_page]
 
-      - @fields.each do |field|
-        %p
-          - case field.type
-          - when Sunspot::Type::IntegerType
-            - if field.reference
-              = label_tag field.name
-              = select_tag field.name, options_from_collection_for_select(field.reference.constantize.alpha, :id, :name, params[field.name]), :include_blank => true
-          - when Sunspot::Type::BooleanType
-            = label_tag field.name
-            = select_tag field.name, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
-          -# TODO Add Time fields
+    .twoup-1
+      %fieldset
+        %legend Search Collection
+        %table.form
+          - @text_fields.each do |field|
+            %tr
+              %th= label_tag field.name
+              %td= text_field_tag field.name, params[field.name]
+
+    .twoup-2
+      %fieldset
+        %legend &nbsp;
+        %table.form
+          - @fields.each do |field|
+            %tr
+              - case field.type
+              - when Sunspot::Type::IntegerType
+                - if field.reference
+                  %th= label_tag field.name
+                  %td= select_tag field.name, options_from_collection_for_select(field.reference.constantize.alpha, :id, :name, params[field.name]), :include_blank => true
+              - when Sunspot::Type::BooleanType
+                %th= label_tag field.name
+                %td= select_tag field.name, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+              -# TODO Add Time fields
 
 
-      = text_field_tag :search, params[:search]
       = submit_tag 'Filter', :name => nil
       = submit_tag 'Clear', :name => :clear
+
+    .clear
 
   = render 'search_results'
 

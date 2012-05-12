@@ -229,6 +229,12 @@ body.bp {
 
     select {
       width: 295px;
+      height: 28px;
+      padding: 4px 0;
+      border: solid 1px #E5E5E5;
+      box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+      background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+      background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     }
   }
 
@@ -322,7 +328,7 @@ body.bp {
   }
 
   // audio / video
-  #media {
+  #media_item {
     height: 200px;
     margin: 8px;
     border: 2px solid grey;
