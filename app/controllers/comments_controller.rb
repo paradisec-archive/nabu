@@ -1,11 +1,12 @@
 class CommentsController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :except => :create
 
   respond_to :js
 
   def create
     resource = params[:commentable_type].constantize.find(params[:commentable_id])
     @comment = resource.comments.build(params[:comment])
+    authorize! :create, @comment
     @comment.owner = current_user
     if @comment.save
       flash[:notice] = 'Comment sent successfully.'
