@@ -1,0 +1,2 @@
+$ ->
+  $(".chzn-select").chosen();

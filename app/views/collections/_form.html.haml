@@ -24,16 +24,16 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :university_id, 'Originating university'
         %td
-          = f.collection_select :university_id, University.alpha, :id, :name, :prompt => true
+          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
@@ -42,7 +42,7 @@
           = f.fields_for :collection_countries do |c|
             %br
             - if c.object.new_record?
-              = c.collection_select :country_id, Country.alpha, :id, :name, {:prompt => true}, :class => 'addable country'
+              = c.collection_select :country_id, Country.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select addable country'
             - else
               = c.object.country.name
               = c.check_box :_destroy
@@ -55,7 +55,7 @@
             %br
             - if l.object.new_record?
               - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
-              = l.select :language_id, options_for_select, {:prompt => true}, :class => 'addable language'
+              = l.select :language_id, options_for_select, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select addable language'
             - else
               = l.object.language.name
               = l.check_box :_destroy
@@ -110,7 +110,7 @@
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, :prompt => true
+        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :access_narrative, 'Data access details'
@@ -155,6 +155,6 @@
 
       %tr
         %th= f.label :field_of_research_id, 'Field of research'
-        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, :prompt => true
+        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
 
