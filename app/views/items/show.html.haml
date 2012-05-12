@@ -207,16 +207,20 @@
       #archive
         %table.form.show
           %tr
-            %th Ready for metadata export
-            %td= check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
+            %th{:class => 'no_colon'}
+            %td
+              = check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
+              Ready for metadata export
           %tr
-            %th Born digital
-            %td= check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
-
+            %th{:class => 'no_colon'}
+            %td
+              = check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
+              Born digital
           %tr
-            %th Tapes returned to depositor
-            %td= check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
-
+            %th{:class => 'no_colon'}
+            %td
+              = check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
+              Tapes returned to depositor
           %tr
             %th Original media
             %td= @item.original_media
