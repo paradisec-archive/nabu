@@ -28,39 +28,23 @@
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a operator...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :university_id, 'Originating university'
         %td
-          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
+          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'chzn-select'
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
-        %th= f.label :country_id, 'Countries'
-        %td
-          = f.fields_for :collection_countries do |c|
-            %br
-            - if c.object.new_record?
-              = c.collection_select :country_id, Country.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select addable country'
-            - else
-              = c.object.country.name
-              = c.check_box :_destroy
-              Delete
+        %th= f.label :country_ids, 'Countries'
+        %td= f.select :country_ids, Country.alpha.map {|c| [c.name, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
 
       %tr
-        %th= f.label :language_id, 'Languages'
+        %th= f.label :language_ids, 'Languages'
         %td
-          = f.fields_for :collection_languages do |l|
-            %br
-            - if l.object.new_record?
-              - options_for_select = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
-              = l.select :language_id, options_for_select, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select addable language'
-            - else
-              = l.object.language.name
-              = l.check_box :_destroy
-              Delete
-
+          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.country_id}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+          = f.select :language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
 
       %tr
         %th= f.label :region, 'Region / village'
@@ -97,20 +81,12 @@
     %legend Access Information
     %table.form
       %tr
-        %th= f.label :user_id, 'Edit access'
-        %td
-          = f.fields_for :collection_admins do |a|
-            %br
-            - if a.object.new_record?
-              = a.collection_select :user_id, User.alpha, :id, :name, {:prompt => true}, :class => 'addable'
-            - else
-              = a.object.user.name
-              = a.check_box :_destroy
-              Delete
+        %th= f.label :admin_ids, 'Edit access'
+        %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
+        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a access condition...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :access_narrative, 'Data access details'
@@ -155,6 +131,6 @@
 
       %tr
         %th= f.label :field_of_research_id, 'Field of research'
-        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
+        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'chzn-select'
 
 

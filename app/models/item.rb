@@ -41,9 +41,9 @@ class Item < ActiveRecord::Base
   attr_accessible :identifier, :title, :url, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :university_id, :operator_id,
-                  :item_countries_attributes,
-                  :item_content_languages_attributes, :item_subject_languages_attributes,
-                  :item_admins_attributes, :item_agents_attributes,
+                  :countries_ids,
+                  :content_languages_ids, :subject_languages_ids,
+                  :item_admins_ids, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
                   :originated_on, :language,
@@ -51,10 +51,6 @@ class Item < ActiveRecord::Base
                   :metadata_exportable, :born_digital, :tapes_returned,
                   :original_media, :ingest_notes, :tracking
 
-  accepts_nested_attributes_for :item_countries, :allow_destroy => true, :reject_if => :all_blank
-  accepts_nested_attributes_for :item_subject_languages, :allow_destroy => true, :reject_if => :all_blank
-  accepts_nested_attributes_for :item_content_languages, :allow_destroy => true, :reject_if => :all_blank
-  accepts_nested_attributes_for :item_admins, :allow_destroy => true, :reject_if => :all_blank
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 
   delegate :name, :to => :collector, :prefix => true, :allow_nil => true
