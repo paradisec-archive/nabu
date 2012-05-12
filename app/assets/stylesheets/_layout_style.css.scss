@@ -211,6 +211,7 @@ body.bp {
     margin-bottom: 0;
     td {
       vertical-align: top;
+      min-width: 200px;
 
       .map {
         width: 100%;
@@ -223,6 +224,7 @@ body.bp {
       text-align: right;
       vertical-align: top;
       &:after { content: ":" }
+      min-wdith: 200px;
     }
 
     select {
