@@ -95,7 +95,7 @@
           .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :editable => 'true'}}
 
       %tr
-        %th= label_tag :search
+        %th= label_tag :search, 'Search location on map'
         %td= text_field_tag :map_search
 
       %tr
@@ -133,3 +133,7 @@
       %tr
         %th= f.label :access_narrative, 'Data access details'
         %td= f.text_area :access_narrative, :rows => 5
+
+      %tr
+        %th= f.label :admin_comment, 'Comments'
+        %td= f.text_area :admin_comment, :rows => 5

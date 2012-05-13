@@ -67,7 +67,7 @@
           .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :editable => 'true'}}
 
       %tr
-        %th= label_tag :search
+        %th= label_tag :search, 'Search location on map'
         %td= text_field_tag :map_search, '', :class => 'map_search'
 
       %tr

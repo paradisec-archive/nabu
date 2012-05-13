@@ -277,6 +277,10 @@
             %th Data access narrative
             %td= @item.access_narrative
 
+          %tr
+            %th Comments
+            %td= @item.admin_comment
+
 
   - if can? :update, @item
     = link_to 'Edit item', edit_item_path(@item), :class => 'button'
