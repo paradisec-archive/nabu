@@ -7,6 +7,7 @@ class ItemsController < ApplicationController
       params.delete(:search)
       redirect_to items_path
     end
+
     @search = Item.solr_search do
       fulltext params[:search]
       facet :content_language_ids, :country_ids, :university_id
@@ -22,10 +23,10 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
-#    authorize! :advanced_search, Item
+    # authorize! :advanced_search, Item
     do_search
   end
-  
+
   def new
     build_associations
   end
@@ -57,6 +58,7 @@ class ItemsController < ApplicationController
 
   def bulk_edit
     @item = Item.new
+    @item.collection = Collection.new
     build_associations
 
     do_search
@@ -117,11 +119,10 @@ class ItemsController < ApplicationController
           with field.name, params[field.name] == 'true' ? true : false
         end
       end
-      
+
       with(:private, false) unless current_user.admin?
       order_by sort_column, sort_direction
       paginate :page => params[:page], :per_page => params[:per_page]
     end
   end
-
 end

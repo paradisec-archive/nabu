@@ -7,7 +7,6 @@ class CollectionsController < ApplicationController
       redirect_to collections_path
     end
 
-
     @search = Collection.solr_search do
       fulltext params[:search]
       facet :language_ids, :country_ids, :university_id
@@ -23,8 +22,8 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
-#    authorize! :advanced_search, Collection
-     do_search
+    # authorize! :advanced_search, Collection
+    do_search
   end
 
   def new
@@ -129,5 +128,5 @@ class CollectionsController < ApplicationController
       order_by sort_column, sort_direction
       paginate :page => params[:page], :per_page => params[:per_page]
     end
-  end  
+  end
 end
