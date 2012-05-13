@@ -33,7 +33,6 @@ Nabu::Application.routes.draw do
     match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
     match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
     resources :items
-    end
   end
 
   resources :comments, :shallow => true do
