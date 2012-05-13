@@ -211,7 +211,7 @@ body.bp {
   }
 
   table.form {
-    border-spacing: 5px;
+    border-spacing: 1px;
     margin-bottom: 0;
     td {
       vertical-align: top;
@@ -254,13 +254,10 @@ body.bp {
     }
   }
 
-  input[type="text"], textarea {
-    width: 281px;
+  input[type="text"], textarea, td div ul.chzn-choices {
     &.short {
       width: 200px;
     }
-    padding: 7px;
-    margin: 0 7px 0 0;
     border: solid 1px #E5E5E5;
     background: #FFFFFF;
     box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
@@ -274,6 +271,16 @@ body.bp {
     &:focus {
       border-color: #617798;
     }
+  }
+
+  input[type="text"], textarea {
+    width: 281px;
+    padding: 7px;
+    margin: 0 7px 0 0;
+  }
+
+  td div.chzn-container {
+    border: solid 2px #E5E5E5;
   }
 
   input[type="submit"], button, .button {
