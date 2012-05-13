@@ -11,7 +11,7 @@
           %th Archived
         %th Actions
     %tbody
-      - @collection.items.each do |item|
+      - @collection.items.order(:identifier).each do |item|
         %tr
           %td= item.identifier
           %td= item.title
@@ -23,6 +23,6 @@
             = link_to 'Edit', edit_item_path(item) if can? :update, item
 
   - if can? :create, @collection.items.build # TODO this actually adds an item to the array is there a better way
-    = button_to 'Add item', new_collection_item_path(@collection), :methd => :get
+    = link_to 'Add item', new_collection_item_path(@collection), :class => 'button'
   - else
     %br
