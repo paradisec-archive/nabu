@@ -25,6 +25,14 @@
             Private
 
       %tr
+        %th Description
+        %td= @item.description
+
+      %tr
+        %th Date created
+        %td= @item.originated_on
+
+      %tr
         %th Archive link
         %td= link_to item_url(@item), item_url(@item)
 
@@ -35,23 +43,6 @@
       %tr
         %th Collector
         %td= @item.collector_name
-
-      %tr
-        %th Originating university
-        %td= @item.university_name
-
-      %tr
-        %th Operator
-        -if @item.operator
-          %td= @item.operator_name
-
-      %tr
-        %th Description
-        %td= @item.description
-
-      %tr
-        %th Date created
-        %td= @item.originated_on
 
       %tr
         %th Countries
@@ -77,6 +68,7 @@
           - @item.content_languages.each do |language|
             = language.name
             %br
+
       %tr
         %th Dialect
         %td= @item.dialect
@@ -100,6 +92,15 @@
       %tr
         %td.empty{:colspan => 2}
           .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}}
+
+      %tr
+        %th Originating university
+        %td= @item.university_name
+
+      %tr
+        %th Operator
+        -if @item.operator
+          %td= @item.operator_name
 
       %tr
         %th Discourse type

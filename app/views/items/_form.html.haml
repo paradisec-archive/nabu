@@ -24,22 +24,6 @@
           = f.label :private
 
       %tr
-        %th= f.label :url, 'URL'
-        %td= f.text_field :url
-
-      %tr
-        %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
-
-      %tr
-        %th= f.label :university_id, 'Originating university'
-        %td= f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a univeristy...'}, :class => 'chzn-select'
-
-      %tr
-        %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a operator...'}, :class => 'chzn-select'
-
-      %tr
         %th
           = f.label :description
           %br
@@ -49,6 +33,14 @@
       %tr
         %th= f.label :originated_on, 'Origination date'
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
+
+      %tr
+        %th= f.label :url, 'URL'
+        %td= f.text_field :url
+
+      %tr
+        %th= f.label :collector_id
+        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :country_ids, 'Countries'
@@ -97,6 +89,14 @@
       %tr
         %th= label_tag :search, 'Search location on map'
         %td= text_field_tag :map_search
+
+      %tr
+        %th= f.label :university_id, 'Originating university'
+        %td= f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a univeristy...'}, :class => 'chzn-select'
+
+      %tr
+        %th= f.label :operator_id
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a operator...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :discourse_type_id
