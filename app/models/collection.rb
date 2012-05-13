@@ -8,7 +8,7 @@ class Collection < ActiveRecord::Base
   belongs_to :field_of_research
   belongs_to :access_condition
 
-  has_many :items
+  has_many :items, :dependent => :restrict
   has_many :collection_languages, :dependent => :destroy
   has_many :languages, :through => :collection_languages, :validate => true
 

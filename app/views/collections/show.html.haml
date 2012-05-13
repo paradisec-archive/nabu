@@ -139,7 +139,7 @@
         %tr
           %th Field of research
           %td= @collection.field_of_research.name_with_identifier
-          
+
         %tr
           %th #Items in collections
           %td= number_to_human @num_items
@@ -149,7 +149,6 @@
         %tr
           %th #Essence objects in items of collection
           %td= number_to_human @num_essences
-        
 
-    %button
-      = link_to 'Edit collection', edit_collection_path(@collection)
+
+    = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'

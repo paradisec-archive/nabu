@@ -4,65 +4,61 @@
 
 - if can? :create, Collection
   #actions
-    %button
-      = link_to 'Add collection', new_collection_path
+    = link_to 'Add collection', new_collection_path, :class => 'button'
 
 
-- if admin_user_signed_in?
+    #collections
+      %fieldset
+        %legend My Collections
+        %table.table
+          %tr
+            %th ID
+            %th Title
+            %th Creation Date
+            %th Actions
 
-  #system
-    %h2 System monitoring
+            - @collections.each do |collection|
+              %tr
+                %td= collection.identifier
+                %td= collection.title
+                %td= collection.created_at
+                %td
+                  = link_to 'View', collection if can? :read, collection
+                  = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+
+
+
+    #items
+      %fieldset
+        %legend My Items
+        %table.table
+          %tr
+            %th ID
+            %th Title
+            %th Creation Date
+            %th Actions
+
+            - @items.each do |item|
+              %tr
+                %td= item.full_identifier
+                %td= item.title
+                %td= item.created_at
+                %td
+                  = link_to 'View', collection if can? :read, collection
+                  = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+
 
     #comments
-    %fieldset
-      %legend Last 5 Comments
-
-      %table
-        %tr
-          %th Item
-          %th User
-          %th Comment
-        - @comments.each do |comment|
-          %tr
-            %td= link_to comment.commentable.full_identifier, comment.commentable
-            %td= comment.owner.name
-            %td= comment.body
-
-
-    #metadata
-    %fieldset
-      %legend Items with incomplete metadata
-
-    #activities.twoup-1
       %fieldset
-        %legend Recent system activities on essence data
-
-    #statistics.twoup-2
-      %fieldset
-        %legend Content statistics
+        %legend My Comments
         %table
           %tr
-            %td= number_with_delimiter @num_collections
-            %td collections
-            %td= number_with_delimiter @num_comments
-            %td comments posted
-          %tr
-            %td= number_with_delimiter @num_items
-            %td items
-            %td= number_with_delimiter @num_comments
-            %td comments approved
-          %tr
-            %td= number_with_delimiter @num_essences
-            %td essence objects
-            %td 0
-            %td comments pending
-          %tr
-            %td= number_with_delimiter @num_users
-            %td users
-            %td
-            %td
-          %tr
-            %td= number_with_delimiter @num_universities
-            %td universities
-            %td
-            %td
+            %th Item
+            %th User
+            %th Comment
+          - @comments.each do |comment|
+            %tr
+              %td= link_to comment.commentable.full_identifier, comment.commentable
+              %td= comment.owner.name
+              %td= comment.body
+

@@ -1,0 +1,7 @@
+%h1 Comments
+
+= paginate @comments
+
+= render :partial => "comments/comments", :locals => { :comments => @comments }
+
+= paginate @comments

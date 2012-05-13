@@ -1,5 +1,4 @@
 Nabu::Application.routes.draw do
-  opinio_model
 
   # The ActiveAdmin routes cause Rails to set up a connection to the
   # production database, which isn't available during
@@ -33,9 +32,13 @@ Nabu::Application.routes.draw do
     get 'advanced_search', :on => :collection
     match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
     match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
-    resources :items do
-      opinio
+    resources :items
     end
+  end
+
+  resources :comments, :shallow => true do
+    match 'approve' => 'comments#approve', :on => :member, :via => :post
+    match 'spam'    => 'comments#spam',    :on => :member, :via => :post
   end
   resources :universities, :only => :create
 end

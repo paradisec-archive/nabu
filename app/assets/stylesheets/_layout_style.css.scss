@@ -272,30 +272,31 @@ body.bp {
     }
   }
 
-  input[type="submit"], button {
-	width: auto;
-	height: 32px;
-	line-height: 32px;
-	margin: 0;
+  input[type="submit"], button, .button {
+    width: auto;
+    height: 32px;
+    line-height: 32px;
+    margin: 0;
     padding: 0 16px;
-	background: #617798;
-	border: solid 1px #20538D;
+    background: #617798;
+    border: solid 1px #20538D;
     font-size: 14px;
-	color: #FFFFFF;
-	border-radius: 5px;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
-	&:hover, &:focus {
+    color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    &:hover, &:focus {
       background: #356094;
     }
     &:active {
       box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
     }
-	a, a:hover, a:visited {
-	  color: #FFFFFF;
-	  display: block;
-      height: 32px;
-      float: left;
-	}
+  }
+
+  a.button {
+    color: #FFFFFF;
+    display: block;
+    height: 32px;
+    float: left;
   }
 
   .left {
@@ -342,7 +343,7 @@ body.bp {
   }
   .comment_body {
     font-family: 'Lucida Console',monospace;
-    button {
+    input[type="submit"], button, .button {
       float: right;
     }
   }

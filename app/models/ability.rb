@@ -29,8 +29,10 @@ class Ability
 
       can :read, Item, :private => false
       can :manage, Item, :collection  => { :collection_admins => { :user_id => user.id } }
-      can :manage, Item, :collection  => { :collection_id => user.id }
+      can :manage, Item, :collection  => { :collector_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
+
+      can :create, Comment, :commentable => { :private => false }
     end
   end
 end

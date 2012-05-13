@@ -1,0 +1,15 @@
+#new_comment
+  - if current_user
+    %h4 Add Comment
+    = form_for Comment.new, :remote => true do |f|
+      %table.form
+        %tr
+          %th= f.label :body, item.class.base_class.name.to_s
+          %td
+            = f.text_area :body, :rows => 5
+            = hidden_field_tag :commentable_id, item.id
+            = hidden_field_tag :commentable_type, item.class.base_class.name.to_s
+            = f.submit 'Add'
+  - else
+    %p Must be logged in to comment
+  %hr

@@ -3,13 +3,9 @@ class PageController < ApplicationController
   end
 
   def dashboard
-    @num_collections = Collection.count
-    @num_items = Item.count
-    @num_essences = Essence.count
-    @num_users = User.count
-    @num_universities = University.count
-    @num_comments = Comment.count
-
-    @comments = Comment.order('id desc').limit(5)
+    @comments = Comment.owned_by(current_user).limit(10)
+    # TODO We should be smarter here and pull in collections we ar admin for
+    @collections = Collection.limit(10).where(:collector_id => current_user)
+    @items = Item.limit(10).where(:collector_id => current_user)
   end
 end

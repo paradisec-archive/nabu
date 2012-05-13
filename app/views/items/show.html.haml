@@ -1,5 +1,8 @@
 %h1= @item.title
 
+= link_to 'Previous item', @item.prev_item, :class => 'button' if @item.prev_item
+= link_to 'Next item', @item.next_item, :class => 'button' if @item.next_item
+
 .twoup-1
   %fieldset
     %legend Item details
@@ -200,8 +203,8 @@
         %li.tab= link_to 'Admin information', '#admin'
 
     #comment
-      = render_comments_form @item
-      = render_comments @item
+      = render :partial => 'comments/new', :locals => { :item => @item }
+      = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
 
     - if can? :manage, @item
       #archive
@@ -276,5 +279,4 @@
 
 
   - if can? :update, @item
-    %button
-      = link_to 'Edit item', edit_item_path(@item)
+    = link_to 'Edit item', edit_item_path(@item), :class => 'button'

@@ -9,4 +9,6 @@ class FieldOfResearch < ActiveRecord::Base
   def name_with_identifier
     "#{identifier} - #{name}"
   end
+
+  has_many :collections, :dependent => :restrict
 end

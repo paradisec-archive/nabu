@@ -20,7 +20,6 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
-gem 'opinio'
 gem 'chosen-rails'
 
 # Admin

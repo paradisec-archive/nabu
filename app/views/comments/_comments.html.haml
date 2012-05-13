@@ -1,0 +1,5 @@
+%div#comments
+  - unless comments.empty?
+    = render :partial => 'comments/comment', :collection => comments
+  - else
+    #no_comments No comments found
