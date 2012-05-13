@@ -1,0 +1,33 @@
+
+= paginate @search
+
+%table.table
+  %tr
+    = sortable :identifier, 'ID'
+    = sortable :title
+    = sortable :collector_name, 'Collector'
+    = sortable :language, 'Language as given'
+    %th Countries
+    = sortable :modification_date
+    %th Actions
+
+    - @search.each_hit_with_result do |hit, item|
+      %tr
+        %td= item.full_identifier
+        %td= item.title
+        %td= item.collector.name
+        %td= item.language
+        %td
+          - item.countries.each do |country|
+            = country.name
+        %td= item.updated_at.to_date
+        %td
+          = link_to 'View', item
+          = link_to 'Edit', edit_item_path(item) if can? :update, item
+
+= paginate @search
+
+%p
+  %button.per_page{:data => {:per => 10}} Show 10
+  %button.per_page{:data => {:per => 50}} Show 50
+  %button.per_page{:data => {:per => 100}} Show 100

@@ -24,30 +24,7 @@ class CollectionsController < ApplicationController
 
   def advanced_search
 #    authorize! :advanced_search, Collection
-    @fields = Sunspot::Setup.for(Collection).fields
-    @text_fields = Sunspot::Setup.for(Collection).all_text_fields
-    @search = Collection.solr_search do
-      Sunspot::Setup.for(Collection).all_text_fields.each do |field|
-        next if params[field.name].blank?
-        keywords params[field.name], :fields => [field.name]
-      end
-
-      Sunspot::Setup.for(Collection).fields.each do |field|
-        next if params[field.name].blank?
-        case field.type
-        when Sunspot::Type::StringType
-          # Do nothing. Should be covered by text field above
-        when Sunspot::Type::IntegerType
-          with field.name, params[field.name]
-        when Sunspot::Type::BooleanType
-          with field.name, params[field.name] == 'true' ? true : false
-        end
-      end
-
-      with(:private, false) unless current_user.admin?
-      order_by sort_column, sort_direction
-      paginate :page => params[:page], :per_page => params[:per_page]
-    end
+     do_search
   end
 
   def new
@@ -72,6 +49,7 @@ class CollectionsController < ApplicationController
   def edit
     build_associations
   end
+
   def update
     if @collection.update_attributes(params[:collection])
       # Make the depositor an admin
@@ -146,6 +124,10 @@ class CollectionsController < ApplicationController
           with field.name, params[field.name] == 'true' ? true : false
         end
       end
+
+      with(:private, false) unless current_user.admin?
+      order_by sort_column, sort_direction
+      paginate :page => params[:page], :per_page => params[:per_page]
     end
-  end
+  end  
 end

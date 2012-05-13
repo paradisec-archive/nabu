@@ -24,17 +24,18 @@ Nabu::Application.routes.draw do
   match '/contact' => 'page#contact'
 
   resources :users
+  resources :items do
+    get 'advanced_search', :on => :collection
+    match 'bulk_update' => 'items#bulk_edit', :on => :collection, :via => :get
+    match 'bulk_update' => 'items#bulk_update', :on => :collection, :via => :put
+  end
   resources :collections, :shallow => true do
     get 'advanced_search', :on => :collection
     match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
     match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
     resources :items do
-      get 'advanced_search', :on => :collection
-      match 'bulk_update' => 'collections#bulk_edit', :on => :collection, :via => :get
-      match 'bulk_update' => 'collections#bulk_update', :on => :collection, :via => :put
       opinio
     end
   end
-  resources :items, :only => :index
   resources :universities, :only => :create
 end

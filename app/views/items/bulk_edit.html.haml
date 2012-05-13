@@ -1,0 +1,23 @@
+%h1 Items Bulk Update
+
+
+.page-box
+  %p== #{@search.total} search results
+
+  = render 'search_results'
+
+= form_for @item, :url => bulk_update_items_path, :method => :put do |f|
+  - if @item.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@item.errors.count, 'error')} prohibited this post from being saved:
+      %ul
+        - @item.errors.full_messages.each do |msg|
+          %li= msg
+
+  = hidden_field_tag :item_ids, @search.results.map(&:id)
+  = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
+
+  = render :partial => 'form', :locals => {:f => f}
+
+  = f.submit 'Update Items'
+

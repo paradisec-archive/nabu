@@ -1,0 +1,51 @@
+%h1 Items
+
+
+.page-box
+
+  = form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit' do
+
+    - if params[:per_page]
+      = hidden_field_tag :per_page, params[:per_page]
+
+    .right
+      = link_to 'Faceted Search', items_path
+
+    .twoup-1
+      %fieldset
+        %legend Advanced Search
+        %table.form
+          - @text_fields.each do |field|
+            %tr
+              %th= label_tag field.name
+              %td= text_field_tag field.name, params[field.name]
+
+    .twoup-2
+      %fieldset
+        %table.form
+          - @fields.each do |field|
+            %tr
+              - case field.type
+              - when Sunspot::Type::IntegerType
+                - if field.reference
+                  %th= label_tag field.name
+                  %td= select_tag field.name, options_from_collection_for_select(field.reference.constantize.alpha, :id, :name, params[field.name]), :include_blank => true
+              - when Sunspot::Type::BooleanType
+                %th= label_tag field.name
+                %td= select_tag field.name, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+              -# TODO Add Time fields
+
+
+      = submit_tag 'Filter', :name => nil
+      = submit_tag 'Clear', :name => :clear
+
+    .clear
+
+  %p== #{@search.total} search results
+
+  = render 'search_results'
+
+  .right
+    = link_to 'Bulk Update results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+  .clear
