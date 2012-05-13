@@ -184,4 +184,12 @@ class Item < ActiveRecord::Base
     integer :subject_language_ids, :references => Language, :multiple => true
     integer :country_ids, :references => Country, :multiple => true
   end
+
+  def next_item
+    Item.where(:collection_id => self.collection).order(:identifier).where('identifier > ?', self.identifier).first
+  end
+
+  def prev_item
+    Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).first
+  end
 end
