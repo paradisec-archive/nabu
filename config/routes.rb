@@ -40,4 +40,8 @@ Nabu::Application.routes.draw do
     match 'spam'    => 'comments#spam',    :on => :member, :via => :post
   end
   resources :universities, :only => :create
+
+  scope '/oai' do
+    match 'item' => 'oai#item'
+  end
 end

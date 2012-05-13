@@ -193,4 +193,33 @@ class Item < ActiveRecord::Base
   def prev_item
     Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).first
   end
+
+  # OAI-MPH mappings
+  # If we need to later on we can generate the XML directly
+  #def to_oai_dc
+  #  xml = Builder::XmlMarkup.new
+  #  xml.tag!("oai_dc:dc",
+  #           'xmlns:oai_dc' => "http://www.openarchives.org/OAI/2.0/oai_dc/",
+  #           'xmlns:dc' => "http://purl.org/dc/elements/1.1/",
+  #           'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
+  #           'xsi:schemaLocation' =>
+  #  %{http://www.openarchives.org/OAI/2.0/oai_dc/
+  #                                        http://www.openarchives.org/OAI/2.0/oai_dc.xsd}) do
+  #    xml.tag!('oai_dc:title', title)
+  #    xml.tag!('oai_dc:description', text)
+  #    xml.tag!('oai_dc:creator', user)
+  #    tags.each do |tag|
+  #      xml.tag!('oai_dc:subject', tag)
+  #    end
+  #                                        end
+  #  xml.target!
+  #end
+
+  # For now we just map the fields
+  def self.map_oai_dc
+    {
+      :title => :title,
+      :identifier => :full_identifier,
+    }
+  end
 end
