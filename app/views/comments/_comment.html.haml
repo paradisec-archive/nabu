@@ -2,8 +2,7 @@
   %p.comment_body
     = simple_format comment.body
     - if can? :destroy, comment
-      %button
-        = link_to t('opinio.actions.delete'), comment_path(comment), :method => :delete, :remote => true
+      = button_to 'Delete', comment_path(comment), :method => :delete, :remote => true
   %p.comment_who
     = 'by '
     - if can? :manage, comment.owner

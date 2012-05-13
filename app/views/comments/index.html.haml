@@ -1,7 +1,7 @@
-%h1 t('opinio.messages.comments')
+%h1 Comments
 
 = paginate @comments
 
-= render :partial => "opinio/comments/comments", :locals => { :comments => @comments }
+= render :partial => "comments/comments", :locals => { :comments => @comments }
 
 = paginate @comments

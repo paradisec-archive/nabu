@@ -4,8 +4,7 @@
 
 - if can? :create, Collection
   #actions
-    %button
-      = link_to 'Add collection', new_collection_path
+    = button_to 'Add collection', new_collection_path, :method => :get
 
 
     #collections

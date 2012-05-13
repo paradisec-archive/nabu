@@ -342,7 +342,7 @@ body.bp {
   }
   .comment_body {
     font-family: 'Lucida Console',monospace;
-    button {
+    input[type="submit"], button {
       float: right;
     }
   }

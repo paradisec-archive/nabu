@@ -276,5 +276,4 @@
 
 
   - if can? :update, @item
-    %button
-      = link_to 'Edit item', edit_item_path(@item)
+    = button_to 'Edit item', edit_item_path(@item), :method => :get
