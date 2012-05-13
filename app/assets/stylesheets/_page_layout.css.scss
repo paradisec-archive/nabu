@@ -9,6 +9,7 @@ body.bp {
   }
   #content {
     @include column($blueprint-grid-columns);
+    overflow: visible;
   }
 
   #header {
@@ -20,9 +21,11 @@ body.bp {
 
 .twoup-1 {
   @include column(12);
+  overflow: visible;
 }
 
 .twoup-2 {
   @include column(12, last);
+  overflow: visible;
 }
 

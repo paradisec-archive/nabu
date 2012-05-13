@@ -40,12 +40,12 @@ class Item < ActiveRecord::Base
   validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
   validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
 
-  attr_accessible :identifier, :title, :url, :description, :region,
+  attr_accessible :identifier, :title, :owned, :url, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :university_id, :operator_id,
-                  :countries_ids,
-                  :content_languages_ids, :subject_languages_ids,
-                  :item_admins_ids, :item_agents_attributes,
+                  :country_ids,
+                  :content_language_ids, :subject_language_ids,
+                  :admin_ids, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
                   :admin_comment,
