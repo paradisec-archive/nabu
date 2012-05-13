@@ -669,7 +669,7 @@ namespace :import do
                           :longitude => longitude,
                           :zoom => zoom.to_i,
                           :url => item['item_url'],
-                          :access_narrative => item['item_comments'],
+                          :admin_comment => item['item_comments'],
                           :originated_on => originated_on,
                           :metadata_exportable => item['item_impxml_ready'],
                           :born_digital => item['item_born_digital'],

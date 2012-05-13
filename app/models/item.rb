@@ -48,6 +48,7 @@ class Item < ActiveRecord::Base
                   :item_admins_ids, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
+                  :admin_comment,
                   :originated_on, :language,
                   :dialect, :discourse_type_id,
                   :metadata_exportable, :born_digital, :tapes_returned,

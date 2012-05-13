@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120512121321) do
+ActiveRecord::Schema.define(:version => 20120513063557) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -208,6 +208,7 @@ ActiveRecord::Schema.define(:version => 20120512121321) do
     t.datetime "metadata_imported_on"
     t.datetime "metadata_exported_on"
     t.text     "tracking"
+    t.text     "admin_comment"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
