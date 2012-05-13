@@ -23,7 +23,8 @@ class Item < ActiveRecord::Base
 
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
-  has_many :essences, :dependent => :destroy
+
+  has_many :essences, :dependent => :restrict
   has_many :comments, :as => :commentable, :dependent => :destroy
 
   validates :identifier, :presence => true, :uniqueness => {:scope => [:collection_id, :identifier]}

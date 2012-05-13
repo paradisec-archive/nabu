@@ -11,4 +11,13 @@ class Language < ActiveRecord::Base
   def name_with_code
     "#{code} - #{name}"
   end
+
+  has_many :item_content_langages,
+  has_many :items_for_content, :through => :item_content_langages, :dependent => :restrict
+
+  has_many :item_subject_langages,
+  has_many :items_for_subject, :through => :item_subject_langages, :dependent => :restrict
+
+  has_many :collection_langages,
+  has_many :collections, :through => :collection_langages, :dependent => :restrict
 end

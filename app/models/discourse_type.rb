@@ -4,4 +4,6 @@ class DiscourseType < ActiveRecord::Base
   attr_accessible :name
 
   scope :alpha, order(:name)
+
+  has_many :items, :dependent => :restrict
 end
