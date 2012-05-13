@@ -1,7 +1,8 @@
 %h1= @item.title
 
-= link_to 'Previous item', @item.prev_item, :class => 'button' if @item.prev_item
-= link_to 'Next item', @item.next_item, :class => 'button' if @item.next_item
+.right
+  = link_to 'Previous item', @item.prev_item, :class => 'button' if @item.prev_item
+  = link_to 'Next item', @item.next_item, :class => 'button' if @item.next_item
 
 .twoup-1
   %fieldset
