@@ -1,64 +1,61 @@
 %h1 Dashboard
 
-#mycontent
-
 - if can? :create, Collection
   #actions
     = link_to 'Add collection', new_collection_path, :class => 'button'
 
 
-    #collections
-      %fieldset
-        %legend My Collections
-        %table.table
-          %tr
-            %th ID
-            %th Title
-            %th Creation Date
-            %th Actions
+  %fieldset
+    %legend My Collections
+    .fix-scroll-height
+      %table.table
+        %tr
+          %th ID
+          %th Title
+          %th Creation Date
+          %th Actions
 
-            - @collections.each do |collection|
-              %tr
-                %td= collection.identifier
-                %td= collection.title
-                %td= collection.created_at
-                %td
-                  = link_to 'View', collection if can? :read, collection
-                  = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
-
-
-
-    #items
-      %fieldset
-        %legend My Items
-        %table.table
-          %tr
-            %th ID
-            %th Title
-            %th Creation Date
-            %th Actions
-
-            - @items.each do |item|
-              %tr
-                %td= item.full_identifier
-                %td= item.title
-                %td= item.created_at
-                %td
-                  = link_to 'View', collection if can? :read, collection
-                  = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
-
-
-    #comments
-      %fieldset
-        %legend My Comments
-        %table
-          %tr
-            %th Item
-            %th User
-            %th Comment
-          - @comments.each do |comment|
+          - @collections.each do |collection|
             %tr
-              %td= link_to comment.commentable.full_identifier, comment.commentable
-              %td= comment.owner.name
-              %td= comment.body
+              %td= collection.identifier
+              %td= collection.title
+              %td= collection.created_at
+              %td
+                = link_to 'View', collection if can? :read, collection
+                = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+
+
+  %fieldset
+    %legend My Items
+    .fix-scroll-height
+      %table.table
+        %tr
+          %th ID
+          %th Title
+          %th Creation Date
+          %th Actions
+
+          - @items.each do |item|
+            %tr
+              %td= item.full_identifier
+              %td= item.title
+              %td= item.created_at
+              %td
+                = link_to 'View', collection if can? :read, collection
+                = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+
+
+  %fieldset
+    %legend My Comments
+    .fix-scroll-height
+      %table.table
+        %tr
+          %th Item
+          %th User
+          %th Comment
+        - @comments.each do |comment|
+          %tr
+            %td= link_to comment.commentable.full_identifier, comment.commentable
+            %td= comment.owner.name
+            %td= comment.body
 

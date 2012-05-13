@@ -80,6 +80,10 @@ body.bp {
     }
   }
 
+  #actions {
+    margin-bottom: 15px;
+  }
+
   #footer {
     margin-top: 20px;
   }
@@ -294,9 +298,8 @@ body.bp {
 
   a.button {
     color: #FFFFFF;
-    display: block;
+    display: inline-block;
     height: 32px;
-    float: left;
   }
 
   .left {
