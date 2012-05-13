@@ -14,6 +14,14 @@ class User < ActiveRecord::Base
 
   scope :alpha, order(:first_name, :last_name)
 
+  has_many :collection_admins
+  has_many :collections, :through => :collection_admins, :dependent => :destroy
+
+  has_many :item_admins
+  has_many :items, :through => :item_admins, :dependent => :destroy
+
+  has_many :item_agents, :dependent => :restrict
+
   def self.sortable_columns
     %w{id first_name last_name address adress2 country email phone admin contact_only}
   end
