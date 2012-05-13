@@ -35,6 +35,12 @@
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
+        %td
+        %td
+          = f.check_box :owned, :checked => true
+          = f.label :owned, 'Item held by Paradisec'
+
+      %tr
         %th= f.label :url, 'URL'
         %td= f.text_field :url
 

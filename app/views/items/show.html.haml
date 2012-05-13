@@ -34,7 +34,7 @@
 
       %tr
         %th Archive link
-        %td= link_to item_url(@item), item_url(@item)
+        %td= item_archive_url(@item)
 
       %tr
         %th URL
@@ -212,17 +212,17 @@
       #archive
         %table.form.show
           %tr
-            %th{:class => 'no_colon'}
+            %td
             %td
               = check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
               Ready for metadata export
           %tr
-            %th{:class => 'no_colon'}
+            %td
             %td
               = check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
               Born digital
           %tr
-            %th{:class => 'no_colon'}
+            %td
             %td
               = check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
               Tapes returned to depositor

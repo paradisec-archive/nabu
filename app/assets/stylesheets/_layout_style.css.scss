@@ -211,7 +211,6 @@ body.bp {
   }
 
   table.form {
-    border-spacing: 1px;
     margin-bottom: 0;
     td {
       vertical-align: top;
@@ -229,7 +228,6 @@ body.bp {
       vertical-align: top;
       min-wdith: 200px;
       &:after { content: ":" }
-      &.no_colon:after { content: none }
     }
 
     select {
@@ -244,6 +242,7 @@ body.bp {
   }
 
   table.form.show {
+    border-spacing: 5px;
     td {
       background: white;
       padding: 4px;
