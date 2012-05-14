@@ -1,6 +1,6 @@
 namespace :import do
   
-  @verbose = true
+  @verbose = false
 
   desc 'Setup database from old PARADISEC data & other imports'
   task :all => [:setup, :import, :clean]
@@ -496,6 +496,9 @@ namespace :import do
     languages.each do |lang|
       next if lang['cl_eth_code'].blank? || lang['cl_coll_id'].blank?
       language = Language.find_by_code(lang['cl_eth_code'])
+      if !language
+        puts "Error: language code #{lang['cl_eth_code']} not found for collection #{lang['cl_coll_id']} - skipping collection language add"
+      end
       collection = Collection.find_by_identifier lang['cl_coll_id']
       next unless collection && language
       CollectionLanguage.create! :collection => collection, :language => language
@@ -736,7 +739,7 @@ namespace :import do
 
   desc 'Import item_content_languages into NABU from paradisec_legacy DB'
   task :item_content_languages => :environment do
-    puts "Importing languages per item from PARADISEC legacy DB"
+    puts "Importing content languages per item from PARADISEC legacy DB"
     client = connect
     languages = client.query("SELECT * FROM item_language16")
     languages.each do |lang|
@@ -757,7 +760,7 @@ namespace :import do
 
   desc 'Import item_subject_languages into NABU from paradisec_legacy DB'
   task :item_subject_languages => :environment do
-    puts "Importing languages per item from PARADISEC legacy DB"
+    puts "Importing subject languages per item from PARADISEC legacy DB"
     client = connect
     languages = client.query("SELECT * FROM item_subjectlang16")
     languages.each do |lang|
