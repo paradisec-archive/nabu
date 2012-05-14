@@ -334,13 +334,31 @@ namespace :import do
       next if line =~ /^LangID/
       code, country_code, name_type, name = line.strip.split("\t")
       next unless name_type == "L"
-      language = Language.new :code => code, :name => name, :country_id => Country.where(:code => country_code).first.id
-      if !language.valid?
-        puts "Skipping adding language #{code}, #{name} errors: #{language.errors}" if @verbose
+
+      # save language if new
+      language = Language.find_by_code_and_name(code, name)
+      if !language
+        language = Language.new :code => code, :name => name
+        if !language.valid?
+          puts "Skipping adding language #{code}, #{name} errors: #{language.errors}" if @verbose
+          next
+        end
+        language.save!
+        puts "Saved language #{code} - #{name}" if @verbose
+      end
+
+      # save language - country mapping
+      country = Country.find_by_code(country_code)
+      if !country
+        puts "Error: Country not in countries list #{country_code} - skipping"
         next
       end
-      language.save!
-      puts "Saved language #{code} - #{name}" if @verbose
+      lang_country = CountriesLanguage.new :country => country, :language => language
+      begin
+        lang_country.save!
+      rescue
+        puts "Error saving county - language mapping lang=#{language.code} country=#{country.code}"
+      end
     end
   end
 

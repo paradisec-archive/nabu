@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120513091334) do
+ActiveRecord::Schema.define(:version => 20120514032312) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -110,6 +110,13 @@ ActiveRecord::Schema.define(:version => 20120513091334) do
 
   add_index "countries", ["code"], :name => "index_countries_on_code", :unique => true
   add_index "countries", ["name"], :name => "index_countries_on_name", :unique => true
+
+  create_table "countries_languages", :force => true do |t|
+    t.integer "country_id",  :null => false
+    t.integer "language_id", :null => false
+  end
+
+  add_index "countries_languages", ["country_id", "language_id"], :name => "index_countries_languages_on_country_id_and_language_id", :unique => true
 
   create_table "discourse_types", :force => true do |t|
     t.string "name", :null => false
@@ -216,12 +223,9 @@ ActiveRecord::Schema.define(:version => 20120513091334) do
   add_index "items", ["identifier", "collection_id"], :name => "index_items_on_identifier_and_collection_id", :unique => true
 
   create_table "languages", :force => true do |t|
-    t.string  "code"
-    t.string  "name"
-    t.integer "country_id", :null => false
+    t.string "code"
+    t.string "name"
   end
-
-  add_index "languages", ["country_id"], :name => "index_languages_on_country_id"
 
   create_table "universities", :force => true do |t|
     t.string   "name"

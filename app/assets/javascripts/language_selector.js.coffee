@@ -5,9 +5,12 @@ $ ->
       ids.push $(this).attr('value')
 
     $('select.language').each ->
-      $(this).find('option').attr('disabled', 'disabled')
-      for id in ids
-        $(this).find('option[data-country_id=' + id + ']').removeAttr('disabled').insertBefore($(this).children().first())
-      $(this).find('option:selected').insertBefore($(this).children().first())
+      $(this).find('option').each ->
+        $(this).attr('disabled', 'disabled')
+        country_ids = $(this).data('country_id').split(',')
+        for id in ids
+          if id in country_ids
+            $(this).removeAttr('disabled').insertBefore($(this).children().first())
+            break
       # Tell chosen we changed the list
       $(this).trigger('liszt:updated')
