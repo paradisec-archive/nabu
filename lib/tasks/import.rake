@@ -439,7 +439,7 @@ namespace :import do
                                 :orthographic_notes => coll['coll_orthographic_notes'],
                                 :media => coll['coll_media'],
                                 :comments => coll['coll_comments'],
-                                :deposit_form_recieved => coll['coll_depform_rcvd'],
+                                :deposit_form_received => coll['coll_depform_rcvd'],
                                 :tape_location => coll['coll_location'],
                                 :field_of_research_id => 1
 

@@ -22,7 +22,7 @@ Feature: Collections
       And I go to the home page
      Then I should see "Add collection"
      When I go to the new collection page
-     Then I should see "Deposit form recieved"
+     Then I should see "Deposit form received"
 
   Scenario: Add a collection
     Given I am signed in as that user

@@ -36,7 +36,7 @@ class Collection < ActiveRecord::Base
                   :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
-                  :complete, :private, :tape_location, :deposit_form_recieved
+                  :complete, :private, :tape_location, :deposit_form_received
 
   paginates_per 10
 
@@ -99,7 +99,7 @@ class Collection < ActiveRecord::Base
     integer :zoom
     boolean :complete
     boolean :private
-    boolean :deposit_form_recieved
+    boolean :deposit_form_received
     time :created_at
   end
 end
