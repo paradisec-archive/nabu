@@ -416,6 +416,8 @@ namespace :import do
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
           puts "Saved access condition #{coll['coll_access_conditions']}" if @verbose
         end
+      else
+        puts "Error: collection #{coll['coll_id']} has no access condition"
       end
 
       ## make sure title and description aren't blank
