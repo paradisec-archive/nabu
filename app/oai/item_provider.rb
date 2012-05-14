@@ -61,6 +61,6 @@ class ItemProvider < OAI::Provider::Base
   repository_url 'http://paradisec.org.au/oai/collection'
   record_prefix 'oai:paradisec.org.au'
   admin_email 'nicholas.thieberger@paradisec.org.au'
-  sample_identifier 'oai:paradisec.org.au:AA1-001'
+  sample_id 'AA1-001'
   source_model OAI::Provider::ActiveRecordWrapper.new(::Item, :limit => 100)
 end
