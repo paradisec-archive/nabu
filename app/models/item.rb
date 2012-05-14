@@ -218,17 +218,9 @@ class Item < ActiveRecord::Base
   # If we need to later on we can generate the XML directly
   # TODO
   # - The <request> header doesn't have the params to the request as XML attributes
-  def to_oai_dc
+  def to_olac
     xml = ::Builder::XmlMarkup.new
-    xml.tag!(
-      'oai_dc',
-      'xmlns:oai_dc'  => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
-      'xmlns:dc'      => 'http://purl.org/dc/elements/1.1/',
-      'xmlns:xsi'     => 'http://www.w3.org/2001/XMLSchema-instance',
-      'xmlns:dcterms' => 'http://purl.org/dc/terms/',
-      'xmlns:olac'    => 'http://www.language-archives.org/OLAC/1.1/',
-      'xsi:schemaLocation' => %{http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://www.language-archives.org/OLAC/1.1/dcterms.xsd http://www.language-archives.org/OLAC/1.1/ http://www.language-archives.org/OLAC/1.1/olac.xsd}
-    ) do
+    xml.tag! 'olac:olac', OAI::Provider::Metadata::Olac.instance.header_specification do
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier

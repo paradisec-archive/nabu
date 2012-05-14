@@ -6,10 +6,41 @@ module OAI::Provider::Response
     private
     # TODO Make this overidable upstream
     def identifier_for(record)
-      "#{provider.prefix}:#{record.full_identifier}"
+      '#{provider.prefix}:#{record.full_identifier}'
     end
   end
 end
+
+module OAI::Provider::Metadata 
+  class Olac < Format
+
+    def initialize
+      @prefix = 'olac'
+      @schema = 'http://www.language-archives.org/OLAC/1.1/olac-archive.xsd'
+      @namespace = 'http://www.language-archives.org/OLAC/1.1/'
+      @element_namespace = 'olac'
+    end
+
+    def header_specification
+      {
+        'xmlns:oai_dc'  => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
+        'xmlns:dc'      => 'http://purl.org/dc/elements/1.1/',
+        'xmlns:xsi'     => 'http://www.w3.org/2001/XMLSchema-instance',
+        'xmlns:dcterms' => 'http://purl.org/dc/terms/',
+        'xmlns:olac'    => 'http://www.language-archives.org/OLAC/1.1/',
+        'xsi:schemaLocation' => %{
+          http://www.openarchives.org/OAI/2.0/oai_dc/
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd
+          http://www.language-archives.org/OLAC/1.1/dcterms.xsd
+          http://www.language-archives.org/OLAC/1.1/
+          http://www.language-archives.org/OLAC/1.1/olac.xsd
+        }
+      }
+    end
+
+  end
+end
+OAI::Provider::Base.register_format(OAI::Provider::Metadata::Olac.instance)
 
 module OAI::Provider::Response
   class Base
@@ -23,6 +54,7 @@ module OAI::Provider::Response
     end
   end
 end
+
 
 class ItemProvider < OAI::Provider::Base
   repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
