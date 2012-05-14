@@ -80,5 +80,5 @@ class ItemProvider < OAI::Provider::Base
       xml.tag! 'access', 'The current focus of PARADISEC is securing endangered materials. Access to the datastore is by password and is currently only available to depositors via the following URL: http://www.paradisec.org.au/repository/[CollectionID]/[ItemID]. Page images of some fieldnotes can be located online.'
     end
   end
-  extra_description xml
+  extra_description xml.target!
 end
