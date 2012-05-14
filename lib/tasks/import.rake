@@ -679,6 +679,12 @@ namespace :import do
         discourse_type = DiscourseType.find_by_pd_dt_id(item['item_discourse_type'])
       end
 
+      ## set "owned" boolean
+      item_owned = true
+      if !item['item_url'].blank? && item['item_url'] =~ /paradisec/
+        item_owned = false
+      end
+
       ## prepare record
       new_item = Item.new :identifier => identifier,
                           :title => title,
@@ -690,6 +696,7 @@ namespace :import do
                           :longitude => longitude,
                           :zoom => zoom.to_i,
                           :url => item['item_url'],
+                          :owned => item_owned,
                           :admin_comment => item['item_comments'],
                           :originated_on => originated_on,
                           :metadata_exportable => item['item_impxml_ready'],
