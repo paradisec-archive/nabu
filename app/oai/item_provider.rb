@@ -63,7 +63,7 @@ class ItemProvider < OAI::Provider::Base
   repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
   repository_url 'http://paradisec.org.au/oai/collection'
   record_prefix 'oai:paradisec.org.au'
-  admin_email 'nicholas.thieberger@paradisec.org.au'
+  admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
   source_model OAI::Provider::ActiveRecordWrapper.new(::Item, :limit => 100)
   xml = ::Builder::XmlMarkup.new
