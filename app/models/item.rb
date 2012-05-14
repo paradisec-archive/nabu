@@ -225,7 +225,7 @@ class Item < ActiveRecord::Base
       'xmlns:oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
       'xmlns:dc' => 'http://purl.org/dc/elements/1.1/',
       'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-      'xmlns:dcterms' => 'http://purl.org/dc/terms/"',
+      'xmlns:dcterms' => 'http://purl.org/dc/terms/',
       'xsi:schemaLocation' => %{http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://www.language-archives.org/OLAC/1.1/dcterms.xsd}
     ) do
       xml.tag! 'dc:title', title
