@@ -11,11 +11,15 @@
 
 ## Milestones
 * Help pages (CMS?)
-* Import Media Essence Information (needs whole archive on server, use exisiting scripts?)
+* Import Media Essence Information (needs whole archive on server, use existing scripts?)
+* Advanced search
 * Harvesting Interface Implementation OLAC
 * Harvesting Interface Implementation ANDS
-* CSV & METS Metadata Import Implementation for Collection and Items
-* CSV & METS Metadata Export Implementation
+* CSV Metadata Import Implementation for Collection and Items
+* CSV Metadata Export Implementation
 * Reporting Web Service Implementation for Workflow Monitoring, notifications
 * Home Page Reporting Dashboard Display Implementation
 * Testing & Bug Fixes
+
+## Post Rollout
+* Update URLs of harvesting services for OAI-PMH

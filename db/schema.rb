@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120514032312) do
+ActiveRecord::Schema.define(:version => 20120514104812) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -223,8 +223,9 @@ ActiveRecord::Schema.define(:version => 20120514032312) do
   add_index "items", ["identifier", "collection_id"], :name => "index_items_on_identifier_and_collection_id", :unique => true
 
   create_table "languages", :force => true do |t|
-    t.string "code"
-    t.string "name"
+    t.string  "code"
+    t.string  "name"
+    t.boolean "retired"
   end
 
   create_table "universities", :force => true do |t|

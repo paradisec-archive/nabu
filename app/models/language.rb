@@ -2,7 +2,7 @@ class Language < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :code, :presence => true, :uniqueness => true
 
-  attr_accessible :name, :code
+  attr_accessible :name, :code, :retired
 
   scope :alpha, order(:name)
   def name_with_code

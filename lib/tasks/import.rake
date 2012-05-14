@@ -397,9 +397,7 @@ namespace :import do
       next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
       collector = User.find_by_pd_contact_id coll['coll_collector_id']
       if !collector
-        if !Rails.env == "development"
-          raise "ERROR: #{new_coll} has no collector - can't add to collections"
-        end
+        puts "ERROR: #{coll['coll_id']} has no collector (#{coll['coll_collector_id']})- can't add to collections"
         next
       end
       operator = User.find_by_pd_contact_id coll['coll_operator_id']
@@ -418,6 +416,8 @@ namespace :import do
           access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
           puts "Saved access condition #{coll['coll_access_conditions']}" if @verbose
         end
+      else
+        puts "Error: collection #{coll['coll_id']} has no access condition"
       end
 
       ## make sure title and description aren't blank
@@ -508,14 +508,20 @@ namespace :import do
 
   desc 'Import collection_languages into NABU from paradisec_legacy DB'
   task :collection_languages => :environment do
-    puts "Importing languages per collection from PARADISEC legacy DB"
+    puts "Importing collection languages per collection from PARADISEC legacy DB"
     client = connect
     languages = client.query("SELECT * FROM collection_language16")
     languages.each do |lang|
       next if lang['cl_eth_code'].blank? || lang['cl_coll_id'].blank?
       language = Language.find_by_code(lang['cl_eth_code'])
       if !language
-        puts "Error: language code #{lang['cl_eth_code']} not found for collection #{lang['cl_coll_id']} - skipping collection language add"
+        lang_name = client.query("SELECT eth_name FROM ethnologue16 where eth_code='"+lang['cl_eth_code']+"'")
+        language = Language.new :code => lang['cl_eth_code'], :name => lang_name.first['eth_name']+" (retired)", :retired => true
+        begin
+          language.save!
+        rescue
+          puts "Error: language code #{lang['cl_eth_code']} not found for collection #{lang['cl_coll_id']} - skipping collection language add"
+        end
       end
       collection = Collection.find_by_identifier lang['cl_coll_id']
       next unless collection && language
@@ -681,7 +687,7 @@ namespace :import do
 
       ## set "owned" boolean
       item_owned = true
-      if !item['item_url'].blank? && item['item_url'] =~ /paradisec/
+      if !item['item_url'].blank? && item['item_url'] !~ /paradisec/
         item_owned = false
       end
 
@@ -771,7 +777,13 @@ namespace :import do
       next if lang['il_eth_code'].blank? || lang['il_item_pid'].blank?
       language = Language.find_by_code(lang['il_eth_code'])
       if !language
-        puts "Error: language code #{lang['il_eth_code']} not found for item #{lang['il_item_pid']} - skipping content language add"
+        lang_name = client.query("SELECT eth_name FROM ethnologue16 where eth_code='"+lang['il_eth_code']+"'")
+        language = Language.new :code => lang['il_eth_code'], :name => lang_name.first['eth_name']+" (retired)", :retired => true
+        begin
+          language.save!
+        rescue
+          puts "Error: language code #{lang['il_eth_code']} not found for item #{lang['il_item_pid']} - skipping content language add"
+        end
       end
       item = get_item(lang['il_item_pid'])
       next unless item && language
@@ -792,7 +804,13 @@ namespace :import do
       next if lang['is_eth_code'].blank? || lang['is_item_pid'].blank?
       language = Language.find_by_code(lang['is_eth_code'])
       if !language
-        puts "Error: language code #{lang['is_eth_code']} not found for item #{lang['is_item_pid']} - skipping subject language add"
+        lang_name = client.query("SELECT eth_name FROM ethnologue16 where eth_code='"+lang['is_eth_code']+"'")
+        language = Language.new :code => lang['is_eth_code'], :name => lang_name.first['eth_name']+" (retired)", :retired => true
+        begin
+          language.save!
+        rescue
+          puts "Error: language code #{lang['is_eth_code']} not found for item #{lang['is_item_pid']} - skipping subject language add"
+        end
       end
       item = get_item(lang['is_item_pid'])
       next unless item && language
