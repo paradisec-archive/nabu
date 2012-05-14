@@ -31,6 +31,7 @@ module OAI::Provider::Metadata
         'xsi:schemaLocation' => %{
           http://www.openarchives.org/OAI/2.0/oai_dc/
           http://www.openarchives.org/OAI/2.0/oai_dc.xsd
+          http://purl.org/dc/terms/
           http://www.language-archives.org/OLAC/1.1/dcterms.xsd
           http://www.language-archives.org/OLAC/1.1/
           http://www.language-archives.org/OLAC/1.1/olac.xsd
