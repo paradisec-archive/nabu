@@ -50,7 +50,7 @@
 
       %tr
         %th= f.label :country_ids, 'Countries'
-        %td= f.select :country_ids, Country.alpha.map {|c| [c.name, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
+        %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
 
       %tr
         %th= f.label :language, 'Language as given'

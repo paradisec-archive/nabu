@@ -39,7 +39,7 @@
 
       %tr
         %th= f.label :country_ids, 'Countries'
-        %td= f.select :country_ids, Country.alpha.map {|c| [c.name, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
+        %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
 
       %tr
         %th= f.label :language_ids, 'Languages'
@@ -123,8 +123,8 @@
     %legend Admin information
     %table.form
       %tr
-        %th= f.label :deposit_form_recieved
-        %td= f.check_box :deposit_form_recieved
+        %th= f.label :deposit_form_received
+        %td= f.check_box :deposit_form_received
 
       %tr
         %th= f.label :tape_location

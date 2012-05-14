@@ -6,7 +6,7 @@ class Country < ActiveRecord::Base
 
   scope :alpha, order(:name)
   def name_with_code
-    "#{code} - #{name}"
+    "#{name} - #{code}"
   end
 
   has_many :countries_languages  
