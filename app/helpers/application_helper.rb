@@ -38,24 +38,6 @@ module ApplicationHelper
     "%02d:%02d:%02d.%d" % [hh, mm, ss, ms * 1000]
   end
 
-  def citation(item)
-    cite = "#{item.collector.name} (recorder)"
-    cite += " #{item.originated_on.year}" if item.originated_on
-    cite += '; '
-    cite += item.title
-    cite += ','
-    last = item.essence_types.length - 1
-    item.essence_types.each_with_index do |type, index|
-      cite += type
-      if index != last
-        cite += "/"
-      end
-    end
-    cite += " #{item.url || item_url(item)}"
-    cite += " #{Date.today}."
-    cite
-  end
-
   def current_link_to label, path, cname
     link_to label, path, ({:class => 'active'} if controller.controller_name == cname)
   end
