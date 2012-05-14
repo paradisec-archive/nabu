@@ -742,6 +742,9 @@ namespace :import do
     languages.each do |lang|
       next if lang['il_eth_code'].blank? || lang['il_item_pid'].blank?
       language = Language.find_by_code(lang['il_eth_code'])
+      if !language
+        puts "Error: language code #{lang['il_eth_code']} not found for item #{lang['il_item_pid']} - skipping content language add"
+      end
       item = get_item(lang['il_item_pid'])
       next unless item && language
       begin
@@ -760,6 +763,9 @@ namespace :import do
     languages.each do |lang|
       next if lang['is_eth_code'].blank? || lang['is_item_pid'].blank?
       language = Language.find_by_code(lang['is_eth_code'])
+      if !language
+        puts "Error: language code #{lang['is_eth_code']} not found for item #{lang['is_item_pid']} - skipping subject language add"
+      end
       item = get_item(lang['is_item_pid'])
       next unless item && language
       begin
