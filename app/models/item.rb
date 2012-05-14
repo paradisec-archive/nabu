@@ -228,8 +228,12 @@ class Item < ActiveRecord::Base
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
-      xml.tag! 'dcterms:created', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
-      xml.tag! 'dc:date', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
+
+      # FIXME remove after next full import
+      if originated_on
+        xml.tag! 'dcterms:created', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
+        xml.tag! 'dc:date', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
+      end
 
       essences.each do |essence|
         xml.tag! 'dcterms:tableOfContents', essence.filename
@@ -243,7 +247,7 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:subject', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
       content_languages.each do |language|
-        xml.tag! 'dc:content', 'xsi:type' => 'olac:language', 'olac:code' => language.code
+        xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
       # TODO bring this back
       format = ""
