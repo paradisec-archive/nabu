@@ -19,7 +19,7 @@
 //= require chosen
 //= require jquery-mousewheel
 //= require jquery-fixedheadertable
-//= require collection
+//= require per_page
 //= require datepicker
 //= require maps
 //= require scrollable-table
@@ -28,5 +28,5 @@
 //= require remove_empty_fields
 //= require add_university
 //= require language_selector
-
+//= require copy_language
 
