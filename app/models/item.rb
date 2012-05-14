@@ -243,7 +243,7 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:subject', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
       content_languages.each do |language|
-        xml.tag! 'dc:content', 'xsi:type' => 'olac:language', 'olac:code' => language.code
+        xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
       # TODO bring this back
       format = ""
