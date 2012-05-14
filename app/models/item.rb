@@ -263,8 +263,9 @@ class Item < ActiveRecord::Base
       # <dc:type xsi:type="olac:discourse-type" olac:code="singing"/>
       # <dc:type xsi:type="dcterms:DCMIType">Sound</dc:type>
       # <dc:type xsi:type="dcterms:DCMIType">MovingImage</dc:type>
-      xml.tag! 'dcterms:accessRights', access_condition.name
-      xml.tag! 'dc:rights', access_condition.name
+      # FIXME Remove if on the two lines below. ONly exists because of dodgey data
+      xml.tag! 'dcterms:accessRights', access_condition.name if access_condition
+      xml.tag! 'dc:rights', access_condition.name if access_condition
       xml.tag! 'dcterms:bibliographicCitation', citation
       xml.tag! 'dc:description', (description + ". Language as given: #{language}")
     end
