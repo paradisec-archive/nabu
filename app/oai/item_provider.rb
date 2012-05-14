@@ -6,7 +6,7 @@ module OAI::Provider::Response
     private
     # TODO Make this overidable upstream
     def identifier_for(record)
-      '#{provider.prefix}:#{record.full_identifier}'
+      "#{provider.prefix}:#{record.full_identifier}"
     end
   end
 end
