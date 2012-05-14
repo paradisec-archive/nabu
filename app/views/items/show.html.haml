@@ -48,7 +48,7 @@
         %th Countries
         %td
           - @item.countries.each do |country|
-            = country.name
+            = country.name_with_code
             %br
 
       %tr
@@ -59,14 +59,14 @@
         %th Subject language(s)
         %td
           - @item.subject_languages.each do |language|
-            = language.name
+            = language.name_with_code
             %br
 
       %tr
         %th Content language(s)
         %td
           - @item.content_languages.each do |language|
-            = language.name
+            = language.name_with_code
             %br
 
       %tr
