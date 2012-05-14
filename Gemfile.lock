@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/johnf/ruby-oai.git
-  revision: 3bff50286f14a726c88f392484ed82b3ed5cf8a2
+  revision: 0859d16b67a318a2866aaec972b68e12ce02d49a
   specs:
     oai (0.0.13)
       builder (>= 2.0.0)
