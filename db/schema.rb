@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120514104812) do
+ActiveRecord::Schema.define(:version => 20120514143050) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(:version => 20120514104812) do
     t.boolean  "complete"
     t.boolean  "private"
     t.string   "tape_location"
-    t.boolean  "deposit_form_recieved"
+    t.boolean  "deposit_form_received"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
