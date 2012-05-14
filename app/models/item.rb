@@ -1,4 +1,5 @@
 class Item < ActiveRecord::Base
+  delegate :url_helpers, :to => 'Rails.application.routes'
   has_paper_trail
   nilify_blanks
 
@@ -194,32 +195,86 @@ class Item < ActiveRecord::Base
     Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).first
   end
 
+  def citation
+    cite = "#{collector.name} (recorder)"
+    cite += " #{originated_on.year}" if originated_on
+    cite += '; '
+    cite += title
+    cite += ','
+    last = essence_types.length - 1
+    essence_types.each_with_index do |type, index|
+      cite += type
+      if index != last
+        cite += "/"
+      end
+    end
+    cite += " #{url || url_helpers.item_url(self, :host => 'paradisec.org.au')}"
+    cite += " #{Date.today}."
+    cite
+  end
+
+
   # OAI-MPH mappings
   # If we need to later on we can generate the XML directly
-  #def to_oai_dc
-  #  xml = Builder::XmlMarkup.new
-  #  xml.tag!("oai_dc:dc",
-  #           'xmlns:oai_dc' => "http://www.openarchives.org/OAI/2.0/oai_dc/",
-  #           'xmlns:dc' => "http://purl.org/dc/elements/1.1/",
-  #           'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
-  #           'xsi:schemaLocation' =>
-  #  %{http://www.openarchives.org/OAI/2.0/oai_dc/
-  #                                        http://www.openarchives.org/OAI/2.0/oai_dc.xsd}) do
-  #    xml.tag!('oai_dc:title', title)
-  #    xml.tag!('oai_dc:description', text)
-  #    xml.tag!('oai_dc:creator', user)
-  #    tags.each do |tag|
-  #      xml.tag!('oai_dc:subject', tag)
-  #    end
-  #                                        end
-  #  xml.target!
-  #end
+  # TODO
+  # - The <request> header doesn't have the params to the request as XML attributes
+  def to_oai_dc
+    xml = ::Builder::XmlMarkup.new
+    xml.tag!(
+      'oai_dc',
+      'xmlns:oai_dc' => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
+      'xmlns:dc' => 'http://purl.org/dc/elements/1.1/',
+      'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+      'xmlns:dcterms' => 'http://purl.org/dc/terms/"',
+      'xsi:schemaLocation' => %{http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd http://www.language-archives.org/OLAC/1.1/dcterms.xsd}
+    ) do
+      xml.tag! 'dc:title', title
 
-  # For now we just map the fields
-  def self.map_oai_dc
-    {
-      :title => :title,
-      :identifier => :full_identifier,
-    }
+      xml.tag! 'dc:identifier', full_identifier
+      xml.tag! 'dc:identifier', url_helpers.item_url(self, :host => 'paradisec.org.au'), 'xsi:type' => 'dcterms:URI' if owned?
+      xml.tag! 'dc:identifier', url if url?
+
+      xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
+      xml.tag! 'dcterms:created', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
+      xml.tag! 'dc:date', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
+
+      essences.each do |essence|
+        xml.tag! 'dcterms:tableOfContents', essence.filename
+      end
+
+      item_agents.each do |agent|
+        xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => 'recorder'
+      end
+
+      subject_languages.each do |language|
+        xml.tag! 'dc:subject', 'xsi:type' => 'olac:language', 'olac:code' => language.code
+      end
+      content_languages.each do |language|
+        xml.tag! 'dc:content', 'xsi:type' => 'olac:language', 'olac:code' => language.code
+      end
+      # TODO bring this back
+      format = ""
+      #format += "Digitised: #{born_digital? ? 'yes' : 'no'}"
+      format += "\nMedia: #{original_media}" unless original_media.blank?
+      format += "\nAudio Notes: #{ingest_notes}" unless ingest_notes.blank?
+      xml.tag! 'dc:format', format
+      countries.each do |country|
+        xml.tag! 'dc:coverage', country.code, 'xsi:type' => 'dcterms:ISO3166'
+      end
+      # TODO GEO
+      #<dc:coverage xsi:type="dcterms:Box">northlimit=2.083; southlimit=1.006; westlimit=108.905; eastlimit=109.711</dc:coverage>
+      # TODO
+      # old item_type table
+      # <dc:type xsi:type="olac:linguistic-type" olac:code="primary_text"/>
+      # <dc:subject xsi:type="olac:linguistic-field" olac:code="text_and_corpus_linguistics"/>
+      # <dc:type xsi:type="olac:discourse-type" olac:code="singing"/>
+      # <dc:type xsi:type="dcterms:DCMIType">Sound</dc:type>
+      # <dc:type xsi:type="dcterms:DCMIType">MovingImage</dc:type>
+      xml.tag! 'dcterms:accessRights', access_condition.name
+      xml.tag! 'dc:rights', access_condition.name
+      xml.tag! 'dcterms:bibliographicCitation', citation
+      xml.tag! 'dc:description', (description + ". Language as given: #{language}")
+    end
+    xml.target!
   end
 end
