@@ -417,7 +417,11 @@ namespace :import do
           puts "Saved access condition #{coll['coll_access_conditions']}" if @verbose
         end
       else
-        puts "Error: collection #{coll['coll_id']} has no access condition"
+        begin
+          access_cond = AccessCondition.find_by_name "Open (subject to agreeing to access conditions)"
+        rescue
+          access_cond = AccessCondition.create! :name => "Open (subject to agreeing to access conditions)"
+        end
       end
 
       ## make sure title and description aren't blank
