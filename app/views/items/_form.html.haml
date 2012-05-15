@@ -35,6 +35,10 @@
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
+        %th= f.label :originated_on_narrative, 'Origination date free form'
+        %td= f.text_field :originated_on_narrative
+
+      %tr
         %td
         %td
           = f.check_box :owned

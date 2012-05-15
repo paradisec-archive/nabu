@@ -1,6 +1,6 @@
 namespace :import do
   
-  @verbose = false
+  @verbose = true
 
   desc 'Setup database from old PARADISEC data & other imports'
   task :all => [:setup, :import, :clean]
@@ -653,6 +653,7 @@ namespace :import do
                                                  item['item_ymax'], item['item_ymin'])
 
       ## origination date
+      originated_on = nil
       if item['item_date_iso'].blank?
         begin
           if item['item_date'] == "date unknown" || item['item_date'] == "unknown"
@@ -667,9 +668,14 @@ namespace :import do
         if item['item_date_iso'] == "1999-11-30"
           originated_on = nil
         else
-          originated_on = item['item_date_iso'].to_date
+          begin
+            originated_on = item['item_date_iso'].to_date
+          rescue
+            puts "Error importing item_date_iso #{item['item_date_iso']} for item #{item['item_pid']}"
+          end
         end
       end
+      originated_on_narrative = item['item_date']
 
       ## get access conditions
       if !item['item_rights'].blank?
@@ -705,6 +711,7 @@ namespace :import do
                           :owned => item_owned,
                           :admin_comment => item['item_comments'],
                           :originated_on => originated_on,
+                          :originated_on_narrative => originated_on_narrative,
                           :metadata_exportable => item['item_impxml_ready'],
                           :born_digital => item['item_born_digital'],
                           :tapes_returned => item['item_tapes_returned'],
@@ -730,10 +737,18 @@ namespace :import do
 
       ## set dates
       if item['item_date_received'] != nil
-        new_item.received_on = item['item_date_received'].to_date
+        begin
+          new_item.received_on = item['item_date_received'].to_date
+        rescue
+          puts "Error importing item_date_received #{item['item_date_received']} for item #{item['item_pid']}"
+        end
       end
       if item['item_date_digitised'] != nil
-        new_item.digitised_on = item['item_date_digitised'].to_date
+        begin
+          new_item.digitised_on = item['item_date_digitised'].to_date
+        rescue
+          puts "Error importing item_date_digitised #{item['item_date_digitised']} for item #{item['item_pid']}"
+        end
       end
       if item['item_metadata_entered'] == true
         metadata_imported_on = Date.today
@@ -752,8 +767,12 @@ namespace :import do
 
       ## fix created_at (updated_at is now)
       if item['item_date_created'] != nil
-        new_item.created_at = item['item_date_created'].to_date
-        new_item.save!
+        begin
+          new_item.created_at = item['item_date_created'].to_date
+          new_item.save!
+        rescue
+          puts "Error importing item_date_created #{item['item_date_created']} for item #{item['item_pid']}"
+        end
       end
       puts "Saved item #{item['item_pid']} #{item['item_description']}, #{collector.id} #{collector.first_name} #{collector.last_name}" if @verbose
     end

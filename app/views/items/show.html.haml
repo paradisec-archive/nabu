@@ -14,7 +14,7 @@
         %td<
           %span= @item.full_identifier
           .right<
-            = surround '(', ')' do
+            = surround '(', ' )' do
               = link_to 'Collection Details', @item.collection
 
       - if user_signed_in?
@@ -29,8 +29,12 @@
         %td= @item.description
 
       %tr
-        %th Date created
+        %th Origination date
         %td= @item.originated_on
+
+      %tr
+        %th Origination date free form
+        %td= @item.originated_on_narrative
 
       %tr
         %th Archive link

@@ -50,7 +50,7 @@ class Item < ActiveRecord::Base
                   :access_condition_id,
                   :access_narrative, :private,
                   :admin_comment,
-                  :originated_on, :language,
+                  :originated_on, :originated_on_narrative, :language,
                   :dialect, :discourse_type_id,
                   :metadata_exportable, :born_digital, :tapes_returned,
                   :original_media, :ingest_notes, :tracking
