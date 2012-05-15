@@ -23,3 +23,4 @@
 
 ## Post Rollout
 * Update URLs of harvesting services for OAI-PMH
+* Check all dates in collections that should have a value have one
