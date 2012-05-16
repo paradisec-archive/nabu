@@ -418,9 +418,9 @@ namespace :import do
         end
       else
         begin
-          access_cond = AccessCondition.find_by_name "Open (subject to agreeing to access conditions)"
+          access_cond = AccessCondition.find_by_name "As yet unspecified"
         rescue
-          access_cond = AccessCondition.create! :name => "Open (subject to agreeing to access conditions)"
+          access_cond = AccessCondition.create! :name => "As yet unspecified"
         end
       end
 
