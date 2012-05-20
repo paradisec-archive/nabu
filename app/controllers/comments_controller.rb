@@ -27,14 +27,14 @@ class CommentsController < ApplicationController
   def spam
     @comment.status = 'spam'
     @comment.save!
-    flash[:notice] = 'Comment marked as spam'
+    flash[:notice] = 'Comment marked as spam.'
     redirect_to root_path
   end
 
   def approve
     @comment.status = 'approved'
     @comment.save!
-    flash[:notice] = 'Comment approved'
+    flash[:notice] = 'Comment approved.'
     redirect_to root_path
   end
 end

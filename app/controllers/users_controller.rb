@@ -63,7 +63,7 @@ class UsersController < ApplicationController
       @user.destroy
       flash[:notice] = 'User was deleted.'
     rescue ActiveRecord::DeleteRestrictionError
-      flash[:error] = 'User cannot be deleted it is in use'
+      flash[:error] = 'User cannot be deleted - it is in use.'
     end
     redirect_to :action => :index
   end
