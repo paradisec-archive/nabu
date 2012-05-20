@@ -7,6 +7,11 @@
       %ul
         - @item.errors.full_messages.each do |msg|
           %li= msg
+
+  .right
+    = f.submit 'Update item'
+
   = render :partial => 'form', :locals => {:f => f}
 
-  = f.submit 'Update item'
+  .right
+    = f.submit 'Update item'

@@ -17,7 +17,11 @@
   = hidden_field_tag :item_ids, @search.results.map(&:id)
   = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
+  .right
+    = f.submit 'Update Items'
+
   = render :partial => 'form', :locals => {:f => f}
 
-  = f.submit 'Update Items'
+  .right
+    = f.submit 'Update Items'
 

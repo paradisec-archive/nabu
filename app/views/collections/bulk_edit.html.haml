@@ -17,7 +17,11 @@
   = hidden_field_tag :collection_ids, @search.results.map(&:id)
   = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
+  .right
+    = f.submit 'Update Collections'
+
   = render :partial => 'form', :locals => {:f => f}
 
-  = f.submit 'Update Collections'
+  .right
+    = f.submit 'Update Collections'
 

@@ -1,19 +1,19 @@
 
-.left
-  = f.text_field :title, {:style => "width: 800px;", :placeholder => "Please enter a title"}
-
-.right
-  = f.check_box :complete
-  = f.label :complete, 'Collection completed'
-
-  = f.check_box :private
-  = f.label :private
+.left{:style => "width: 80%"}
+  = f.text_field :title, {:placeholder => "Please enter a title"}
 
 .clear
 
 .twoup-1
   %fieldset
     %legend Collection details
+    .right
+      = f.check_box :complete
+      = f.label :complete, 'Collection completed'
+
+      = f.check_box :private
+      = f.label :private
+
     %table.form
       %tr
         %th= f.label :identifier, 'Collection ID'

@@ -2,18 +2,22 @@
   %h1= @collection.title
 
 .right
-  = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
-  Collection complete
-
-  = check_box_tag :private, @collection.private, @collection.private, :disabled => true
-  Private
+  - if can? :manage, Collection
+    = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
   
 .clear
 
 .twoup-1
   %fieldset
     %legend Collection details
+    .right
+      = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
+      Collection complete
+      = check_box_tag :private, @collection.private, @collection.private, :disabled => true
+      Private
+
     %table.form.show
+
       %tr
         %th Collection ID
         %td= @collection.identifier
@@ -92,6 +96,7 @@
 
 
 .twoup-2
+
   = render :partial => 'items'
 
   - if can? :manage, Collection
@@ -151,4 +156,5 @@
           %td= number_to_human @num_essences
 
 
-    = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
+    .right
+      = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
