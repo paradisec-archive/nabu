@@ -986,4 +986,19 @@ namespace :import do
     end
   end
 
+  desc 'Update essence meta_data'
+  task :update_essences => :environment do
+    puts 'Updating Essence metadata'
+    Essence.find_each do |essence|
+      media = Nabu::Media.new essence.path
+      essence.mimetype = media.mimetype
+      essence.size = media.size
+      essence.bitrate = media.bitrate
+      essence.samplerate = media.samplerate
+      essence.duration = media.duration
+      essence.channels = media.channels
+      essence.fps = media.fps
+      essence.save!
+    end
+  end
 end

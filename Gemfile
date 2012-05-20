@@ -46,6 +46,9 @@ gem 'sunspot_solr'
 # Web Server
 gem 'unicorn'
 
+# Media Detection
+gem 'ruby-filemagic'
+
 # Deployment
 gem 'capistrano'
 gem 'capistrano-unicorn'

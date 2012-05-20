@@ -9,7 +9,7 @@ class Country < ActiveRecord::Base
     "#{name} - #{code}"
   end
 
-  has_many :countries_languages  
+  has_many :countries_languages
   has_many :languages, :through => :countries_languages, :dependent => :restrict
 
   has_many :item_languages

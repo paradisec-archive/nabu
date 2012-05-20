@@ -44,7 +44,7 @@
       %tr
         %th= f.label :language_ids, 'Languages'
         %td
-          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" name=\"#{l.id}\">#{l.name_with_code}</option>" }.join.html_safe
+          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" name=\"#{l.id}\" #{'selected' if @collection.language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
           = f.select :language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
 
       %tr

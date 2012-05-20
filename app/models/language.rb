@@ -4,6 +4,7 @@ class Language < ActiveRecord::Base
 
   attr_accessible :name, :code, :retired
 
+  default_scope includes(:countries)
   scope :alpha, order(:name)
   def name_with_code
     "#{name} - #{code}"

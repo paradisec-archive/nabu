@@ -17,4 +17,9 @@ class Essence < ActiveRecord::Base
     types = mimetype.split("/",2)
     types[1].upcase
   end
+
+  def path(prefix)
+    "/srv/media/something/#{filename}"
+  end
+
 end
