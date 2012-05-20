@@ -1,15 +1,22 @@
-%h1 User details
 
-.page-box
-  = form_for @user do |f|
-    - if @user.errors.any?
-      #error_explanation
-        %h2== #{pluralize(@user.errors.count, 'error')} prohibited this post from being saved:
-        %ul
-          - @user.errors.full_messages.each do |msg|
-            %li= msg
+= form_for @user do |f|
+  - if @user.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@user.errors.count, 'error')} prohibited this post from being saved:
+      %ul
+        - @user.errors.full_messages.each do |msg|
+          %li= msg
 
-    .twoup-1
+  .left
+    %h1 User details
+
+  .right
+    = f.submit 'Update'
+
+  .clear{:style => "padding-top: 7px"}
+
+  .twoup-1
+    %fieldset
       %table.form
         %tr
           %td= f.label :first_name, '* First name'
@@ -61,11 +68,8 @@
               = f.check_box :operator
               = f.label :operator
 
-        %tr
-          %td
-          %td= f.submit 'Update'
-
-    .twoup-2
+  .twoup-2
+    %fieldset
       %table.form
         %tr
           %td= f.label :password, "New password"
@@ -86,3 +90,5 @@
             %br
             %i (we need your current password to confirm your changes)
 
+    .right
+      = f.submit 'Update'
