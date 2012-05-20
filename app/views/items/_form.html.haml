@@ -63,7 +63,7 @@
       %tr
         %th= f.label :subject_language_ids, 'Subject languages'
         %td
-          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" name=\"#{l.id}\" #{'selected' if @item.subject_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
+          - ofs = Language.alpha.includes(:item_subject_languages).map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @item.subject_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
           = f.select :subject_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
           %br
           = link_to 'Copy from Content language', '#', :id => 'copy-subject-language'
@@ -71,7 +71,7 @@
       %tr
         %th= f.label :content_language_ids, 'Content language'
         %td
-          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" name=\"#{l.id}\" #{'selected' if @item.content_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
+          - ofs = Language.alpha.includes(:item_content_languages).map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @item.content_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
           = f.select :content_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
           %br
           = link_to 'Copy from Subject language', '#', :id => 'copy-content-language'
