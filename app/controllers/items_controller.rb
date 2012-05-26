@@ -70,10 +70,20 @@ class ItemsController < ApplicationController
 
     update_params = params[:item].delete_if {|k, v| v.blank?}
 
+    # Collect the fields we are appending to
+    appendable = {}
+    params[:item].each_pair do |k, v|
+      if k =~ /^bulk_edit_append_(.*)/
+        appendable[$1] = params[:item].delete $1
+        params[:item].delete k
+      end
+    end
+
     invalid_record = false
     @items.each do |item|
-      # TODO Allow association deletion
-#      associations_to_delete = update_params.select {|k, v| k =~ /^delete_assoc
+      appendable.each_pair do |k, v|
+        params[:item][k.to_sym] = item.send(k) + v
+      end
       unless item.update_attributes(params[:item])
         invalid_record = true
         @item = item

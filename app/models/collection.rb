@@ -30,13 +30,16 @@ class Collection < ActiveRecord::Base
   validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
   validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
 
+  attr_reader :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
+
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
                   :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
-                  :complete, :private, :tape_location, :deposit_form_received
+                  :complete, :private, :tape_location, :deposit_form_received,
+                  :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
 
   paginates_per 10
 
@@ -102,4 +105,5 @@ class Collection < ActiveRecord::Base
     boolean :deposit_form_received
     time :created_at
   end
+
 end
