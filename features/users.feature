@@ -225,7 +225,7 @@ Feature: Authentication and Authorisation
       And I should see "Pfeiffer"
       And I should see "Piper"
      When I fill in "search" with "f"
-      And I press "Filter"
+      And I press "Search"
      Then I should see "Ferlito"
       And I should see "Pfeiffer"
       And I should not see "Piper"
