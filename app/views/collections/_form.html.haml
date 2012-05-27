@@ -38,11 +38,21 @@
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
-        %th= f.label :country_ids, 'Countries'
+        %th
+          - if params[:action] = 'bulk_edit'
+            %small Append
+            = f.check_box :bulk_edit_append_country_ids
+            %br
+          = f.label :country_ids, 'Countries'
         %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
 
       %tr
-        %th= f.label :language_ids, 'Languages'
+        %th
+          - if params[:action] = 'bulk_edit'
+            %small Append
+            = f.check_box :bulk_edit_append_language_ids
+            %br
+          = f.label :language_ids, 'Languages'
         %td
           - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @collection.language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
           = f.select :language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
@@ -82,7 +92,12 @@
     %legend Access Information
     %table.form
       %tr
-        %th= f.label :admin_ids, 'Edit access'
+        %th
+          - if params[:action] = 'bulk_edit'
+            %small Append
+            = f.check_box :bulk_edit_append_admin_ids
+            %br
+          = f.label :admin_ids, 'Edit access'
         %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
 
       %tr

@@ -76,10 +76,20 @@ class CollectionsController < ApplicationController
 
     update_params = params[:collection].delete_if {|k, v| v.blank?}
 
+    # Collect the fields we are appending to
+    appendable = {}
+    params[:item].each_pair do |k, v|
+      if k =~ /^bulk_edit_append_(.*)/
+        appendable[$1] = params[:collection].delete $1
+        params[:collection].delete k
+      end
+    end
+
     invalid_record = false
     @collections.each do |collection|
-      # TODO Allow association deletion
-#      associations_to_delete = update_params.select {|k, v| k =~ /^delete_assoc
+      appendable.each_pair do |k, v|
+        params[:collection][k.to_sym] = collection.send(k) + v
+      end
       unless collection.update_attributes(params[:collection])
         invalid_record = true
         @collection = collection
