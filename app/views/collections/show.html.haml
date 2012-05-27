@@ -10,11 +10,12 @@
 .twoup-1
   %fieldset
     %legend Collection details
-    .right
-      = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
-      Collection complete
-      = check_box_tag :private, @collection.private, @collection.private, :disabled => true
-      Private
+    - if can? :manage, Collection
+      .right
+        = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
+        Collection complete
+        = check_box_tag :private, @collection.private, @collection.private, :disabled => true
+        Private
 
     %table.form.show
 
