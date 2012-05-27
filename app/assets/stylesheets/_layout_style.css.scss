@@ -144,6 +144,7 @@ body.bp {
       background: #617798;
       color: white;
       font-weight: normal;
+      padding: 4px 4px 0px 0px;
     }
 
     tr {
@@ -215,7 +216,6 @@ body.bp {
     margin-bottom: 0;
     td {
       vertical-align: top;
-      min-width: 200px;
 
       .map {
         width: 100%;
@@ -231,8 +231,8 @@ body.bp {
     th {
       text-align: right;
       vertical-align: top;
-      min-wdith: 200px;
       &:after { content: ":" }
+      padding: 4px 4px 0px 0px;
     }
 
     select {
@@ -251,7 +251,8 @@ body.bp {
     td {
       background: white;
       padding: 4px;
-      min-width: 200px;
+      word-break:break-all;
+      width: 0%;
     }
     td.empty {
       background: transparent;

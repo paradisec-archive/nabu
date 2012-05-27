@@ -21,11 +21,11 @@ body.bp {
 
 .twoup-1 {
   @include column(12);
-  overflow: visible;
+  overflow: auto;
 }
 
 .twoup-2 {
   @include column(12, last);
-  overflow: visible;
+  overflow: auto;
 }
 
