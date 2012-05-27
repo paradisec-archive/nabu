@@ -55,7 +55,7 @@
 
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_country_ids
             %br
@@ -68,7 +68,7 @@
 
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_subject_language_ids
             %br
@@ -81,7 +81,7 @@
 
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_content_language_ids
             %br
@@ -138,15 +138,16 @@
           = f.fields_for :item_agents do |c|
             - if c.object.new_record?
               = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
+              %br
               = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'chzn-select'
             - else
               = c.object.user.name
               == :
               = c.object.agent_role.name
+              == &nbsp;&nbsp;&nbsp;
               = c.check_box :_destroy
               Delete
-            %br
-
+              %br
 
 .twoup-2
   %fieldset
@@ -154,7 +155,7 @@
     %table.form
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_admin_ids
             %br

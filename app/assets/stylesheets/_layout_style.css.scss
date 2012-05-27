@@ -2,7 +2,7 @@ body.bp {
   font-family: normal Verdana, Tahoma, sans-serif;
 
   a {
-	color: #20538D;
+	color: $grey;
     text-decoration: none;
   }
   a:hover, a:focus {
@@ -13,9 +13,14 @@ body.bp {
     margin: 0 0 0.5em;
   }
 
-  // TODO move these to partials
+  th {
+    padding: 4px 4px 0px 0px;
+  }
+
   #container {
     overflow: visible;
+    // nasty nasty fixed width (blame 'chosen' plugin for breaking columns)
+    width: 1250px;
   }
   #header {
     padding-bottom: 10px;
@@ -49,7 +54,7 @@ body.bp {
           display: block;
           height: 34px;
           background: #617798;
-          border: solid 1px #20538D;
+          border: solid 1px $grey;
           color: white;
           padding: 0 80px 0 40px;
           &:hover, &:focus {
@@ -59,7 +64,7 @@ body.bp {
             box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
           }
           &.active {
-            background: #20538D;
+            background: $grey;
           }
         }
       }
@@ -144,7 +149,6 @@ body.bp {
       background: #617798;
       color: white;
       font-weight: normal;
-      padding: 4px 4px 0px 0px;
     }
 
     tr {
@@ -231,13 +235,13 @@ body.bp {
     th {
       text-align: right;
       vertical-align: top;
-      &:after { content: ":" }
-      padding: 4px 4px 0px 0px;
+      label:after { content: ":" }
       max-width: 200px;
+      min-width: 100px;
     }
 
     select {
-      width: 295px;
+      width: 100%;
       height: 28px;
       padding: 4px 0;
       border: solid 1px #E5E5E5;
@@ -278,13 +282,18 @@ body.bp {
   }
 
   input[type="text"], textarea {
-    width: 281px;
+    width: 100%;
+    box-sizing: border-box;
     padding: 7px;
     margin: 0 7px 0 0;
   }
 
   td div.chzn-container {
     border: solid 2px #E5E5E5;
+    width: 100%;
+  }
+  .chzn-container-multi .chzn-choices .search-field input {
+    height: 24px;
   }
 
   input[type="submit"], button, .button {
@@ -294,7 +303,7 @@ body.bp {
     margin: 0;
     padding: 0 16px;
     background: #617798;
-    border: solid 1px #20538D;
+    border: solid 1px $grey;
     font-size: 14px;
     color: #FFFFFF;
     border-radius: 5px;

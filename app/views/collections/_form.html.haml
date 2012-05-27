@@ -39,7 +39,7 @@
 
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_country_ids
             %br
@@ -48,7 +48,7 @@
 
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_language_ids
             %br
@@ -93,7 +93,7 @@
     %table.form
       %tr
         %th
-          - if params[:action] = 'bulk_edit'
+          - if params[:action] == 'bulk_edit'
             %small Append
             = f.check_box :bulk_edit_append_admin_ids
             %br

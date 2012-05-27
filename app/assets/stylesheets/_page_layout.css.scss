@@ -21,11 +21,12 @@ body.bp {
 
 .twoup-1 {
   @include column(12);
-  overflow: auto;
+  // needs to be "visible" to avoid cutting off 'chosen' dropdowns
+  overflow: visible;
 }
 
 .twoup-2 {
   @include column(12, last);
-  overflow: auto;
+  overflow: visible;
 }
 
