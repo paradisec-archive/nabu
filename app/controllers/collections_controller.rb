@@ -9,7 +9,7 @@ class CollectionsController < ApplicationController
 
     @search = Collection.solr_search do
       fulltext params[:search]
-      facet :language_ids, :country_ids, :university_id
+      facet :language_ids, :country_ids, :collector_id
 
       with(:university_id, params[:university_id]) if params[:university_id].present?
       with(:language_ids, params[:language_id]) if params[:language_id].present?
