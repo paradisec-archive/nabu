@@ -23,8 +23,6 @@ body.bp {
 
   #container {
     overflow: visible;
-    // nasty nasty fixed width (blame 'chosen' plugin for breaking columns)
-    width: 1250px;
   }
   #header {
     padding-bottom: 10px;
@@ -140,6 +138,9 @@ body.bp {
     background: #EEE;
     padding: 10px;
     margin-bottom: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
     legend {
       font-size: 18px;
       text-shadow: grey 2px 2px 3px;
@@ -283,21 +284,22 @@ body.bp {
     &:focus {
       border-color: #617798;
     }
+    .search-field input {
+      height: 24px;
+    }
   }
 
   input[type="text"], textarea {
     width: 100%;
     box-sizing: border-box;
+    -moz-box-sizing: border-box;
     padding: 7px;
     margin: 0 7px 0 0;
   }
 
   td div.chzn-container {
     border: solid 2px #E5E5E5;
-    width: 100%;
-  }
-  .chzn-container-multi .chzn-choices .search-field input {
-    height: 24px;
+    width: 100% !important;
   }
 
   input[type="submit"], button, .button {
