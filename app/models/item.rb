@@ -183,9 +183,8 @@ class Item < ActiveRecord::Base
     end
 
     # Link models for faceting
-    integer :university_id, :references => University
     integer :content_language_ids, :references => Language, :multiple => true
-    integer :subject_language_ids, :references => Language, :multiple => true
+    integer :collector_id, :references => User
     integer :country_ids, :references => Country, :multiple => true
   end
 

@@ -10,9 +10,9 @@ class ItemsController < ApplicationController
 
     @search = Item.solr_search do
       fulltext params[:search]
-      facet :content_language_ids, :country_ids, :university_id
+      facet :content_language_ids, :country_ids, :collector_id
 
-      with(:university_id, params[:university_id]) if params[:university_id].present?
+      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
       with(:content_language_ids, params[:content_language_id]) if params[:language_id].present?
       with(:country_ids, params[:country_id]) if params[:country_id].present?
 
