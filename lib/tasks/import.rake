@@ -658,6 +658,7 @@ namespace :import do
 
       ## origination date
       originated_on = nil
+      originated_on_narrative = nil
       if item['item_date_iso'].blank?
         begin
           if item['item_date'] == "date unknown" || item['item_date'] == "unknown"
@@ -667,6 +668,7 @@ namespace :import do
           end
         rescue
           puts "Error importing item_date #{item['item_date']} for item #{item['item_pid']}"
+          originated_on_narrative = item['item_date'] unless item['item_date'].blank?
         end
       else
         if item['item_date_iso'] == "1999-11-30"
@@ -678,8 +680,17 @@ namespace :import do
             puts "Error importing item_date_iso #{item['item_date_iso']} for item #{item['item_pid']}"
           end
         end
+        if !item['item_date'].blank?
+          begin
+            if item['item_date_iso'].to_date != item['item_date'].to_date
+              originated_on_narrative = item['item_date']
+            end
+          rescue
+            ## save us if item[item_date] can't be converted to a date
+            originated_on_narrative = item['item_date']
+          end
+        end
       end
-      originated_on_narrative = item['item_date']
 
       ## get access conditions
       if !item['item_rights'].blank?
