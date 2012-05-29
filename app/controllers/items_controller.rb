@@ -95,7 +95,7 @@ class ItemsController < ApplicationController
       do_search
       render :action => "bulk_edit"
     else
-      flash[:notice] = 'Items where successfully updated.'
+      flash[:notice] = 'Items were successfully updated.'
       redirect_to advanced_search_items_path + "?#{params[:original_search_params]}"
     end
   end

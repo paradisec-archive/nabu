@@ -101,7 +101,7 @@ class CollectionsController < ApplicationController
       do_search
       render :action => "bulk_edit"
     else
-      flash[:notice] = 'Collections where successfully updated.'
+      flash[:notice] = 'Collections were successfully updated.'
       redirect_to advanced_search_collections_path + "?#{params[:original_search_params]}"
     end
   end

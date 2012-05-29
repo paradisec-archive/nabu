@@ -46,6 +46,6 @@
   = render 'search_results'
 
   .right
-    = link_to 'Bulk Edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+    = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
 
   .clear
