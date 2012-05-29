@@ -78,7 +78,7 @@ class CollectionsController < ApplicationController
 
     # Collect the fields we are appending to
     appendable = {}
-    params[:item].each_pair do |k, v|
+    params[:collection].each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
         appendable[$1] = params[:collection].delete $1
         params[:collection].delete k
