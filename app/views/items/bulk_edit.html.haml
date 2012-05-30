@@ -23,5 +23,5 @@
   = render :partial => 'form', :locals => {:f => f}
 
   .right
-    = f.submit 'Update Items'
+    = f.submit 'Update Items', :confirm => "This will update #{@search.total} items - are you sure?"
 
