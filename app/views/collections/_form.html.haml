@@ -24,7 +24,7 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select'
+        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select-req'
 
       %tr
         %th= f.label :operator_id
