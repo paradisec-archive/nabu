@@ -53,4 +53,4 @@
     %button.per_page{:data => {:per => 100}} Show 100
 
   %p
-    = link_to 'Export CSV', users_path(:format => :csv)
+    = link_to 'Export CSV', users_path(:format => :csv, :params => params)
