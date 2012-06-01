@@ -296,6 +296,9 @@ body.bp {
     -moz-box-sizing: border-box;
     padding: 7px;
     margin: 0 7px 0 0;
+    &#search {
+      width: 300px;
+    }
   }
 
   td div.chzn-container {

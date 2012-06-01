@@ -9,7 +9,7 @@ class UsersController < ApplicationController
       @users = @users.where{ (first_name =~ match) | (last_name =~ match) }
     end
 
-    @users = @users.page params[:page]
+    @users = @users.page(params[:page]).per(params[:per_page])
 
     respond_to do |format|
       format.html

@@ -2,12 +2,17 @@
 
 .page-box
 
-  .search
-    = form_tag users_path, :method => :get do
-      %p
-        = text_field_tag :search, params[:search]
-        = submit_tag "Search", :name => nil
-        = submit_tag "Clear", :name => :clear
+  = form_tag users_path, :method => :get do
+    .left
+      - if params[:per_page]
+        = hidden_field_tag :per_page, params[:per_page]
+      = text_field_tag :search, params[:search], {:placeholder => "Please enter search terms to filter users"}
+      = submit_tag "Search", :name => nil
+      = submit_tag "Clear", :name => :clear
+
+    .clear
+
+    %p== #{@users.total_count} search results
 
   = paginate @users
 
@@ -41,6 +46,11 @@
           =link_to 'Delete', user, :method => :delete, :confirm => 'Are you sure?'
 
   = paginate @users
+
+  %p
+    %button.per_page{:data => {:per => 10}} Show 10
+    %button.per_page{:data => {:per => 50}} Show 50
+    %button.per_page{:data => {:per => 100}} Show 100
 
   %p
     = link_to 'Export CSV', users_path(:format => :csv)
