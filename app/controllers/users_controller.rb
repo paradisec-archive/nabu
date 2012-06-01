@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     params.delete(:search) if params[:clear]
     if params[:search]
       match = "%#{params[:search]}%"
-      @users = @users.where{ (first_name =~ match) | (last_name =~ match) }
+      @users = @users.where{ (first_name =~ match) | (last_name =~ match)  | (address =~ match) | (address2 =~ match) | (country =~ match) | (email =~ match)}
     end
 
     @users = @users.page(params[:page]).per(params[:per_page])
