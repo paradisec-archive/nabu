@@ -91,4 +91,5 @@
             %i (we need your current password to confirm your changes)
 
     .right
-      = f.submit 'Update'
+      = link_to 'Cancel', users_path, :class => 'button'
+      = f.submit 'Save user'
