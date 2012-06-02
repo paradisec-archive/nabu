@@ -151,6 +151,53 @@
 
 .twoup-2
   %fieldset
+    %legend Archive information
+    %table.form
+      %tr
+        %td.empty
+        %td
+          = f.check_box :metadata_exportable
+          Ready for metadata export
+      %tr
+        %td.empty
+        %td
+          = f.check_box :born_digital
+          Born digital
+      %tr
+        %td.empty
+        %td
+          = f.check_box :tapes_returned
+          Tapes returned to depositor
+      %tr
+        %th Original media
+        %td= f.text_field :original_media
+
+      %tr
+        %th Data received
+        %td= f.text_field :received_on, :class => 'dateinput short', :value => params[:received_on] || @item.received_on && @item.received_on.strftime('%d %B %Y')
+
+      %tr
+        %th Date digitised
+        %td= f.text_field :digitised_on, :class => 'dateinput short', :value => params[:digitised_on] || @item.digitised_on && @item.digitised_on.strftime('%d %B %Y')
+
+      %tr
+        %th Ingest notes
+        %td= f.text_area :ingest_notes
+
+      %tr
+        %th Metadata imported
+        %td= f.text_field :metadata_imported_on, :class => 'dateinput short', :value => params[:metadata_imported_on] || @item.metadata_imported_on && @item.metadata_imported_on.strftime('%d %B %Y')
+
+      %tr
+        %th Metadata exported
+        %td= f.text_field :metadata_exported_on, :class => 'dateinput short', :value => params[:metadata_exported_on] || @item.metadata_exported_on && @item.metadata_exported_on.strftime('%d %B %Y')
+
+      %tr
+        %th Tracking
+        %td= f.text_field :tracking
+
+
+  %fieldset
     %legend Admin information
     %table.form
       %tr

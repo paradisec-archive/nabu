@@ -55,7 +55,8 @@ class Item < ActiveRecord::Base
                   :dialect, :discourse_type_id,
                   :metadata_exportable, :born_digital, :tapes_returned,
                   :original_media, :ingest_notes, :tracking,
-                  :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids, :bulk_edit_append_admin_ids
+                  :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids, :bulk_edit_append_admin_ids,
+                  :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on
 
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 
