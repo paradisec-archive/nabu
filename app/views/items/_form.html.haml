@@ -126,7 +126,7 @@
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a operator...'}, :class => 'chzn-select'
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'chzn-select'
 
       %tr
         %th= f.label :discourse_type_id
