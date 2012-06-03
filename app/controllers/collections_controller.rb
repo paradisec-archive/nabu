@@ -11,9 +11,9 @@ class CollectionsController < ApplicationController
       fulltext params[:search]
       facet :language_ids, :country_ids, :collector_id
 
-      with(:university_id, params[:university_id]) if params[:university_id].present?
       with(:language_ids, params[:language_id]) if params[:language_id].present?
       with(:country_ids, params[:country_id]) if params[:country_id].present?
+      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
 
       with(:private, false) unless current_user && current_user.admin?
       order_by sort_column, sort_direction
