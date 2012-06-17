@@ -21,8 +21,7 @@
         %td<
           %span= @item.full_identifier
           .right<
-            = surround '(', ' )' do
-              = link_to 'Collection Details', @item.collection
+            = link_to '(Collection Details)', @item.collection
 
       - if user_signed_in?
         %tr
