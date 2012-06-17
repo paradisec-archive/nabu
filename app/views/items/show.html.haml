@@ -118,7 +118,7 @@
         %td= @item.discourse_type_name
 
       %tr
-        %th Agents
+        %th Roles
         %td
           - @item.item_agents.each do |item_agent|
             == #{item_agent.user.name} : #{item_agent.agent_role.name}

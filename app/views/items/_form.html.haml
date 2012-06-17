@@ -133,7 +133,7 @@
         %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'chzn-select'
 
       %tr
-        %th= f.label :agent_id, 'Agents'
+        %th= f.label :agent_id, 'Roles'
         %td
           = f.fields_for :item_agents do |c|
             - if c.object.new_record?
