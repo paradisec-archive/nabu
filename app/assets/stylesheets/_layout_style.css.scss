@@ -338,6 +338,7 @@ body.bp {
 
   .right {
     float: right;
+    display: inline-block !important;
   }
 
   .clear {
@@ -347,7 +348,6 @@ body.bp {
   .citation {
     font-size: 12px;
     font-style: italic;
-    width: 295px;
   }
 
   .pagination {

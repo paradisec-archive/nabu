@@ -3,13 +3,11 @@
 
 .right
   = link_to 'Previous item', @item.prev_item, :class => 'button' if @item.prev_item
+  - if can? :update, @item
+    = link_to 'Edit item', edit_item_path(@item), :class => 'button'
   = link_to 'Next item', @item.next_item, :class => 'button' if @item.next_item
 
 .clear{:style => "padding-top: 7px"}
-
-.right
-  - if can? :update, @item
-    = link_to 'Edit item', edit_item_path(@item), :class => 'button'
 
 .twoup-1
   %fieldset
@@ -18,8 +16,9 @@
     %table.form.show
       %tr
         %th Item ID
-        %td<
-          %span= @item.full_identifier
+        %td
+          .left
+            %span= @item.full_identifier
           .right<
             = link_to '(Collection Details)', @item.collection
 
@@ -109,8 +108,7 @@
 
       %tr
         %th Operator
-        -if @item.operator
-          %td= @item.operator_name
+        %td= @item.operator_name
 
       %tr
         %th Discourse type
@@ -156,7 +154,7 @@
                   - if essence.samplerate
                     == #{essence.samplerate} Hz 
                   - if essence.fps
-                    == / #{essence.fps} FPS
+                    == "/ #{essence.fps} FPS"
                 %td= number_to_human_channels essence.channels
                 %td= number_to_human_size essence.size
                 %td= number_to_human_duration essence.duration
@@ -203,7 +201,7 @@
           %td= @item.collection.zoom
 
         %tr
-          %td{:colspan => 2}
+          %td.empty{:colspan => 2}
             .map{:data => {:latitude => @item.collection.latitude, :longitude => @item.collection.longitude, :zoom => @item.collection.zoom, :static => true}}
 
 
