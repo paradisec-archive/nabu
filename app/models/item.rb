@@ -1,3 +1,4 @@
+include ActionView::Helpers::SanitizeHelper
 class Item < ActiveRecord::Base
   delegate :url_helpers, :to => 'Rails.application.routes'
   has_paper_trail
@@ -198,19 +199,27 @@ class Item < ActiveRecord::Base
   end
 
   def citation
-    cite = "#{collector.name} (recorder)"
+    cite = ""
+    item_agents.each_with_index do |item_agent, index|
+        cite += "#{item_agent.user.name} (#{item_agent.agent_role.name})"
+        if index != item_agents.size - 1
+            cite += ", "
+        end
+    end
     cite += " #{originated_on.year}" if originated_on
     cite += '; '
-    cite += title
-    cite += ','
+    cite += "<i>#{sanitize(title)}</i>"
+    cite += ', '
     last = essence_types.length - 1
     essence_types.each_with_index do |type, index|
-      cite += type
-      if index != last
-        cite += "/"
-      end
+        cite += type
+        if index != last
+            cite += "/"
+        else
+            cite += ", "
+        end
     end
-    cite += " #{url || url_helpers.item_url(self, :host => 'paradisec.org.au')}"
+    cite += " #{url_helpers.item_url(self, :host => 'paradisec.org.au')}"
     cite += " #{Date.today}."
     cite
   end
