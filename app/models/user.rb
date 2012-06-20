@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   has_many :item_agents, :dependent => :restrict
 
   def self.sortable_columns
-    %w{id first_name last_name address adress2 country email phone admin contact_only}
+    %w{last_name id first_name address adress2 country email phone admin contact_only}
   end
 
   def name
