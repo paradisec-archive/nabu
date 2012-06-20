@@ -1,7 +1,4 @@
 
-.left{:style => "width: 80%"}
-  = f.text_field :title, {:placeholder => "Please enter a title"}
-
 .clear
 
 .twoup-1
@@ -21,6 +18,20 @@
           %td= f.text_field :identifier
         - else
           %td#collection_identifier= @collection.identifier
+
+      %tr
+        %th
+          = f.label :title
+          %br
+          %i (published)
+        %td= f.text_field :title, {:placeholder => "Please enter a title"}
+
+      %tr
+        %th
+          = f.label :description
+          %br
+          %i (published)
+        %td= f.text_area :description, :rows => 5
 
       %tr
         %th= f.label :collector_id
@@ -80,13 +91,6 @@
       %tr
         %th= label_tag :search, 'Search location on map'
         %td= text_field_tag :map_search, '', :class => 'map_search'
-
-      %tr
-        %th
-          = f.label :description
-          %br
-          %i (published)
-        %td= f.text_area :description, :rows => 5
 
   %fieldset
     %legend Access Information

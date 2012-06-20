@@ -1,7 +1,4 @@
 
-.left{:style => "width: 80%;"}
-  = f.text_field :title, {:placeholder => "Please enter a title"}
-
 .clear
 
 .twoup-1
@@ -23,6 +20,13 @@
         %td
           = f.check_box :private
           = f.label :private
+
+      %tr
+        %th
+          = f.label :title
+          %br
+          %i (published)
+        %td= f.text_field :title, {:placeholder => "Please enter a title"}
 
       %tr
         %th

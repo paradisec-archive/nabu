@@ -1,5 +1,3 @@
-.left
-  %h1= @collection.title
 
 .right
   - if can? :manage, Collection
@@ -22,6 +20,14 @@
       %tr
         %th Collection ID
         %td= @collection.identifier
+
+      %tr
+        %th Title
+        %td= @collection.title
+
+      %tr
+        %th Description
+        %td= @collection.description
 
       %tr
         %th Collector
@@ -70,10 +76,6 @@
         %td.empty{:colspan => 2}
           .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}}
 
-
-      %tr
-        %th Description
-        %td= @collection.description
 
   - if can? :manage, Collection
     %fieldset
