@@ -29,15 +29,11 @@ class Item < ActiveRecord::Base
   has_many :essences, :dependent => :restrict
   has_many :comments, :as => :commentable, :dependent => :destroy
 
+  # require presence of these three fields.
   validates :identifier, :presence => true, :uniqueness => {:scope => [:collection_id, :identifier]}
-  validates :title, :description, :presence => true
+  validates :title, :presence => true
   validates :collector_id, :presence => true
-# FIXME: possibly re-activate these after import
-#  validates :region, :presence => true
-#  validates :university_id, :operator_id, :presence => true
-#  validates :latitude, :longitude, :zoom, :presence => true
-#  validates :subject_language_id, :content_language_id, :discourse_type_id, :presence => true
-#  validates :originated_on, :presence => true
+
   validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
   validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
   validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}

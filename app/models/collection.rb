@@ -18,17 +18,14 @@ class Collection < ActiveRecord::Base
   has_many :collection_admins, :dependent => :destroy
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
+  # require presence of these three fields
   validates :identifier, :presence => true, :uniqueness => true
-  validates :title, :description, :presence => true
-  validates :field_of_research_id, :presence => true
-# FIXME: possibly re-activate these after import
-#  validates :region, :presence => true
-#  validates :university_id, :presence => true
-#  validates :latitude, :longitude, :zoom, :presence => true
+  validates :title, :presence => true
   validates :collector_id, :presence => true
-  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
-  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
-  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
+
+  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
+  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
+  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}, :allow_nil => true
 
   attr_reader :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
 
