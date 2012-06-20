@@ -46,6 +46,14 @@ after commit local:
  cap deploy
  cap -T
 
+upload DB:
+ mysqldump -u root nabu_devel | gzip > nabu.sql.gz
+ scp nabu.sql.gz deploy@115.146.93.26:
+ ssh deploy@115.146.93.26
+ gzip -dc nabu.sql.gz | mysql -u root nabu
+ cd /srv/www/nabu/current
+ RAILS_ENV=production rake sunspot:reindex
+
 
 # ANDS
 
