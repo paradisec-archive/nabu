@@ -215,7 +215,7 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " #{url_helpers.item_url(self, :host => 'paradisec.org.au')}"
+    cite += " http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}"
     cite += " #{Date.today}."
     cite
   end
@@ -231,7 +231,7 @@ class Item < ActiveRecord::Base
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
-      xml.tag! 'dc:identifier', url_helpers.item_url(self, :host => 'paradisec.org.au'), 'xsi:type' => 'dcterms:URI' if owned?
+      xml.tag! 'dc:identifier', "http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if owned?
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'

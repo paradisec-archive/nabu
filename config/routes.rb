@@ -35,6 +35,8 @@ Nabu::Application.routes.draw do
     resources :items
   end
 
+  match '/repository/:collection_identifier/:item_identifier' => 'repository#redirect'
+
   resources :comments, :shallow => true do
     match 'approve' => 'comments#approve', :on => :member, :via => :post
     match 'spam'    => 'comments#spam',    :on => :member, :via => :post
