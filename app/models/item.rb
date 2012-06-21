@@ -196,16 +196,16 @@ class Item < ActiveRecord::Base
 
   def citation
     cite = ""
-    item_agents.each_with_index do |item_agent, index|
-        cite += "#{item_agent.user.name} (#{item_agent.agent_role.name})"
-        if index != item_agents.size - 1
-            cite += ", "
-        end
+    if collector
+      cite += "#{collector.name} (collector)"
     end
-    cite += " #{originated_on.year}" if originated_on
-    cite += '; '
-    cite += "<i>#{sanitize(title)}</i>"
-    cite += ', '
+    item_agents.each do |item_agent|
+      cite += ", " unless cite == ""
+      cite += "#{item_agent.user.name} (#{item_agent.agent_role.name})"
+    end
+    cite += ", #{originated_on.year}" if originated_on
+    cite += '; ' unless cite == ""
+    cite += "<i>#{sanitize(title)}</i>, "
     last = essence_types.length - 1
     essence_types.each_with_index do |type, index|
         cite += type
@@ -215,7 +215,7 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}"
+    cite += " http://paradisec.org.au/repository/#{collection.identifier}/#{identifier},"
     cite += " #{Date.today}."
     cite
   end
