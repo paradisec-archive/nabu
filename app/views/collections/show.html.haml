@@ -35,8 +35,9 @@
 
       %tr
         %th Operator
-        - if @collection.operator
-          %td= @collection.operator_name
+        %td
+          - if @collection.operator
+            = @collection.operator_name
 
       %tr
         %th Originating university

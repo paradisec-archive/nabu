@@ -45,7 +45,6 @@
         %th= f.label :university_id, 'Originating university'
         %td
           = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'chzn-select'
-          %br
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
