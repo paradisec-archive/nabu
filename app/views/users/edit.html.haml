@@ -19,60 +19,61 @@
     %fieldset
       %table.form
         %tr
-          %td= f.label :first_name, '* First name'
+          %th= f.label :first_name, '* First name'
           %td= f.text_field :first_name
 
         %tr
-          %td= f.label :last_name, '* Last name'
+          %th= f.label :last_name, '* Last name'
           %td= f.text_field :last_name
 
         %tr
-          %td= f.label :email, '* Email'
+          %th= f.label :email, '* Email'
           %td= f.text_field :email
 
         %tr
-          %td= f.label :address
+          %th= f.label :address
           %td= f.text_field :address
 
-          %tr
-            %td= f.label :address2, 'Address'
-            %td= f.text_field :address2
+        %tr
+          %th= f.label :address2, 'Address'
+          %td= f.text_field :address2
 
         %tr
-          %td= f.label :country
+          %th= f.label :country
           %td= f.text_field :country
 
         %tr
-          %td= f.label :phone
+          %th= f.label :phone
           %td= f.text_field :phone, :autocomplete => :off
 
         - if admin_user_signed_in?
           %tr
-            %td
+            %th
               Access level:
             %td
               = f.check_box :admin
               = f.label :admin
 
           %tr
-            %td
+            %th
               Contact Only:
             %td
               = f.check_box :contact_only
               = f.label :contact_only
 
           %tr
-            %td
-              Also working as:
-            %td
-              = f.check_box :operator
-              = f.label :operator
-
+            %th= f.label :rights_transferred_to_id
+            %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an rightholder...'}, :class => 'chzn-select'
+          
+          %tr
+            %th= f.label :rights_transfer_reason
+            %td= f.text_field :rights_transfer_reason, :autocomplete => :off
+        
   .twoup-2
     %fieldset
       %table.form
         %tr
-          %td= f.label :password, "New password"
+          %th= f.label :password, "New password"
           %td
             = f.password_field :password, :autocomplete => :off
             %br
@@ -80,11 +81,11 @@
 
 
         %tr
-          %td= f.label :password_confirmation, "Repeat password"
+          %th= f.label :password_confirmation, "Repeat password"
           %td= f.password_field :password_confirmation, :autocomplete => :off
 
         %tr
-          %td= f.label :current_password
+          %th= f.label :current_password
           %td
             = f.password_field :current_password, :autocomplete => :off
             %br
