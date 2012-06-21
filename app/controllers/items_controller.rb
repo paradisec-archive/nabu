@@ -129,7 +129,9 @@ class ItemsController < ApplicationController
       end
 
       with(:private, false) unless current_user.admin?
-      order_by sort_column, sort_direction
+      sort_column.each do |c|
+        order_by c, sort_direction
+      end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
   end
