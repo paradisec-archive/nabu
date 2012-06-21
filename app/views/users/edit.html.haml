@@ -63,7 +63,7 @@
 
           %tr
             %th= f.label :rights_transferred_to_id
-            %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an rightholder...'}, :class => 'chzn-select'
+            %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'chzn-select'
           
           %tr
             %th= f.label :rights_transfer_reason
