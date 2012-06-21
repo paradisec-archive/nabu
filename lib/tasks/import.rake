@@ -391,7 +391,7 @@ namespace :import do
     client = connect
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
-      next if coll['coll_id'].blank?
+      next if coll['coll_id'].blank? or coll['coll_description']=="DELETE THIS COLLECTION"
 
       ## get collector & operator
       next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
