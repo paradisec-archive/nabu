@@ -88,29 +88,13 @@ class Item < ActiveRecord::Base
     self.latitude ||= collection.latitude
     self.longitude ||= collection.longitude
     self.zoom ||= collection.zoom
-    if self.item_countries.empty?
-      collection.collection_countries.each do |collection_country|
-        self.item_countries.build :country_id => collection_country.country_id
-      end
-    end
-    if self.item_subject_languages.empty?
-      collection.collection_languages.each do |collection_language|
-        self.item_subject_languages.build :language_id => collection_language.language_id
-      end
-    end
-    if self.item_content_languages.empty?
-      collection.collection_languages.each do |collection_language|
-        self.item_content_languages.build :language_id => collection_language.language_id
-      end
-    end
+    self.country_ids = collection.country_ids
+    self.subject_language_ids = collection.language_ids
+    self.content_language_ids = collection.language_ids
 
     self.access_condition_id ||= collection.access_condition_id
     self.access_narrative ||= collection.access_narrative
-    if self.item_admins.empty?
-      collection.collection_admins.each do |collection_admin|
-        self.item_admins.build :user_id => collection_admin.user_id
-      end
-    end
+    self.admin_ids = collection.admin_ids
   end
 
   def self.sortable_columns

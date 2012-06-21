@@ -29,7 +29,6 @@ class CollectionsController < ApplicationController
   end
 
   def new
-    build_associations
   end
 
   def show
@@ -48,7 +47,6 @@ class CollectionsController < ApplicationController
   end
 
   def edit
-    build_associations
   end
 
   def update
@@ -67,7 +65,6 @@ class CollectionsController < ApplicationController
 
   def bulk_edit
     @collection = Collection.new
-    build_associations
 
     do_search
   end
@@ -109,12 +106,6 @@ class CollectionsController < ApplicationController
   end
 
   private
-  def build_associations
-    @collection.collection_languages.build
-    @collection.collection_countries.build
-    @collection.collection_admins.build
-  end
-
   def do_search
     @fields = Sunspot::Setup.for(Collection).fields
     @text_fields = Sunspot::Setup.for(Collection).all_text_fields
