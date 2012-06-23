@@ -1,6 +1,6 @@
 
 .right
-  - if can? :manage, Collection
+  - if can? :manage, @collection
     = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
   
 .clear
@@ -8,7 +8,7 @@
 .twoup-1
   %fieldset
     %legend Collection details
-    - if can? :manage, Collection
+    - if can? :manage, @collection
       .right
         = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
         Collection complete
@@ -78,7 +78,7 @@
           .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}}
 
 
-  - if can? :manage, Collection
+  - if can? :manage, @collection
     %fieldset
       %legend Access information
       %table.form.show
@@ -103,7 +103,7 @@
 
   = render :partial => 'items'
 
-  - if can? :manage, Collection
+  - if can? :manage, @collection
     %fieldset
       %legend Depositing information
       %table.form.show
