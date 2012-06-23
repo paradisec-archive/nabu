@@ -36,7 +36,7 @@
             %name= item_agent.user.name
             %role= item_agent.agent_role.name
       %citation= strip_tags(@item.citation)
-      %files
+      %files{:numFiles => item.essences.length}
         - @item.essences.each do |essence|
           %file
             %name= essence.filename
@@ -55,7 +55,7 @@
         %dateDigitised= @item.digitised_on
         %ingestNotes= @item.ingest_notes
         %metadataImportedOn= @item.metadata_imported_on
-        %metadataExpoertedOn= @item.metadata_exported_on
+        %metadataExportedOn= @item.metadata_exported_on
         %tracking= @item.tracking
       %adminInfo
         %recordCreated= @item.created_at
@@ -66,7 +66,7 @@
         %dataAccessConditions= @item.access_condition_name
         %dataAccessNarrative= @item.access_narrative
         %adminComment= @item.admin_comment
-      %userComments
+      %userComments{:numComments => item.comments.length}
         - @item.comments.each do |comment|
           %comment
             %author= comment.owner.name

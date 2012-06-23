@@ -1,0 +1,54 @@
+-if can? :manage, @collection
+  %xml
+    %collection
+      %identifier= @collection.identifier
+      %complete= @collection.complete
+      %private= @collection.private
+      %title= @collection.title
+      %description= @collection.description
+      %collector= @collection.collector_name
+      %operator= @collection.operator_name
+      %university= @collection.university_name
+      %countries
+        - @collection.countries.each do |country|
+          %country= country.name_with_code
+      %languages
+        - @collection.languages.each do |language|
+          %language= language.name_with_code
+      %region= @collection.region
+      %geographicLocation
+        %latitude= @collection.latitude
+        %longitude= @collection.longitude
+        %zoom= @collection.zoom
+      %accessInfo
+        %adminAccess
+          - @collection.admins.each do |admin|
+            %userName= admin.name
+        %dataAccessConditions= @collection.access_condition_name
+        %dataAccessNarrative= @collection.access_narrative
+      %depositInfo
+        %metadataSource= @collection.metadata_source
+        %orthographicNotes= @collection.orthographic_notes
+        %media= @collection.media
+        %recordCreated= @collection.created_at
+        %recordLastModified= @collection.updated_at
+        %adminComment= @collection.comments
+      %adminInfo
+        %depositFormReceived= @collection.deposit_form_received
+        %tapeLocation= @collection.tape_location
+        %fieldOfResearch= @collection.field_of_research.name_with_identifier
+      %items{:numItems => @num_items, :readyForExport => @num_items_ready}
+        - @collection.items.each do |item|
+          %item{:numComments => item.comments.length, :numFiles => item.essences.length}
+            %identifier= item.identifier
+            %private= item.private
+            %title= item.title
+            %xmlLink= "#{strip_tags(item_archive_url(item))}.xml"
+            %collector= item.collector_name
+            %university= item.university_name
+            %operator= item.operator_name
+            
+            
+            
+      
+      
