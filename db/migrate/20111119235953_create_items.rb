@@ -56,7 +56,6 @@ class CreateItems < ActiveRecord::Migration
       t.belongs_to :item,   :null => false
       t.belongs_to :user,   :null => false
       t.belongs_to :agent_role,   :null => false
-      t.string     :comment
     end
     add_index :item_agents, [:item_id, :user_id, :agent_role_id], :unique => :true
 

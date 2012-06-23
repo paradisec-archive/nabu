@@ -261,7 +261,7 @@ class Item < ActiveRecord::Base
       # FIXME Remove if on the two lines below. ONly exists because of dodgey data
       xml.tag! 'dcterms:accessRights', access_condition.name if access_condition
       xml.tag! 'dc:rights', access_condition.name if access_condition
-      xml.tag! 'dcterms:bibliographicCitation', citation
+      xml.tag! 'dcterms:bibliographicCitation', strip_tags(citation)
       xml.tag! 'dc:description', (description + ". Language as given: #{language}")
     end
     xml.target!
