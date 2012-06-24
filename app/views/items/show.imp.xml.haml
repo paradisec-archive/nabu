@@ -1,0 +1,19 @@
+-if can? :manage, @item
+  %REPORT
+    %BEXTDATA
+      %DESCRIPTION
+        = "Language: \"#{@item.subject_languages.first.name}\" #{@item.subject_languages.first.code};"
+        = "Country: #{@item.countries.first.code};"
+        = "Notes: #{@item.description}."
+      %ORIGINATOR= @item.collector_name
+      %ORIGINATIONDATE= @item.originated_on
+    %QUALITYREPORT
+      %BASICDATA
+        %ARCHIVENUMBER= @item.full_identifier
+        %TITLE= @item.title
+        %OPERATOR= @item.operator_name
+      %QUALITYEVENTS
+        %EVENT
+          %TYPE IngestNotest0
+          %COMMENT= @item.ingest_notes
+          %SAMPLECOUNT 0

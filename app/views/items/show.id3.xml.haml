@@ -1,0 +1,14 @@
+-if can? :manage, @item
+  %Tags{:format => "ID3", :version => "2.3", :encoding => "UTF-16"}
+    %TIT2= "Persistent identifier: #{@item.full_identifier}"
+    %TIT3= @item.title
+    %TXXX= @item.originated_on
+    %TALB= "Collection: #{@item.collection.title}"
+    %TPE1= "Collector: #{@item.collector_name}"
+    %TPUB= "PARADISEC"
+    %TCON= "[item_type]"
+    %TMED= "[item_media]"
+    %TENC= "Operator: #{@item.operator_name}"
+    %TCOP= @item.access_condition.name
+    %TLAN= @item.language
+    %COMM= "#{@item.countries.first.name} #{@item.countries.first.code} #{@item.description}"
