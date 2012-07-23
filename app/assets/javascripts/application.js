@@ -10,15 +10,18 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
+// Vendor Stuff
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
 //= require jquery-query
 //= require chosen-jquery
-// The next two are for making scrollable tables
 //= require chosen
+// The next two are for making scrollable tables
 //= require jquery-mousewheel
 //= require jquery-fixedheadertable
+//
+// Our Stuff
 //= require per_page
 //= require datepicker
 //= require maps
@@ -29,4 +32,5 @@
 //= require add_university
 //= require language_selector
 //= require copy_language
+//= require items
 

@@ -138,17 +138,21 @@
         %th= f.label :agent_id, 'Roles'
         %td
           = f.fields_for :item_agents do |c|
-            - if c.object.new_record?
-              = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
-              = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'chzn-select'
-            - else
-              = c.object.user.name
-              == :
-              = c.object.agent_role.name
-              == &nbsp;&nbsp;&nbsp;
-              = c.check_box :_destroy
-              Delete
-              %br
+            = c.object.user.name
+            == :
+            = c.object.agent_role.name
+            &nbsp;&nbsp;&nbsp;
+            = c.check_box :_destroy
+            Delete
+            %br
+          - ia = ItemAgent.new
+          - id = ia.object_id
+          - fields = f.fields_for :item_agents, ia, :child_index => id do |c|
+            = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
+            = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'chzn-select'
+
+          = link_to 'Add new role', '#', :class => 'add_fields', :data => {:id => id, :fields => fields.gsub("\n", "")}
+
 
 .twoup-2
   %fieldset

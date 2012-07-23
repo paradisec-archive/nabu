@@ -30,7 +30,6 @@ class ItemsController < ApplicationController
   end
 
   def new
-    build_associations
   end
 
   def show
@@ -46,7 +45,6 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    build_associations
   end
 
   def update
@@ -61,7 +59,6 @@ class ItemsController < ApplicationController
   def bulk_edit
     @item = Item.new
     @item.collection = Collection.new
-    build_associations
 
     do_search
   end
@@ -103,10 +100,6 @@ class ItemsController < ApplicationController
   end
 
   private
-  def build_associations
-    @item.item_agents.build
-  end
-
   def do_search
     @fields = Sunspot::Setup.for(Item).fields
     @text_fields = Sunspot::Setup.for(Item).all_text_fields
