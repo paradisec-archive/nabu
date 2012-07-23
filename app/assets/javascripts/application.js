@@ -15,8 +15,7 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require jquery-query
-//= require chosen-jquery
-//= require chosen
+//= require select2
 // The next two are for making scrollable tables
 //= require jquery-mousewheel
 //= require jquery-fixedheadertable
@@ -33,4 +32,5 @@
 //= require language_selector
 //= require copy_language
 //= require items
+//= require dropdowns
 

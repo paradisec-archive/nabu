@@ -55,7 +55,7 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'chzn-select-req'
+        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'select2-req'
 
       %tr
         %th
@@ -64,7 +64,7 @@
             = f.check_box :bulk_edit_append_country_ids
             %br
           = f.label :country_ids, 'Countries'
-        %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'chzn-select country'
+        %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'select2 country'
 
       %tr
         %th= f.label :language, 'Language as given'
@@ -79,7 +79,7 @@
           = f.label :subject_language_ids, 'Subject languages'
         %td
           - ofs = Language.alpha.includes(:item_subject_languages).map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @item.subject_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
-          = f.select :subject_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
+          = f.select :subject_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'select2 language'
           = link_to 'Copy from Content language', '#', :id => 'copy-subject-language'
 
       %tr
@@ -91,7 +91,7 @@
           = f.label :content_language_ids, 'Content language'
         %td
           - ofs = Language.alpha.includes(:item_content_languages).map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @item.content_language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
-          = f.select :content_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'chzn-select language'
+          = f.select :content_language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'select2 language'
           = link_to 'Copy from Subject language', '#', :id => 'copy-content-language'
 
       %tr
@@ -124,15 +124,15 @@
 
       %tr
         %th= f.label :university_id, 'Originating university'
-        %td= f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'chzn-select'
+        %td= f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'chzn-select'
+        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'select2'
 
       %tr
         %th= f.label :discourse_type_id
-        %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'chzn-select'
+        %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
 
       %tr
         %th= f.label :agent_id, 'Roles'
@@ -148,8 +148,8 @@
           - ia = ItemAgent.new
           - id = ia.object_id
           - fields = f.fields_for :item_agents, ia, :child_index => id do |c|
-            = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
-            = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'chzn-select'
+            = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'select2'
+            = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'select2'
 
           = link_to 'Add new role', '#', :class => 'add_fields', :data => {:id => id, :fields => fields.gsub("\n", "")}
 
@@ -212,11 +212,11 @@
             = f.check_box :bulk_edit_append_admin_ids
             %br
           = f.label :admin_ids, 'Edit access'
-        %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'chzn-select'
+        %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'select2'
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'chzn-select'
+        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 
       %tr
         %th= f.label :access_narrative, 'Data access details'
