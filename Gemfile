@@ -21,7 +21,7 @@ gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
 gem 'chosen-rails'
-gem 'oai', :git => 'git://github.com/johnf/ruby-oai.git' #https://github.com/edsu/ruby-oai/pull/3
+gem 'oai'
 
 # Admin
 gem 'activeadmin'
