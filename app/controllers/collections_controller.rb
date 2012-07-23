@@ -119,7 +119,9 @@ class CollectionsController < ApplicationController
         next if params[field.name].blank?
         case field.type
         when Sunspot::Type::StringType
-          # Do nothing. Should be covered by text field above
+          if params["blank_#{field.name}"].present?
+            with field.name.to_sym, nil
+          end
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
         when Sunspot::Type::BooleanType

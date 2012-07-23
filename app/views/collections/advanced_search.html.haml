@@ -17,8 +17,14 @@
         %table.form
           - @text_fields.each do |field|
             %tr
-              %th= label_tag field.name
-              %td= text_field_tag field.name, params[field.name]
+              %th
+                = label_tag field.name
+                - if @fields.map(&:name).include? field.name
+                  %br
+                  Blank
+                  = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
+              %td
+                = text_field_tag field.name, params[field.name]
 
     .twoup-2
       %fieldset
@@ -28,10 +34,20 @@
               - case field.type
               - when Sunspot::Type::IntegerType
                 - if field.reference
-                  %th= label_tag field.name
+                  %th
+                    = label_tag field.name
+                    - if @fields.map(&:name).include? field.name
+                      %br
+                      Blank
+                      = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
                   %td= select_tag field.name, options_from_collection_for_select(field.reference.constantize.alpha, :id, :name, params[field.name]), :include_blank => true
               - when Sunspot::Type::BooleanType
-                %th= label_tag field.name
+                %th
+                  = label_tag field.name
+                  - if @fields.map(&:name).include? field.name
+                    %br
+                    Blank
+                    = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
                 %td= select_tag field.name, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
               -# TODO Add Time fields
 
