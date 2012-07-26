@@ -35,7 +35,7 @@
         %li= current_link_to 'Collections', collections_path, 'collections'
         %li= current_link_to 'Items', items_path, 'items'
         %li= current_link_to 'Users', users_path, 'users' if can? :manage, User
-        %li= link_to 'Help', '#'
+        %li= link_to 'Glossary', glossary_path
 
     #flash
       - flash.each do |name, msg|

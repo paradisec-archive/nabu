@@ -1,0 +1,64 @@
+.right
+  = link_to 'Previous file', @essence.prev_essence, :class => 'button' if @essence.prev_essence
+  - if @essence.next_essence
+    = link_to 'Next file', @essence.next_essence, :class => 'button'
+  -else
+    = link_to 'Next file', @essence.next_essence, :class => 'button invisible'
+
+.clear{:style => "padding-top: 7px"}
+
+.twoup-1
+  %fieldset
+    %legend File details
+    
+    %table.form.show
+      %tr
+        %th File
+        %td
+          .left
+            %span= @essence.full_identifier
+          .right<
+            = link_to '(Item Details)', @essence.item
+
+      %tr
+        %th Path
+        %td= @essence.path
+
+      %tr
+        %th Type
+        %td= @essence.mimetype
+
+      %tr
+        %th Size
+        %td= number_to_human_size @essence.size
+
+      %tr
+        %th Duration
+        %td= number_to_human_duration @essence.duration
+
+      %tr
+        %th Samplerate
+        %td
+          - if @essence.samplerate
+            == #{@essence.samplerate} Hz 
+
+      %tr
+        %th Number of channels
+        %td= number_to_human_channels @essence.channels
+
+      %tr
+        %th Framerate
+        %td
+          - if @essence.fps
+            == #{@essence.fps} FPS
+
+      %tr
+        %th Bitrate
+        %td= number_to_human_rate @essence.bitrate
+
+.twoup-2
+  %fieldset
+    %legend Preview
+    
+    #media_item [video here] This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
+    

@@ -175,7 +175,7 @@ class Item < ActiveRecord::Base
   end
 
   def prev_item
-    Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).first
+    Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).last
   end
 
   def citation

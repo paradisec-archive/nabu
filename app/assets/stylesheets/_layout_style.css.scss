@@ -86,6 +86,15 @@ body.bp {
       margin-bottom: 10px;
       width: 100%;
     }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
   }
 
   #actions {
@@ -207,17 +216,6 @@ body.bp {
     }
     table.fht-table-init {
       border: none;
-    }
-  }
-  // TODO fix the headertable.js jquery plugin to deal with size change.
-  // This is a terrible hack.
-  .small_table {
-    font-size: 11px;
-    .fht-thead table.fht-table {
-      width: 569px;
-    }
-    table.fht-table-init {
-      margin-top: -44px !important;
     }
   }
 
@@ -458,6 +456,10 @@ body.bp {
     fieldset {
       background: whiteSmoke;
     }
+  }
+
+  .invisible {
+    visibility: hidden;
   }
 
 } // body.bp
