@@ -271,9 +271,13 @@ body.bp {
     }
   }
 
-  input[type="text"], textarea, td div ul.chzn-choices {
+  input[type="text"], input[type="email"], input[type="password"],
+  textarea, td div ul.chzn-choices {
     &.short {
       width: 200px;
+    }
+    &.middle {
+      width: 400px;
     }
     border: solid 1px #E5E5E5;
     background: #FFFFFF;
@@ -293,7 +297,7 @@ body.bp {
     }
   }
 
-  input[type="text"], textarea {
+  input[type="text"], input[type="email"], input[type="password"], textarea {
     width: 100%;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
