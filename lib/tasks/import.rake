@@ -391,13 +391,19 @@ namespace :import do
     client = connect
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
-      next if coll['coll_id'].blank? or coll['coll_description']=="DELETE THIS COLLECTION"
+      if coll['coll_id'].blank? or coll['coll_description']=="DELETE THIS COLLECTION"
+        puts "Skipping collection with blank ID or maked for deletion"
+        next
+      end
 
       ## get collector & operator
-      next if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
+      if !coll['coll_collector_id'] or coll['coll_collector_id'] == 0
+        puts "ERROR: #{coll['coll_id']} has no collector (#{coll['coll_collector_id']}) - can't add to collections"
+        next
+      end
       collector = User.find_by_pd_contact_id coll['coll_collector_id']
       if !collector
-        puts "ERROR: #{coll['coll_id']} has no collector (#{coll['coll_collector_id']})- can't add to collections"
+        puts "ERROR: #{coll['coll_id']} has no collector (#{coll['coll_collector_id']}) - can't add to collections"
         next
       end
       operator = User.find_by_pd_contact_id coll['coll_operator_id']
@@ -629,12 +635,21 @@ namespace :import do
     items = client.query("SELECT * FROM items")
     items.each do |item|
       ## get collection
-      next if item['item_collection_id'].blank?
+      if item['item_collection_id'].blank?
+        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "item_collection_id is blank"
+        next
+      end
       collection = Collection.find_by_identifier item['item_collection_id']
-      next unless collection
+      if !collection
+        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "collection not found"
+        next
+      end
 
       ## get identifier (item_pid has full string, item_id may be truncated)
-      coll_id, identifier = item['item_pid'].split /-/
+      first_dash = item['item_pid'].index('-')
+      identifier = item['item_pid'][first_dash+1..-1]
 
       ## get collector and operator
       collector = User.find_by_pd_contact_id item['item_collector_id']
@@ -776,7 +791,8 @@ namespace :import do
       if !new_item.valid?
         puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
         new_item.errors.each {|field, msg| puts "#{field}: #{msg}"}
-        break
+        p new_item
+        next
       end
       new_item.save!
 
@@ -794,7 +810,9 @@ namespace :import do
   end
 
   def get_item(item_pid)
-    coll_id, identifier = item_pid.split /-/
+    first_dash = item_pid.index('-')
+    coll_id = item_pid[0..first_dash-1]
+    identifier = item_pid[first_dash+1..-1]
     collection = Collection.find_by_identifier coll_id
     return nil if !collection
 
