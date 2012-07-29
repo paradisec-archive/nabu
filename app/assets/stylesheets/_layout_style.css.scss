@@ -88,6 +88,15 @@ body.bp {
     margin-bottom: 10px;
     width: 100%;
   }
+  h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
 }
 
 #actions {
@@ -211,17 +220,6 @@ table.table {
     border: none;
   }
 }
-// TODO fix the headertable.js jquery plugin to deal with size change.
-// This is a terrible hack.
-.small_table {
-  font-size: 11px;
-  .fht-thead table.fht-table {
-    width: 569px;
-  }
-  table.fht-table-init {
-    margin-top: -44px !important;
-  }
-}
 
 table.form {
   margin-bottom: 0;
@@ -275,9 +273,13 @@ table.form.show {
   }
 }
 
-input[type="text"], textarea, td .select2-container {
+input[type="text"], input[type="email"], input[type="password"],
+textarea, td .select2-container {
   &.short {
     width: 200px;
+  }
+  &.middle {
+    width: 400px;
   }
   border: solid 1px #E5E5E5;
   background: #FFFFFF;
@@ -297,7 +299,7 @@ input[type="text"], textarea, td .select2-container {
   }
 }
 
-input[type="text"], textarea {
+input[type="text"], input[type="email"], input[type="password"], textarea {
   width: 100%;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -308,7 +310,7 @@ input[type="text"], textarea {
   }
 }
 
-td div.chzn-container {
+td div.select2-container {
   border: solid 2px #E5E5E5;
   width: 100% !important;
 }
@@ -472,4 +474,8 @@ a.button {
 
 td li.select2-search-choice a {
   padding-left: 0px;
+}
+
+.invisible {
+  visibility: hidden;
 }

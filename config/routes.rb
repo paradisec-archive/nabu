@@ -18,14 +18,16 @@ Nabu::Application.routes.draw do
     root :to => 'page#dashboard'
   end
   root :to => 'page#about'
+  root :to => 'page#glossary'
 
   match '/about' => 'page#about'
   match '/contact' => 'page#contact'
+  match '/glossary' => 'page#glossary'
 
   resources :users
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
-
+  resources :essences
   resources :items do
     get 'advanced_search', :on => :collection
     match 'bulk_update' => 'items#bulk_edit', :on => :collection, :via => :get

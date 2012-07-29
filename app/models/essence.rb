@@ -18,8 +18,20 @@ class Essence < ActiveRecord::Base
     types[1].upcase
   end
 
-  def path(prefix)
+  def path
     "/srv/media/something/#{filename}"
+  end
+
+  def full_identifier
+    item.collection.identifier + '/' + item.identifier + '/' + filename
+  end
+
+  def next_essence
+    Essence.where(:item_id => self.item).order(:id).where('id > ?', self.id).first
+  end
+
+  def prev_essence
+    Essence.where(:item_id => self.item).order(:id).where('id < ?', self.id).last
   end
 
 end
