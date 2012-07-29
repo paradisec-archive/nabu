@@ -63,12 +63,12 @@
 
           %tr
             %th= f.label :rights_transferred_to_id
-            %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'chzn-select'
-          
+            %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'select2'
+
           %tr
             %th= f.label :rights_transfer_reason
             %td= f.text_field :rights_transfer_reason, :autocomplete => :off
-        
+
   .twoup-2
     %fieldset
       %table.form

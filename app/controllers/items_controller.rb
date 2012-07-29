@@ -36,6 +36,9 @@ class ItemsController < ApplicationController
   end
 
   def create
+    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
+    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
+    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
     if @item.save
       flash[:notice] = 'Item was successfully created.'
       redirect_to @item
@@ -48,6 +51,9 @@ class ItemsController < ApplicationController
   end
 
   def update
+    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
+    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
+    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
     if @item.update_attributes(params[:item])
       flash[:notice] = 'Item was successfully updated.'
       redirect_to @item

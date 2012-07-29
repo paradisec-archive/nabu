@@ -25,6 +25,8 @@ Nabu::Application.routes.draw do
   match '/glossary' => 'page#glossary'
 
   resources :users
+  resources :countries, :only => [:index, :show]
+  resources :languages, :only => [:index, :show]
   resources :essences
   resources :items do
     get 'advanced_search', :on => :collection
