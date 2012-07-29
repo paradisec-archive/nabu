@@ -38,6 +38,8 @@ class CollectionsController < ApplicationController
   end
 
   def create
+    @collection.country_ids = params[:collection].delete(:country_ids).split(/,/)
+    @collection.language_ids = params[:collection].delete(:language_ids).split(/,/)
     if @collection.save
       flash[:notice] = 'Collection was successfully created.'
       redirect_to @collection
@@ -50,6 +52,8 @@ class CollectionsController < ApplicationController
   end
 
   def update
+    @collection.country_ids = params[:collection].delete(:country_ids).split(/,/)
+    @collection.language_ids = params[:collection].delete(:language_ids).split(/,/)
     if @collection.update_attributes(params[:collection])
       # Make the depositor an admin
       unless @collection.admins.include? current_user

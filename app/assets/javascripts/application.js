@@ -29,7 +29,6 @@
 //= require tabs
 //= require remove_empty_fields
 //= require add_university
-//= require language_selector
 //= require copy_language
 //= require items
 //= require dropdowns

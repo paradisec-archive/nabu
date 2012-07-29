@@ -23,6 +23,9 @@ Nabu::Application.routes.draw do
   match '/contact' => 'page#contact'
 
   resources :users
+  resources :countries, :only => [:index, :show]
+  resources :languages, :only => [:index, :show]
+
   resources :items do
     get 'advanced_search', :on => :collection
     match 'bulk_update' => 'items#bulk_edit', :on => :collection, :via => :get

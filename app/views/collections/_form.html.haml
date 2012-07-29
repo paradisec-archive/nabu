@@ -54,7 +54,7 @@
             = f.check_box :bulk_edit_append_country_ids
             %br
           = f.label :country_ids, 'Countries'
-        %td= f.select :country_ids, Country.alpha.map {|c| [c.name_with_code, c.id]}, {}, :multiple => true, :data => {:placeholder => 'Choose a country...'}, :class => 'select2 country'
+        %td= f.hidden_field :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
       %tr
         %th
@@ -64,8 +64,7 @@
             %br
           = f.label :language_ids, 'Languages'
         %td
-          - ofs = Language.alpha.map { |l| "<option data-country_id=\"#{l.countries.map(&:id).join(',')}\" value=\"#{l.id}\" #{'selected' if @collection.language_ids.include?(l.id)}>#{l.name_with_code}</option>" }.join.html_safe
-          = f.select :language_ids, ofs, {}, :multiple => true, :data => {:placeholder => 'Choose a language...'}, :class => 'select2 language'
+          = f.hidden_field :language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
       %tr
         %th= f.label :region, 'Region / village'
