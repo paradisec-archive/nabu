@@ -691,13 +691,13 @@ namespace :import do
     items.each do |item|
       ## get collection
       if item['item_collection_id'].blank?
-        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "Skipping item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
         puts "item_collection_id is blank"
         next
       end
       collection = Collection.find_by_identifier item['item_collection_id']
       if !collection
-        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "Skipping item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
         puts "collection not found"
         next
       end
