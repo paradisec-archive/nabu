@@ -21,7 +21,6 @@ gem 'haml-rails'
 gem 'to_csv-rails'
 gem 'kaminari'
 gem 'chosen-rails'
-gem 'select2-rails'
 gem 'oai'
 
 # Admin
