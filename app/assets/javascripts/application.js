@@ -16,15 +16,11 @@
 //= require jquery-ui
 //= require jquery-query
 //= require select2
-// The next two are for making scrollable tables
-//= require jquery-mousewheel
-//= require jquery-fixedheadertable
 //
 // Our Stuff
 //= require per_page
 //= require datepicker
 //= require maps
-//= require scrollable-table
 //= require sortable
 //= require tabs
 //= require remove_empty_fields

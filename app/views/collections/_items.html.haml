@@ -1,7 +1,19 @@
 
 %fieldset
-  %legend Items in Collection (#{@collection.items.length})
-  %table.table.scrollable
+  %legend Items in Collection (#{@num_items})
+
+  .right
+    %p
+      - if can? :create, @items.build # TODO this actually adds an item to the array is there a better way
+        = link_to 'Add item', new_collection_item_path(@collection), :class => 'button'
+      - else
+
+  .left
+    = paginate @items, :param_name => :items_page
+
+  .clear
+
+  %table.table
     %thead
       %tr
         %th Item
@@ -11,7 +23,7 @@
           %th Archived
         %th Actions
     %tbody
-      - @collection.items.order(:identifier).each do |item|
+      - @items.order(:identifier).each do |item|
         %tr
           %td= item.identifier
           %td= item.title
@@ -22,7 +34,9 @@
             = link_to 'View', item if can? :read, item
             = link_to 'Edit', edit_item_path(item) if can? :update, item
 
-  - if can? :create, @collection.items.build # TODO this actually adds an item to the array is there a better way
-    = link_to 'Add item', new_collection_item_path(@collection), :class => 'button'
-  - else
-    %br
+  = paginate @items, :param_name => :items_page
+
+  %p
+    %button.per_page{:data => {:per => 10, :param_name => :items_per_page}} Show 10
+    %button.per_page{:data => {:per => 50, :param_name => :items_per_page}} Show 50
+    %button.per_page{:data => {:per => "#{@num_items}", :param_name => :items_per_page}} Show all

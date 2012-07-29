@@ -133,35 +133,11 @@
 .twoup-2
   .tabs
     %ul
-      %li.tab= link_to 'Content Files', '#content_item'
+      %li.tab= link_to "Content Files (#{@num_files})", '#content_item'
       %li.tab= link_to 'Collection Information', '#collection'
 
     #content_item
-      %table.table
-        %thead
-          %tr
-            %th Filename
-            %th Type
-            %th File size
-            %th Duration
-            %th Metadata
-        %tbody
-          - @item.essences.each do |essence|
-            %tr
-              %td= essence.filename
-              %td= essence.mimetype
-              %td= number_to_human_size essence.size
-              %td= number_to_human_duration essence.duration
-              %td= link_to 'View', essence if can? :read, essence
-          %tr
-            %td
-              %b== #{@item.essences.length} files
-            %td== --
-            %td
-              %b= number_to_human_size @item.essences.sum(&:size)
-            %td== --
-            %td== --
-
+      = render :partial => 'essences'
 
     #collection
       %table.form.show

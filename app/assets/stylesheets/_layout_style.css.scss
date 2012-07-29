@@ -159,6 +159,7 @@ body.bp {
 
   table.table {
     box-shadow: rgba(0,0,0, 0.1) 2px 2px 3px;
+    margin-bottom: 5px;
 
     th {
       background: #617798;
@@ -198,25 +199,6 @@ body.bp {
         width: 100px;
         height: 70px;
       }
-    }
-  }
-
-  // scrollable tables
-  .fht-table-wrapper {
-    box-shadow: rgba(0,0,0, 0.1) 2px 2px 3px;
-    margin-bottom: 10px;
-
-    table.fht-table {
-      border-bottom: #000 solid 1px;
-      margin-bottom: 0;
-      thead th {
-        background: #617798;
-        color: white;
-        font-weight: normal;
-      }
-    }
-    table.fht-table-init {
-      border: none;
     }
   }
 

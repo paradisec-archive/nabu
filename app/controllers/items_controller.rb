@@ -33,6 +33,8 @@ class ItemsController < ApplicationController
   end
 
   def show
+    @num_files = @item.essences.length
+    @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
   end
 
   def create

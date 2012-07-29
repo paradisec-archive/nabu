@@ -35,6 +35,8 @@ class CollectionsController < ApplicationController
     @num_items = @collection.items.count
     @num_items_ready = @collection.items.where{ digitised_on != nil }.count
     @num_essences = Essence.where(:item_id => @collection.items).count
+
+    @items = @collection.items.page(params[:items_page]).per(params[:items_per_page])
   end
 
   def create
