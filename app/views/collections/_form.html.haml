@@ -12,12 +12,13 @@
       = f.label :private
 
     %table.form
-      %tr
-        %th= f.label :identifier, 'Collection ID'
-        - if @collection.new_record?
-          %td= f.text_field :identifier
-        - else
-          %td#collection_identifier= @collection.identifier
+      - unless params[:action] == 'bulk_edit'
+        %tr
+          %th= f.label :identifier, 'Collection ID'
+          - if @collection.new_record?
+            %td= f.text_field :identifier
+          - else
+            %td#collection_identifier= @collection.identifier
 
       %tr
         %th

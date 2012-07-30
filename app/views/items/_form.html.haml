@@ -5,15 +5,16 @@
   %fieldset
     %legend Item details
     %table.form
-      %tr
-        %th= f.label :identifier, 'Item ID'
-        %td
-          = @item.collection.identifier
-          == -
-          - if @item.new_record?
-            = f.text_field :identifier, :class => 'short'
-          - else
-            = @item.identifier
+      - unless params[:action] == 'bulk_edit'
+        %tr
+          %th= f.label :identifier, 'Item ID'
+          %td
+            = @item.collection.identifier
+            == -
+            - if @item.new_record?
+              = f.text_field :identifier, :class => 'short'
+            - else
+              = @item.identifier
 
       %tr
         %td
