@@ -110,6 +110,7 @@ class ItemsController < ApplicationController
     @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
     @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
 
+    params[:item][:item_agents_attributes] ||= {}
     params[:item][:item_agents_attributes].each_pair do |id, iaa|
       name = iaa['user_id']
       next unless name =~ /^NEWCONTACT:/

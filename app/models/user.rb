@@ -25,9 +25,9 @@ class User < ActiveRecord::Base
   has_many :items, :through => :item_admins, :dependent => :destroy
 
   has_many :item_agents, :dependent => :restrict
-  
+
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
-  
+
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}
   end
