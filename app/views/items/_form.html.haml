@@ -177,7 +177,7 @@
         %td= f.text_field :original_media
 
       %tr
-        %th Data received
+        %th Date received
         %td= f.text_field :received_on, :class => 'dateinput short', :value => params[:received_on] || @item.received_on && @item.received_on.strftime('%d %B %Y')
 
       %tr

@@ -58,8 +58,7 @@
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td
-            = collection_select :collection, :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= collection_select :collection, :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
         %tr
           %th
