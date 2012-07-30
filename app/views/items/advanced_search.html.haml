@@ -1,66 +1,178 @@
-%h1 Items
+%h1 Advanced Search Items
 
 
-.page-box
+.right
+  = link_to 'Basic Search', items_path
+.clear
 
-  = form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit' do
+= form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit' do
 
-    - if params[:per_page]
-      = hidden_field_tag :per_page, params[:per_page]
+  - if params[:per_page]
+    = hidden_field_tag :per_page, params[:per_page]
 
-    .right
-      = link_to 'Basic Search', items_path
+  .twoup-1
+    %fieldset
+      %legend Item details
+      %table.form
+        %tr
+          %th= label_tag :identifier, 'Item ID'
+          %td= text_field_tag :identifier, params[:identifier], :class => 'short'
 
-    .twoup-1
-      %fieldset
-        %legend Advanced Search
-        %table.form
-          - @text_fields.each do |field|
-            %tr
-              %th
-                = label_tag field.name
-                - if @fields.map(&:name).include? field.name
-                  %br
-                  Blank
-                  = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
-              %td= text_field_tag field.name, params[field.name]
+        %tr
+          %th= label_tag :private
+          %td= select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
 
-    .twoup-2
-      %fieldset
-        %table.form
-          - @fields.each do |field|
-            %tr
-              - case field.type
-              - when Sunspot::Type::IntegerType
-                - if field.reference
-                  %th
-                    = label_tag field.name
-                    - if @fields.map(&:name).include? field.name
-                      %br
-                      Blank
-                      = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
-                  %td= select_tag field.name, options_from_collection_for_select(field.reference.constantize.alpha, :id, :name, params[field.name]), :include_blank => true
-              - when Sunspot::Type::BooleanType
-                %th
-                  = label_tag field.name
-                  - if @fields.map(&:name).include? field.name
-                    %br
-                    Blank
-                    = check_box_tag "blank_#{field.name}", 1, params["blank_#{field.name}"]
-                %td= select_tag field.name, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
-              -# TODO Add Time fields
+        %tr
+          %th
+            = label_tag :title
+            %br
+            %i (published)
+          %td= text_field_tag :title, params[:title], {:placeholder => "Please enter a title"}
+
+        %tr
+          %th
+            = label_tag :description
+            %br
+            %i (published)
+          %td= text_area_tag :description, params[:description], :rows => 5
+
+        %tr
+          %th= label_tag :originated_on, 'Origination date'
+          %td= text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
+
+        %tr
+          %th= label_tag :originated_on_narrative, 'Origination date free form'
+          %td= text_field_tag :originated_on_narrative, params[:originated_on_narrative]
+
+        %tr
+          %th= label_tag :owned, 'Item held by Paradisec'
+          %td= select_tag :owned, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+
+        %tr
+          %th= label_tag :url, 'URL'
+          %td= text_field_tag :url, params[:url]
+
+        %tr
+          %th= label_tag :collector_id
+          %td= collection_select :item, :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'select2-req'
+
+        %tr
+          %th= label_tag :country_ids, 'Countries'
+          %td= hidden_field :item, :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+
+        %tr
+          %th= label_tag :language, 'Language as given'
+          %td= text_field_tag :language, params[:language]
+
+        %tr
+          %th= label_tag :subject_language_ids, 'Subject languages'
+          %td
+            = hidden_field :item, :subject_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+
+        %tr
+          %th= label_tag :content_language_ids, 'Content language'
+          %td
+            = hidden_field :item, :content_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+
+        %tr
+          %th= label_tag :dialect
+          %td= text_field_tag :dialect, params[:dialect]
+
+        %tr
+          %th= label_tag :region, 'Region / village'
+          %td= text_field_tag :region, params[:region]
+
+        %tr
+          %th= label_tag :university_id, 'Originating university'
+          %td= collection_select :item, :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+
+        %tr
+          %th= label_tag :operator_id
+          %td= collection_select :item, :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'select2'
+
+        %tr
+          %th= label_tag :discourse_type_id
+          %td= collection_select :item, :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+
+        %tr
+          %th= label_tag :agent_id, 'Roles'
+          %td TODO(John : this is another multiple values field)
+
+  .twoup-2
+    %fieldset
+      %legend Archive information
+      %table.form
+        %tr
+          %th Ready for metadata export:
+          %td= select_tag :metadata_exportable, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+
+        %tr
+          %th= label_tag :born_digital
+          %td= select_tag :born_digital, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+
+        %tr
+          %th Tapes returned to depositor:
+          %td= select_tag :tapes_returned, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+
+        %tr
+          %th= label_tag :original_media
+          %td= text_field_tag :original_media, params[:original_media]
+
+        %tr
+          %th Date received:
+          %td= text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
+
+        %tr
+          %th Date digitised:
+          %td= text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
+
+        %tr
+          %th= label_tag :ingest_notes
+          %td= text_area_tag :ingest_notes, params[:ingest_notes]
+
+        %tr
+          %th Metadata imported:
+          %td= text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
+
+        %tr
+          %th Metadata exported:
+          %td= text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
+
+        %tr
+          %th= label_tag :tracking
+          %td= text_field_tag :tracking, params[:tracking]
 
 
-      = submit_tag 'Search', :name => nil
-      = submit_tag 'Clear', :name => :clear
+    %fieldset
+      %legend Admin information
+      %table.form
+        %tr
+          %th= label_tag :admin_ids, 'Edit access'
+          %td TODO (John - fix "multiple" search fields)
 
-    .clear
+        %tr
+          %th= label_tag :access_condition, 'Data access conditions'
+          %td= collection_select :item, :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 
-  %p== #{@search.total} search results
+        %tr
+          %th= label_tag :access_narrative, 'Data access details'
+          %td= text_area_tag :access_narrative, params[:access_narrative], :rows => 5
 
-  = render 'search_results'
+        %tr
+          %th= label_tag :admin_comment, 'Comments'
+          %td= text_area_tag :admin_comment, params[:admin_comment], :rows => 5
 
-  .right
-    = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+    = submit_tag 'Search', :name => nil
+    = submit_tag 'Clear', :name => :clear
 
   .clear
+
+%p== #{@search.total} search results
+
+= render 'search_results'
+
+.right
+  = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+.clear
