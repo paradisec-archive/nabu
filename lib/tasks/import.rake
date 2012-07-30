@@ -241,9 +241,11 @@ namespace :import do
     puts "Importing contacts from PARADISEC legcacy DB"
     client = connect
     users = client.query("SELECT * FROM contacts")
+    rights_transferred = []
     users.each do |user|
       next if user['cont_collector'].blank? && user['cont_collector_surname'].blank?
       next if user['cont_address1'] == 'DELETE THIS RECORD'
+
       last_name, first_name = user['cont_collector'].split(/, /, 2)
       if first_name.blank?
         first_name, last_name = user['cont_collector'].split(/ /, 2)
@@ -309,7 +311,26 @@ namespace :import do
           puts e.message
         end
         puts "Saved new user #{first_name} #{last_name}, #{email}, #{contact_only}, #{user['cont_id']}" if @verbose
+
+        # remember users that have their rights transferred
+        if user['cont_address1'] =~ /REPRESENTATIVE=(\d+)(?:,REASON=(\w+))/
+          rights_transferred << {
+            :user   => new_user,
+            :rep    => $1,
+            :reason => $2
+          }
+        end
       end
+    end
+
+    # fix up users with transferred rights
+    rights_transferred.each do |right|
+      rep_user = User.where(:pd_contact_id => right[:rep].to_i).first
+      right[:user].rights_transferred_to_id = rep_user.id
+      right[:user].rights_transfer_reason = right[:reason]
+      right[:user].address = right[:user].address2
+      right[:user].address2 = nil
+      right[:user].save!
     end
   end
 

@@ -157,7 +157,6 @@ ActiveRecord::Schema.define(:version => 20120621072614) do
     t.integer "item_id",       :null => false
     t.integer "user_id",       :null => false
     t.integer "agent_role_id", :null => false
-    t.string  "comment"
   end
 
   add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
@@ -250,6 +249,7 @@ ActiveRecord::Schema.define(:version => 20120621072614) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
+    t.string   "unconfirmed_email"
     t.integer  "failed_attempts",          :default => 0
     t.string   "unlock_token"
     t.datetime "locked_at"
