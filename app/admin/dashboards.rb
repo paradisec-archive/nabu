@@ -2,7 +2,9 @@ ActiveAdmin::Dashboards.build do
 
   section 'Recent Collections', :priority => 10 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
-      id_column
+      column :id do |collection|
+        link_to collection.id, "/collections/#{collection.id}"
+      end
       column :identifier
       column :title
       default_actions
@@ -10,7 +12,9 @@ ActiveAdmin::Dashboards.build do
   end
   section 'Recent Items', :priority => 20 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Item.order('id desc').limit(10) do
-      id_column
+      column :id do |item|
+        link_to item.id, "/items/#{item.id}"
+      end
       column :full_identifier
       column :title
       default_actions
