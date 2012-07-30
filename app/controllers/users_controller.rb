@@ -1,25 +1,6 @@
 class UsersController < ApplicationController
   load_and_authorize_resource
 
-  def index
-    @users = @users.order(sort_column.join(',') + ' ' + sort_direction)
-    params.delete(:search) if params[:clear]
-    if params[:search]
-      match = "%#{params[:search]}%"
-      @users = @users.where{ (first_name =~ match) | (last_name =~ match)  | (address =~ match) | (address2 =~ match) | (country =~ match) | (email =~ match)}
-    end
-
-    @users = @users.page(params[:page]).per(params[:per_page])
-
-    respond_to do |format|
-      format.html
-      format.csv do
-        fields = [:id, :email, :first_name, :last_name, :address, :address2, :country, :phone, :admin, :rights_transferred_to.first_name, :rights_transferred_to.last_name, :sign_in_count, :last_sign_in_at, :failed_attempts]
-        send_data @users.to_csv(:only => fields), :type => "text/csv; charset=utf-8; header=present"
-      end
-    end
-  end
-
   def show
     render 'users/edit'
   end
@@ -56,16 +37,4 @@ class UsersController < ApplicationController
       render :action => 'edit'
     end
   end
-
-  def destroy
-    # TODO what if the users has collections or is the last user or last admin?
-    begin
-      @user.destroy
-      flash[:notice] = 'User was deleted.'
-    rescue ActiveRecord::DeleteRestrictionError
-      flash[:error] = 'User cannot be deleted - it is in use.'
-    end
-    redirect_to :action => :index
-  end
-
 end

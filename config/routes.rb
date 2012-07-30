@@ -24,10 +24,10 @@ Nabu::Application.routes.draw do
   match '/contact' => 'page#contact'
   match '/glossary' => 'page#glossary'
 
-  resources :users
+  resources :users, :only => [:show, :edit, :update]
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
-  resources :essences
+  resources :essences, :only => [:show]
   resources :items do
     get 'advanced_search', :on => :collection
     match 'bulk_update' => 'items#bulk_edit', :on => :collection, :via => :get

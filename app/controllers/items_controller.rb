@@ -73,6 +73,10 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
+    params[:country_ids]          = params[:country_ids].split(/,/) if params[:country_ids]
+    params[:subject_language_ids] = params[:subject_language_ids].split(/,/) if params[:subject_language_ids]
+    params[:content_language_ids] = params[:content_language_ids].split(/,/) if params[:content_language_ids]
+
     @items = Item.where :id => params[:item_ids].split(' ')
 
     update_params = params[:item].delete_if {|k, v| v.blank?}

@@ -39,4 +39,4 @@
   %button.per_page{:data => {:per => 10}} Show 10
   %button.per_page{:data => {:per => 50}} Show 50
   %button.per_page{:data => {:per => 100}} Show 100
-  %button.per_page{:data => {:per => "#{@search.total}", :param_name => :items_per_page}} Show all #{@search.total}
+  %button.per_page{:data => {:per => @search.total}} Show all #{@search.total}

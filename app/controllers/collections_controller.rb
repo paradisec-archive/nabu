@@ -82,6 +82,9 @@ class CollectionsController < ApplicationController
 
 
   def bulk_update
+    params[:country_ids]  = params[:country_ids].split(/,/) if params[:country_ids]
+    params[:language_ids] = params[:language_ids].split(/,/) if params[:language_ids]
+
     @collections = Collection.where :id => params[:collection_ids].split(' ')
 
     update_params = params[:collection].delete_if {|k, v| v.blank?}
