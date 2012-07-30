@@ -1,6 +1,21 @@
 class UsersController < ApplicationController
   load_and_authorize_resource
 
+  respond_to :json, :html
+
+  def index
+    @users = @users.order('first_name, last_name')
+    match = "%#{params[:q]}%"
+    @users = @users.where{ (first_name =~ match) | (last_name =~ match)  | (address =~ match) | (address2 =~ match) | (country =~ match) | (email =~ match)}
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render :json => @users.map {|u| {:id => u.id, :name => u.name}}
+      end
+    end
+  end
+
   def show
     render 'users/edit'
   end

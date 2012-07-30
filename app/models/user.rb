@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 
   attr_accessible :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me
   attr_accessible :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :as => :admin
+  attr_accessible :first_name, :last_name, :password, :password_confirmation, :contact_only, :as => :contact_only
 
   validates :first_name, :presence => true
   validates :email, :presence => true, :unless => proc { |user| user.contact_only? }

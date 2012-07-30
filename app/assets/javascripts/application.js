@@ -26,6 +26,5 @@
 //= require remove_empty_fields
 //= require add_university
 //= require copy_language
-//= require items
-//= require dropdowns
+//= require items_and_collections
 

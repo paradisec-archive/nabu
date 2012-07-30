@@ -145,7 +145,7 @@
           - ia = ItemAgent.new
           - id = ia.object_id
           - fields = f.fields_for :item_agents, ia, :child_index => id do |c|
-            = c.collection_select :user_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a user...'}, :class => 'select2'
+            = c.hidden_field :user_id, :data => {:placeholder => 'Choose a user...', :url => users_path, :createable => true}, :class => 'select2'
             = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'select2'
 
           = link_to 'Add new role', '#', :class => 'add_fields', :data => {:id => id, :fields => fields.gsub("\n", "")}
