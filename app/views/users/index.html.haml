@@ -51,6 +51,7 @@
     %button.per_page{:data => {:per => 10}} Show 10
     %button.per_page{:data => {:per => 50}} Show 50
     %button.per_page{:data => {:per => 100}} Show 100
+    %button.per_page{:data => {:per => "#{@users.total_count}", :param_name => :items_per_page}} Show all #{@users.total_count}
 
   %p
     = link_to 'Export CSV', users_path(:format => :csv, :params => params)

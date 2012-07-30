@@ -6,7 +6,7 @@ namespace :import do
   task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:quiet, :dev_users, :add_identifiers, :load_db]
+  task :setup => [:quiet, :dev_users, :add_identifiers, :access_cond_setup, :load_db]
 
   task :quiet do
     if ENV['DEBUG'].nil?
@@ -83,6 +83,65 @@ namespace :import do
     AddIdentifiers.migrate(:down)
   end
 
+  ## SETUP access_cond table and mapping function
+
+  desc 'Create limited list of access conditions'
+  task :access_cond_setup => :environment do
+    AccessCondition.create! :name => "Open (subject to agreeing to PDSC access form)"
+    AccessCondition.create! :name => "Open (subject to the access condition details)"
+    AccessCondition.create! :name => "Closed (subject to access condition details)"
+    AccessCondition.create! :name => "Mixed (check individual items)"
+    AccessCondition.create! :name => "As yet unspecified"
+  end
+
+  def getAccessCond(curr_cond)
+    narrative = ""
+
+    case curr_cond
+    when "normal",
+         "standard, as per PDSC Access form",
+         "Open (subject to agreeing to access conditions)"
+      ac = AccessCondition.find_by_name "Open (subject to agreeing to PDSC access form)"
+
+    when "non-profit"
+      ac = AccessCondition.find_by_name "Open (subject to agreeing to PDSC access form)"
+      narrative = curr_cond
+
+    when "Open (subject to the following conditions)"
+      ac = AccessCondition.find_by_name "Open (subject to the access condition details)"
+
+    when "Access by permission of the depositor, except where speakers of Kagate wish to access the data, in which case permission can be granted by either the depositor or Norpu Kagate"
+      ac = AccessCondition.find_by_name "Open (subject to the access condition details)"
+      narrative = curr_cond
+
+    when "Closed (subject to the following conditions)"
+      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+
+    when "restricted, no access except with depositor's permission",
+         "Restricted, only acccessed by members of the families involved or by bona fide researchers with the permission of those members",
+         "access restricted to depositor and Kokota community",
+         "access restricted to depositor and Simbo community",
+         "Recorded under the request of the widow Helen Ufrafo.  The content is not to be further reproduced and/ or commented publicly.",
+         "Restricted; access available through Jadran Mimica only. Contains culturally sensitive materials.",
+         "Tekee Media Ros Dunlop, Max Stahl",
+         "Tekee Media Ros Dunlop",
+         "Not for wider distribution"
+      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+      narrative = curr_cond
+
+    when "", nil
+      ac = AccessCondition.find_by_name "As yet unspecified"
+
+    else
+      puts "ERROR: don't know what to do with access condition #{curr_cond} - marking closed"
+      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+      narrative = curr_cond
+
+    end
+    [ac, narrative]
+  end
+
+  ## Open DB connection
 
   def connect
     require 'mysql2'
@@ -416,17 +475,13 @@ namespace :import do
                                                  coll['coll_ymax'], coll['coll_ymin'])
 
       ## get access conditions
-      if !coll['coll_access_conditions'].blank?
-        access_cond = AccessCondition.find_by_name coll['coll_access_conditions']
-        if !access_cond
-          access_cond = AccessCondition.create! :name => coll['coll_access_conditions']
-          puts "Saved access condition #{coll['coll_access_conditions']}" if @verbose
-        end
-      else
-        begin
-          access_cond = AccessCondition.find_by_name "As yet unspecified"
-        rescue
-          access_cond = AccessCondition.create! :name => "As yet unspecified"
+      access_cond, narrative = getAccessCond(coll['coll_access_conditions'])
+      access_narrative = coll['coll_access_narrative']
+      if !narrative.blank?
+        if access_narrative.blank?
+          access_narrative = narrative
+        else
+          access_narrative += '; ' + narrative
         end
       end
 
@@ -444,7 +499,7 @@ namespace :import do
                                 :latitude => latitude,
                                 :longitude => longitude,
                                 :zoom => zoom.to_i,
-                                :access_narrative => coll['coll_access_narrative'],
+                                :access_narrative => access_narrative,
                                 :metadata_source => coll['coll_metadata_source'],
                                 :orthographic_notes => coll['coll_orthographic_notes'],
                                 :media => coll['coll_media'],
@@ -636,13 +691,13 @@ namespace :import do
     items.each do |item|
       ## get collection
       if item['item_collection_id'].blank?
-        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "Skipping item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
         puts "item_collection_id is blank"
         next
       end
       collection = Collection.find_by_identifier item['item_collection_id']
       if !collection
-        puts "Error adding item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
+        puts "Skipping item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"
         puts "collection not found"
         next
       end
@@ -708,13 +763,7 @@ namespace :import do
       end
 
       ## get access conditions
-      if !item['item_rights'].blank?
-        access_cond = AccessCondition.find_by_name item['item_rights']
-        if !access_cond
-          access_cond = AccessCondition.create! :name => item['item_rights']
-          puts "Saved access condition #{item['item_rights']}" if @verbose
-        end
-      end
+      access_cond, narrative = getAccessCond(item['item_rights'])
 
       ## get discourse type
       if !item['item_discourse_type'].blank?
@@ -747,7 +796,8 @@ namespace :import do
                           :tapes_returned => item['item_tapes_returned'],
                           :original_media => item['item_media'],
                           :ingest_notes => item['item_audio_notes'],
-                          :tracking => item['item_tracking']
+                          :tracking => item['item_tracking'],
+                          :access_narrative => narrative
 
       ## set collection, collector, operator and university
       new_item.collection = collection
@@ -756,7 +806,7 @@ namespace :import do
       new_item.university = university
       new_item.discourse_type = discourse_type
 
-      ## set access rights and private field from collection
+      ## set access_cond and private field from collection
       if access_cond
         new_item.access_condition_id = access_cond.id
       end

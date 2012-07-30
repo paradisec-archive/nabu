@@ -1,0 +1,34 @@
+
+= paginate @files, :param_name => :files_page
+
+%table.table
+  %thead
+    %tr
+      %th Filename
+      %th Type
+      %th File size
+      %th Duration
+      %th Metadata
+  %tbody
+    - @files.each do |file|
+      %tr
+        %td= file.filename
+        %td= file.mimetype
+        %td= number_to_human_size file.size
+        %td= number_to_human_duration file.duration
+        %td= link_to 'View', file if can? :read, file
+    %tr
+      %td
+        %b== #{@files.length} files
+      %td== --
+      %td
+        %b= number_to_human_size @files.sum(&:size)
+      %td== --
+      %td== --
+
+= paginate @files, :param_name => :files_page
+
+%p
+  %button.per_page{:data => {:per => 10, :param_name => :files_per_page}} Show 10
+  %button.per_page{:data => {:per => 50, :param_name => :files_per_page}} Show 50
+  %button.per_page{:data => {:per => "#{@num_files}", :param_name => :files_per_page}} Show all
