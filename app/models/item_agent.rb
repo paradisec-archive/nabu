@@ -7,5 +7,4 @@ class ItemAgent < ActiveRecord::Base
 
   validates :user_id, :presence => true
   validates :agent_role_id, :presence => true
-  validates :item_id, :presence => true
 end

@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   has_many :items, :through => :item_admins, :dependent => :destroy
 
   has_many :item_agents, :dependent => :restrict
-  
+
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
 
   scope :users, where(:contact_only => false)
