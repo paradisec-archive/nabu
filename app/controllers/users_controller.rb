@@ -4,8 +4,8 @@ class UsersController < ApplicationController
   def index
     @users = @users.order(sort_column.join(',') + ' ' + sort_direction)
     params.delete(:search) if params[:clear]
-    if params[:search]
-      match = "%#{params[:search]}%"
+    if params[:search] || params[:q]
+      match = "%#{params[:search] || params[:q]}%"
       @users = @users.where{ (first_name =~ match) | (last_name =~ match)  | (address =~ match) | (address2 =~ match) | (country =~ match) | (email =~ match)}
     end
 
@@ -14,8 +14,11 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        fields = [:id, :email, :first_name, :last_name, :address, :address2, :country, :phone, :admin, :rights_transferred_to.first_name, :rights_transferred_to.last_name, :sign_in_count, :last_sign_in_at, :failed_attempts]
+        fields = [:id, :email, :first_name, :last_name, :address, :address2, :country, :phone, :admin, :rights_transferred_to, :sign_in_count, :last_sign_in_at, :failed_attempts]
         send_data @users.to_csv(:only => fields), :type => "text/csv; charset=utf-8; header=present"
+      end
+      format.json do
+        render :json => @users.map {|u| {:id => u.id, :name => u.name}}
       end
     end
   end
