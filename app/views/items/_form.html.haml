@@ -4,6 +4,10 @@
 .twoup-1
   %fieldset
     %legend Item details
+    .right
+      = f.check_box :private
+      = f.label :private
+
     %table.form
       - unless params[:action] == 'bulk_edit'
         %tr
@@ -15,12 +19,6 @@
               = f.text_field :identifier, :class => 'short'
             - else
               = @item.identifier
-
-      %tr
-        %td
-        %td
-          = f.check_box :private
-          = f.label :private
 
       %tr
         %th
