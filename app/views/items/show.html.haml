@@ -14,6 +14,10 @@
 .twoup-1
   %fieldset
     %legend Item details
+    - if can? :manage, @item
+      .right
+        = check_box_tag :private, @item.private, @item.private, :disabled => true
+        Private
 
     %table.form.show
       %tr
@@ -23,13 +27,6 @@
             %span= @item.full_identifier
           .right<
             = link_to '(Collection Details)', @item.collection
-
-      - if user_signed_in?
-        %tr
-          %td.empty
-          %td
-            = check_box_tag :checked, @item.private, @item.private, :disabled => true
-            Private
 
       %tr
         %th Title

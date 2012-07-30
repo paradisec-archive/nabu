@@ -13,14 +13,15 @@
   .twoup-1
     %fieldset
       %legend Item details
+      .right
+        = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+        = label_tag :private
+      .clear
+
       %table.form
         %tr
           %th= label_tag :identifier, 'Item ID'
           %td= text_field_tag :identifier, params[:identifier], :class => 'short'
-
-        %tr
-          %th= label_tag :private
-          %td= select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
 
         %tr
           %th
