@@ -149,29 +149,6 @@ Feature: Authentication and Authorisation
      And the "Email" field should contain "fred@freddo.org"
      And I should see "User was successfully updated."
 
-#   # TODO How do we test this since the text boxes are hidden if you aren't an admin
-#   Scenario: Non admin can't set admin or operator
-#    Given a user exists with first_name: "John", last_name: "Ferlito"
-#      And I am signed in as that user
-#     When I go to that user's page
-#      And I check "Admin"
-#      And I check "Operator"
-#      And I press "Update"
-#     Then the "Admin" checkbox should not be checked
-#      And the "Operator" checkbox should not be checked
-
-   Scenario: Admin can set admin or operator
-    Given a user "johnf" exists with first_name: "John"
-      And an admin user "admin" exists with first_name: "Admin"
-      And I am signed in as the user "admin"
-     When I go to the user "johnf"'s page
-      And I check "Admin"
-      And I check "Operator"
-      And I press "Update"
-     Then I should see "User was successfully updated."
-      And the "Admin" checkbox should be checked
-      And the "Operator" checkbox should be checked
-
   Scenario: A user can only see her own details
     Given a user: "johnf" exists with email: "johnf@robotparade.com.au", first_name: "John"
     And a user: "silvia" exists with email: "silvia@gingertech.net", first_name: "Silvia"

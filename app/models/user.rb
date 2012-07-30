@@ -27,7 +27,11 @@ class User < ActiveRecord::Base
   has_many :item_agents, :dependent => :restrict
   
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
-  
+
+  scope :users, where(:contact_only => false)
+  scope :contacts, where(:contact_only => true)
+  scope :admins, where(:admin => true)
+
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}
   end
