@@ -9,6 +9,8 @@
     %TCON= "[item_type]"
     %TMED= "[item_media]"
     %TENC= "Operator: #{@item.operator_name}"
-    %TCOP= @item.access_condition.name
+    - if @item.access_condition
+      %TCOP= @item.access_condition.name
     %TLAN= @item.language
-    %COMM= "#{@item.countries.first.name} #{@item.countries.first.code} #{@item.description}"
+    - unless @item.countries.empty?
+      %COMM= "#{@item.countries.first.name} #{@item.countries.first.code} #{@item.description}"

@@ -35,6 +35,17 @@ class ItemsController < ApplicationController
   def show
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
+
+    respond_to do |format|
+      format.html
+      format.xml do
+        if params[:xml_type]
+          render :template => "items/show.#{params[:xml_type]}.xml.haml"
+        else
+          render :template => "items/show"
+        end
+      end
+    end
   end
 
   def create
