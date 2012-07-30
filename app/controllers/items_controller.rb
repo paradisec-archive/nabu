@@ -38,9 +38,7 @@ class ItemsController < ApplicationController
   end
 
   def create
-    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
-    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
-    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
+    tidy_params
     if @item.save
       flash[:notice] = 'Item was successfully created.'
       redirect_to @item
@@ -53,9 +51,7 @@ class ItemsController < ApplicationController
   end
 
   def update
-    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
-    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
-    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
+    tidy_params
     if @item.update_attributes(params[:item])
       flash[:notice] = 'Item was successfully updated.'
       redirect_to @item
@@ -73,9 +69,7 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    params[:country_ids]          = params[:country_ids].split(/,/) if params[:country_ids]
-    params[:subject_language_ids] = params[:subject_language_ids].split(/,/) if params[:subject_language_ids]
-    params[:content_language_ids] = params[:content_language_ids].split(/,/) if params[:content_language_ids]
+    tidy_params
 
     @items = Item.where :id => params[:item_ids].split(' ')
 
@@ -111,6 +105,38 @@ class ItemsController < ApplicationController
     end
   end
 
+  def tidy_params
+    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
+    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
+    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
+
+    params[:item][:item_agents_attributes].each_pair do |id, iaa|
+      name = iaa['user_id']
+      next unless name =~ /^NEWCONTACT:/
+      name = name.gsub(/^NEWCONTACT:/, '')
+
+      last_space = name.rindex(' ')
+      if last_space
+        first_name = name[0..last_space-1]
+        last_name = name[last_space+1..-1]
+      else
+        first_name = name
+      end
+
+      contact = User.where(:first_name => first_name, :last_name => last_name).first
+      if contact.nil?
+        random_string = SecureRandom.base64(16)
+        contact = User.create!({
+          :first_name => first_name,
+          :last_name => last_name,
+          :password => random_string,
+          :password_confirmation => random_string,
+          :contact_only => true}, :as => :contact_only)
+      end
+      iaa['user_id'] = contact.id
+    end
+  end
+
   private
   def do_search
     @fields = Sunspot::Setup.for(Item).fields
@@ -142,4 +168,5 @@ class ItemsController < ApplicationController
       paginate :page => params[:page], :per_page => params[:per_page]
     end
   end
+
 end

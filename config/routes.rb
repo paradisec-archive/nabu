@@ -24,7 +24,7 @@ Nabu::Application.routes.draw do
   match '/contact' => 'page#contact'
   match '/glossary' => 'page#glossary'
 
-  resources :users, :only => [:show, :edit, :update]
+  resources :users
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
   resources :essences, :only => [:show]
