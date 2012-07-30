@@ -127,7 +127,7 @@
 
       %tr
         %th= f.label :orthographic_notes
-        %td= f.text_field :orthographic_notes
+        %td= f.text_area :orthographic_notes, :rows => 5
 
       %tr
         %th= f.label :media
@@ -135,7 +135,7 @@
 
       %tr
         %th= f.label :comments
-        %td= f.text_field :comments
+        %td= f.text_area :comments, :rows => 5
 
   %fieldset
     %legend Admin Information
@@ -146,7 +146,7 @@
 
       %tr
         %th= f.label :tape_location
-        %td= f.text_field :tape_location
+        %td= f.text_area :tape_location, :rows => 5
 
       %tr
         %th= f.label :field_of_research_id, 'Field of research'

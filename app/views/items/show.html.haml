@@ -34,7 +34,7 @@
 
       %tr
         %th Description
-        %td= @item.description
+        %td= h(@item.description).gsub(/\n/, '<br/>').html_safe
 
       %tr
         %th Origination date
@@ -148,7 +148,7 @@
 
         %tr
           %th Description
-          %td= @item.collection.description
+          %td= h(@item.collection.description).gsub(/\n/, '<br/>').html_safe
 
         %tr
           %th Countries
@@ -224,7 +224,7 @@
 
           %tr
             %th Ingest notes
-            %td= @item.ingest_notes
+            %td= h(@item.ingest_notes).gsub(/\n/, '<br/>').html_safe
 
           %tr
             %th Metadata imported
@@ -261,11 +261,11 @@
 
           %tr
             %th Data access narrative
-            %td= @item.access_narrative
+            %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
 
           %tr
             %th Comments
-            %td= @item.admin_comment
+            %td= h(@item.admin_comment).gsub(/\n/, '<br/>').html_safe
 
 
   - if can? :update, @item

@@ -27,7 +27,7 @@
 
       %tr
         %th Description
-        %td= @collection.description
+        %td= h(@collection.description).gsub(/\n/, '<br/>').html_safe
 
       %tr
         %th Collector
@@ -93,7 +93,7 @@
 
         %tr
           %th Data access details
-          %td= @collection.access_narrative
+          %td= h(@collection.access_narrative).gsub(/\n/, '<br/>').html_safe
 
 
 
@@ -111,7 +111,7 @@
 
         %tr
           %th Orthographic notes
-          %td= @collection.orthographic_notes
+          %td= h(@collection.orthographic_notes).gsub(/\n/, '<br/>').html_safe
 
         %tr
           %th Media
@@ -127,7 +127,7 @@
 
         %tr
           %th Comments
-          %td= @collection.comments
+          %td= h(@collection.comments).gsub(/\n/, '<br/>').html_safe
 
     %fieldset
       %legend Admin information
@@ -141,7 +141,7 @@
 
         %tr
           %th Location tapes stored
-          %td= @collection.tape_location
+          %td= h(@collection.tape_location).gsub(/\n/, '<br/>').html_safe
 
         %tr
           %th Field of research
