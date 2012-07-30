@@ -31,6 +31,10 @@ ActiveAdmin.register User do
       row :rights_transfer_reason
       row :contact_only
       row :admin
+    end
+
+    h3 "Admin information"
+    attributes_table do
       row :created_at
       row :confirmation_sent_at
       row :confirmed_at
@@ -45,4 +49,22 @@ ActiveAdmin.register User do
       row :reset_password_sent_at
     end
   end
+
+  form do |f|
+    f.inputs "User Details" do
+      f.input :first_name
+      f.input :last_name
+      f.input :address
+      f.input :address2
+      f.input :country
+      f.input :email
+      f.input :phone
+      f.input :rights_transferred_to
+      f.input :rights_transfer_reason
+      f.input :contact_only
+      f.input :admin
+    end
+    f.buttons
+  end
+
 end
