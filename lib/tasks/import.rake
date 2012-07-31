@@ -89,7 +89,7 @@ namespace :import do
   task :access_cond_setup => :environment do
     AccessCondition.create! :name => "Open (subject to agreeing to PDSC access form)"
     AccessCondition.create! :name => "Open (subject to the access condition details)"
-    AccessCondition.create! :name => "Closed (subject to access condition details)"
+    AccessCondition.create! :name => "Closed (subject to the access condition details)"
     AccessCondition.create! :name => "Mixed (check individual items)"
     AccessCondition.create! :name => "As yet unspecified"
   end
@@ -100,6 +100,8 @@ namespace :import do
     case curr_cond
     when "normal",
          "standard, as per PDSC Access form",
+         "Tekee Media Ros Dunlop, Max Stahl",
+         "Tekee Media Ros Dunlop",
          "Open (subject to agreeing to access conditions)"
       ac = AccessCondition.find_by_name "Open (subject to agreeing to PDSC access form)"
 
@@ -123,8 +125,6 @@ namespace :import do
          "access restricted to depositor and Simbo community",
          "Recorded under the request of the widow Helen Ufrafo.  The content is not to be further reproduced and/ or commented publicly.",
          "Restricted; access available through Jadran Mimica only. Contains culturally sensitive materials.",
-         "Tekee Media Ros Dunlop, Max Stahl",
-         "Tekee Media Ros Dunlop",
          "Not for wider distribution"
       ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
       narrative = curr_cond
