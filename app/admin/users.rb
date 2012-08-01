@@ -3,7 +3,7 @@ ActiveAdmin.register User do
   scope :users
   scope :contacts
   scope :admins
-  scope :all
+  scope :all_users
 
   # add pagination buttons to index page sidebar
   sidebar :paginate, :only => :index  do
