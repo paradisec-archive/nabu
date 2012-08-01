@@ -14,8 +14,6 @@ class User < ActiveRecord::Base
   validates :first_name, :presence => true
   validates :email, :presence => true, :unless => proc { |user| user.contact_only? }
 
-  paginates_per 10
-
   scope :alpha, order(:first_name, :last_name)
 
   has_many :collection_admins
@@ -31,6 +29,7 @@ class User < ActiveRecord::Base
   scope :users, where(:contact_only => false)
   scope :contacts, where(:contact_only => true)
   scope :admins, where(:admin => true)
+  scope :all
 
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}

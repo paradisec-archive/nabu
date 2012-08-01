@@ -1,7 +1,41 @@
 ActiveAdmin.register User do
+  # show scoped buttons on index page
   scope :users
   scope :contacts
   scope :admins
+  scope :all
+
+  # add pagination buttons to index page sidebar
+  sidebar :paginate, :only => :index  do
+    para button_tag 'Show 10', :class => 'per_page', :data => {:per => 10}
+    para button_tag 'Show 50', :class => 'per_page', :data => {:per => 50}
+    count = User.count
+    if params[:scope]
+      count = eval("User.#{params[:scope]}.count")
+    end
+    button_tag "Show all #{count}", :class => 'per_page', :data => {:per => count}
+  end
+
+  # change pagination
+  before_filter :only => :index do
+    @per_page = params[:per_page] || 30
+  end
+
+  # index page search sidebar
+  filter :first_name
+  filter :last_name
+  filter :address
+  filter :address2
+  filter :country
+  filter :phone
+  filter :email
+  filter :unconfirmed_email
+  filter :rights_transferred_to
+  filter :rights_transfer_reason
+  filter :contact_only
+  filter :admin
+
+  # index page
   index do
     id_column
     column :first_name
@@ -16,6 +50,7 @@ ActiveAdmin.register User do
     default_actions
   end
 
+  # show page
   show do |user|
     attributes_table do
       row :id
@@ -24,9 +59,9 @@ ActiveAdmin.register User do
       row :address
       row :address2
       row :country
+      row :phone
       row :email
       row :unconfirmed_email
-      row :phone
       row :rights_transferred_to
       row :rights_transfer_reason
       row :contact_only
@@ -50,6 +85,7 @@ ActiveAdmin.register User do
     end
   end
 
+  # edit page
   form do |f|
     f.inputs "User Details" do
       f.input :first_name
@@ -66,5 +102,4 @@ ActiveAdmin.register User do
     end
     f.buttons
   end
-
 end
