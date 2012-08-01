@@ -45,7 +45,7 @@
       %tr
         %th= f.label :university_id, 'Originating university'
         %td
-          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2 university'
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr

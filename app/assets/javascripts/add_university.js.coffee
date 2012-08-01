@@ -7,8 +7,8 @@ $ ->
     $('#add-university-form button').click ->
       value = $('#university_name').val()
       $.post '/universities', 'university[name]=' + value, (data) ->
-        $('#collection_university_id').append($('<option></option>').attr('selected', 'selected').attr('value', data['id']).text(data['name']))
-        $('#collection_university_id').trigger('change')
+        $('university').append($('<option></option>').attr('selected', 'selected').attr('value', data['id']).text(data['name']))
+        $('university').trigger('change')
         $('#add-university-form').remove()
       .error ->
         $('#add-university-form').replaceWith('<p class="error">University already exists please select it from the drop down');
