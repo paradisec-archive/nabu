@@ -1,9 +1,20 @@
 %h1 Advanced Search Items
 
-
 .right
   = link_to 'Basic Search', items_path
 .clear
+
+
+- if params.length > 2
+  %p== #{@search.total} search results
+
+  = render 'search_results'
+
+  .right
+    = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+  .clear
+
 
 = form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit' do
 
@@ -28,22 +39,38 @@
             = label_tag :title
             %br
             %i (published)
-          %td= text_field_tag :title, params[:title], {:placeholder => "Please enter a title"}
+          %td
+            = text_field_tag :title, params[:title], {:placeholder => "Please enter a title"}
+            %br
+            Blank
+            = check_box_tag "blank_title", 1, params["blank_title"]
 
         %tr
           %th
             = label_tag :description
             %br
             %i (published)
-          %td= text_area_tag :description, params[:description], :rows => 5
+          %td
+            = text_area_tag :description, params[:description], :rows => 5
+            %br
+            Blank
+            = check_box_tag "blank_description", 1, params["blank_description"]
 
         %tr
           %th= label_tag :originated_on, 'Origination date'
-          %td= text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
+          %td
+            = text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
+            %br
+            Blank
+            = check_box_tag "blank_originated_on", 1, params["blank_originated_on"]
 
         %tr
           %th= label_tag :originated_on_narrative, 'Origination date free form'
-          %td= text_field_tag :originated_on_narrative, params[:originated_on_narrative]
+          %td
+            = text_field_tag :originated_on_narrative, params[:originated_on_narrative]
+            %br
+            Blank
+            = check_box_tag "blank_originated_on_narrative", 1, params["blank_originated_on_narrative"]
 
         %tr
           %th= label_tag :owned, 'Item held by Paradisec'
@@ -51,7 +78,11 @@
 
         %tr
           %th= label_tag :url, 'URL'
-          %td= text_field_tag :url, params[:url]
+          %td
+            = text_field_tag :url, params[:url]
+            %br
+            Blank
+            = check_box_tag "blank_url", 1, params["blank_url"]
 
         %tr
           %th= label_tag :collector_id
@@ -63,7 +94,11 @@
 
         %tr
           %th= label_tag :language, 'Language as given'
-          %td= text_field_tag :language, params[:language]
+          %td
+            = text_field_tag :language, params[:language]
+            %br
+            Blank
+            = check_box_tag "blank_language", 1, params["blank_language"]
 
         %tr
           %th= label_tag :subject_language_ids, 'Subject languages'
@@ -77,11 +112,19 @@
 
         %tr
           %th= label_tag :dialect
-          %td= text_field_tag :dialect, params[:dialect]
+          %td
+            = text_field_tag :dialect, params[:dialect]
+            %br
+            Blank
+            = check_box_tag "blank_dialect", 1, params["blank_dialect"]
 
         %tr
           %th= label_tag :region, 'Region / village'
-          %td= text_field_tag :region, params[:region]
+          %td
+            = text_field_tag :region, params[:region]
+            %br
+            Blank
+            = check_box_tag "blank_region", 1, params["blank_region"]
 
         %tr
           %th= label_tag :university_id, 'Originating university'
@@ -97,7 +140,7 @@
 
         %tr
           %th= label_tag :agent_id, 'Roles'
-          %td TODO(John : this is another multiple values field)
+          %td TODO(John : another multiple values field)
 
   .twoup-2
     %fieldset
@@ -117,31 +160,59 @@
 
         %tr
           %th= label_tag :original_media
-          %td= text_field_tag :original_media, params[:original_media]
+          %td
+            = text_field_tag :original_media, params[:original_media]
+            %br
+            Blank
+            = check_box_tag "blank_original_media", 1, params["blank_original_media"]
 
         %tr
           %th Date received:
-          %td= text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
+          %td
+            = text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
+            %br
+            Blank
+            = check_box_tag "blank_received_on", 1, params["blank_received_on"]
 
         %tr
           %th Date digitised:
-          %td= text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
+          %td
+            = text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
+            %br
+            Blank
+            = check_box_tag "blank_digitised_on", 1, params["blank_digitised_on"]
 
         %tr
           %th= label_tag :ingest_notes
-          %td= text_area_tag :ingest_notes, params[:ingest_notes]
+          %td
+            = text_area_tag :ingest_notes, params[:ingest_notes]
+            %br
+            Blank
+            = check_box_tag "blank_ingest_notes", 1, params["blank_ingest_notes"]
 
         %tr
           %th Metadata imported:
-          %td= text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
+          %td
+            = text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
+            %br
+            Blank
+            = check_box_tag "blank_metadata_imported_on", 1, params["blank_metadata_imported_on"]
 
         %tr
           %th Metadata exported:
-          %td= text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
+          %td
+            = text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
+            %br
+            Blank
+            = check_box_tag "blank_metadata_exported_on", 1, params["blank_metadata_exported_on"]
 
         %tr
           %th= label_tag :tracking
-          %td= text_field_tag :tracking, params[:tracking]
+          %td
+            = text_field_tag :tracking, params[:tracking]
+            %br
+            Blank
+            = check_box_tag "blank_tracking", 1, params["blank_tracking"]
 
 
     %fieldset
@@ -157,23 +228,22 @@
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'
-          %td= text_area_tag :access_narrative, params[:access_narrative], :rows => 5
+          %td
+            = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
+            %br
+            Blank
+            = check_box_tag "blank_access_narrative", 1, params["blank_access_narrative"]
 
         %tr
           %th= label_tag :admin_comment, 'Comments'
-          %td= text_area_tag :admin_comment, params[:admin_comment], :rows => 5
+          %td
+            = text_area_tag :admin_comment, params[:admin_comment], :rows => 5
+            %br
+            Blank
+            = check_box_tag "blank_admin_comments", 1, params["blank_admin_comments"]
 
 
     = submit_tag 'Search', :name => nil
     = submit_tag 'Clear', :name => :clear
 
   .clear
-
-%p== #{@search.total} search results
-
-= render 'search_results'
-
-.right
-  = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
-
-.clear

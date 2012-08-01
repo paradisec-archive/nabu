@@ -4,6 +4,18 @@
   = link_to 'Basic Search', collections_path
 .clear
 
+
+- if params.length > 2
+  %p== #{@search.total} search results
+
+  = render 'search_results'
+
+  .right
+    = link_to 'Bulk edit results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+
+  .clear
+
+
 = form_tag advanced_search_collections_path, :method => :get, :class => 'no-empty-submit' do
 
   - if params[:per_page]
@@ -72,7 +84,11 @@
 
         %tr
           %th= label_tag :region, 'Region / village'
-          %td= text_field_tag :region, params[:region]
+          %td
+            = text_field_tag :region, params[:region]
+            %br
+            Blank
+            = check_box_tag "blank_region", 1, params["blank_region"]
 
     %fieldset
       %legend Access Information
@@ -80,7 +96,7 @@
         %tr
           %th
             = label_tag :admin_ids, 'Edit access'
-          %td TODO (John - fix "multiple" search fields)
+          %td TODO (John - fix "multiple" search fields, make sure 'blank' can be searched)
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
@@ -101,11 +117,19 @@
       %table.form
         %tr
           %th= label_tag :metadata_source
-          %td= text_field_tag :metadata_source, params[:metadata_source]
+          %td
+            = text_field_tag :metadata_source, params[:metadata_source]
+            %br
+            Blank
+            = check_box_tag "blank_metadata_source", 1, params["blank_metadata_source"]
 
         %tr
           %th= label_tag :orthographic_notes
-          %td= text_field_tag :orthographic_notes, params[:orthographic_notes]
+          %td
+            = text_field_tag :orthographic_notes, params[:orthographic_notes]
+            %br
+            Blank
+            = check_box_tag "blank_orthographic_notes", 1, params["blank_orthographic_notes"]
 
         %tr
           %th= label_tag :media
@@ -117,11 +141,19 @@
 
         %tr
           %th Date created:
-          %td= text_field_tag :created_at, params[:created_at], :class => 'dateinput short', :value => params[:created_at]
+          %td
+            = text_field_tag :created_at, params[:created_at], :class => 'dateinput short', :value => params[:created_at]
+            %br
+            Blank
+            = check_box_tag "blank_created_at", 1, params["blank_created_at"]
 
         %tr
           %th Date modified:
-          %td= text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short', :value => params[:updated_at]
+          %td
+            = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short', :value => params[:updated_at]
+            %br
+            Blank
+            = check_box_tag "blank_updated_at", 1, params["blank_updated_at"]
 
         %tr
           %th= label_tag :comments
@@ -155,11 +187,3 @@
 
   .clear
 
-%p== #{@search.total} search results
-
-= render 'search_results'
-
-.right
-  = link_to 'Bulk edit results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
-
-.clear
