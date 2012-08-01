@@ -5,3 +5,7 @@ solr/*
 tmp/
 .sass-cache/
 rerun.txt
+.DS_Store
+db/legacy/
+legacy_code/
+public/system/
