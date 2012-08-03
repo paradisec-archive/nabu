@@ -49,6 +49,9 @@ gem 'unicorn'
 # Media Detection
 gem 'ruby-filemagic'
 
+# Metadata export of files
+gem 'httparty'
+
 # Deployment
 gem 'capistrano'
 gem 'capistrano-unicorn'

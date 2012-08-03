@@ -54,8 +54,7 @@ module Nabu
       samplerate: #{samplerate} Hz
       duration: #{duration} seconds
       channels #{channels} channels
-      fps: #{fps} fps
-      "
+      fps: #{fps} fps"
     end
 
     def probe
@@ -79,6 +78,7 @@ module Nabu
           @data[:format] = Hash.new
         else
           key, value = line.split(/=/)
+          next if key.blank? || value.blank?
           if type == :format
             @data[:format][key.strip] = value.strip
           elsif type == :stream
