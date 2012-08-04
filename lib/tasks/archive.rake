@@ -1,7 +1,7 @@
 require 'media'
 
 namespace :archive do
-  
+
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
     # find essence files in Nabu::Application.config.scan_directory
@@ -18,7 +18,7 @@ namespace :archive do
 
       collection = Collection.find_by_identifier coll_id
       if !collection
-        puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping"  
+        puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping"
         next
       end
       item = collection.items.find_by_identifier item_id
@@ -65,7 +65,7 @@ namespace :archive do
 
     # make sure the archive directory exists and all its parent directories
     FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
-    
+
     # for each essence file, find its collection & item
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
@@ -84,7 +84,7 @@ namespace :archive do
         puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping"
         next
       end
-    
+
       # make sure the archive directory for the collection and item exists
       # and move the file there
       destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
