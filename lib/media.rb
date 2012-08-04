@@ -18,22 +18,27 @@ module Nabu
     end
 
     def bitrate
+      return if !is_media?
       probe[:format]['bit_rate'].to_i
     end
 
     def samplerate
+      return if !is_media?
       probe[:streams].select {|s| s['codec_type'] == 'audio'}.first['sample_rate'].to_i
     end
 
     def duration
+      return if !is_media?
       probe[:format]['duration'].to_f
     end
 
     def channels
+      return if !is_media?
       probe[:streams].select {|s| s['codec_type'] == 'audio'}.first['channels'].to_i
     end
 
     def fps
+      return if !is_media?
       video = probe[:streams].select {|s| s['codec_type'] == 'video'}.first
       return unless video
       frame_rate = video['r_frame_rate']
@@ -55,6 +60,12 @@ module Nabu
       duration: #{duration} seconds
       channels #{channels} channels
       fps: #{fps} fps"
+    end
+
+    private
+
+    def is_media?
+      mimetype =~ /^(audio|video)/
     end
 
     def probe
