@@ -18,6 +18,26 @@ ActiveAdmin.register_page "File Processing" do
     end
 
     div :class => 'dashboard_section panel' do
+      h3 "Recently imported files (max 20)"
+      div :class => 'panel_contents' do
+        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Essence.order('id desc').limit(20) do
+          column :id do |essence|
+            link_to essence.id, "/essences/#{essence.id}"
+          end
+          column :full_identifier
+          column :mimetype
+          column :size
+          column :duration
+          column :samplerate
+          column :channels
+          column :fps
+          column :bitrate
+          default_actions
+        end
+      end
+    end
+
+    div :class => 'dashboard_section panel' do
       render 'paths'
     end    
   end
