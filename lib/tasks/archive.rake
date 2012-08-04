@@ -96,8 +96,7 @@ namespace :archive do
         # and move the file there
         destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
         FileUtils.mkdir_p(destination_path)
-### Change back to mv before commit
-        FileUtils.cp(upload_directory + file, destination_path + file)
+        FileUtils.mv(upload_directory + file, destination_path + file)
 
         puts "---------------------------------------------------------------"
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
