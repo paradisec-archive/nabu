@@ -30,7 +30,9 @@ class Item < ActiveRecord::Base
   has_many :comments, :as => :commentable, :dependent => :destroy
 
   # require presence of these three fields.
-  validates :identifier, :presence => true, :uniqueness => {:scope => [:collection_id, :identifier]}
+  validates :identifier, :presence => true,
+            :uniqueness => {:scope => [:collection_id, :identifier]},
+            :format => { :with => /^[a-zA-Z0-9]*$/, :message => "error - only letters and numbers allowed" }
   validates :title, :presence => true
   validates :collector_id, :presence => true
 
