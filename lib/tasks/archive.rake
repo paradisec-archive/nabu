@@ -6,21 +6,24 @@ namespace :archive do
   task :export_metadata => :environment do
     # scan for WAV files .wav -> .imp.xml
     scan_directory(Nabu::Application.config.scan_for_imp,
-                   "wav",
-                   "imp",
-                   ".imp.xml")
+                   'wav',
+                   'imp',
+                   '.imp.xml')
 
     # scan for MP3 files .mp3 -> .id3.xml
     scan_directory(Nabu::Application.config.scan_for_id3,
-                   "mp3",
-                   "id3",
-                   ".id3.xml")
+                   'mp3',
+                   'id3',
+                   '.id3.xml')
   end
 
   def scan_directory(directory, file_extension, type, render_extension)
     # find essence files in Nabu::Application.config.scan_directory
+    unless Dir.exists? Nabu::Application.config.scan_directory
+      FileUtils.mkdir_p Nabu::Application.config.scan_directory
+    end
     dir_contents = Dir.entries(directory)
-    dir_contents -= [".", ".."]
+    dir_contents -= ['.', '..']
 
     # for each essence file, find its collection & item
     # by matching the pattern
