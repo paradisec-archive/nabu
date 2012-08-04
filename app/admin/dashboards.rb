@@ -1,5 +1,11 @@
 ActiveAdmin::Dashboards.build do
 
+  section 'Statistics', :priority => 0 do
+    div do
+      render 'admin/dashboard/statistics'
+    end
+  end
+
   section 'Recent Collections', :priority => 10 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
       column :id do |collection|
@@ -10,6 +16,7 @@ ActiveAdmin::Dashboards.build do
       default_actions
     end
   end
+
   section 'Recent Items', :priority => 20 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Item.order('id desc').limit(10) do
       column :id do |item|
@@ -20,6 +27,7 @@ ActiveAdmin::Dashboards.build do
       default_actions
     end
   end
+
   section 'Recent Comments', :priority => 30 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Comment.order('id desc').limit(10) do
       id_column
@@ -41,12 +49,6 @@ ActiveAdmin::Dashboards.build do
         link_to 'Spam',    spam_comment_path(comment)
       end
 
-    end
-  end
-
-  section 'Statistics' do
-    div do
-      render 'admin/dashboard/statistics'
     end
   end
 end
