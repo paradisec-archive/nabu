@@ -1,5 +1,29 @@
 require 'media'
 
+class OfflineTemplate < AbstractController::Base
+  include AbstractController::Rendering
+  include AbstractController::Helpers
+  #include AbstractController::Layouts
+  include CanCan::ControllerAdditions
+
+  def initialize(*args)
+    super()
+    lookup_context.view_paths = Rails.root.join('app', 'views')
+  end
+
+  def current_user
+    @current_user ||= User.admins.first
+  end
+
+  #def params
+  #  {}
+  #end
+end
+
+class ItemOfflineTemplate < OfflineTemplate
+  attr_accessor :item
+end
+
 namespace :archive do
 
   desc 'Provide essence files in scan_directory with metadata for sealing'
@@ -39,10 +63,9 @@ namespace :archive do
         next
       end
 
-      # write the appropriate metadata file
-      data = HTTParty.get("http://localhost:3000/items/#{item.id}.xml?xml_type=#{type}").body
-# JOHN (TODO) Fix the access problem (only for admin)
-p data
+      template = ItemOfflineTemplate.new
+      template.item = item
+      data = template.render_to_string :template => "items/show.#{type}.xml"
 
       metadata_filename = directory + basename + render_extension
       metadata_file = File.open(metadata_filename, 'w') {|f| f.write(data)}
@@ -55,7 +78,7 @@ p data
   task :import_files => :environment do
     # find essence files in Nabu::Application.config.upload_directories
     dir_list = Nabu::Application.config.upload_directories
-    
+
     dir_list.each do |upload_directory|
       next if !File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
@@ -65,7 +88,7 @@ p data
       if !File.directory?(Nabu::Application.config.archive_directory)
         FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
       end
-    
+
       # for each essence file, find its collection & item
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
@@ -136,5 +159,4 @@ p data
     end
     [basename, extension, coll_id, item_id, collection, item]
   end
-
 end
