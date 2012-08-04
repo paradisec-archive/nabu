@@ -70,7 +70,10 @@ Nabu::Application.configure do
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
   # --- OVERWRITE FOR PRODUCTION
   config.archive_directory = "#{Rails.root}/public/system/nabu-archive/"
-  config.upload_directories = "#{Rails.root}/public/system/send_to_archive/, /tmp/test/"
+  config.upload_directories = [
+    "#{Rails.root}/public/system/send_to_archive/",
+    "/tmp/test/"
+  ]
   config.scan_directory = "/Processing Area/Dobbin XML files/"
   config.scan_for_imp = "#{config.scan_directory}Dobbin xml import/"
   config.scan_for_id3 = "#{config.scan_directory}Dobbin id3 import/"

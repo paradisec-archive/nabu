@@ -51,7 +51,7 @@ p data
   desc 'Import files into the archive'
   task :import_files => :environment do
     # find essence files in Nabu::Application.config.upload_directories
-    dir_list = Nabu::Application.config.upload_directories.split(',')
+    dir_list = Nabu::Application.config.upload_directories
     
     dir_list.each do |upload_directory|
       next if !File.directory?(upload_directory)
@@ -60,7 +60,6 @@ p data
 
       # make sure the archive directory exists and all its parent directories
       if !File.directory?(Nabu::Application.config.archive_directory)
-        p " creating directory"
         FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
       end
     
