@@ -66,4 +66,13 @@ Nabu::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
+
+  # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
+  # --- OVERWRITE FOR PRODUCTION
+  config.archive_directory = "#{Rails.root}/public/system/nabu-archive/"
+  config.upload_directories = "#{Rails.root}/public/system/send_to_archive/, /tmp/test/"
+  config.scan_directory = "/Processing Area/Dobbin XML files/"
+  config.scan_for_imp = "#{config.scan_directory}Dobbin xml import/"
+  config.scan_for_id3 = "#{config.scan_directory}Dobbin id3 import/"
+
 end
