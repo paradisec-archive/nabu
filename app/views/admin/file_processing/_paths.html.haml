@@ -1,0 +1,21 @@
+%h3 List of Paths
+.panel_contents
+  %table
+    %tr
+      %th For
+      %th Directory
+    %tr
+      %td Archive
+      %td= Nabu::Application.config.archive_directory
+    %tr
+      %td Upload Directories
+      %td
+        - Nabu::Application.config.upload_directories.each do |dir|
+          = dir
+          %br
+    %tr
+      %td Scan WAV files
+      %td= Nabu::Application.config.scan_for_imp
+    %tr
+      %td Scan MP3 files
+      %td= Nabu::Application.config.scan_for_id3

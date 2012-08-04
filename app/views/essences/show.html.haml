@@ -54,7 +54,9 @@
 
       %tr
         %th Bitrate
-        %td== #{@essence.bitrate} bps
+        %td
+          - if @essence.bitrate
+            == #{@essence.bitrate} bps
 
 .twoup-2
   %fieldset

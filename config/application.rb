@@ -72,7 +72,10 @@ module Nabu
     # into the correct directory.
     # Note: files of the pattern "#{collection_id}-#{item_id}-xxx-PDS_ADMIN.xxx"
     # will be copied, but not added to the list of imported files in Nabu.
-    config.upload_directory = "#{Rails.root}/public/system/send_to_archive/"
+    config.upload_directories = [
+      "#{Rails.root}/public/system/send_to_archive/",
+      "/tmp/test/"
+    ]
 
     # This is the directory that Nabu will scan for new files frequently.
     # If it finds files in there that match the pattern
@@ -83,5 +86,7 @@ module Nabu
     # .mp3 -> .id3.xml
     # .ogg -> .vorbiscomment (TODO)
     config.scan_directory = "#{Rails.root}/public/system/prepare_for_sealing/"
+    config.scan_for_imp = "#{config.scan_directory}XMLImport/"
+    config.scan_for_id3 = "#{config.scan_directory}ID3Import/"
   end
 end
