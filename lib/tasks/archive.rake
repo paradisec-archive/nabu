@@ -36,6 +36,9 @@ namespace :archive do
 
     # scan for MP3 files .mp3 -> .id3.xml
     scan_directory(Nabu::Application.config.scan_for_id3,
+                   "mp3",
+                   "id3",
+                   ".id3.v2_3.xml")
                    'mp3',
                    'id3',
                    '.id3.xml')

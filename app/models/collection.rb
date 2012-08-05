@@ -19,7 +19,8 @@ class Collection < ActiveRecord::Base
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
   # require presence of these three fields
-  validates :identifier, :presence => true, :uniqueness => true
+  validates :identifier, :presence => true, :uniqueness => true,
+            :format => { :with => /^[a-zA-Z0-9]*$/, :message => "error - only letters and numbers allowed" }
   validates :title, :presence => true
   validates :collector_id, :presence => true
 
