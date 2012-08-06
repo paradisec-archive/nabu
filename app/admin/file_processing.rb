@@ -3,7 +3,7 @@ ActiveAdmin.register_page "File Processing" do
     div :class => 'dashboard_section panel' do
       h3 'Collections with at least one item not ready for export (max 20)'
       div :class => 'panel_contents' do
-        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.includes(:items).where(:items => {:metadata_exportable => false}).order('id desc').limit(20) do
+        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.includes(:items).where(:items => {:metadata_exportable => false}).order('collections.id desc').limit(20) do
           column :identifier
           column :collection_id do |collection|
             link_to collection.identifier, "/collections/#{item.collection.id}"
