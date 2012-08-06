@@ -105,9 +105,9 @@ namespace :archive do
         puts "---------------------------------------------------------------"
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
 
-        # files of the pattern "#{collection_id}-#{item_id}-xxx-PDS_ADMIN.xxx"
+        # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
-        next if basename.split('-').last == "PDS_ADMIN"
+        next if basename.split('-').last == "PDSC_ADMIN"
 
         # extract media metadata from file
         media = Nabu::Media.new destination_path + file
