@@ -20,6 +20,7 @@ class Ability
 
       # Anyone can create a collection
       can :create, Collection
+
       # Anyone can view non-private collections
       can :read, Collection, :private => false
       can :advanced_search, Collection
@@ -28,10 +29,15 @@ class Ability
       can :manage, Collection, :collection_admins => { :user_id => user.id }
       can :manage, Collection, :collector_id => user.id
 
-      can :read, Item, :private => false
+      can :read,   Item, :private => false
       can :manage, Item, :collection  => { :collection_admins => { :user_id => user.id } }
       can :manage, Item, :collection  => { :collector_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
+
+      can :read, Essence, :item => {:private => false }
+      can :read, Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
+      can :read, Essence, :item => { :collection  => { :collector_id => user.id } }
+      can :read, Essence, :item => { :item_admins => { :user_id => user.id } }
 
       can :create, Comment, :commentable => { :private => false }
     end
