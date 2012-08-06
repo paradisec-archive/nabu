@@ -1,7 +1,8 @@
 .bundle
 db/*.sqlite3
 log/*
-solr/*
+solr/data
+solr/pids
 tmp/
 .sass-cache/
 rerun.txt

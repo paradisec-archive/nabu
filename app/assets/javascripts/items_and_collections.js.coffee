@@ -48,7 +48,10 @@ setup_select2 = (element) ->
           text = data.name
           if data.code
             text = text + " (" + data.code + ")"
-          results.push { id: data.id, text: text }
+          if options['multiple']
+            results.push { id: data.id, text: text }
+          else
+            results = { id: data.id, text: text }
         callback.call(null, results)
 
     createable = $(element).data('createable')

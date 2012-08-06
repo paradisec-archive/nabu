@@ -62,11 +62,11 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= collection_select :collection, :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'select2-req'
+          %td= hidden_field_tag :collection, :collector_id, :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :operator_id
-          %td= collection_select :collection, :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'select2'
+          %td= hidden_field_tag :collection, :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :university_id, 'Originating university'

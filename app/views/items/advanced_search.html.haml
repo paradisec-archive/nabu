@@ -86,7 +86,7 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= collection_select :item, :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'select2-req'
+          %td= hidden_field_tag :item, :collector_id, :data => {:placeholder => 'Choose a collector...', :uel => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :country_ids, 'Countries'
@@ -132,7 +132,7 @@
 
         %tr
           %th= label_tag :operator_id
-          %td= collection_select :item, :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'select2'
+          %td= hidden_field_tag :item, :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :discourse_type_id
