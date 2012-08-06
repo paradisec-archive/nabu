@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   before_filter :find_by_full_identifier, :only => [:show, :edit, :create, :update]
   load_and_authorize_resource :collection
   load_and_authorize_resource :item, :through => :collection, :shallow => true
@@ -50,7 +51,6 @@ class ItemsController < ApplicationController
   end
 
   def create
-    tidy_params
     if @item.save
       flash[:notice] = 'Item was successfully created.'
       redirect_to @item
@@ -63,7 +63,6 @@ class ItemsController < ApplicationController
   end
 
   def update
-    tidy_params
     if @item.update_attributes(params[:item])
       flash[:notice] = 'Item was successfully updated.'
       redirect_to @item
@@ -81,9 +80,6 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    tidy_params
-
-    # FIXME SECURITY - Should be current_user.items
     @items = current_user.items.find params[:item_ids].split(' ')
 
     update_params = params[:item].delete_if {|k, v| v.blank?}
@@ -120,9 +116,9 @@ class ItemsController < ApplicationController
 
   private
   def tidy_params
-    @item.country_ids = params[:item].delete(:country_ids).split(/,/)
-    @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
-    @item.content_language_ids = params[:item].delete(:content_language_ids).split(/,/)
+    [:country_ids, :subject_language_ids, :content_language_ids, :admin_ids].each do |field|
+      params[:item][field] = params[:item][field].split(/,/) if params[:item][field]
+    end
 
     params[:item][:item_agents_attributes] ||= {}
     params[:item][:item_agents_attributes].each_pair do |id, iaa|

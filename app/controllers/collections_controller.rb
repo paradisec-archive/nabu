@@ -1,4 +1,5 @@
 class CollectionsController < ApplicationController
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :find_by => :identifier
 
   def index
@@ -40,8 +41,6 @@ class CollectionsController < ApplicationController
   end
 
   def create
-    @collection.country_ids = params[:collection].delete(:country_ids).split(/,/)
-    @collection.language_ids = params[:collection].delete(:language_ids).split(/,/)
     if @collection.save
       flash[:notice] = 'Collection was successfully created.'
       redirect_to @collection
@@ -59,8 +58,6 @@ class CollectionsController < ApplicationController
   end
 
   def update
-    @collection.country_ids = params[:collection].delete(:country_ids).split(/,/)
-    @collection.language_ids = params[:collection].delete(:language_ids).split(/,/)
     if @collection.update_attributes(params[:collection])
       # Make the depositor an admin
       unless @collection.admins.include? current_user
@@ -82,10 +79,7 @@ class CollectionsController < ApplicationController
 
 
   def bulk_update
-    params[:country_ids]  = params[:country_ids].split(/,/) if params[:country_ids]
-    params[:language_ids] = params[:language_ids].split(/,/) if params[:language_ids]
-
-    @collections = Collection.where :id => params[:collection_ids].split(' ')
+    @collections = current_user.collections.where :id => params[:collection_ids].split(' ')
 
     update_params = params[:collection].delete_if {|k, v| v.blank?}
 
@@ -120,6 +114,12 @@ class CollectionsController < ApplicationController
   end
 
   private
+  def tidy_params
+    [:country_ids, :language_ids, :admin_ids].each do |field|
+      params[:collection][field] = params[:collection][field].split(/,/) if params[:collection][field]
+    end
+  end
+
   def do_search
     @fields = Sunspot::Setup.for(Collection).fields
     @text_fields = Sunspot::Setup.for(Collection).all_text_fields

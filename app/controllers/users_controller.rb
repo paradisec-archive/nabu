@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :except => :show
 
   respond_to :json, :html
 
@@ -17,7 +17,16 @@ class UsersController < ApplicationController
   end
 
   def show
-    render 'users/edit'
+    @user = User.find params[:id]
+    respond_to do |format|
+      format.html do
+        authorize! :show, @user
+        render 'users/edit'
+      end
+      format.json do
+        render :json => {:id => @user.id, :name => @user.name}
+      end
+    end
   end
 
   def edit

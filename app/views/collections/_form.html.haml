@@ -36,11 +36,11 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.collection_select :collector_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a collector...'}, :class => 'select2-req'
+        %td= f.hidden_field :collector_id, :data => {:placeholder => 'Choose a collector...', :url => users_path, :required => true}, :class => 'select2'
 
       %tr
         %th= f.label :operator_id
-        %td= f.collection_select :operator_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an operator...'}, :class => 'select2'
+        %td= f.hidden_field :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
       %tr
         %th= f.label :university_id, 'Originating university'
@@ -101,7 +101,7 @@
             = f.check_box :bulk_edit_append_admin_ids
             %br
           = f.label :admin_ids, 'Edit access'
-        %td= f.select :admin_ids, User.alpha.map {|u| [u.name, u.id]}, {:include_blank => true}, :multiple => true, :data => {:placeholder => 'Choose a user...'}, :class => 'select2'
+        %td= f.hidden_field :admin_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
