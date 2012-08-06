@@ -9,7 +9,7 @@ ActiveAdmin::Dashboards.build do
   section '10 Newest Collections', :priority => 10 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
       column :id do |collection|
-        link_to collection.id, "/collections/#{collection.id}"
+        link_to collection.id, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
       end
       column :identifier
       column :title
@@ -20,7 +20,7 @@ ActiveAdmin::Dashboards.build do
   section '10 Newest Items', :priority => 20 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Item.order('id desc').limit(10) do
       column :id do |item|
-        link_to item.id, "/items/#{item.id}"
+        link_to item.id, item
       end
       column :full_identifier
       column :title
@@ -55,7 +55,7 @@ ActiveAdmin::Dashboards.build do
   section '10 Newest Users', :priority => 50 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, User.order('id desc').limit(10) do
       column :id do |user|
-        link_to user.id, "/admin/users/#{user.id}"
+        link_to user.id, [:admin, user]
       end
       column :first_name
       column :last_name

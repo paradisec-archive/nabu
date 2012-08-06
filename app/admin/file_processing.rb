@@ -7,11 +7,11 @@ ActiveAdmin.register_page "File Processing" do
           column :identifier
           # FIXME USe _path for the URLs below
           column :collection_id do |collection|
-            link_to collection.identifier, "/collections/#{collection.id}"
+            link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
           end
           column :sample_item do |collection|
             item = collection.items.where(:metadata_exportable => false).first
-            link_to item.identifier, "/items/#{item.id}"
+            link_to item.identifier, item
           end
           column :title
           default_actions
