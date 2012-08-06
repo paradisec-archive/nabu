@@ -5,8 +5,9 @@ ActiveAdmin.register_page "File Processing" do
       div :class => 'panel_contents' do
         insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.includes(:items).where(:items => {:metadata_exportable => false}).order('collections.id desc').limit(20) do
           column :identifier
+          # FIXME USe _path for the URLs below
           column :collection_id do |collection|
-            link_to collection.identifier, "/collections/#{item.collection.id}"
+            link_to collection.identifier, "/collections/#{collection.id}"
           end
           column :sample_item do |collection|
             item = collection.items.where(:metadata_exportable => false).first
