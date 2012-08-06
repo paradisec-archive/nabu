@@ -52,6 +52,9 @@ class ItemsController < ApplicationController
 
   def create
     if @item.save
+      # update xml file of the item
+      save_item_catalog_file(@item)
+
       flash[:notice] = 'Item was successfully created.'
       redirect_to @item
     else
@@ -64,6 +67,9 @@ class ItemsController < ApplicationController
 
   def update
     if @item.update_attributes(params[:item])
+      # update xml file of the item
+      save_item_catalog_file(@item)
+
       flash[:notice] = 'Item was successfully updated.'
       redirect_to @item
     else
@@ -103,6 +109,8 @@ class ItemsController < ApplicationController
         @item = item
         break
       end
+      # save updated item info to xml file
+      save_item_catalog_file(@item)
     end
 
     if invalid_record
@@ -185,4 +193,17 @@ class ItemsController < ApplicationController
     @item = @collection.items.find_by_identifier item_identifier
   end
 
+  def save_item_catalog_file(item)
+    if !File.directory?(Nabu::Application.config.archive_directory)
+      FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
+    end
+    # make sure the archive directory for the collection and item exist
+    directory = Nabu::Application.config.archive_directory +
+                "#{item.collection.identifier}/#{item.identifier}/"
+    FileUtils.mkdir_p(directory)
+    # save file
+    data = render_to_string :template => "items/show.xml"
+    file = directory + "#{item.full_identifier}-CAT-PDS_ADMIN.xml"
+    file = File.open(file, 'w') {|f| f.write(data)}
+  end
 end
