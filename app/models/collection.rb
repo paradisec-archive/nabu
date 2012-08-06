@@ -103,4 +103,7 @@ class Collection < ActiveRecord::Base
     time :created_at
   end
 
+  def to_param
+    identifier
+  end
 end

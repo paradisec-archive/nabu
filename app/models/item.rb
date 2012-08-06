@@ -268,4 +268,8 @@ class Item < ActiveRecord::Base
     end
     xml.target!
   end
+
+  def to_param
+    full_identifier
+  end
 end

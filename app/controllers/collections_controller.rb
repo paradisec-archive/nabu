@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  load_and_authorize_resource #:except => [:advanced_search]
+  load_and_authorize_resource :find_by => :identifier
 
   def index
     if params[:clear]

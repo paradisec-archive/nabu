@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  before_filter :find_by_full_identifier, :only => [:show, :edit, :create, :update]
   load_and_authorize_resource :collection
   load_and_authorize_resource :item, :through => :collection, :shallow => true
 
@@ -82,7 +83,8 @@ class ItemsController < ApplicationController
   def bulk_update
     tidy_params
 
-    @items = Item.where :id => params[:item_ids].split(' ')
+    # FIXME SECURITY - Should be current_user.items
+    @items = current_user.items.find params[:item_ids].split(' ')
 
     update_params = params[:item].delete_if {|k, v| v.blank?}
 
@@ -116,6 +118,7 @@ class ItemsController < ApplicationController
     end
   end
 
+  private
   def tidy_params
     @item.country_ids = params[:item].delete(:country_ids).split(/,/)
     @item.subject_language_ids = params[:item].delete(:subject_language_ids).split(/,/)
@@ -149,7 +152,6 @@ class ItemsController < ApplicationController
     end
   end
 
-  private
   def do_search
     @fields = Sunspot::Setup.for(Item).fields
     @text_fields = Sunspot::Setup.for(Item).all_text_fields
@@ -179,6 +181,12 @@ class ItemsController < ApplicationController
       end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
+  end
+
+  def find_by_full_identifier
+    collection_identifier, item_identifier = params[:id].split (/-/)
+    @collection = Collection.find_by_identifier collection_identifier
+    @item = @collection.items.find_by_identifier item_identifier
   end
 
 end
