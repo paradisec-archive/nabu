@@ -39,9 +39,6 @@ namespace :archive do
                    "mp3",
                    "id3",
                    ".id3.v2_3.xml")
-                   'mp3',
-                   'id3',
-                   '.id3.xml')
   end
 
   def scan_directory(directory, file_extension, type, render_extension)

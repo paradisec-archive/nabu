@@ -472,7 +472,7 @@ namespace :import do
     collections = client.query("SELECT * FROM collections")
     collections.each do |coll|
       if coll['coll_id'].blank? or coll['coll_description']=="DELETE THIS COLLECTION"
-        puts "Skipping collection with blank ID or maked for deletion"
+        puts "Skipping collection with blank ID or marked for deletion"
         next
       end
 
@@ -710,6 +710,11 @@ namespace :import do
     client = connect
     items = client.query("SELECT * FROM items")
     items.each do |item|
+      ## a few items can safely be skipped
+      next if ["??1-ASS1", "??4-ASS", "ABW02-001", "Awtest-001",
+               "Awtest-002", "Awtest-003", "Awtest-004", "Awtest-005",
+               "JB2-001", "TEST-test", "aol_ak_061219-elic", "CJP1-001",
+               "CK1-001", "EO1-001", "FD1-001", "PL1-arawa" ].include?(item['item_pid'])
       ## get collection
       if item['item_collection_id'].blank?
         puts "Skipping item #{item['item_pid']} #{item['item_id']} #{item['item_note']}"

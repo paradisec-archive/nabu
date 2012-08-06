@@ -6,7 +6,7 @@ ActiveAdmin::Dashboards.build do
     end
   end
 
-  section 'Recent Collections', :priority => 10 do
+  section '10 Newest Collections', :priority => 10 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
       column :id do |collection|
         link_to collection.id, "/collections/#{collection.id}"
@@ -17,7 +17,7 @@ ActiveAdmin::Dashboards.build do
     end
   end
 
-  section 'Recent Items', :priority => 20 do
+  section '10 Newest Items', :priority => 20 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Item.order('id desc').limit(10) do
       column :id do |item|
         link_to item.id, "/items/#{item.id}"
@@ -28,7 +28,7 @@ ActiveAdmin::Dashboards.build do
     end
   end
 
-  section 'Recent Comments', :priority => 30 do
+  section '10 Newest Comments', :priority => 30 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Comment.order('id desc').limit(10) do
       id_column
       column :body
@@ -49,6 +49,16 @@ ActiveAdmin::Dashboards.build do
         link_to 'Spam',    spam_comment_path(comment)
       end
 
+    end
+  end
+
+  section '10 Newest Users', :priority => 50 do
+    insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, User.order('id desc').limit(10) do
+      column :id do |user|
+        link_to user.id, "/admin/users/#{user.id}"
+      end
+      column :first_name
+      column :last_name
     end
   end
 end
