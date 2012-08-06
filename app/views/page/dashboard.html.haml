@@ -41,8 +41,8 @@
               %td= item.title
               %td= item.created_at
               %td
-                = link_to 'View', collection if can? :read, collection
-                = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+                = link_to 'View', item if can? :read, item
+                = link_to 'Edit', edit_item_path(item) if can? :update, item
 
 
   %fieldset
