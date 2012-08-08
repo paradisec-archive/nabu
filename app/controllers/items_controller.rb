@@ -188,9 +188,13 @@ class ItemsController < ApplicationController
   end
 
   def find_by_full_identifier
-    collection_identifier, item_identifier = params[:id].split (/-/)
-    @collection = Collection.find_by_identifier collection_identifier
-    @item = @collection.items.find_by_identifier item_identifier
+    if params[:id]
+      collection_identifier, item_identifier = params[:id].split (/-/)
+      @collection = Collection.find_by_identifier collection_identifier
+      @item = @collection.items.find_by_identifier item_identifier
+    elsif params[:collection_id]
+      @collection = Collection.find_by_identifier params[:collection_id]
+    end
   end
 
   def save_item_catalog_file(item)
