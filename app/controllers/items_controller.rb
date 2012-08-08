@@ -1,6 +1,6 @@
 class ItemsController < ApplicationController
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
-  before_filter :find_by_full_identifier, :only => [:show, :edit, :create, :update]
+  before_filter :find_by_full_identifier
   load_and_authorize_resource :collection
   load_and_authorize_resource :item, :through => :collection, :shallow => true
 
