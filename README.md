@@ -54,3 +54,8 @@ upload DB:
  cd /srv/www/nabu/current
  RAILS_ENV=production rake sunspot:reindex
 
+# OAI-PMH
+
+available at:
+ http://catalog.paradisec.org.au/oai/item
+

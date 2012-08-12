@@ -37,6 +37,8 @@
         %depositFormReceived= @collection.deposit_form_received
         %tapeLocation= @collection.tape_location
         %fieldOfResearch= @collection.field_of_research.name_with_identifier
+        %fundingBody= @collection.funding_body.name
+        %grantIdentifier= "#{@collection.funding_body.key_prefix}#{@collection.grant_identifier}"
       %items{:numItems => @num_items, :readyForExport => @num_items_ready}
         - @collection.items.each do |item|
           %item{:numComments => item.comments.length, :numFiles => item.essences.length}

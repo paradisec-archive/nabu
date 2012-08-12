@@ -152,4 +152,10 @@
         %th= f.label :field_of_research_id, 'Field of research'
         %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
+      %tr
+        %th= f.label :funding_body_id, 'Funding body'
+        %td= f.collection_select :funding_body_id, FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
 
+      %tr
+        %th= f.label :grant_identifier
+        %td= f.text_field :grant_identifier

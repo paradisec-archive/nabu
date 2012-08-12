@@ -7,6 +7,7 @@ class Collection < ActiveRecord::Base
   belongs_to :university
   belongs_to :field_of_research
   belongs_to :access_condition
+  belongs_to :funding_body
 
   has_many :items, :dependent => :restrict
   has_many :collection_languages, :dependent => :destroy
@@ -33,6 +34,7 @@ class Collection < ActiveRecord::Base
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
+                  :funding_body_id, :grant_identifier,
                   :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
@@ -51,7 +53,7 @@ class Collection < ActiveRecord::Base
   end
 
   searchable do
-    # Thins we want to perform full text search on
+    # Things we want to perform full text search on
     text :title
     text :identifier
     text :university_name
@@ -62,6 +64,10 @@ class Collection < ActiveRecord::Base
     text :access_condition_name
     text :field_of_research do
       field_of_research.name
+    end
+    text :grant_identifier
+    text :funding_body do
+      funding_body.name
     end
     text :languages do
       languages.map(&:name)

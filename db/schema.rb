@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120621072614) do
+ActiveRecord::Schema.define(:version => 20120812142330) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -85,6 +85,8 @@ ActiveRecord::Schema.define(:version => 20120621072614) do
     t.boolean  "private"
     t.string   "tape_location"
     t.boolean  "deposit_form_received"
+    t.string   "grant_identifier"
+    t.integer  "funding_body_id"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
@@ -145,6 +147,13 @@ ActiveRecord::Schema.define(:version => 20120621072614) do
 
   add_index "fields_of_research", ["identifier"], :name => "index_fields_of_research_on_identifier", :unique => true
   add_index "fields_of_research", ["name"], :name => "index_fields_of_research_on_name", :unique => true
+
+  create_table "funding_bodies", :force => true do |t|
+    t.string   "name",       :null => false
+    t.string   "key_prefix"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "item_admins", :force => true do |t|
     t.integer "item_id", :null => false

@@ -182,6 +182,18 @@
           %th= label_tag :field_of_research_id, 'Field of research'
           %td= collection_select :collection, :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
+        %tr
+          %th= label_tag :funding_body_id, 'Funding body'
+          %td= collection_select :collection, :funding_body_id, FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
+
+        %tr
+          %th Grant identifier:
+          %td
+            = text_field_tag :grant_identifier, params[:grant_identifier]
+            %br
+            Blank
+            = check_box_tag "blank_grant_identifier", 1, params["blank_grant_identifier"]
+
     = submit_tag 'Search', :name => nil
     = submit_tag 'Clear', :name => :clear
 
