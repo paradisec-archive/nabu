@@ -105,11 +105,10 @@ class Item < ActiveRecord::Base
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier
-    text :collection_identifier do
+    text :identifier, :as => :code_textp
+    text :collection_identifier, :as => :code_textp do
       collection.identifier
     end
-    text :identifier
     text :collector_name
     text :university_name
     text :operator_name

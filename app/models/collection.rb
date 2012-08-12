@@ -53,7 +53,7 @@ class Collection < ActiveRecord::Base
   searchable do
     # Thins we want to perform full text search on
     text :title
-    text :identifier
+    text :identifier, :as => :code_textp
     text :university_name
     text :collector_name
     text :region
