@@ -24,7 +24,7 @@
         %adminAccess
           - @collection.admins.each do |admin|
             %userName= admin.name
-        %dataAccessConditions= @collection.access_condition_name
+        %dataAccessConditions= h(@collection.access_condition_name)
         %dataAccessNarrative= @collection.access_narrative
       %depositInfo
         %metadataSource= @collection.metadata_source
@@ -32,25 +32,29 @@
         %media= @collection.media
         %recordCreated= @collection.created_at
         %recordLastModified= @collection.updated_at
-        %adminComment= @collection.comments
+        %adminComment= h(@collection.comments)
       %adminInfo
-        %depositFormReceived= @collection.deposit_form_received
-        %tapeLocation= @collection.tape_location
-        %fieldOfResearch= @collection.field_of_research.name_with_identifier
-        %fundingBody= @collection.funding_body.name
-        %grantIdentifier= "#{@collection.funding_body.key_prefix}#{@collection.grant_identifier}"
+        %depositFormReceived= h(@collection.deposit_form_received)
+        %tapeLocation= h(@collection.tape_location)
+        %fieldOfResearch= h(@collection.field_of_research.name_with_identifier)
+        %fundingBody= h(@collection.funding_body.name) if @collection.funding_body
+        %grantIdentifier
+          -if @collection.funding_body
+            = h(@collection.funding_body.key_prefix + @collection.grant_identifier)
+          -else
+            = h(@collection.grant_identifier)
       %items{:numItems => @num_items, :readyForExport => @num_items_ready}
         - @collection.items.each do |item|
           %item{:numComments => item.comments.length, :numFiles => item.essences.length}
             %identifier= item.full_identifier
             %private= item.private
-            %title= item.title
-            %description= item.description
+            %title= h(item.title)
+            %description= h(item.description)
             %originationDate= item.originated_on
             %originationNarrative= item.originated_on_narrative
             %xmlLink= "#{strip_tags(item_archive_url(item))}.xml"
-            %url= item.url
-            %collector= item.collector_name
+            %url= h(item.url)
+            %collector= h(item.collector_name)
             %countries
               - item.countries.each do |country|
                 %country= country.name_with_code
@@ -67,15 +71,15 @@
               %latitude= item.latitude
               %longitude= item.longitude
               %zoom= item.zoom
-            %university= item.university_name
-            %operator= item.operator_name
-            %discourseType= item.discourse_type_name
+            %university= h(item.university_name)
+            %operator= h(item.operator_name)
+            %discourseType= h(item.discourse_type_name)
             %agents
               - item.item_agents.each do |item_agent|
                 %agent
-                  %name= item_agent.user.name
-                  %role= item_agent.agent_role.name
-            %citation= strip_tags(item.citation)
+                  %name= h(item_agent.user.name)
+                  %role= h(item_agent.agent_role.name)
+            %citation= CGI.escapeHTML(strip_tags(item.citation))
             %files{:numFiles => item.essences.length}
               - item.essences.each do |essence|
                 %file
@@ -89,11 +93,11 @@
                   %frameRate= "#{essence.fps} FPS" if essence.fps
             %archiveInfo
               %bornDigital= item.born_digital
-              %tapesReturned= item.tapes_returned
-              %originalMedia= item.original_media
+              %tapesReturned= h(item.tapes_returned)
+              %originalMedia= h(item.original_media)
               %dateReceived= item.received_on
               %dateDigitised= item.digitised_on
-              %ingestNotes= item.ingest_notes
+              %ingestNotes= h(item.ingest_notes)
               %metadataImportedOn= item.metadata_imported_on
               %metadataExportedOn= item.metadata_exported_on
               %tracking= item.tracking
@@ -103,14 +107,14 @@
               %adminAccess
                 - item.admins.each do |admin|
                   %userName= admin.name
-              %dataAccessConditions= item.access_condition_name
-              %dataAccessNarrative= item.access_narrative
+              %dataAccessConditions= h(item.access_condition_name)
+              %dataAccessNarrative= h(item.access_narrative)
               %adminComment= item.admin_comment
             %userComments{:numComments => item.comments.length}
               - item.comments.each do |comment|
                 %comment
-                  %author= comment.owner.name
-                  %description= comment.body
+                  %author= h(comment.owner.name)
+                  %description= h(comment.body)
                   %createdAt= comment.created_at
 
             
