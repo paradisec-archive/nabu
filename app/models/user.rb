@@ -58,4 +58,10 @@ class User < ActiveRecord::Base
   def email_required?
     false
   end
+
+  def full_path
+    # FIX ME
+    "http://catalog.paradisec.org.au/admin/users/#{id}"
+  end
+
 end

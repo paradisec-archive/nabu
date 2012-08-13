@@ -112,4 +112,112 @@ class Collection < ActiveRecord::Base
   def to_param
     identifier
   end
+
+  def full_identifier
+    identifier
+  end
+
+  def full_path
+    # FIX ME
+    "http://catalog.paradisec.org.au/collections/#{identifier}"
+  end
+
+  def citation
+    cite = ""
+    if collector
+      cite += "#{collector.name} (collector)"
+    end
+    cite += ", #{items.map(&:originated_on).min.year}"
+    cite += '; ' unless cite == ""
+    cite += "<i>#{sanitize(title)}</i>, "
+    cite += "Digital collection managed by PARADISEC. "
+    cite += " #{full_path},"
+    cite += " #{Date.today}."
+    cite
+  end
+
+  def oai_language
+    languages.map(&:name).join(', ')
+  end
+
+  def self.map_oai_dc
+    {:language => :oai_language}
+  end
+
+  # OAI-MPH mappings for RIF-CS
+  def to_rif
+    xml = ::Builder::XmlMarkup.new
+    xml.tag! 'registryObjects', OAI::Provider::Metadata::Rif.instance.header_specification do
+      xml.tag! 'registryObject', 'group' => 'PARADISEC'
+      xml.tag! 'key', full_path
+      xml.tag! 'originatingSource', 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
+
+      xml.tag! 'collection', 'type' => 'collection', 'dateModified' => updated_at do
+
+        xml.tag! 'name', 'type' => 'primary', 'field_id' => 'name_1', 'tab_id' => 'name' do
+          xml.tag! 'namePart', title, 'type' => '', 'field_id' => 'name_1_namePart_1', 'tab_id' => 'name'
+        end
+        xml.tag! 'description', description, 'type' => 'brief', 'field_id' => 'description_1', 'tab_id' => 'description'
+        xml.tag! 'rights', 'field_id' => 'rights_1', 'tab_id' => 'rights' do
+          xml.tag! 'accessRights', access_condition_name, 'field_id' => 'rights_1_accessRights_1', 'tab_id' => 'rights'
+        end
+        xml.tag! 'identifier', full_path, 'type' => 'uri', 'field_id' => 'identifier_1', 'tab_id' => 'identifier'
+        xml.tag! 'location', 'field_id' => 'location_1', 'tab_id' => 'location' do
+          xml.tag! 'address', 'field_id' => 'location_1_address_1', 'tab_id' => 'location' do
+            xml.tag! 'electronic', 'type' => 'url', 'field_id' => 'location_1_address_1_electronic_1', 'tab_id' => 'location' do
+              xml.tag! 'value', full_path, 'field_id' => 'location_1_address_1_electronic_1_value_1', 'tab_id' => 'location'
+            end
+          end
+        end
+
+        xml.tag! 'relatedObject', 'field_id' => 'relatedObject_1', 'tab_id' => 'relatedObject' do
+          xml.tag! 'key', collector.full_path, 'roclass' => 'Party', 'field_id' => 'relatedObject_1_key_1', 'tab_id' => 'relatedObject'
+          xml.tag! 'relation', 'type' => 'hasCollector', 'field_id' => 'relatedObject_1_relation_1', 'tab_id' => 'relatedObject' do
+            xml.tag! 'url', 'field_id' => 'relatedObject_1_relation_1_url_1', 'tab_id' => 'relatedObject'
+          end
+        end
+
+        xml.tag! 'relatedObject', 'field_id' => 'relatedObject_3', 'tab_id' => 'relatedObject' do
+          if university.party_identifier
+            xml.tag! 'key', university.party_identifier, 'roclass' => 'Party', 'field_id' => 'relatedObject_3_key_1', 'tab_id' => 'relatedObject'
+          else
+            xml.tag! 'key', university.name, 'roclass' => 'Party', 'field_id' => 'relatedObject_3_key_1', 'tab_id' => 'relatedObject'
+          end
+          xml.tag! 'relation', 'type' => 'isOutputOf', 'field_id' => 'relatedObject_3_relation_1', 'tab_id' => 'relatedObject' do
+            xml.tag! 'url', 'field_id' => 'relatedObject_3_relation_1_url_1', 'tab_id' => 'relatedObject'
+          end
+        end
+
+        languages.each do |language|
+          xml.tag! 'subject', language.name, 'type' => 'local', 'field_id' => 'subject_1', 'tab_id' => 'subject'
+          xml.tag! 'subject', language.code, 'type' => 'iso639-3', 'field_id' => 'subject_2', 'tab_id' => 'subject'
+        end
+
+        countries.each do |country|
+          xml.tag! 'coverage', 'field_id' => 'coverage_1', 'tab_id' => 'coverage' do
+            xml.tag! 'spatial', country.name, 'type' => 'text', 'field_id' => 'coverage_1_spatial_1', 'tab_id' => 'coverage'
+            xml.tag! 'spatial', country.code, 'type' => 'iso31661', 'field_id' => 'coverage_1_spatial_2', 'tab_id' => 'coverage'
+          end
+        end
+
+        xml.tag! 'coverage', 'field_id' => 'coverage_2', 'tab_id' => 'coverage' do
+          xml.tag! 'temporal', items.map(&:originated_on).min, 'type' => 'dateFrom', 'dateFormat' => 'UTC', 'field_id' => 'coverage_2_temporal_1_date_1', 'tab_id' => 'coverage'
+          xml.tag! 'temporal', items.map(&:originated_on).max, 'type' => 'dateTo', 'dateFormat' => 'UTC', 'field_id' => 'coverage_2_temporal_1_date_2', 'tab_id' => 'coverage'
+        end
+
+        xml.tag! 'citationInfo', 'field_id' => 'citationInfo_1', 'tab_id' => 'citationInfo' do
+          xml.tag! 'fullCitation', citation, 'style' => 'APA', 'field_id' => 'citationInfo_1_fullCitation_1', 'tab_id' => 'citationInfo'
+        end
+
+        xml.tag! 'relatedInfo', 'type' => 'website', 'field_id' => 'relatedInfo_1', 'tab_id' => 'relatedInfo' do
+          xml.tag! 'identifier', "http://www.ethnologue.com/show_language.asp?code=#{languages.first.code}", 'field_id' => 'relatedInfo_1_identifier_1', 'tab_id' => 'relatedInfo'
+          xml.tag! 'title', "Ethnologue entry for #{languages.first.name}", 'field_id' => 'relatedInfo_1_title_1', 'tab_id' => 'relatedInfo'
+          xml.tag! 'notes', 'field_id' => 'relatedInfo_1_notes_1', 'tab_id' => 'relatedInfo'
+        end
+      end
+
+    end
+    xml.target!
+  end
+
 end

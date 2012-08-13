@@ -90,3 +90,5 @@ module Nabu
     config.scan_for_id3 = "#{config.scan_directory}ID3Import/"
   end
 end
+
+require 'monkeypatch'
