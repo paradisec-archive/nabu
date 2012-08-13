@@ -107,14 +107,13 @@ class Item < ActiveRecord::Base
   def self.sortable_columns
     %w{identifier title university_name collector_name updated_at language}
   end
+
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier
-    text :collection_identifier do
-      collection.identifier
+    text :identifier, :as => :code_textp do
+      full_identifier
     end
-    text :identifier
     text :collector_name
     text :university_name
     text :operator_name
@@ -137,6 +136,11 @@ class Item < ActiveRecord::Base
     text :countries do
       countries.map(&:name)
     end
+
+    # Link models for faceting
+    integer :content_language_ids, :references => Language, :multiple => true
+    integer :collector_id, :references => User
+    integer :country_ids, :references => Country, :multiple => true
 
     # Things we want to sort or use :with on
     integer :id
@@ -171,10 +175,13 @@ class Item < ActiveRecord::Base
       countries.map(&:name)
     end
 
-    # Link models for faceting
-    integer :content_language_ids, :references => Language, :multiple => true
-    integer :collector_id, :references => User
-    integer :country_ids, :references => Country, :multiple => true
+    # Things we want to check blankness of
+    blank_fields = [:title, :description, :originated_on, :originated_on_narrative, :url, :language, :dialect, :region, :original_media, :received_on, :digitised_on, :ingest_notes, :metadata_imported_on, :metadata_exported_on, :tracking, :access_narrative, :admin_comment]
+    blank_fields.each do |f|
+      boolean "#{f}_blank".to_sym do
+        self.send(f).blank?
+      end
+    end
   end
 
   def next_item

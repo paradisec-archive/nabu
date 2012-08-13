@@ -44,10 +44,10 @@
             %br
             %i (published)
           %td
-            = text_field_tag :title, params[:title], {:placeholder => "Please enter a title"}
+            = text_field_tag :title, params[:title], {:placeholder => 'Please enter a title'}
             %br
             Blank
-            = check_box_tag "blank_title", 1, params["blank_title"]
+            = check_box_tag :title_blank, 1, params[:title_blank]
 
         %tr
           %th
@@ -55,22 +55,22 @@
             %br
             %i (published)
           %td
-            = text_field_tag :description, params[:description], :rows => 5
+            = text_field_tag :description, params[:description]
             %br
             Blank
-            = check_box_tag "blank_description", 1, params["blank_description"]
+            = check_box_tag :description_blank, 1, params[:description_blank]
 
         %tr
           %th= label_tag :collector_id
-          %td= hidden_field_tag :collection, :collector_id, :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
+          %td= hidden_field_tag :collection, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :operator_id
-          %td= hidden_field_tag :collection, :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+          %td= hidden_field_tag :collection, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td= collection_select :collection, :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= collection_select :collection, params[:university_id], University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
         %tr
           %th
@@ -88,7 +88,7 @@
             = text_field_tag :region, params[:region]
             %br
             Blank
-            = check_box_tag "blank_region", 1, params["blank_region"]
+            = check_box_tag :region_blank, 1, params[:region_blank]
 
     %fieldset
       %legend Access Information
@@ -100,7 +100,7 @@
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
-          %td= collection_select :collection, :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
+          %td= collection_select :collection, params[:access_condition_id], AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'
@@ -108,7 +108,7 @@
             = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
             %br
             Blank
-            = check_box_tag "blank_access_narrative", 1, params["blank_access_narrative"]
+            = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
 
 
   .twoup-2
@@ -121,7 +121,7 @@
             = text_field_tag :metadata_source, params[:metadata_source]
             %br
             Blank
-            = check_box_tag "blank_metadata_source", 1, params["blank_metadata_source"]
+            = check_box_tag :metadata_source_blank, 1, params[:metadata_source_blank]
 
         %tr
           %th= label_tag :orthographic_notes
@@ -129,7 +129,7 @@
             = text_field_tag :orthographic_notes, params[:orthographic_notes]
             %br
             Blank
-            = check_box_tag "blank_orthographic_notes", 1, params["blank_orthographic_notes"]
+            = check_box_tag :orthographic_notes_blank, 1, params[:orthographic_notes_blank]
 
         %tr
           %th= label_tag :media
@@ -137,7 +137,7 @@
             = text_field_tag :media, params[:media]
             %br
             Blank
-            = check_box_tag "blank_media", 1, params["blank_media"]
+            = check_box_tag :media_blank, 1, params[:media_blank]
 
         %tr
           %th Date created:
@@ -145,7 +145,7 @@
             = text_field_tag :created_at, params[:created_at], :class => 'dateinput short', :value => params[:created_at]
             %br
             Blank
-            = check_box_tag "blank_created_at", 1, params["blank_created_at"]
+            = check_box_tag :created_at_blank, 1, params[:created_at_blank]
 
         %tr
           %th Date modified:
@@ -153,7 +153,7 @@
             = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short', :value => params[:updated_at]
             %br
             Blank
-            = check_box_tag "blank_updated_at", 1, params["blank_updated_at"]
+            = check_box_tag :updated_at_blank, 1, params[:updated_at_blank]
 
         %tr
           %th= label_tag :comments
@@ -161,7 +161,7 @@
             = text_field_tag :comments, params[:comments]
             %br
             Blank
-            = check_box_tag "blank_comments", 1, params["blank_comments"]
+            = check_box_tag :comments_blank, 1, params[:comments_blank]
 
     %fieldset
       %legend Admin Information
@@ -176,11 +176,11 @@
             = text_field_tag :tape_location, params[:tape_location]
             %br
             Blank
-            = check_box_tag "blank_tape_location", 1, params["blank_tape_location"]
+            = check_box_tag :tape_location_blank, 1, params[:tape_location_blank]
 
         %tr
           %th= label_tag :field_of_research_id, 'Field of research'
-          %td= collection_select :collection, :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
+          %td= collection_select :collection, params[:field_of_research_id], FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
         %tr
           %th= label_tag :funding_body_id, 'Funding body'
@@ -192,7 +192,7 @@
             = text_field_tag :grant_identifier, params[:grant_identifier]
             %br
             Blank
-            = check_box_tag "blank_grant_identifier", 1, params["blank_grant_identifier"]
+            = check_box_tag :grant_identifier_blank, 1, params[:grant_identifier_blank]
 
     = submit_tag 'Search', :name => nil
     = submit_tag 'Clear', :name => :clear

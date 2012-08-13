@@ -59,7 +59,7 @@
     <!-- *** This fieldType is used by Sunspot! *** -->
     <fieldType name="rand" class="solr.RandomSortField" omitNorms="true"/>
     <!-- *** This fieldType is used by Sunspot! *** -->
-    <fieldType name="text" class="solr.TextField" omitNorms="false">
+    <fieldType name="text_pre" class="solr.TextField" omitNorms="false">
       <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StandardFilterFactory"/>
@@ -67,6 +67,13 @@
         <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="5" side="front"/>
       </analyzer>
       <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StandardFilterFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldType>
+    <fieldType name="text" class="solr.TextField" omitNorms="false">
+      <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
@@ -135,6 +142,7 @@
     <dynamicField name="_local*" stored="false" type="tdouble" multiValued="false" indexed="true"/>
     <!-- *** This dynamicField is used by Sunspot! *** -->
     <dynamicField name="*_text" stored="false" type="text" multiValued="true" indexed="true"/>
+    <dynamicField name="*_textp" stored="false" type="text_pre" multiValued="true" indexed="true"/>
     <!-- *** This dynamicField is used by Sunspot! *** -->
     <dynamicField name="*_texts" stored="true" type="text" multiValued="true" indexed="true"/>
     <!-- *** This dynamicField is used by Sunspot! *** -->
