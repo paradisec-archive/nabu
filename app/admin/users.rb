@@ -47,6 +47,7 @@ ActiveAdmin.register User do
     column :phone
     column :contact_only
     column :admin
+    column :party_identifier
     default_actions
   end
 
@@ -66,6 +67,7 @@ ActiveAdmin.register User do
       row :rights_transfer_reason
       row :contact_only
       row :admin
+      row :party_identifier
     end
 
     h3 "Admin information"
@@ -99,6 +101,7 @@ ActiveAdmin.register User do
       f.input :rights_transfer_reason
       f.input :contact_only
       f.input :admin
+      f.input :party_identifier
     end
     f.buttons
   end
