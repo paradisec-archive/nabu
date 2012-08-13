@@ -40,10 +40,10 @@
             %br
             %i (published)
           %td
-            = text_field_tag :title, params[:title], {:placeholder => "Please enter a title"}
+            = text_field_tag :title, params[:title], {:placeholder => 'Please enter a title'}
             %br
             Blank
-            = check_box_tag "blank_title", 1, params["blank_title"]
+            = check_box_tag :title_blank, 1, params[:title_blank]
 
         %tr
           %th
@@ -51,10 +51,10 @@
             %br
             %i (published)
           %td
-            = text_area_tag :description, params[:description], :rows => 5
+            = text_field_tag :description, params[:description]
             %br
             Blank
-            = check_box_tag "blank_description", 1, params["blank_description"]
+            = check_box_tag :description_blank, 1, params[:description_blank]
 
         %tr
           %th= label_tag :originated_on, 'Origination date'
@@ -62,7 +62,7 @@
             = text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
             %br
             Blank
-            = check_box_tag "blank_originated_on", 1, params["blank_originated_on"]
+            = check_box_tag :originated_on_blank, 1, params[:originated_on_blank]
 
         %tr
           %th= label_tag :originated_on_narrative, 'Origination date free form'
@@ -70,7 +70,7 @@
             = text_field_tag :originated_on_narrative, params[:originated_on_narrative]
             %br
             Blank
-            = check_box_tag "blank_originated_on_narrative", 1, params["blank_originated_on_narrative"]
+            = check_box_tag :originated_on_narrative_blank, 1, params[:originated_on_narrative_blank]
 
         %tr
           %th= label_tag :owned, 'Item held by Paradisec'
@@ -82,7 +82,7 @@
             = text_field_tag :url, params[:url]
             %br
             Blank
-            = check_box_tag "blank_url", 1, params["blank_url"]
+            = check_box_tag :url_blank, 1, params[:url_blank]
 
         %tr
           %th= label_tag :collector_id
@@ -98,7 +98,7 @@
             = text_field_tag :language, params[:language]
             %br
             Blank
-            = check_box_tag "blank_language", 1, params["blank_language"]
+            = check_box_tag :language_blank, 1, params[:language_blank]
 
         %tr
           %th= label_tag :subject_language_ids, 'Subject languages'
@@ -116,7 +116,7 @@
             = text_field_tag :dialect, params[:dialect]
             %br
             Blank
-            = check_box_tag "blank_dialect", 1, params["blank_dialect"]
+            = check_box_tag :dialect_blank, 1, params[:dialect_blank]
 
         %tr
           %th= label_tag :region, 'Region / village'
@@ -124,7 +124,7 @@
             = text_field_tag :region, params[:region]
             %br
             Blank
-            = check_box_tag "blank_region", 1, params["blank_region"]
+            = check_box_tag :region_blank, 1, params[:region_blank]
 
         %tr
           %th= label_tag :university_id, 'Originating university'
@@ -164,7 +164,7 @@
             = text_field_tag :original_media, params[:original_media]
             %br
             Blank
-            = check_box_tag "blank_original_media", 1, params["blank_original_media"]
+            = check_box_tag :original_media_blank, 1, params[:original_media_blank]
 
         %tr
           %th Date received:
@@ -172,7 +172,7 @@
             = text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
             %br
             Blank
-            = check_box_tag "blank_received_on", 1, params["blank_received_on"]
+            = check_box_tag :received_on_blank, 1, params[:received_on_blank]
 
         %tr
           %th Date digitised:
@@ -180,7 +180,7 @@
             = text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
             %br
             Blank
-            = check_box_tag "blank_digitised_on", 1, params["blank_digitised_on"]
+            = check_box_tag :digitised_on_blank, 1, params[:digitised_on_blank]
 
         %tr
           %th= label_tag :ingest_notes
@@ -188,7 +188,7 @@
             = text_area_tag :ingest_notes, params[:ingest_notes]
             %br
             Blank
-            = check_box_tag "blank_ingest_notes", 1, params["blank_ingest_notes"]
+            = check_box_tag :ingest_notes_blank, 1, params[:ingest_notes_blank]
 
         %tr
           %th Metadata imported:
@@ -196,7 +196,7 @@
             = text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
             %br
             Blank
-            = check_box_tag "blank_metadata_imported_on", 1, params["blank_metadata_imported_on"]
+            = check_box_tag :metadata_imported_on_blank, 1, params[:metadata_imported_on_blank]
 
         %tr
           %th Metadata exported:
@@ -204,7 +204,7 @@
             = text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
             %br
             Blank
-            = check_box_tag "blank_metadata_exported_on", 1, params["blank_metadata_exported_on"]
+            = check_box_tag :metadata_exported_on_blank, 1, params[:metadata_exported_on_blank]
 
         %tr
           %th= label_tag :tracking
@@ -212,7 +212,7 @@
             = text_field_tag :tracking, params[:tracking]
             %br
             Blank
-            = check_box_tag "blank_tracking", 1, params["blank_tracking"]
+            = check_box_tag :tracking_blank, 1, params[:tracking_blank]
 
 
     %fieldset
@@ -232,7 +232,7 @@
             = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
             %br
             Blank
-            = check_box_tag "blank_access_narrative", 1, params["blank_access_narrative"]
+            = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
 
         %tr
           %th= label_tag :admin_comment, 'Comments'
@@ -240,7 +240,7 @@
             = text_area_tag :admin_comment, params[:admin_comment], :rows => 5
             %br
             Blank
-            = check_box_tag "blank_admin_comments", 1, params["blank_admin_comments"]
+            = check_box_tag :admin_comments_blank, 1, params[:admin_comments_blank]
 
 
     = submit_tag 'Search', :name => nil

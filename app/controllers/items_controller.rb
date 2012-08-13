@@ -160,23 +160,28 @@ class ItemsController < ApplicationController
     @fields = Sunspot::Setup.for(Item).fields
     @text_fields = Sunspot::Setup.for(Item).all_text_fields
     @search = Item.solr_search do
+      # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|
         next if params[field.name].blank?
         keywords params[field.name], :fields => [field.name]
       end
 
+      # Exact search
       Sunspot::Setup.for(Item).fields.each do |field|
         next if params[field.name].blank?
         case field.type
-        when Sunspot::Type::StringType
-          if params["blank_#{field.name}"].present?
-            with field.name.to_sym, nil
-          end
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
         when Sunspot::Type::BooleanType
           with field.name, params[field.name] == 'true' ? true : false
         end
+      end
+
+      # Blank Search
+      Sunspot::Setup.for(Item).fields.each do |field|
+        next unless field.name =~ /_blank$/
+          next unless params[field.name] == '1'
+        with field.name
       end
 
       with(:private, false) unless current_user.admin?

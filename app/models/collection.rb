@@ -107,6 +107,14 @@ class Collection < ActiveRecord::Base
     boolean :private
     boolean :deposit_form_received
     time :created_at
+
+    # Things we want to check blankness of
+    blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location, :grant_identifier]
+    blank_fields.each do |f|
+      boolean "#{f}_blank".to_sym do
+        self.send(f).blank?
+      end
+    end
   end
 
   def to_param
