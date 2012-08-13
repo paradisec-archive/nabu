@@ -17,5 +17,5 @@
 * Home Page Reporting Dashboard Display Implementation
 
 ## Post Rollout
-* Update URLs of harvesting services for OAI-PMH
+* Update URLs of harvesting services for OAI-PMH (don't allow private items)
 * Check all dates in collections that should have a value have one

@@ -148,6 +148,16 @@
           %td= @collection.field_of_research.name_with_identifier
 
         %tr
+          %th Funding body
+          %td
+            -if @collection.funding_body
+              = @collection.funding_body.name
+
+        %tr
+          %th Grant identifier
+          %td= h("#{@collection.funding_body.key_prefix}#{@collection.grant_identifier}").gsub(/\n/, '<br/>').html_safe
+
+        %tr
           %th #Items in collections
           %td= number_to_human @num_items
         %tr
