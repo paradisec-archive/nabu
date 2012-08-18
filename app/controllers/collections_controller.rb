@@ -78,7 +78,6 @@ class CollectionsController < ApplicationController
 
 
   def bulk_update
-  #  @collections = current_user.collections.where :id => params[:collection_ids].split(' ')
     @collections = Collection.accessible_by(current_ability).where :id => params[:collection_ids].split(' ')
 
     update_params = params[:collection].delete_if {|k, v| v.blank?}
@@ -87,7 +86,7 @@ class CollectionsController < ApplicationController
     appendable = {}
     params[:collection].each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
-        appendable[$1] = params[:collection].delete $1
+        appendable[$1] = params[:collection].delete $1 if v == "1"
         params[:collection].delete k
       end
     end
@@ -97,7 +96,6 @@ class CollectionsController < ApplicationController
       appendable.each_pair do |k, v|
         params[:collection][k.to_sym] = collection.send(k) + (v || [])
       end
-      puts "Updating with #{params[:collection].inspect}"
       unless collection.update_attributes(params[:collection])
         invalid_record = true
         @collection = collection
@@ -112,7 +110,7 @@ class CollectionsController < ApplicationController
 
     if invalid_record
       do_search
-      render :action => "bulk_edit"
+      render :action => 'bulk_edit'
     else
       flash[:notice] = 'Collections were successfully updated.'
       redirect_to advanced_search_collections_path + "?#{params[:original_search_params]}"
