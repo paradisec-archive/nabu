@@ -25,7 +25,7 @@
 
 # Cleanup
 
-    sudo aptitude purge nano consolekit.
+    sudo aptitude purge nano consolekit
     sudo deluser --remove-home ubuntu
     sudo visudo
     # Remove the ubuntu entry
@@ -43,7 +43,7 @@
     sudo apt-get install vim deborphan htop mailutils tcpdump ngrep git-core postfix
 
 # Percona Server
-    echo "deb http://repo.percona.com/apt lucid main" | sudo tee /etc/apt/sources.list.d/percona.list 
+    echo "deb http://repo.percona.com/apt precise main" | sudo tee /etc/apt/sources.list.d/percona.list
     sudo /usr/bin/apt-key adv --recv-keys --keyserver keys.gnupg.net 1C4CBDCDCD2EFD2A
     sudo apt-get update
     sudo aptitude install percona-server-client percona-server-server percona-toolkit percona-xtrabackup
@@ -54,8 +54,6 @@
 
 # Nginx
 
-    sudo apt-add-repository ppa:nginx/stable
-    sudo apt-get update
     sudo apt-get install nginx-full
     sudo rm /etc/nginx/sites-enabled/default
     sudo mkdir /srv/www
@@ -105,16 +103,18 @@
         export RBENV_ROOT="/opt/rbenv"
         eval "$(rbenv init -)"
     /usr/bin/git clone git://github.com/sstephenson/ruby-build.git /opt/rbenv/plugins/ruby-build
-    sudo apt-get install zlib1g-dev libmysqlclient-dev libxml2-dev libxslt1-dev libssl-dev g++
+    sudo apt-get install zlib1g-dev libmysqlclient-dev libxml2-dev libxslt1-dev libssl-dev g++ libreadline-dev build-essential libmagic-dev
     sudo -i
-    rbenv install 1.9.3-p125
-    rbenv global 1.9.3-p125
+    rbenv install 1.9.3-p194
+    rbenv global 1.9.3-p194
     gem install bundler
+    rbenv rehash
 
 
 # Java
 
     sudo apt-get install openjdk-6-jre-headless
 
+# monit
 
-
+http://railscasts.com/episodes/375-monit
