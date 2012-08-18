@@ -124,14 +124,6 @@ class ItemsController < ApplicationController
 
   private
   def tidy_params
-    [:country_ids, :subject_language_ids, :content_language_ids, :admin_ids].each do |field|
-      if params[:item]
-        params[:item][field] = params[:item][field].split(/,/) if params[:item][field]
-      else
-        params[field] = params[field].split(/,/) if params[field]
-      end
-    end
-
     if params[:item]
       params[:item][:item_agents_attributes] ||= {}
       params[:item][:item_agents_attributes].each_pair do |id, iaa|

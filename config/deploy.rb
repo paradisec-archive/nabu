@@ -1,11 +1,11 @@
+set :stages, %w(production staging uat development)
+set :default_stage, 'uat'
+require 'capistrano/ext/multistage'
+
 set :application, 'nabu'
 set :repository,  'git@github.com:nabu-catalog/nabu'
 
 set :scm, :git
-
-role :web, '115.146.93.26'
-role :app, '115.146.93.26'
-role :db,  '115.146.93.26', :primary => true # This is where Rails migrations will run
 
 set :deploy_to, "/srv/www/#{application}"
 
@@ -21,6 +21,8 @@ set :ssh_options, {
 }
 
 set :default_shell, "/bin/bash --login"
+
+set :shared_children, fetch(:shared_children) + ['tmp/sockets']
 
 namespace :sunspot do
   task :symlink, :except => { :no_release => true } do

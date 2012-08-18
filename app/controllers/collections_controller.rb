@@ -1,5 +1,4 @@
 class CollectionsController < ApplicationController
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update, :advanced_search]
   load_and_authorize_resource :find_by => :identifier
 
   def index
@@ -79,7 +78,8 @@ class CollectionsController < ApplicationController
 
 
   def bulk_update
-    @collections = current_user.collections.where :id => params[:collection_ids].split(' ')
+  #  @collections = current_user.collections.where :id => params[:collection_ids].split(' ')
+    @collections = Collection.accessible_by(current_ability).where :id => params[:collection_ids].split(' ')
 
     update_params = params[:collection].delete_if {|k, v| v.blank?}
 
@@ -95,13 +95,19 @@ class CollectionsController < ApplicationController
     invalid_record = false
     @collections.each do |collection|
       appendable.each_pair do |k, v|
-        params[:collection][k.to_sym] = collection.send(k) + v
+        params[:collection][k.to_sym] = collection.send(k) + (v || [])
       end
+      puts "Updating with #{params[:collection].inspect}"
       unless collection.update_attributes(params[:collection])
         invalid_record = true
         @collection = collection
         break
       end
+    end
+
+    appendable.each_pair do |k, v|
+      params[:collection][k.to_sym] = nil
+      params[:collection]["bulk_edit_append_#{k}"] = v
     end
 
     if invalid_record
@@ -114,16 +120,6 @@ class CollectionsController < ApplicationController
   end
 
   private
-  def tidy_params
-    [:country_ids, :language_ids, :admin_ids].each do |field|
-      if params[:collection]
-        params[:collection][field] = params[:collection][field].split(/,/) if params[:collection][field]
-      else
-        params[field] = params[field].split(/,/) if params[field]
-      end
-    end
-  end
-
   def do_search
     @fields = Sunspot::Setup.for(Collection).fields
     @text_fields = Sunspot::Setup.for(Collection).all_text_fields

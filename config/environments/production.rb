@@ -67,6 +67,8 @@ Nabu::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
+  config.action_mailer.default_url_options = { :host => 'catalog.paradisec.org.au' }
+
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
   # --- OVERWRITE FOR PRODUCTION
   config.archive_directory = "#{Rails.root}/public/system/nabu-archive/"

@@ -62,25 +62,25 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= hidden_field_tag :collection, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
+          %td= hidden_field_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :operator_id
-          %td= hidden_field_tag :collection, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+          %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td= collection_select :collection, params[:university_id], University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= collection_select :university_id, params[:university_id], University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
         %tr
           %th
             = label_tag :country_ids, 'Countries'
-          %td= hidden_field_tag :country_ids, params[:country_ids].try(:join, ','), :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+          %td= hidden_field_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
         %tr
           %th
             = label_tag :language_ids, 'Languages'
-          %td= hidden_field_tag :language_ids, params[:language_ids].try(:join, ','), :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          %td= hidden_field_tag :language_ids, params[:language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
         %tr
           %th= label_tag :region, 'Region / village'
@@ -96,11 +96,11 @@
         %tr
           %th
             = label_tag :admin_ids, 'Edit access'
-          %td= hidden_field_tag :admin_ids, params[:admin_ids].try(:join, ','), :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
+          %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
-          %td= collection_select :collection, params[:access_condition_id], AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
+          %td= collection_select :access_condition_id, params[:access_condition_id], AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'
@@ -180,11 +180,11 @@
 
         %tr
           %th= label_tag :field_of_research_id, 'Field of research'
-          %td= collection_select :collection, params[:field_of_research_id], FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
+          %td= collection_select :field_of_research_id, params[:field_of_research_id], FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
         %tr
           %th= label_tag :funding_body_id, 'Funding body'
-          %td= collection_select :collection, :funding_body_id, FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
+          %td= collection_select :funding_body_id, params[:field_of_research_id], FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
 
         %tr
           %th Grant identifier:

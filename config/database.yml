@@ -11,18 +11,21 @@ development:
   host: localhost
   user: root
 
-production:
+production: &PRODUCTION
   <<: *COMMON
   adapter: mysql2
   host: localhost
   database: nabu
   user: root
 
+staging:
+  <<: *PRODUCTION
+
+uat:
+  <<: *PRODUCTION
+
 test: &test
   <<: *COMMON
   adapter: sqlite3
   database: ":memory:"
   verbosity: quiet
-
-cucumber:
-  <<: *test
