@@ -11,7 +11,7 @@ development:
   host: localhost
   user: root
 
-production: &PRODUCTiION
+production: &PRODUCTION
   <<: *COMMON
   adapter: mysql2
   host: localhost
