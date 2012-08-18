@@ -22,7 +22,7 @@ set :ssh_options, {
 
 set :default_shell, "/bin/bash --login"
 
-set :shared_children, fetch(:shared_children) + ['sockets']
+set :shared_children, fetch(:shared_children) + ['tmp/sockets']
 
 namespace :sunspot do
   task :symlink, :except => { :no_release => true } do
