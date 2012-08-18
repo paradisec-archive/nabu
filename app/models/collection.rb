@@ -146,7 +146,7 @@ class Collection < ActiveRecord::Base
     if collector
       cite += "#{collector.name} (collector)"
     end
-    cite += ", #{items.map(&:originated_on).min.year}"
+    cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
     cite += '; ' unless cite == ""
     cite += "<i>#{sanitize(title)}</i>, "
     cite += "Digital collection managed by PARADISEC. "
@@ -207,15 +207,17 @@ class Collection < ActiveRecord::Base
           end
         end
 
-        xml.tag! 'relatedObject' do
-          if university.party_identifier
-            xml.tag! 'key', university.party_identifier
-          else
-            xml.tag! 'key', university.name
-          end
-          xml.tag! 'relation', 'type' => 'isOutputOf' do
-            xml.tag! 'description', university.name
-            xml.tag! 'url'
+        if university
+          xml.tag! 'relatedObject' do
+            if university.party_identifier
+              xml.tag! 'key', university.party_identifier
+            else
+              xml.tag! 'key', university.full_path
+            end
+            xml.tag! 'relation', 'type' => 'isOutputOf' do
+              xml.tag! 'description', university.name
+              xml.tag! 'url', university.full_path
+            end
           end
         end
 
@@ -233,8 +235,8 @@ class Collection < ActiveRecord::Base
           # FIXME: geographic coordinates not correct
           xml.tag! 'spatial', 'type' => 'iso19139dcmiBox', 'northlimit' => latitude, 'southlimit' => longitude, 'westlimit' => latitude, 'eastLimit' => longitude
 
-          xml.tag! 'temporal', items.map(&:originated_on).min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
-          xml.tag! 'temporal', items.map(&:originated_on).max, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+          xml.tag! 'temporal', items.map(&:originated_on).compact.min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
+          xml.tag! 'temporal', items.map(&:originated_on).compact.max, 'type' => 'dateTo', 'dateFormat' => 'UTC'
         end
 
         xml.tag! 'citationInfo' do
@@ -242,8 +244,8 @@ class Collection < ActiveRecord::Base
         end
 
         xml.tag! 'relatedInfo', 'type' => 'website' do
-          xml.tag! 'identifier', "http://www.ethnologue.com/show_language.asp?code=#{languages.first.code}", 'type' => 'uri'
-          xml.tag! 'title', "Ethnologue entry for #{languages.first.name}"
+          xml.tag! 'identifier', "http://www.ethnologue.com/show_language.asp?code=#{languages.first.try(:code)}", 'type' => 'uri'
+          xml.tag! 'title', "Ethnologue entry for #{languages.first.try(:name)}"
         end
       end
 

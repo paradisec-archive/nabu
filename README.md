@@ -71,11 +71,11 @@ testing:
   $ localtunnel 3000
 
   use resulting server on an OAI repository explorer:
-  * http://www.language-archives.org/register/register.php (OLAC)
-  * http://re.cs.uct.ac.za/
-  * http://validator.oaipmh.com/ (OAI-PMH validator)
-  * http://oval.base-search.net/ (OAI-PMH validator)
-  * http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp (test protocol)
+  http://www.language-archives.org/register/register.php (OLAC)
+  http://re.cs.uct.ac.za/
+  http://oval.base-search.net/ (OAI-PMH validator)
+  http://validator.oaipmh.com/ (OAI-PMH validator)
+  http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp (test protocol)
 
   URLs to test:
   http://localhost:3000/oai/collection?verb=Identify
@@ -83,3 +83,6 @@ testing:
   http://localhost:3000/oai/collection?verb=ListSets
   http://localhost:3000/oai/collection?verb=ListIdentifiers
   http://localhost:3000/oai/collection?verb=ListRecords
+
+  Test at ANDS:
+  https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au
