@@ -133,9 +133,9 @@ namespace :archive do
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 
-        # skip PDSC_ADMIN and rename CAT files
+        # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
-        if basename.split('-').last == "CAT"
+        if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
