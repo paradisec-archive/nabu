@@ -56,6 +56,7 @@ gem 'capistrano-unicorn'
 # Misc
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'
+gem 'quiet_assets'
 
 group :development, :test do
   gem 'thin'
