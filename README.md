@@ -54,8 +54,21 @@ upload DB:
  cd /srv/www/nabu/current
  RAILS_ENV=production rake sunspot:reindex
 
+
 # OAI-PMH
 
-available at:
+OLAC available at:
  http://catalog.paradisec.org.au/oai/item
+
+RIF-CS available ta:
+  http://catalog.paradisec.org.au/oai/catalog
+
+testing:
+  install localtunnel to port forward your local webserver
+  http://progrium.com/localtunnel/
+  $ gem install localtunnel
+  $ rbenv rehash
+  $ localtunnel 3000
+  use resulting server on OAI repository explorer:
+  http://re.cs.uct.ac.za/
 

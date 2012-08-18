@@ -74,6 +74,11 @@ class Item < ActiveRecord::Base
     collection.identifier + '-' + identifier
   end
 
+  def full_path
+    # FIX ME
+    "http://catalog.paradisec.org.au/items/#{full_identifier}"
+  end
+
   def essence_types
     essences.map(&:type).uniq
   end
@@ -215,13 +220,13 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " http://paradisec.org.au/repository/#{collection.identifier}/#{identifier},"
+    cite += " #{full_path},"
     cite += " #{Date.today}."
     cite
   end
 
 
-  # OAI-MPH mappings
+  # OAI-MPH mappings for OLAC
   # If we need to later on we can generate the XML directly
   # TODO
   # - The <request> header doesn't have the params to the request as XML attributes

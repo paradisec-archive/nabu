@@ -1,16 +1,5 @@
 require 'oai'
 
-# Monkey patch
-module OAI::Provider::Response
-  class RecordResponse < Base
-    private
-    # TODO Make this overidable upstream
-    def identifier_for(record)
-      "#{provider.prefix}:#{record.full_identifier}"
-    end
-  end
-end
-
 module OAI::Provider::Metadata
   class Olac < Format
 
@@ -45,23 +34,9 @@ module OAI::Provider::Metadata
 end
 OAI::Provider::Base.register_format(OAI::Provider::Metadata::Olac.instance)
 
-module OAI::Provider::Response
-  class Base
-    private
-    def extract_identifier(id)
-      full_identifier = id.sub(/#{provider.prefix}:/, '')
-      collection_identifier, item_identifier = full_identifier.split /-/
-      collection = Collection.where(:identifier => collection_identifier).first
-      item = collection.items.where(:identifier => item_identifier).first
-      item.id
-    end
-  end
-end
-
-
 class ItemProvider < OAI::Provider::Base
   repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
-  repository_url 'http://paradisec.org.au/oai/collection'
+  repository_url 'http://catalog.paradisec.org.au/oai/item'
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
@@ -69,7 +44,7 @@ class ItemProvider < OAI::Provider::Base
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => '2012-05-15', 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
-      xml.tag! 'archiveURL', 'http://paradisec.org.au'
+      xml.tag! 'archiveURL', 'http://catalog.paradisec.org.au'
       xml.tag! 'participant', 'name' => 'Linda Barwick',  'role' => 'Project Director', 'email' => 'Linda.Barwick@arts.usyd.edu.au'
       xml.tag! 'participant', 'name' => 'Nick Thieberger', 'role' => 'Project Manager',  'email' => 'thien@unimelb.edu.au'
       xml.tag! 'institution', 'A consortium made up of the University of Melbourne, University of Sydney, and the Australian National University'

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120812142330) do
+ActiveRecord::Schema.define(:version => 20120813112341) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -240,8 +240,9 @@ ActiveRecord::Schema.define(:version => 20120812142330) do
 
   create_table "universities", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.string   "party_identifier"
   end
 
   create_table "users", :force => true do |t|
@@ -275,6 +276,7 @@ ActiveRecord::Schema.define(:version => 20120812142330) do
     t.integer  "rights_transferred_to_id"
     t.string   "rights_transfer_reason"
     t.string   "unconfirmed_email",        :limit => 128
+    t.string   "party_identifier"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

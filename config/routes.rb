@@ -50,5 +50,6 @@ Nabu::Application.routes.draw do
 
   scope '/oai' do
     match 'item' => 'oai#item'
+    match 'collection' => 'oai#collection'
   end
 end

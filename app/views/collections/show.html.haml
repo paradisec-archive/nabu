@@ -156,7 +156,6 @@
         %tr
           %th Grant identifier
           %td= h(@collection.full_grant_identifier).gsub(/\n/, '<br/>').html_safe
-
         %tr
           %th #Items in collections
           %td= number_to_human @num_items
