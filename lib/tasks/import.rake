@@ -1003,6 +1003,12 @@ namespace :import do
       agent_role = AgentRole.find_by_pd_role_id agent['ir_role_id']
       next unless agent_role && item
 
+      ## skip certain users
+      next if agent['ir_role_content'] == "Evans, Nicholas Prof"
+      next if agent['ir_role_content'] == "Roesler, Ruth H."
+      next if agent['ir_role_content'] == "Voorhoeve, C.L."
+      next if agent['ir_role_content'] == "Wurm, S.A."
+
       ## get or create a user
       results = agent['ir_role_content'].split(', ')
       if results.length > 2
@@ -1011,29 +1017,31 @@ namespace :import do
         next
       end
       last_name, first_name = agent['ir_role_content'].split(', ', 2)
+      last_name.strip! unless last_name.nil?
+      first_name.strip! unless first_name.nil?
       if first_name.blank?
         first_name, space, last_name = agent['ir_role_content'].rpartition(' ')
+        last_name.strip! unless last_name.nil?
+        first_name.strip! unless first_name.nil?
       end
       if first_name.blank?
         user = User.find_by_first_name last_name
       else
         user = User.find_by_first_name_and_last_name(first_name, last_name)
       end
-      if !user
+      if user.nil?
         ## let's create a new user without email
         password = fixme(user, 'password', 'asdfgj')
-        begin
-          if first_name.blank?
-            first_name = last_name
-            last_name = ''
-          end
-          new_user = User.create!({:first_name => first_name.strip,
-                                  :last_name => last_name.strip,
-                                  :contact_only => true,
-                                  :password => password,
-                                  :password_confirmation => password}, :as => :admin)
-          user = new_user
+        if first_name.blank?
+          first_name = last_name
+          last_name = ''
         end
+        new_user = User.create!({:first_name => first_name,
+                                :last_name => last_name,
+                                :contact_only => true,
+                                :password => password,
+                                :password_confirmation => password}, :as => :admin)
+        user = new_user
         puts "Saved new user #{first_name} #{last_name}" if @verbose
       end
       begin
