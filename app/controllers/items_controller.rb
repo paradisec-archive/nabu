@@ -210,7 +210,7 @@ class ItemsController < ApplicationController
     FileUtils.mkdir_p(directory)
     # save file
     data = render_to_string :template => "items/show.xml"
-    file = directory + "#{item.full_identifier}-CAT-PDS_ADMIN.xml"
+    file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     file = File.open(file, 'w') {|f| f.write(data)}
   end
 end

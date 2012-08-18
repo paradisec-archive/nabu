@@ -93,6 +93,7 @@ namespace :archive do
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
+        next if File.directory?(upload_directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 
@@ -110,39 +111,58 @@ namespace :archive do
         next if basename.split('-').last == "PDSC_ADMIN"
 
         # extract media metadata from file
-        media = Nabu::Media.new destination_path + file
-        if !media
-          puts "ERROR: was not able to parse #{file} of type #{extension} - skipping"
-          next
-        end
-
-        # find essence file in Nabu DB; if there is none, create a new one
-        essence = Essence.where(:item_id => item, :filename => file).first
-        if !essence
-          essence = Essence.new(:item => item,:filename => file)
-        end
-
-        # update essence entry with metadata from file
-        essence.mimetype   = media.mimetype
-        essence.size       = media.size
-        essence.bitrate    = media.bitrate
-        essence.samplerate = media.samplerate
-        essence.duration   = media.duration
-        essence.channels   = media.channels
-        essence.fps        = media.fps
-        if !essence.valid?
-          puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
-          essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
-          next
-        end
-        essence.save!
-
-        puts "SUCCESS: file #{file} metadata imported into Nabu"
+        import_metadata(destination_path, file, item)
       end
     end
   end
 
+  desc 'Update essence metadata of existing files in the archive'
+  task :update_files => :environment do
+    # find essence files in Nabu::Application.config.archive_directory
+    archive = Nabu::Application.config.archive_directory
+
+    # get all subdirectories in archive
+    subdirs = directories(archive)
+
+    # extract metadata from each essence file in each directory
+    subdirs.each do |directory|
+      dir_contents = Dir.entries(directory)
+      dir_contents -= [".", ".."]
+      dir_contents.each do |file|
+        next if File.directory?(directory + "/" + file)
+        basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
+        next if !collection || !item
+
+        # skip PDSC_ADMIN and rename CAT files
+        next if basename.split('-').last == "PDSC_ADMIN"
+        if basename.split('-').last == "CAT"
+          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          next
+        end
+
+        # extract media metadata from file
+        puts "---------------------------------------------------------------"
+        import_metadata(directory, file, item)
+      end
+    end
+  end
+
+
   # HELPERS
+
+  def directories(path)
+    data = []
+    Dir.foreach(path) do |entry|
+      next if (entry == '..' || entry == '.')
+      full_path = File.join(path, entry)
+      if File.directory?(full_path)
+        data << full_path
+        data += directories(full_path)
+      end
+    end
+    return data
+  end
+
 
   def parse_file_name(file)
     coll_id, item_id = file.split('-')
@@ -158,5 +178,38 @@ namespace :archive do
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping"
     end
     [basename, extension, coll_id, item_id, collection, item]
+  end
+
+
+  def import_metadata(path, file, item)
+    # extract media metadata from file
+    media = Nabu::Media.new path + "/" + file
+    if !media
+      puts "ERROR: was not able to parse #{file} of type #{extension} - skipping"
+      return
+    end
+
+    # find essence file in Nabu DB; if there is none, create a new one
+    essence = Essence.where(:item_id => item, :filename => file).first
+    if !essence
+      essence = Essence.new(:item => item, :filename => file)
+    end
+
+    # update essence entry with metadata from file
+    essence.mimetype   = media.mimetype
+    essence.size       = media.size
+    essence.bitrate    = media.bitrate
+    essence.samplerate = media.samplerate
+    essence.duration   = media.duration
+    essence.channels   = media.channels
+    essence.fps        = media.fps
+    if !essence.valid?
+      puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
+      essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
+      return
+    end
+    essence.save!
+
+    puts "SUCCESS: file #{file} metadata imported into Nabu"
   end
 end

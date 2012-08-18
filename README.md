@@ -42,9 +42,13 @@ DB load:
  rake db:schema:load
  APP_ENV=test rake db:schema:load
 
-after commit local:
- cap deploy
+after commit local to roll out to user acceptance testing server:
+ cap uat deploy
  cap -T
+
+roll out to production server:
+ cap staging deploy
+ cap production deploy
 
 upload DB:
  mysqldump -u root nabu_devel | gzip > nabu.sql.gz
