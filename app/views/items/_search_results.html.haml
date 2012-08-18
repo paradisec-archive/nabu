@@ -25,6 +25,9 @@
           = link_to 'View', item
           = link_to 'Edit', edit_item_path(item) if can? :update, item
 
+-if @search.each_hit_with_result.empty?
+  %p.bold There were NO results for your search.
+
 = paginate @search
 
 %p
