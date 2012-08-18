@@ -33,7 +33,7 @@
           = link_to 'View', collection if can? :read, collection
           = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
 
--if @search.each_hit_with_result.empty?
+-if @search.results.empty?
   %p.bold There were NO results for your search.
 
 = paginate @search
