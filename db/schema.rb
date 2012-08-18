@@ -166,6 +166,7 @@ ActiveRecord::Schema.define(:version => 20120812142330) do
     t.integer "item_id",       :null => false
     t.integer "user_id",       :null => false
     t.integer "agent_role_id", :null => false
+    t.string  "comment"
   end
 
   add_index "item_agents", ["item_id", "user_id", "agent_role_id"], :name => "index_item_agents_on_item_id_and_user_id_and_agent_role_id", :unique => true
@@ -245,11 +246,11 @@ ActiveRecord::Schema.define(:version => 20120812142330) do
 
   create_table "users", :force => true do |t|
     t.string   "email"
-    t.string   "encrypted_password",       :default => "",    :null => false
+    t.string   "encrypted_password",                      :default => "",    :null => false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",            :default => 0
+    t.integer  "sign_in_count",                           :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -258,22 +259,22 @@ ActiveRecord::Schema.define(:version => 20120812142330) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.string   "unconfirmed_email"
-    t.integer  "failed_attempts",          :default => 0
+    t.integer  "failed_attempts",                         :default => 0
     t.string   "unlock_token"
     t.datetime "locked_at"
-    t.string   "first_name",                                  :null => false
+    t.string   "first_name",                                                 :null => false
     t.string   "last_name"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
-    t.boolean  "admin",                    :default => false, :null => false
+    t.datetime "created_at",                                                 :null => false
+    t.datetime "updated_at",                                                 :null => false
+    t.boolean  "admin",                                   :default => false, :null => false
     t.string   "address"
     t.string   "address2"
     t.string   "country"
     t.string   "phone"
-    t.boolean  "contact_only",             :default => false
+    t.boolean  "contact_only",                            :default => false
     t.integer  "rights_transferred_to_id"
     t.string   "rights_transfer_reason"
+    t.string   "unconfirmed_email",        :limit => 128
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

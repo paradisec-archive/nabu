@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update, :advanced_search]
   before_filter :find_by_full_identifier
   load_and_authorize_resource :collection
   load_and_authorize_resource :item, :through => :collection, :shallow => true
@@ -125,34 +125,40 @@ class ItemsController < ApplicationController
   private
   def tidy_params
     [:country_ids, :subject_language_ids, :content_language_ids, :admin_ids].each do |field|
-      params[:item][field] = params[:item][field].split(/,/) if params[:item][field]
+      if params[:item]
+        params[:item][field] = params[:item][field].split(/,/) if params[:item][field]
+      else
+        params[field] = params[field].split(/,/) if params[field]
+      end
     end
 
-    params[:item][:item_agents_attributes] ||= {}
-    params[:item][:item_agents_attributes].each_pair do |id, iaa|
-      name = iaa['user_id']
-      next unless name =~ /^NEWCONTACT:/
-      name = name.gsub(/^NEWCONTACT:/, '')
+    if params[:item]
+      params[:item][:item_agents_attributes] ||= {}
+      params[:item][:item_agents_attributes].each_pair do |id, iaa|
+        name = iaa['user_id']
+        next unless name =~ /^NEWCONTACT:/
+        name = name.gsub(/^NEWCONTACT:/, '')
 
-      last_space = name.rindex(' ')
-      if last_space
-        first_name = name[0..last_space-1]
-        last_name = name[last_space+1..-1]
-      else
-        first_name = name
-      end
+        last_space = name.rindex(' ')
+        if last_space
+          first_name = name[0..last_space-1]
+          last_name = name[last_space+1..-1]
+        else
+          first_name = name
+        end
 
-      contact = User.where(:first_name => first_name, :last_name => last_name).first
-      if contact.nil?
-        random_string = SecureRandom.base64(16)
-        contact = User.create!({
-          :first_name => first_name,
-          :last_name => last_name,
-          :password => random_string,
-          :password_confirmation => random_string,
-          :contact_only => true}, :as => :contact_only)
+        contact = User.where(:first_name => first_name, :last_name => last_name).first
+        if contact.nil?
+          random_string = SecureRandom.base64(16)
+          contact = User.create!({
+            :first_name => first_name,
+            :last_name => last_name,
+            :password => random_string,
+            :password_confirmation => random_string,
+            :contact_only => true}, :as => :contact_only)
+        end
+        iaa['user_id'] = contact.id
       end
-      iaa['user_id'] = contact.id
     end
   end
 
@@ -180,8 +186,8 @@ class ItemsController < ApplicationController
       # Blank Search
       Sunspot::Setup.for(Item).fields.each do |field|
         next unless field.name =~ /_blank$/
-          next unless params[field.name] == '1'
-        with field.name
+        next unless params[field.name] == '1'
+        with field.name, true
       end
 
       with(:private, false) unless current_user.admin?

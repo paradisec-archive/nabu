@@ -96,7 +96,7 @@
         %tr
           %th
             = label_tag :admin_ids, 'Edit access'
-          %td TODO (John - fix "multiple" search fields, make sure 'blank' can be searched)
+          %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'

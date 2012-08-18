@@ -132,10 +132,17 @@ class Item < ActiveRecord::Base
       countries.map(&:name)
     end
 
-    # Link models for faceting
+    # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true
     integer :collector_id, :references => User
+    integer :operator_id, :references => User
     integer :country_ids, :references => Country, :multiple => true
+    integer :university_id, :references => University
+    integer :subject_language_ids, :references => Language, :multiple => true
+    integer :discourse_type_id, :references => DiscourseType
+    integer :access_condition_id, :references => AccessCondition
+    integer :agent_ids, :references => User, :multiple => true
+    integer :admin_ids, :references => User, :multiple => true
 
     # Things we want to sort or use :with on
     integer :id

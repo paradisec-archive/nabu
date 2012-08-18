@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update, :advanced_search]
   load_and_authorize_resource :find_by => :identifier
 
   def index
@@ -116,7 +116,11 @@ class CollectionsController < ApplicationController
   private
   def tidy_params
     [:country_ids, :language_ids, :admin_ids].each do |field|
-      params[:collection][field] = params[:collection][field].split(/,/) if params[:collection][field]
+      if params[:collection]
+        params[:collection][field] = params[:collection][field].split(/,/) if params[:collection][field]
+      else
+        params[field] = params[field].split(/,/) if params[field]
+      end
     end
   end
 
