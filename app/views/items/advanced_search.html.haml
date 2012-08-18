@@ -86,11 +86,11 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= hidden_field_tag :item, :collector_id, :data => {:placeholder => 'Choose a collector...', :uel => users_path}, :class => 'select2'
+          %td= hidden_field_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :country_ids, 'Countries'
-          %td= hidden_field :item, :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+          %td= hidden_field_tag :country_ids, params[:country_ids].try(:join, ','), :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
         %tr
           %th= label_tag :language, 'Language as given'
@@ -103,12 +103,12 @@
         %tr
           %th= label_tag :subject_language_ids, 'Subject languages'
           %td
-            = hidden_field :item, :subject_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+            = hidden_field_tag :subject_language_ids, params[:subject_language_ids].try(:join, ','), :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
         %tr
           %th= label_tag :content_language_ids, 'Content language'
           %td
-            = hidden_field :item, :content_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+            = hidden_field_tag :content_language_ids, params[:content_language_ids].try(:join, ','), :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
         %tr
           %th= label_tag :dialect
@@ -128,19 +128,20 @@
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td= collection_select :item, :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, params[:university_id]), :include_blank => true, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+
 
         %tr
           %th= label_tag :operator_id
-          %td= hidden_field_tag :item, :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+          %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
           %th= label_tag :discourse_type_id
-          %td= collection_select :item, :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+          %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
 
         %tr
-          %th= label_tag :agent_id, 'Roles'
-          %td TODO(John : another multiple values field)
+          %th= label_tag :agent_id, 'Agents'
+          %td= hidden_field_tag :agent_ids, params[:agent_ids].try(:join, ','), :data => {:placeholder => 'Choose an agent...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#agent_ids', :multiple => true}, :class => 'select2'
 
   .twoup-2
     %fieldset
@@ -220,11 +221,11 @@
       %table.form
         %tr
           %th= label_tag :admin_ids, 'Edit access'
-          %td TODO (John - fix "multiple" search fields)
+          %td= hidden_field_tag :admin_ids, params[:admin_ids].try(:join, ','), :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
-          %td= collection_select :item, :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
+          %td= select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, params[:access_condition_id]), :include_blank => true, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'

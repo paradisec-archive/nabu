@@ -43,10 +43,16 @@ class Collection < ActiveRecord::Base
 
   paginates_per 10
 
-  delegate :name, :to => :university, :prefix => true, :allow_nil => true
-  delegate :name, :to => :collector, :prefix => true, :allow_nil => true
-  delegate :name, :to => :operator, :prefix => true, :allow_nil => true
-  delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
+  delegate :name, :to => :university,        :prefix => true, :allow_nil => true
+  delegate :name, :to => :collector,         :prefix => true, :allow_nil => true
+  delegate :name, :to => :operator,          :prefix => true, :allow_nil => true
+  delegate :name, :to => :access_condition,  :prefix => true, :allow_nil => true
+  delegate :name, :to => :funding_body,      :prefix => true, :allow_nil => true
+  delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
+
+  def full_grant_identifier
+    "#{funding_body.key_prefix if funding_body}#{grant_identifier}"
+  end
 
   def self.sortable_columns
     %w{identifier title university_name collector_name created_at}
@@ -63,11 +69,11 @@ class Collection < ActiveRecord::Base
     text :operator_name
     text :access_condition_name
     text :field_of_research do
-      field_of_research.name
+      field_of_research_name
     end
     text :grant_identifier
     text :funding_body do
-      funding_body.name
+      funding_body_name
     end
     text :languages do
       languages.map(&:name)
@@ -82,10 +88,15 @@ class Collection < ActiveRecord::Base
     text :comments
     text :tape_location
 
-    # Link models for faceting
-    integer :collector_id, :references => User
+    # Link models for faceting or dropdowns
     integer :language_ids, :references => Language, :multiple => true
+    integer :collector_id, :references => User
+    integer :operator_id, :references => User
     integer :country_ids, :references => Country, :multiple => true
+    integer :university_id, :references => University
+    integer :field_of_research_id, :references => FieldOfResearch
+    integer :funding_body_id, :references => FundingBody
+    integer :admin_ids, :references => User, :multiple => true
 
     # Things we want to sort or use :with on
     integer :id

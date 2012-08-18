@@ -38,11 +38,7 @@
         %tapeLocation= h(@collection.tape_location)
         %fieldOfResearch= h(@collection.field_of_research.name_with_identifier)
         %fundingBody= h(@collection.funding_body.name) if @collection.funding_body
-        %grantIdentifier
-          -if @collection.funding_body
-            = h(@collection.funding_body.key_prefix + @collection.grant_identifier)
-          -else
-            = h(@collection.grant_identifier)
+        %grantIdentifier= h(@collection.full_grant_identifier)
       %items{:numItems => @num_items, :readyForExport => @num_items_ready}
         - @collection.items.each do |item|
           %item{:numComments => item.comments.length, :numFiles => item.essences.length}
@@ -116,8 +112,3 @@
                   %author= h(comment.owner.name)
                   %description= h(comment.body)
                   %createdAt= comment.created_at
-
-            
-            
-      
-      
