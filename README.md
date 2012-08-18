@@ -69,6 +69,17 @@ testing:
   $ gem install localtunnel
   $ rbenv rehash
   $ localtunnel 3000
-  use resulting server on OAI repository explorer:
-  http://re.cs.uct.ac.za/
 
+  use resulting server on an OAI repository explorer:
+  * http://www.language-archives.org/register/register.php (OLAC)
+  * http://re.cs.uct.ac.za/
+  * http://validator.oaipmh.com/ (OAI-PMH validator)
+  * http://oval.base-search.net/ (OAI-PMH validator)
+  * http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp (test protocol)
+
+  URLs to test:
+  http://localhost:3000/oai/collection?verb=Identify
+  http://localhost:3000/oai/collection?verb=ListMetadataFormats
+  http://localhost:3000/oai/collection?verb=ListSets
+  http://localhost:3000/oai/collection?verb=ListIdentifiers
+  http://localhost:3000/oai/collection?verb=ListRecords
