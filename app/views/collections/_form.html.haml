@@ -25,6 +25,9 @@
           = f.label :title
           %br
           %i (published)
+          - if params[:action] == 'bulk_edit'
+            %small Append
+            = f.check_box :bulk_edit_append_title
         %td= f.text_field :title, {:placeholder => "Please enter a title"}
 
       %tr
@@ -32,6 +35,9 @@
           = f.label :description
           %br
           %i (published)
+          - if params[:action] == 'bulk_edit'
+            %small Append
+            = f.check_box :bulk_edit_append_description
         %td= f.text_area :description, :rows => 5
 
       %tr
@@ -68,7 +74,12 @@
           = f.hidden_field :language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
       %tr
-        %th= f.label :region, 'Region / village'
+        %th
+          = f.label :region, 'Region / village'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_region
         %td= f.text_field :region
 
       %tr
@@ -108,7 +119,12 @@
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
 
       %tr
-        %th= f.label :access_narrative, 'Data access details'
+        %th
+          = f.label :access_narrative, 'Data access details'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_access_narrative
         %td= f.text_area :access_narrative, :rows => 5
 
 
@@ -122,19 +138,39 @@
     %legend Depositing Information
     %table.form
       %tr
-        %th= f.label :metadata_source
+        %th
+          = f.label :metadata_source
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_metadata_source
         %td= f.text_field :metadata_source
 
       %tr
-        %th= f.label :orthographic_notes
+        %th
+          = f.label :orthographic_notes
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_orthographic_notes
         %td= f.text_area :orthographic_notes, :rows => 5
 
       %tr
-        %th= f.label :media
+        %th
+          = f.label :media
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_media
         %td= f.text_field :media
 
       %tr
-        %th= f.label :comments
+        %th
+          = f.label :comments
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_comments
         %td= f.text_area :comments, :rows => 5
 
   %fieldset
@@ -145,7 +181,12 @@
         %td= f.check_box :deposit_form_received
 
       %tr
-        %th= f.label :tape_location
+        %th
+          = f.label :tape_location
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_tape_location
         %td= f.text_area :tape_location, :rows => 5
 
       %tr
@@ -157,5 +198,10 @@
         %td= f.collection_select :funding_body_id, FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
 
       %tr
-        %th= f.label :grant_identifier
+        %th
+          = f.label :grant_identifier
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_grant_identifier
         %td= f.text_field :grant_identifier

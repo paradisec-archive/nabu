@@ -25,6 +25,10 @@
           = f.label :title
           %br
           %i (published)
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_title
         %td= f.text_field :title, {:placeholder => "Please enter a title"}
 
       %tr
@@ -32,6 +36,10 @@
           = f.label :description
           %br
           %i (published)
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_description
         %td= f.text_area :description, :rows => 5
 
       %tr
@@ -39,7 +47,12 @@
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
-        %th= f.label :originated_on_narrative, 'Origination date free form'
+        %th
+          = f.label :originated_on_narrative, 'Origination date free form'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_originated_on_narrative
         %td= f.text_field :originated_on_narrative
 
       %tr
@@ -49,7 +62,12 @@
           = f.label :owned, 'Item held by Paradisec'
 
       %tr
-        %th= f.label :url, 'URL'
+        %th
+          = f.label :url, 'URL'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_url
         %td= f.text_field :url
 
       %tr
@@ -66,7 +84,12 @@
         %td= f.hidden_field :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
       %tr
-        %th= f.label :language, 'Language as given'
+        %th
+          = f.label :language, 'Language as given'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_language
         %td= f.text_field :language
 
       %tr
@@ -92,11 +115,21 @@
           = link_to 'Copy from Subject language', '#', :id => 'copy-content-language'
 
       %tr
-        %th= f.label :dialect
+        %th
+          = f.label :dialect
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_dialect
         %td= f.text_field :dialect
 
       %tr
-        %th= f.label :region, 'Region / village'
+        %th
+          = f.label :region, 'Region / village'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_region
         %td= f.text_field :region
 
       %tr
@@ -173,7 +206,12 @@
           = f.check_box :tapes_returned
           Tapes returned to depositor
       %tr
-        %th Original media
+        %th
+          = f.label :original_media
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_original_media
         %td= f.text_field :original_media
 
       %tr
@@ -185,19 +223,29 @@
         %td= f.text_field :digitised_on, :class => 'dateinput short', :value => params[:digitised_on] || @item.digitised_on && @item.digitised_on.strftime('%d %B %Y')
 
       %tr
-        %th Ingest notes
+        %th
+          = f.label :ingest_notes
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_ingest_notes
         %td= f.text_area :ingest_notes, :rows => 5
 
       %tr
-        %th Metadata imported
+        %th= f.label :metadata_imported_on, 'Metadata imported'
         %td= f.text_field :metadata_imported_on, :class => 'dateinput short', :value => params[:metadata_imported_on] || @item.metadata_imported_on && @item.metadata_imported_on.strftime('%d %B %Y')
 
       %tr
-        %th Metadata exported
+        %th= f.label :metadata_exported_on, 'Metadata exported'
         %td= f.text_field :metadata_exported_on, :class => 'dateinput short', :value => params[:metadata_exported_on] || @item.metadata_exported_on && @item.metadata_exported_on.strftime('%d %B %Y')
 
       %tr
-        %th Tracking
+        %th
+          = f.label :tracking
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_tracking
         %td= f.text_field :tracking
 
 
@@ -218,9 +266,19 @@
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 
       %tr
-        %th= f.label :access_narrative, 'Data access details'
+        %th
+          = f.label :access_narrative, 'Data access details'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_access_narrative
         %td= f.text_area :access_narrative, :rows => 5
 
       %tr
-        %th= f.label :admin_comment, 'Comments'
+        %th
+          = f.label :admin_comment, 'Comments'
+          - if params[:action] == 'bulk_edit'
+            %br
+            %small Append
+            = f.check_box :bulk_edit_append_admin_comments
         %td= f.text_area :admin_comment, :rows => 5

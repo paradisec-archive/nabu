@@ -86,7 +86,7 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    @items = current_user.items.find params[:item_ids].split(' ')
+    @items = Item.accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
     update_params = params[:item].delete_if {|k, v| v.blank?}
 
@@ -94,7 +94,7 @@ class ItemsController < ApplicationController
     appendable = {}
     params[:item].each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
-        appendable[$1] = params[:item].delete $1
+        appendable[$1] = params[:item].delete $1 if v == "1"
         params[:item].delete k
       end
     end
@@ -102,7 +102,7 @@ class ItemsController < ApplicationController
     invalid_record = false
     @items.each do |item|
       appendable.each_pair do |k, v|
-        params[:item][k.to_sym] = item.send(k) + v
+        params[:item][k.to_sym] = item.send(k) + v unless v.blank?
       end
       unless item.update_attributes(params[:item])
         invalid_record = true
@@ -111,6 +111,11 @@ class ItemsController < ApplicationController
       end
       # save updated item info to xml file
       save_item_catalog_file(@item)
+    end
+
+    appendable.each_pair do |k, v|
+      params[:item][k.to_sym] = nil
+      params[:item]["bulk_edit_append_#{k}"] = v
     end
 
     if invalid_record

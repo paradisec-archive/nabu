@@ -29,7 +29,14 @@ class Collection < ActiveRecord::Base
   validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
   validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}, :allow_nil => true
 
-  attr_reader :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
+  bulk = [
+    :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
+    :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
+    :bulk_edit_append_orthographic_notes, :bulk_edit_append_media, :bulk_edit_append_comments,
+    :bulk_edit_append_tape_location, :bulk_edit_append_grant_identifier,
+    :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
+  ]
+  attr_reader *bulk
 
   attr_accessible :identifier, :title, :description, :region,
                   :latitude, :longitude, :zoom,
@@ -39,7 +46,7 @@ class Collection < ActiveRecord::Base
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
                   :complete, :private, :tape_location, :deposit_form_received,
-                  :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
+                  *bulk
 
   paginates_per 10
 
