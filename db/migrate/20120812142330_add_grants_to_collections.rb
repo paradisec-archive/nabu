@@ -12,5 +12,5 @@ class AddGrantsToCollections < ActiveRecord::Migration
       t.belongs_to :funding_body
     end
   end
-  
+
 end

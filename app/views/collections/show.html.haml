@@ -155,7 +155,7 @@
 
         %tr
           %th Grant identifier
-          %td= h("#{@collection.funding_body.key_prefix}#{@collection.grant_identifier}").gsub(/\n/, '<br/>').html_safe
+          %td= h(@collection.full_grant_identifier).gsub(/\n/, '<br/>').html_safe
 
         %tr
           %th #Items in collections

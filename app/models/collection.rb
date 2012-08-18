@@ -50,6 +50,10 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :funding_body,      :prefix => true, :allow_nil => true
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
+  def full_grant_identifier
+    "#{funding_body.key_prefix if funding_body}#{grant_identifier}"
+  end
+
   def self.sortable_columns
     %w{identifier title university_name collector_name created_at}
   end
