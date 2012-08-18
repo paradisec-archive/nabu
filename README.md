@@ -60,8 +60,8 @@ upload DB:
 OLAC available at:
  http://catalog.paradisec.org.au/oai/item
 
-RIF-CS available ta:
-  http://catalog.paradisec.org.au/oai/catalog
+RIF-CS available at:
+  http://catalog.paradisec.org.au/oai/collection
 
 testing:
   install localtunnel to port forward your local webserver
