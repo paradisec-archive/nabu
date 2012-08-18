@@ -102,7 +102,7 @@ class ItemsController < ApplicationController
     invalid_record = false
     @items.each do |item|
       appendable.each_pair do |k, v|
-        params[:item][k.to_sym] = item.send(k) + (v || [])
+        params[:item][k.to_sym] = item.send(k) + v unless v.blank?
       end
       unless item.update_attributes(params[:item])
         invalid_record = true
