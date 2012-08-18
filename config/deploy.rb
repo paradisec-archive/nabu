@@ -26,19 +26,19 @@ set :shared_children, fetch(:shared_children) + ['tmp/sockets']
 
 namespace :sunspot do
   task :symlink, :except => { :no_release => true } do
-    rails_env = fetch(:rails_env, 'production')
+    #rails_env = fetch(:rails_env, 'production')
     run "ln -nfs #{shared_path}/solr/data #{release_path}/solr/data"
     run "ln -nfs #{shared_path}/solr/pids #{release_path}/solr/pids"
   end
 
   desc 'Start solr'
   task :start do
-    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:start RAILS_ENV=production"
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:start RAILS_ENV=#{rails_env}"
   end
 
   desc 'Stop solr'
   task :stop do
-    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=production || true"
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=#{rails_env} || true"
   end
 
   desc 'Restart solr'
