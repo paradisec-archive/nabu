@@ -22,6 +22,8 @@ set :ssh_options, {
 
 set :default_shell, "/bin/bash --login"
 
+set :shared_children, fetch(:shared_children) + ['sockets']
+
 namespace :sunspot do
   task :symlink, :except => { :no_release => true } do
     rails_env = fetch(:rails_env, 'production')
