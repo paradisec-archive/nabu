@@ -27,7 +27,7 @@ namespace :sunspot do
     run "ln -nfs #{shared_path}/solr/data #{release_path}/solr/data"
     run "ln -nfs #{shared_path}/pids #{release_path}/solr/pids"
   end
-  after 'deploy:symlink', 'sunspot:symlink'
+  after 'deploy:create_symlink', 'sunspot:symlink'
 
   desc 'Start solr'
   task :start do
