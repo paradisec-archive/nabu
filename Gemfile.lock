@@ -207,6 +207,8 @@ GEM
     progress_bar (0.4.0)
       highline (~> 1.6.1)
       options (~> 2.3.0)
+    quiet_assets (1.0.1)
+      railties (~> 3.1)
     rack (1.4.1)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -343,6 +345,7 @@ DEPENDENCIES
   paper_trail (~> 2)
   pickle
   progress_bar
+  quiet_assets
   rails (= 3.2.8)
   rspec-rails
   ruby-filemagic
