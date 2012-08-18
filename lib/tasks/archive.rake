@@ -136,7 +136,8 @@ namespace :archive do
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+# TODO: uncomment when going into production & remove essences import code
+#          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
 
