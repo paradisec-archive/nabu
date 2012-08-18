@@ -5,3 +5,4 @@ role :db,  'catalog.paradisec.org.au', :primary => true # This is where Rails mi
 set :rails_env,   'staging'
 set :unicorn_env, 'staging'
 set :app_env,     'staging'
+set :bundle_without, [:test]
