@@ -18,8 +18,11 @@ production: &PRODUCTION
   database: nabu
   user: root
 
-staging: &PRODUCTION
-uat: &PRODUCTION
+staging:
+  <<: *PRODUCTION
+
+uat:
+  <<: *PRODUCTION
 
 test: &test
   <<: *COMMON
