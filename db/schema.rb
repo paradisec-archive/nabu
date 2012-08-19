@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120813112341) do
+ActiveRecord::Schema.define(:version => 20120819120641) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -235,6 +235,10 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.string  "code"
     t.string  "name"
     t.boolean "retired"
+    t.float   "north_limit"
+    t.float   "south_limit"
+    t.float   "west_limit"
+    t.float   "east_limit"
   end
 
   create_table "universities", :force => true do |t|
