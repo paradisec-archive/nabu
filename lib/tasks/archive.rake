@@ -68,7 +68,7 @@ namespace :archive do
       data = template.render_to_string :template => "items/show.#{type}.xml"
 
       metadata_filename = directory + basename + render_extension
-      metadata_file = File.open(metadata_filename, 'w') {|f| f.write(data)}
+      File.open(metadata_filename, 'w') {|f| f.write(data)}
       puts "SUCCESS: metadata file #{metadata_filename} created for #{file}"
     end
   end

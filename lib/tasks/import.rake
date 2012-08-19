@@ -455,7 +455,7 @@ namespace :import do
       field = FieldOfResearch.new :identifier => id, :name => name
       if !field.valid?
         puts "Error adding field of research #{id}, #{name}"
-        field.errors.each {|field, msg| puts "#{field}: #{msg}"}        
+        field.errors.each {|f, msg| puts "#{f}: #{msg}"}
         if Rails.env == "development"
           next
         end
@@ -1065,13 +1065,13 @@ namespace :import do
 
       mimetype = essence['file_type']
       next if mimetype =~ /~/
-      mimetype.sub! /^(wav|mp3|eaf)$/, 'audio/\1'
-      mimetype.sub! /^(jpg|tif|img)$/, 'image/\1'
-      mimetype.sub! /^(mov|mpg|mp4|dv)$/, 'video/\1'
-      mimetype.sub! /^(pdf|mxf|gpk|lex|lng|typ|cha)$/, 'application/\1'
-      mimetype.sub! /^(rtf|xml|trs)$/, 'text/\1'
-      mimetype.sub! /^(txt)$/, 'text/plain'
-      mimetype.sub! /^(001)$/, 'audio/eaf'
+      mimetype.sub!(/^(wav|mp3|eaf)$/, 'audio/\1')
+      mimetype.sub!(/^(jpg|tif|img)$/, 'image/\1')
+      mimetype.sub!(/^(mov|mpg|mp4|dv)$/, 'video/\1')
+      mimetype.sub!(/^(pdf|mxf|gpk|lex|lng|typ|cha)$/, 'application/\1')
+      mimetype.sub!(/^(rtf|xml|trs)$/, 'text/\1')
+      mimetype.sub!(/^(txt)$/, 'text/plain')
+      mimetype.sub!(/^(001)$/, 'audio/eaf')
 
       essence['file_bitrate'] = nil if essence['file_bitrate'] == 0
       essence['file_trackcount'] = nil if essence['file_trackcount'] == 0
