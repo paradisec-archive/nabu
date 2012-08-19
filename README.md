@@ -88,5 +88,8 @@ testing:
   http://localhost:3000/oai/collection?verb=ListIdentifiers
   http://localhost:3000/oai/collection?verb=ListRecords
 
+  The feed that ANDS harvests:
+  http://localhost:3000/oai/collection?verb=ListRecords&metadataPrefix=rif
+
   Test at ANDS:
   https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au
