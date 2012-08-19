@@ -202,7 +202,7 @@ class Collection < ActiveRecord::Base
         xml.tag! 'relatedObject' do
           xml.tag! 'key', collector.full_path
           xml.tag! 'relation', 'type' => 'hasCollector' do
-            xml.description! 'Collector'
+            xml.tag! 'description', 'Collector'
             xml.tag! 'url'
           end
         end
