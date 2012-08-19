@@ -178,7 +178,7 @@ class Collection < ActiveRecord::Base
         xml.tag! 'key', full_path
         xml.tag! 'originatingSource', 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
 
-        xml.tag! 'collection', 'type' => 'collection', 'dateModified' => updated_at do
+        xml.tag! 'collection', 'type' => 'collection', 'dateModified' => updated_at.xmlschema do
 
           xml.tag! 'name', 'type' => 'primary' do
             xml.tag! 'namePart', title
@@ -243,8 +243,8 @@ class Collection < ActiveRecord::Base
             xml.tag! 'spatial', "northlimit=#{latitude}; southlimit=#{longitude}; westlimit=#{latitude}; eastLimit=#{longitude};", 'type' => 'iso19139dcmiBox'
 
             xml.tag! 'temporal' do
-              xml.tag! 'date', items.map(&:originated_on).compact.min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
-              xml.tag! 'date', items.map(&:originated_on).compact.max, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+              xml.tag! 'date', items.map(&:originated_on).compact.min.try(:xmlschema), 'type' => 'dateFrom', 'dateFormat' => 'UTC'
+              xml.tag! 'date', items.map(&:originated_on).compact.max.try(:xmlschema), 'type' => 'dateTo', 'dateFormat' => 'UTC'
             end
           end
 
