@@ -242,8 +242,10 @@ class Collection < ActiveRecord::Base
             # FIXME: geographic coordinates not correct
             xml.tag! 'spatial', 'type' => 'iso19139dcmiBox', 'northlimit' => latitude, 'southlimit' => longitude, 'westlimit' => latitude, 'eastLimit' => longitude
 
-            xml.tag! 'temporal', items.map(&:originated_on).compact.min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
-            xml.tag! 'temporal', items.map(&:originated_on).compact.max, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+            xml.tag! 'temporal' do
+              xml.tag! 'date', items.map(&:originated_on).compact.min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
+              xml.tag! 'date', items.map(&:originated_on).compact.max, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+            end
           end
 
           xml.tag! 'citationInfo' do
