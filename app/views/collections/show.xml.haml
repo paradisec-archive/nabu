@@ -72,9 +72,8 @@
             %discourseType= h(item.discourse_type_name)
             %agents
               - item.item_agents.each do |item_agent|
-                %agent
-                  %name= h(item_agent.user.name)
-                  %role= h(item_agent.agent_role.name)
+                %agent{:role => h(item_agent.agent_role.name)}
+                  = h(item_agent.user.name)
             %citation= CGI.escapeHTML(strip_tags(item.citation))
             %files{:numFiles => item.essences.length}
               - item.essences.each do |essence|

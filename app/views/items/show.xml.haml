@@ -32,9 +32,8 @@
       %discourseType= @item.discourse_type_name
       %agents
         - @item.item_agents.each do |item_agent|
-          %agent
-            %name= item_agent.user.name
-            %role= item_agent.agent_role.name
+          %agent{:role => h(item_agent.agent_role.name)}
+            = h(item_agent.user.name)
       %citation= strip_tags(@item.citation)
       %files{:numFiles => @item.essences.length}
         - @item.essences.each do |essence|
