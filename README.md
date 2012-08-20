@@ -50,6 +50,9 @@ roll out to production server:
  cap staging deploy
  cap production deploy
 
+if necessary:
+ cap production deploy:migrate
+
 upload DB:
  mysqldump -u root nabu_devel | gzip > nabu.sql.gz
  scp nabu.sql.gz deploy@115.146.93.26:
