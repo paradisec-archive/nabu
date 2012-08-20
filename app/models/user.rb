@@ -64,4 +64,7 @@ class User < ActiveRecord::Base
     "http://catalog.paradisec.org.au/admin/users/#{id}"
   end
 
+  def xml_key
+    "paradisec.org.au/user/#{id}"
+  end
 end

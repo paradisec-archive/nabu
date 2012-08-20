@@ -86,6 +86,10 @@ class Item < ActiveRecord::Base
     "http://catalog.paradisec.org.au/items/#{full_identifier}"
   end
 
+  def xml_key
+    "paradisec.org.au/item/#{full_identifier}"
+  end
+
   def essence_types
     essences.map(&:type).uniq
   end

@@ -148,6 +148,10 @@ class Collection < ActiveRecord::Base
     "http://catalog.paradisec.org.au/collections/#{identifier}"
   end
 
+  def xml_key
+    "paradisec.org.au/collection/#{identifier}"
+  end
+
   def citation
     cite = ""
     if collector
@@ -173,88 +177,136 @@ class Collection < ActiveRecord::Base
   # OAI-MPH mappings for RIF-CS
   def to_rif
     xml = ::Builder::XmlMarkup.new
-    xml.tag! 'registryObjects', OAI::Provider::Metadata::Rif.instance.header_specification do
-      xml.tag! 'registryObject', 'group' => 'PARADISEC' do
-        xml.tag! 'key', full_path
-        xml.tag! 'originatingSource', 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
+    xml.registryObjects OAI::Provider::Metadata::Rif.instance.header_specification do
+      xml.registryObject 'group' => 'PARADISEC' do
+        xml.key xml_key
+        xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
 
-        xml.tag! 'collection', 'type' => 'collection', 'dateModified' => updated_at.xmlschema do
-
-          xml.tag! 'name', 'type' => 'primary' do
-            xml.tag! 'namePart', title
+        xml.party 'type' => 'person', 'dateModified' => updated_at.xmlschema do
+          xml.identifier collector.xml_key, 'type' => 'local'
+          xml.name 'type' => 'primary' do
+            xml.namePart collector.first_name, 'type' => 'given'
+            xml.namePart collector.last_name, 'type' => 'family'
           end
-          xml.tag! 'description', description, 'type' => 'brief'
-          xml.tag! 'rights' do
-            xml.tag! 'accessRights', access_condition_name
-          end
-          xml.tag! 'identifier', full_path, 'type' => 'uri'
-          xml.tag! 'location' do
-            xml.tag! 'address' do
-              xml.tag! 'electronic', 'type' => 'url' do
-                xml.tag! 'value', full_path
+          xml.location do
+            xml.address do
+              xml.electronic 'type' => 'url' do
+                xml.value collector.full_path
               end
-              xml.tag! 'physical', 'type' => 'postalAddress' do
-                xml.tag! 'addressPart', 'PARADISEC Sydney, Department of Linguistics, second floor Transient Building F12, Fisher Road, The University of Sydney, Camperdown Campus, NSW 2006, AUSTRALIA, Phone: +61 2 9351 2002', 'type' => 'text'
+              xml.physical 'type' => 'postalAddress' do
+                xml.addressPart collector.name + ' c/o PARADISEC, Department of Linguistics, The University of Sydney', 'type' => 'text'
+              end
+            end
+          end
+          xml.relatedObject do
+            xml.key collector.xml_key
+            xml.relation 'type' => 'isCollector'
+          end
+        end
+
+        if university
+          xml.party 'type' => 'group', 'dateModified' => updated_at.xmlschema do
+            xml.identifier university.xml_key, 'type' => 'local'
+            xml.name 'type' => 'primary' do
+              xml.namePart university.name, 'type' => 'primary'
+            end
+            xml.location do
+              xml.address do
+                xml.electronic 'type' => 'url' do
+                  xml.value university.full_path
+                end
+                xml.physical 'type' => 'streetAddress' do
+                  xml.addressPart university.name, 'type' => 'locationDescriptor'
+                end
+              end
+            end
+            xml.relatedObject do
+              xml.key xml_key
+              xml.relation 'type' => 'isCollectorOf'
+            end
+          end
+        end
+
+        xml.collection 'type' => 'collection', 'dateModified' => updated_at.xmlschema do
+          xml.name 'type' => 'primary' do
+            xml.namePart title
+          end
+          xml.description description, 'type' => 'brief'
+          xml.rights do
+            xml.accessRights access_condition_name
+          end
+          xml.identifier xml_key, 'type' => 'uri'
+          xml.location do
+            xml.address do
+              xml.electronic 'type' => 'url' do
+                xml.value full_path
+              end
+              xml.physical 'type' => 'postalAddress' do
+                xml.addressPart 'PARADISEC Sydney, Department of Linguistics, second floor Transient Building F12, Fisher Road, The University of Sydney, Camperdown Campus, NSW 2006, AUSTRALIA, Phone: +61 2 9351 2002', 'type' => 'text'
               end
             end
           end
 
-          xml.tag! 'relatedObject' do
-            xml.tag! 'key', collector.full_path
-            xml.tag! 'relation', 'type' => 'hasCollector' do
-              xml.tag! 'description', 'Collector'
-              xml.tag! 'url'
+          xml.relatedObject do
+            xml.key collector.xml_key
+            xml.relation 'type' => 'hasCollector' do
+              xml.url collector.full_path
             end
           end
 
-          xml.tag! 'relatedObject' do
-            xml.tag! 'key', 'paradisec.org.au'
-            xml.tag! 'relation', 'type' => 'isManagedBy' do
-              xml.tag! 'url'
+          xml.relatedObject do
+            xml.key 'paradisec.org.au'
+            xml.relation 'type' => 'isManagedBy' do
+              xml.url 'http://catalog.paradisec.org.au'
             end
           end
 
           if university
-            xml.tag! 'relatedObject' do
-              if university.party_identifier
-                xml.tag! 'key', university.party_identifier
-              else
-                xml.tag! 'key', university.full_path
-              end
-              xml.tag! 'relation', 'type' => 'isOutputOf' do
-                xml.tag! 'description', university.name
-                xml.tag! 'url', university.full_path
+            xml.relatedObject do
+              xml.key university.xml_key
+              xml.relation 'type' => 'isOutputOf' do
+                xml.url university.full_path
               end
             end
           end
 
           languages.each do |language|
-            xml.tag! 'subject', language.name, 'type' => 'local'
-            xml.tag! 'subject', language.code, 'type' => 'iso639-3'
+            xml.subject language.name, 'type' => 'local'
+            xml.subject language.code, 'type' => 'iso639-3'
           end
 
-          xml.tag! 'coverage' do
+          xml.coverage do
             countries.each do |country|
-              xml.tag! 'spatial', country.name, 'type' => 'text'
-              xml.tag! 'spatial', country.code, 'type' => 'iso31661'
+              xml.spatial country.name, 'type' => 'text'
+              xml.spatial country.code, 'type' => 'iso31661'
             end
 
             # FIXME: geographic coordinates not correct
-            xml.tag! 'spatial', "northlimit=#{latitude}; southlimit=#{longitude}; westlimit=#{latitude}; eastLimit=#{longitude};", 'type' => 'iso19139dcmiBox'
+            if latitude != 0 || longitude != 0
+              xml.spatial "northlimit=#{latitude}; southlimit=#{longitude}; westlimit=#{latitude}; eastLimit=#{longitude};", 'type' => 'iso19139dcmiBox'
+            end
 
-            xml.tag! 'temporal' do
-              xml.tag! 'date', items.map(&:originated_on).compact.min.try(:xmlschema), 'type' => 'dateFrom', 'dateFormat' => 'UTC'
-              xml.tag! 'date', items.map(&:originated_on).compact.max.try(:xmlschema), 'type' => 'dateTo', 'dateFormat' => 'UTC'
+            unless items.map(&:originated_on).compact.empty?
+              xml.temporal do
+                if items.map(&:originated_on).compact.min
+                  xml.date items.map(&:originated_on).compact.min.xmlschema, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
+                end
+                if items.map(&:originated_on).compact.max
+                  xml.date items.map(&:originated_on).compact.max.xmlschema, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+                end
+              end
             end
           end
 
-          xml.tag! 'citationInfo' do
-            xml.tag! 'fullCitation', citation, 'style' => 'APA'
+          xml.citationInfo do
+            xml.fullCitation citation, 'style' => 'APA'
           end
 
-          xml.tag! 'relatedInfo', 'type' => 'website' do
-            xml.tag! 'identifier', "http://www.ethnologue.com/show_language.asp?code=#{languages.first.try(:code)}", 'type' => 'uri'
-            xml.tag! 'title', "Ethnologue entry for #{languages.first.try(:name)}"
+          languages.each do |language|
+            xml.relatedInfo 'type' => 'website' do
+              xml.identifier "http://www.ethnologue.com/show_language.asp?code=#{language.code}", 'type' => 'uri'
+              xml.title "Ethnologue entry for #{language.name}"
+            end
           end
         end
       end

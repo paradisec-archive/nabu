@@ -10,4 +10,8 @@ class University < ActiveRecord::Base
     # FIX ME
     "http://catalog.paradisec.org.au/admin/universities/#{id}"
   end
+
+  def xml_key
+    "paradisec.org.au/university/#{id}"
+  end
 end
