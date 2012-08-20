@@ -60,20 +60,8 @@
         %td= @collection.region
 
       %tr
-        %th Latitude
-        %td= @collection.latitude
-
-      %tr
-        %th Longitude
-        %td= @collection.longitude
-
-      %tr
-        %th Zoom
-        %td= @collection.zoom
-
-      %tr
         %td.empty{:colspan => 2}
-          .map{:data => {:latitude => @collection.latitude, :longitude => @collection.longitude, :zoom => @collection.zoom, :static => true}}
+          .map{:data => {:south_limit => @collection.south_limit, :north_limit => @collection.north_limit, :west_limit => @collection.west_limit, :east_limit => @collection.east_limit, :static => true}}
 
 
   - if can? :manage, @collection

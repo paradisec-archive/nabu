@@ -18,28 +18,38 @@ $(document).ready ->
       false
 
     $('.map').each (index, element) ->
-      latitude  = $(element).data('latitude') || 0
-      longitude = $(element).data('longitude') || 0
-      zoom      = $(element).data('zoom') || 1
-      editable  = $(element).data('editable')
+      north_limit = $(element).data('north_limit') || 90
+      south_limit = $(element).data('south_limit') || -90
+      west_limit = $(element).data('west_limit') || -180
+      east_limit = $(element).data('east_limit') || 180
+      if $(element).data('editable')
+        editable = true
+      else
+        editable = false
 
-      lat_long  = new google.maps.LatLng(latitude, longitude)
+      sw  = new google.maps.LatLng(south_limit, west_limit)
+      ne  = new google.maps.LatLng(north_limit, east_limit)
+      bounds = new google.maps.LatLngBounds(sw, ne)
+
       options = {
-        center:    lat_long,
-        zoom:      zoom,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,
+        scrollwheel: false,
+        zoomControl: true,
+        draggable: true,
+        disableDoubleClickZoom: false,
       }
 
-      if editable
-        options['zoomControl'] = true
-      else
-        options['draggable'] = false
-        options['scrollwheel'] = false
-        options['disableDoubleClickZoom'] = true
-
-
       map = new google.maps.Map(element, options)
+      map.fitBounds(bounds)
+
+      rect = new google.maps.Rectangle({
+        bounds: bounds,
+        editable: editable,
+        map: map
+        # TODO Add colors etc
+      })
+
       $(element).data('map', map)
 
       google.maps.event.addListener map, 'center_changed', ->

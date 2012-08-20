@@ -1,6 +1,6 @@
 namespace :import do
-  
-  @verbose = true
+
+  @verbose = false
 
   desc 'Setup database from old PARADISEC data & other imports'
   task :all => [:setup, :import, :clean]
@@ -336,32 +336,6 @@ namespace :import do
 
 
   ## FOR COLLECTIONS
-
-  def convert_coords(xmax, xmin, ymax, ymin)
-    if (xmax == 0 && xmin == 0 && ymax == 0 && ymin == 0 )
-      longitude = 0
-      latitude = 0
-      zoom = 1
-    elsif xmax==xmin || ymax==ymin
-      longitude = xmin.to_i
-      latitude = ymin.to_i
-      zoom = 11 # see below
-    elsif (xmax && xmin && ymax && ymin)
-      longitude = (xmax + xmin) / 2.0
-      latitude = (ymax + ymin) / 2.0
-      # copied from:
-      # http://stackoverflow.com/questions/5939983/how-does-this-google-maps-zoom-level-calculation-work
-      mapdisplay = 200; # min of height and width of element which contains the map
-      dist = (6371 * Math.acos(Math.sin(ymin / 57.2958) * Math.sin(ymax / 57.2958) + (Math.cos(ymin / 57.2958) * Math.cos(ymax / 57.2958) * Math.cos((xmax / 57.2958) - (xmin / 57.2958)))))
-      zoom = (8 - Math.log(1.6446 * dist / Math.sqrt(2 * (mapdisplay * mapdisplay))) / Math.log(2)).floor
-    else
-      latitude = 0
-      longitude = 0
-      zoom = 1
-    end
-    return [latitude, longitude, zoom]
-  end
-
   desc 'Import universities into NABU from paradisec_legacy DB'
   task :universities => :environment do
     puts "Importing universities from PARADISEC legacy DB"
@@ -406,7 +380,20 @@ namespace :import do
 
   desc 'Import languages into NABU from ethnologue DB'
   task :languages => :environment do
-    puts "Importing languages from ethnologue DB"
+    # TODO Replace me with new data when we get it
+    geo_codes = Hash.new
+    client = connect
+    ethnologues = client.query('SELECT * FROM ethnologue16')
+    ethnologues.each do |e|
+      geo_codes[e['eth_code']] = {
+        :north_limit => e['eth_ymax'],
+        :south_limit => e['eth_ymin'],
+        :west_limit  => e['eth_xmin'],
+        :east_limit  => e['eth_xmax'],
+      }
+    end
+
+    puts "Importing languages from ethnologue DB (with geocodes from legacy)"
     require 'iconv'
     data = File.open("#{Rails.root}/data/LanguageIndex.tab", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
@@ -418,7 +405,9 @@ namespace :import do
       # save language if new
       language = Language.find_by_code_and_name(code, name)
       if !language
-        language = Language.new :code => code, :name => name
+        params = { :code => code, :name => name }
+        params.merge!(geo_codes[code]) if (geo_codes[code])
+        language = Language.new params
         if !language.valid?
           puts "Skipping adding language #{code}, #{name} errors: #{language.errors}" if @verbose
           next
@@ -455,7 +444,7 @@ namespace :import do
       field = FieldOfResearch.new :identifier => id, :name => name
       if !field.valid?
         puts "Error adding field of research #{id}, #{name}"
-        field.errors.each {|field, msg| puts "#{field}: #{msg}"}        
+        field.errors.each {|f, msg| puts "#{f}: #{msg}"}
         if Rails.env == "development"
           next
         end
@@ -491,10 +480,6 @@ namespace :import do
       ## get university
       university = University.find_by_name coll['coll_original_uni']
 
-      ## get map coordinates
-      latitude, longitude, zoom = convert_coords(coll['coll_xmax'], coll['coll_xmin'],
-                                                 coll['coll_ymax'], coll['coll_ymin'])
-
       ## get access conditions
       access_cond, narrative = getAccessCond(coll['coll_access_conditions'])
       access_narrative = coll['coll_access_narrative']
@@ -517,9 +502,6 @@ namespace :import do
                                 :title => title,
                                 :description => description,
                                 :region => coll['coll_region_village'],
-                                :latitude => latitude,
-                                :longitude => longitude,
-                                :zoom => zoom.to_i,
                                 :access_narrative => access_narrative,
                                 :metadata_source => coll['coll_metadata_source'],
                                 :orthographic_notes => coll['coll_orthographic_notes'],
@@ -527,7 +509,11 @@ namespace :import do
                                 :comments => coll['coll_comments'],
                                 :deposit_form_received => coll['coll_depform_rcvd'],
                                 :tape_location => coll['coll_location'],
-                                :field_of_research_id => 1
+                                :field_of_research_id => 1,
+                                :north_limit => coll['coll_ymax'],
+                                :south_limit => coll['coll_ymin'],
+                                :west_limit  => coll['coll_xmin'],
+                                :east_limit  => coll['coll_xmax']
 
       ## set collector, operator and university
       new_coll.collector = collector
@@ -748,10 +734,6 @@ namespace :import do
       description = item['item_note']
       description = fixme(item, 'item_note', 'PLEASE PROVIDE DESCRIPTION') if description.blank?
 
-      ## get map coordinates
-      latitude, longitude, zoom = convert_coords(item['item_xmax'], item['item_xmin'],
-                                                 item['item_ymax'], item['item_ymin'])
-
       ## origination date
       originated_on = nil
       originated_on_narrative = nil
@@ -809,9 +791,6 @@ namespace :import do
                           :region => item['item_region_village'],
                           :language => item['item_source_language'],
                           :dialect => item['item_dialect'],
-                          :latitude => latitude,
-                          :longitude => longitude,
-                          :zoom => zoom.to_i,
                           :url => item['item_url'],
                           :owned => item_owned,
                           :admin_comment => item['item_comments'],
@@ -823,7 +802,11 @@ namespace :import do
                           :original_media => item['item_media'],
                           :ingest_notes => item['item_audio_notes'],
                           :tracking => item['item_tracking'],
-                          :access_narrative => narrative
+                          :access_narrative => narrative,
+                          :north_limit => item['item_ymax'],
+                          :south_limit => item['item_ymin'],
+                          :west_limit  => item['item_xmin'],
+                          :east_limit  => item['item_xmax']
 
       ## set collection, collector, operator and university
       new_item.collection = collection
@@ -1065,13 +1048,13 @@ namespace :import do
 
       mimetype = essence['file_type']
       next if mimetype =~ /~/
-      mimetype.sub! /^(wav|mp3|eaf)$/, 'audio/\1'
-      mimetype.sub! /^(jpg|tif|img)$/, 'image/\1'
-      mimetype.sub! /^(mov|mpg|mp4|dv)$/, 'video/\1'
-      mimetype.sub! /^(pdf|mxf|gpk|lex|lng|typ|cha)$/, 'application/\1'
-      mimetype.sub! /^(rtf|xml|trs)$/, 'text/\1'
-      mimetype.sub! /^(txt)$/, 'text/plain'
-      mimetype.sub! /^(001)$/, 'audio/eaf'
+      mimetype.sub!(/^(wav|mp3|eaf)$/, 'audio/\1')
+      mimetype.sub!(/^(jpg|tif|img)$/, 'image/\1')
+      mimetype.sub!(/^(mov|mpg|mp4|dv)$/, 'video/\1')
+      mimetype.sub!(/^(pdf|mxf|gpk|lex|lng|typ|cha)$/, 'application/\1')
+      mimetype.sub!(/^(rtf|xml|trs)$/, 'text/\1')
+      mimetype.sub!(/^(txt)$/, 'text/plain')
+      mimetype.sub!(/^(001)$/, 'audio/eaf')
 
       essence['file_bitrate'] = nil if essence['file_bitrate'] == 0
       essence['file_trackcount'] = nil if essence['file_trackcount'] == 0

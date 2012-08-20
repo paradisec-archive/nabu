@@ -36,9 +36,10 @@ class Item < ActiveRecord::Base
   validates :title, :presence => true
   validates :collector_id, :presence => true
 
-  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}
-  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}
-  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}
+  validates :north_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
+  validates :south_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
+  validates :west_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
+  validates :east_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
 
   bulk = [
     :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
@@ -49,7 +50,7 @@ class Item < ActiveRecord::Base
   ]
   attr_reader *bulk
   attr_accessible :identifier, :title, :owned, :url, :description, :region,
-                  :latitude, :longitude, :zoom,
+                  :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
                   :country_ids,
                   :content_language_ids, :subject_language_ids,
@@ -103,9 +104,10 @@ class Item < ActiveRecord::Base
     self.operator_id ||= collection.operator_id
 
     self.region ||= collection.region
-    self.latitude ||= collection.latitude
-    self.longitude ||= collection.longitude
-    self.zoom ||= collection.zoom
+    self.north_limit ||= collection.north_limit
+    self.south_limit ||= collection.south_limit
+    self.west_limit ||= collection.west_limit
+    self.east_limit ||= collection.east_limit
     self.country_ids = collection.country_ids
     self.subject_language_ids = collection.language_ids
     self.content_language_ids = collection.language_ids
@@ -173,9 +175,10 @@ class Item < ActiveRecord::Base
     end
     boolean :private
     date :originated_on
-    float :latitude
-    float :longitude
-    integer :zoom
+    float :north_limit
+    float :south_limit
+    float :west_limit
+    float :east_limit
     boolean :metadata_exportable
     boolean :born_digital
     boolean :tapes_returned

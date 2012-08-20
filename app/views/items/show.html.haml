@@ -90,20 +90,8 @@
         %td= @item.region
 
       %tr
-        %th Latitude
-        %td= @item.latitude
-
-      %tr
-        %th Longitude
-        %td= @item.longitude
-
-      %tr
-        %th Zoom
-        %td= @item.zoom
-
-      %tr
         %td.empty{:colspan => 2}
-          .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :static => true}}
+          .map{:data => {:south_limit => @item.south_limit, :north_limit => @item.north_limit, :west_limit => @item.west_limit, :east_limit => @item.east_limit, :static => true}}
 
       %tr
         %th Originating university
@@ -165,20 +153,8 @@
               %br
 
         %tr
-          %th Latitude
-          %td= @item.collection.latitude
-
-        %tr
-          %th Longitude
-          %td= @item.collection.longitude
-
-        %tr
-          %th Zoom
-          %td= @item.collection.zoom
-
-        %tr
           %td.empty{:colspan => 2}
-            .map{:data => {:latitude => @item.collection.latitude, :longitude => @item.collection.longitude, :zoom => @item.collection.zoom, :static => true}}
+            .map{:data => {:south_limit => @item.collection.south_limit, :north_limit => @item.collection.north_limit, :west_limit => @item.collection.west_limit, :east_limit => @item.collection.east_limit, :static => true}}
 
 
   .tabs

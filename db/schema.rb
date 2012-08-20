@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120813112341) do
+ActiveRecord::Schema.define(:version => 20120819120641) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -70,9 +70,6 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.integer  "university_id"
     t.integer  "field_of_research_id",  :null => false
     t.string   "region"
-    t.float    "latitude"
-    t.float    "longitude"
-    t.integer  "zoom"
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
     t.integer  "access_condition_id"
@@ -87,6 +84,10 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.boolean  "deposit_form_received"
     t.string   "grant_identifier"
     t.integer  "funding_body_id"
+    t.float    "north_limit"
+    t.float    "south_limit"
+    t.float    "west_limit"
+    t.float    "east_limit"
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
@@ -205,9 +206,6 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.string   "language"
     t.string   "dialect"
     t.string   "region"
-    t.float    "latitude"
-    t.float    "longitude"
-    t.integer  "zoom"
     t.integer  "discourse_type_id"
     t.integer  "access_condition_id"
     t.text     "access_narrative"
@@ -226,6 +224,10 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.text     "admin_comment"
     t.boolean  "owned",                   :default => true
     t.text     "originated_on_narrative"
+    t.float    "north_limit"
+    t.float    "south_limit"
+    t.float    "west_limit"
+    t.float    "east_limit"
   end
 
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
@@ -235,6 +237,10 @@ ActiveRecord::Schema.define(:version => 20120813112341) do
     t.string  "code"
     t.string  "name"
     t.boolean "retired"
+    t.float   "north_limit"
+    t.float   "south_limit"
+    t.float   "west_limit"
+    t.float   "east_limit"
   end
 
   create_table "universities", :force => true do |t|

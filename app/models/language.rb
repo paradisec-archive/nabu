@@ -2,7 +2,7 @@ class Language < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :code, :presence => true, :uniqueness => true
 
-  attr_accessible :name, :code, :retired
+  attr_accessible :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit
 
   default_scope includes(:countries)
   scope :alpha, order(:name)
