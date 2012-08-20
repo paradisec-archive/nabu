@@ -27,7 +27,7 @@
         %td= collection.created_at.to_date
         %td= collection.university_name
         %td
-          .map{:data => {:latitude => collection.latitude, :longitude => collection.longitude, :zoom => collection.zoom}}
+          .map{:data => {:north_limit => collection.north_limit, :south_limit => collection.south_limit, :west_limit => collection.west_limit, :east_limit => collection.east_limit}}
 
         %td
           = link_to 'View', collection if can? :read, collection

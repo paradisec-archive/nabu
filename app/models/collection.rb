@@ -25,9 +25,10 @@ class Collection < ActiveRecord::Base
   validates :title, :presence => true
   validates :collector_id, :presence => true
 
-  validates :latitude, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
-  validates :longitude, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
-  validates :zoom, :numericality => {:only_integer => true, :greater_than_or_equal_to => 0, :less_than => 22}, :allow_nil => true
+  validates :north_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
+  validates :south_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
+  validates :west_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
+  validates :east_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
 
   bulk = [
     :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
@@ -39,7 +40,7 @@ class Collection < ActiveRecord::Base
   attr_reader *bulk
 
   attr_accessible :identifier, :title, :description, :region,
-                  :latitude, :longitude, :zoom,
+                  :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
                   :funding_body_id, :grant_identifier,
                   :language_ids, :country_ids, :admin_ids,
@@ -118,9 +119,10 @@ class Collection < ActiveRecord::Base
     string :countries, :multiple => true do
       countries.map(&:name)
     end
-    float :latitude
-    float :longitude
-    integer :zoom
+    float :north_limit
+    float :south_limit
+    float :west_limit
+    float :east_limit
     boolean :complete
     boolean :private
     boolean :deposit_form_received
@@ -240,7 +242,7 @@ class Collection < ActiveRecord::Base
           end
 
           # FIXME: geographic coordinates not correct
-          xml.tag! 'spatial', 'type' => 'iso19139dcmiBox', 'northlimit' => latitude, 'southlimit' => longitude, 'westlimit' => latitude, 'eastLimit' => longitude
+          xml.tag! 'spatial', 'type' => 'iso19139dcmiBox', 'northlimit' => north_limit, 'southlimit' => south_limit, 'westlimit' => west_limit, 'eastLimit' => east_limit
 
           xml.tag! 'temporal', items.map(&:originated_on).compact.min, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
           xml.tag! 'temporal', items.map(&:originated_on).compact.max, 'type' => 'dateTo', 'dateFormat' => 'UTC'

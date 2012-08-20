@@ -17,9 +17,10 @@
           %language= language.name_with_code
       %region= @collection.region
       %geographicLocation
-        %latitude= @collection.latitude
-        %longitude= @collection.longitude
-        %zoom= @collection.zoom
+        %south_limit= @collection.south_limit
+        %north_limit= @collection.north_limit
+        %east_limit= @collection.east_limit
+        %west_limit= @collection.west_limit
       %accessInfo
         %adminAccess
           - @collection.admins.each do |admin|
@@ -64,9 +65,10 @@
             %dialect= item.dialect
             %region= item.region
             %geographicLocation
-              %latitude= item.latitude
-              %longitude= item.longitude
-              %zoom= item.zoom
+              %south_limit= item.south_limit
+              %north_limit= item.north_limit
+              %east_limit= item.east_limit
+              %west_limit= item.west_limit
             %university= h(item.university_name)
             %operator= h(item.operator_name)
             %discourseType= h(item.discourse_type_name)

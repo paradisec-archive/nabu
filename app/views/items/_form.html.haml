@@ -133,20 +133,8 @@
         %td= f.text_field :region
 
       %tr
-        %th= f.label :latitude
-        %td= f.text_field :latitude, :class => 'latitude'
-
-      %tr
-        %th= f.label :longitude
-        %td= f.text_field :longitude, :class => 'longitude'
-
-      %tr
-        %th= f.label :zoom
-        %td= f.text_field :zoom, :class => 'zoom'
-
-      %tr
         %td{:colspan => 2}
-          .map{:data => {:latitude => @item.latitude, :longitude => @item.longitude, :zoom => @item.zoom, :editable => 'true'}}
+          .map{:data => {:south_limit => @item.south_limit, :north_limit => @item.north_limit, :west_limit => @item.west_limit, :east_limit => @item.east_limit, :editable => true}}
 
       %tr
         %th= label_tag :search, 'Search location on map'
