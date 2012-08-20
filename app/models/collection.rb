@@ -283,7 +283,6 @@ class Collection < ActiveRecord::Base
               xml.spatial country.code, 'type' => 'iso31661'
             end
 
-            # FIXME: geographic coordinates not correct
             if north_limit != 0 || south_limit != 0 || west_limit != 0 || east_limit != 0
               xml.spatial "northlimit=#{north_limit}; southlimit=#{south_limit}; westlimit=#{west_limit}; eastLimit=#{east_limit};", 'type' => 'iso19139dcmiBox'
             end
