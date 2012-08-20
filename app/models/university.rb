@@ -8,6 +8,6 @@ class University < ActiveRecord::Base
 
   def full_path
     # FIX ME
-    "http://catalog.paradisec.org.au/admin/universities/#{identifier}"
+    "http://catalog.paradisec.org.au/admin/universities/#{id}"
   end
 end

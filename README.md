@@ -62,7 +62,10 @@ upload DB:
 # OAI-PMH
 
 OLAC available at:
- http://catalog.paradisec.org.au/oai/item
+  http://catalog.paradisec.org.au/oai/item
+
+The feed that OLCA tests:
+  http://localhost:3000/oai/item?verb=ListRecords&metadataPrefix=olac
 
 RIF-CS available at:
   http://catalog.paradisec.org.au/oai/collection
@@ -87,6 +90,9 @@ testing:
   http://localhost:3000/oai/collection?verb=ListSets
   http://localhost:3000/oai/collection?verb=ListIdentifiers
   http://localhost:3000/oai/collection?verb=ListRecords
+
+  The feed that ANDS harvests:
+  http://localhost:3000/oai/collection?verb=ListRecords&metadataPrefix=rif
 
   Test at ANDS:
   https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au
