@@ -266,6 +266,61 @@ class Collection < ActiveRecord::Base
           end
         end
       end
+
+      xml.registryObject 'group' => 'PARADISEC' do
+        xml.key collector.xml_key
+        xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
+
+        xml.party 'type' => 'person', 'dateModified' => updated_at.xmlschema do
+          xml.identifier collector.xml_key, 'type' => 'local'
+          xml.name 'type' => 'primary' do
+            xml.namePart collector.first_name, 'type' => 'given'
+            xml.namePart collector.last_name, 'type' => 'family'
+          end
+          xml.location do
+            xml.address do
+              xml.electronic 'type' => 'url' do
+                xml.value collector.full_path
+              end
+              xml.physical 'type' => 'postalAddress' do
+                xml.addressPart collector.name + ' c/o PARADISEC, Department of Linguistics, The University of Sydney', 'type' => 'text'
+              end
+            end
+          end
+          xml.relatedObject do
+            xml.key collector.xml_key
+            xml.relation 'type' => 'isCollector'
+          end
+        end
+      end
+
+      if university
+        xml.registryObject 'group' => 'PARADISEC' do
+          xml.key university.xml_key
+          xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
+
+          xml.party 'type' => 'group', 'dateModified' => updated_at.xmlschema do
+            xml.identifier university.xml_key, 'type' => 'local'
+            xml.name 'type' => 'primary' do
+              xml.namePart university.name, 'type' => 'primary'
+            end
+            xml.location do
+              xml.address do
+                xml.electronic 'type' => 'url' do
+                  xml.value university.full_path
+                end
+                xml.physical 'type' => 'streetAddress' do
+                  xml.addressPart university.name, 'type' => 'locationDescriptor'
+                end
+              end
+            end
+            xml.relatedObject do
+              xml.key xml_key
+              xml.relation 'type' => 'isCollectorOf'
+            end
+          end
+        end
+      end
     end
     xml.target!
   end
