@@ -232,6 +232,10 @@ class Collection < ActiveRecord::Base
             xml.subject language.code, 'type' => 'iso639-3'
           end
 
+          if field_of_research
+            xml.subject field_of_research.identifier, 'type' => 'anzsrc-for'
+          end
+
           xml.coverage do
             countries.each do |country|
               xml.spatial country.name, 'type' => 'text'
