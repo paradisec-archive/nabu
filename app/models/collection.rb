@@ -291,10 +291,6 @@ class Collection < ActiveRecord::Base
               end
             end
           end
-          xml.relatedObject do
-            xml.key collector.xml_key
-            xml.relation 'type' => 'isCollector'
-          end
         end
       end
 
@@ -317,10 +313,6 @@ class Collection < ActiveRecord::Base
                   xml.addressPart university.name, 'type' => 'locationDescriptor'
                 end
               end
-            end
-            xml.relatedObject do
-              xml.key xml_key
-              xml.relation 'type' => 'isCollectorOf'
             end
           end
         end
