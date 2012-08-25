@@ -94,8 +94,11 @@ testing:
   http://localhost:3000/oai/collection?verb=ListIdentifiers
   http://localhost:3000/oai/collection?verb=ListRecords
 
-  The feed that ANDS harvests:
-  http://localhost:3000/oai/collection?verb=ListRecords&metadataPrefix=rif
+The feed that ANDS harvests:
+  http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif
 
-  Test at ANDS:
+Test at ANDS:
   https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au
+
+Feed for a single collection:
+  http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2
