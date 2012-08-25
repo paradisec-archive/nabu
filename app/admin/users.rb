@@ -105,4 +105,20 @@ ActiveAdmin.register User do
     end
     f.buttons
   end
+
+  # limit fields in csv export
+  csv do
+    column :first_name
+    column :last_name
+    column :address
+    column :address2
+    column :country
+    column :email
+    column :phone
+    column :rights_transferred_to
+    column :rights_transfer_reason
+    column :contact_only
+    column :admin
+    column :party_identifier
+  end
 end
