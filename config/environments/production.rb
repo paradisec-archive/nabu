@@ -74,8 +74,8 @@ Nabu::Application.configure do
   # --- OVERWRITE FOR PRODUCTION
   config.archive_directory = "/srv/catalog/"
   config.upload_directories = [
-    "/srv/processing_area/",
-    "/srv/upload/"
+    "/srv/nabu/processing_area/",
+    "/srv/nabu/upload/"
   ]
   config.scan_directory = "#{config.upload_directories.first}Dobbin_files/"
   config.scan_for_imp = "#{config.scan_directory}Dobbin xml import/"
