@@ -74,6 +74,9 @@ module Nabu
       output = %x{ffprobe -show_format -show_streams #@file 2> /dev/null}
       raise "Error running ffprobe, returned #{$?} output: #{output}" unless $?.success?
 
+      # deal with invlaid UTF-8
+      output.encode!('UTF-8', 'UTF-8', :invalid => :replace)
+
       @data = Hash.new
       type = nil
       output.lines.each do |line|

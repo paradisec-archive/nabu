@@ -10,21 +10,29 @@
       %th Duration
       %th Metadata
   %tbody
-    - @files.each do |file|
+    - if @files.length == 0
       %tr
-        %td= file.filename
-        %td= file.mimetype
-        %td= number_to_human_size file.size
-        %td= number_to_human_duration file.duration
-        %td= link_to 'View', [@collection, @item, file] if can? :read, file
-    %tr
-      %td
-        %b== #{@files.length} files
-      %td== --
-      %td
-        %b= number_to_human_size @files.sum(&:size)
-      %td== --
-      %td== --
+        %td no files available
+        %td
+        %td
+        %td
+        %td
+    - else
+      - @files.each do |file|
+        %tr
+          %td= file.filename
+          %td= file.mimetype
+          %td= number_to_human_size file.size
+          %td= number_to_human_duration file.duration
+          %td= link_to 'View', [@collection, @item, file] if can? :read, file
+      %tr
+        %td
+          %b== #{@files.length} files
+        %td== --
+        %td
+          %b= number_to_human_size @files.sum(&:size)
+        %td== --
+        %td== --
 
 = paginate @files, :param_name => :files_page
 

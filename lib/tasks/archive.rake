@@ -145,6 +145,8 @@ namespace :archive do
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{file}..."
         next if File.directory?(directory + "/" + file)
+        puts "---------------------------------------------------------------"
+        puts "Inspecting file #{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 
