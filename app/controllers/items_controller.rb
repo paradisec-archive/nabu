@@ -24,6 +24,14 @@ class ItemsController < ApplicationController
       end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        fields = [:full_identifier, :title, :owned, :description, :url, :collector_name, :operator_name, :csv_item_agents, :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name, :access_narrative]
+        send_data @items.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
+      end
+    end
   end
 
   def advanced_search

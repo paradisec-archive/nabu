@@ -239,6 +239,25 @@ class Item < ActiveRecord::Base
     cite
   end
 
+  def csv_countries
+    countries.map(&:name).join(';')
+  end
+
+  def csv_content_languages
+    content_languages.map(&:name).join(';')
+  end
+
+  def csv_subject_languages
+    subject_languages.map(&:name).join(';')
+  end
+
+  def csv_item_agents
+    result = ""
+    item_agents.each do |agent|
+      result += "#{agent.user.name} (#{agent.agent_role.name});"
+    end
+    result
+  end
 
   # OAI-MPH mappings for OLAC
   # If we need to later on we can generate the XML directly
