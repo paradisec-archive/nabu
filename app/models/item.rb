@@ -218,9 +218,9 @@ class Item < ActiveRecord::Base
     if collector
       cite += "#{collector.name} (collector)"
     end
-    item_agents.each do |item_agent|
+    item_agents.group_by(&:user).map do |user, ias|
       cite += ", " unless cite == ""
-      cite += "#{item_agent.user.name} (#{item_agent.agent_role.name})"
+      cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
     end
     cite += ", #{originated_on.year}" if originated_on
     cite += '; ' unless cite == ""
