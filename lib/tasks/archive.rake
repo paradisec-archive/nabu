@@ -144,7 +144,7 @@ namespace :archive do
       dir_contents.each do |file|
         next if File.directory?(directory + "/" + file)
         puts "---------------------------------------------------------------"
-        puts "Inspecting file #{file}..."
+        puts "Inspecting file #{directory}/#{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 

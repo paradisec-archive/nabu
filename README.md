@@ -53,7 +53,7 @@ roll out to production server:
 if necessary:
  cap production deploy:migrate
 
-upload DB:
+upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
  mysqldump -u root nabu_devel | gzip > nabu.sql.gz
  scp nabu.sql.gz deploy@115.146.93.26:
  ssh deploy@115.146.93.26
@@ -61,6 +61,8 @@ upload DB:
  cd /srv/www/nabu/current
  RAILS_ENV=production rake sunspot:reindex
 
+import archive files:
+ RAILS_ENV=production rake archive:update_files
 
 # OAI-PMH
 
