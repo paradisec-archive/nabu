@@ -134,11 +134,15 @@
 
       %tr
         %td{:colspan => 2}
-          .map{:data => {:south_limit => @item.south_limit, :north_limit => @item.north_limit, :west_limit => @item.west_limit, :east_limit => @item.east_limit, :editable => true}}
+          = f.hidden_field :north_limit, :class => 'north_limit'
+          = f.hidden_field :south_limit, :class => 'south_limit'
+          = f.hidden_field :east_limit, :class => 'east_limit'
+          = f.hidden_field :west_limit, :class => 'west_limit'
+
+          .map{:data => {:south_limit => @item.south_limit, :north_limit => @item.north_limit, :west_limit => @item.west_limit, :east_limit => @item.east_limit, :editable => 'true'}}
 
       %tr
-        %th= label_tag :search, 'Search location on map'
-        %td= text_field_tag :map_search
+        %th= link_to 'Set map from language', '#', :id => 'set-map-from-language'
 
       %tr
         %th= f.label :university_id, 'Originating university'

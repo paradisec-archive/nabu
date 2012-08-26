@@ -62,7 +62,7 @@ class ItemsController < ApplicationController
       save_item_catalog_file(@item)
 
       flash[:notice] = 'Item was successfully created.'
-      redirect_to @item
+      redirect_to [@collection, @item]
     else
       render :action => 'new'
     end
@@ -72,12 +72,15 @@ class ItemsController < ApplicationController
   end
 
   def update
+    @num_files = @item.essences.length
+    @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
+
     if @item.update_attributes(params[:item])
       # update xml file of the item
       save_item_catalog_file(@item)
 
       flash[:notice] = 'Item was successfully updated.'
-      redirect_to @item
+      redirect_to [@collection, @item]
     else
       render :action => "edit"
     end
@@ -223,7 +226,7 @@ class ItemsController < ApplicationController
                 "#{item.collection.identifier}/#{item.identifier}/"
     FileUtils.mkdir_p(directory)
     # save file
-    data = render_to_string :template => "items/show.xml"
+    data = render_to_string :template => 'items/show', :format => :xml
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     file = File.open(file, 'w') {|f| f.write(data)}
   end
