@@ -131,7 +131,7 @@ namespace :archive do
     # extract metadata from each essence file in each directory
     subdirs.each do |directory|
       dir_contents = Dir.entries(directory)
-      dir_contents -= [".", ".."]
+      dir_contents -= [".", "..",".snapshot"]
       dir_contents.each do |file|
         next if File.directory?(directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
