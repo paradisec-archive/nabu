@@ -108,6 +108,7 @@ ActiveAdmin.register User do
 
   # limit fields in csv export
   csv do
+    column :id
     column :first_name
     column :last_name
     column :address

@@ -168,6 +168,14 @@ class Collection < ActiveRecord::Base
     cite
   end
 
+  def csv_countries
+    countries.map(&:name).join(';')
+  end
+
+  def csv_languages
+    languages.map(&:name).join(';')
+  end
+
   def oai_language
     languages.map(&:name).join(', ')
   end

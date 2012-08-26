@@ -61,3 +61,5 @@
 
   = render 'search_results'
 
+  %p
+    = link_to 'Export CSV', collections_path(:format => :csv, :params => params)

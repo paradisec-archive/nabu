@@ -18,7 +18,7 @@ end
 # Views
 gem 'jquery-rails'
 gem 'haml-rails'
-gem 'to_csv-rails'
+gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'
 gem 'oai'
 
