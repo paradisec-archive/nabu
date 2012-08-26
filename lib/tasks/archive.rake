@@ -121,6 +121,10 @@ namespace :archive do
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
+    # remove all current information about essences in DB
+    # comment this out after the seeding
+    Essence.delete_all
+
     # get all subdirectories in archive
     subdirs = directories(archive)
 
@@ -136,8 +140,7 @@ namespace :archive do
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-# TODO: uncomment when going into production & remove essences import code
-#          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
 
