@@ -10,7 +10,6 @@
     %th Languages
     = sortable :created_at, 'Creation Date'
     = sortable :university_name, 'Source university'
-    %th Map
     %th Actions
 
     - @search.each_hit_with_result do |hit, collection|
@@ -26,8 +25,6 @@
             = language.name
         %td= collection.created_at.to_date
         %td= collection.university_name
-        %td
-          .map{:data => {:north_limit => collection.north_limit, :south_limit => collection.south_limit, :west_limit => collection.west_limit, :east_limit => collection.east_limit}}
 
         %td
           = link_to 'View', collection if can? :read, collection
