@@ -47,7 +47,7 @@ namespace :archive do
       FileUtils.mkdir_p Nabu::Application.config.scan_directory
     end
     dir_contents = Dir.entries(directory)
-    dir_contents -= ['.', '..']
+    dir_contents -= ['.', '..', '.snapshot']
 
     # for each essence file, find its collection & item
     # by matching the pattern
@@ -82,7 +82,7 @@ namespace :archive do
     dir_list.each do |upload_directory|
       next if !File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
-      dir_contents -= [".", ".."]
+      dir_contents -= [".", "..",".shapshot"]
 
       # make sure the archive directory exists and all its parent directories
       if !File.directory?(Nabu::Application.config.archive_directory)
@@ -121,14 +121,29 @@ namespace :archive do
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
+    # remove all current information about essences in DB
+    # comment this out after the seeding
+    puts "---------------------------------------------------------------"
+    puts "Deleting all existing essence information in Nabu..."
+    Essence.delete_all
+    puts "...done"
+
     # get all subdirectories in archive
+    puts "---------------------------------------------------------------"
+    puts "Gathering all subdirectories in the archive..."
     subdirs = directories(archive)
+    puts "...done"
 
     # extract metadata from each essence file in each directory
     subdirs.each do |directory|
+      puts "==="
+      puts "---------------------------------------------------------------"
+      puts "Working through directory #{directory}"
       dir_contents = Dir.entries(directory)
-      dir_contents -= [".", ".."]
+      dir_contents -= [".", "..",".snapshot"]
       dir_contents.each do |file|
+        puts "---------------------------------------------------------------"
+        puts "Inspecting file #{file}..."
         next if File.directory?(directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
@@ -136,13 +151,12 @@ namespace :archive do
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-# TODO: uncomment when going into production & remove essences import code
+# Do this after go-live
 #          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
 
         # extract media metadata from file
-        puts "---------------------------------------------------------------"
         import_metadata(directory, file, item)
       end
     end
@@ -154,7 +168,7 @@ namespace :archive do
   def directories(path)
     data = []
     Dir.foreach(path) do |entry|
-      next if (entry == '..' || entry == '.')
+      next if (entry == '..' || entry == '.' || entry == '.snapshot')
       full_path = File.join(path, entry)
       if File.directory?(full_path)
         data << full_path

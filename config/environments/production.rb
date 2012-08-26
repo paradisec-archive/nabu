@@ -68,13 +68,14 @@ Nabu::Application.configure do
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   config.action_mailer.default_url_options = { :host => 'catalog.paradisec.org.au' }
+  config.action_mailer.delivery_method = :sendmail
 
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
   # --- OVERWRITE FOR PRODUCTION
   config.archive_directory = "/srv/catalog/"
   config.upload_directories = [
-    "/srv/processing_area/",
-    "/srv/upload/"
+    "/srv/nabu/processing_area/",
+    "/srv/nabu/upload/"
   ]
   config.scan_directory = "#{config.upload_directories.first}Dobbin_files/"
   config.scan_for_imp = "#{config.scan_directory}Dobbin xml import/"
