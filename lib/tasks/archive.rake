@@ -140,7 +140,7 @@ namespace :archive do
       puts "---------------------------------------------------------------"
       puts "Working through directory #{directory}"
       dir_contents = Dir.entries(directory)
-      dir_contents -= [".", "..",".snapshot"]
+      dir_contents -= [".", "..",".snapshot",".JS2-F04-A.wav.FpX8la"]
       dir_contents.each do |file|
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{file}..."
