@@ -142,9 +142,9 @@ namespace :archive do
       dir_contents = Dir.entries(directory)
       dir_contents -= [".", "..",".snapshot"]
       dir_contents.each do |file|
+        next if File.directory?(directory + "/" + file)
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{file}..."
-        next if File.directory?(directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 
