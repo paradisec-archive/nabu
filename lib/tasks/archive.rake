@@ -47,7 +47,7 @@ namespace :archive do
       FileUtils.mkdir_p Nabu::Application.config.scan_directory
     end
     dir_contents = Dir.entries(directory)
-    dir_contents -= ['.', '..']
+    dir_contents -= ['.', '..', '.snapshot']
 
     # for each essence file, find its collection & item
     # by matching the pattern
@@ -82,7 +82,7 @@ namespace :archive do
     dir_list.each do |upload_directory|
       next if !File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
-      dir_contents -= [".", ".."]
+      dir_contents -= [".", "..",".shapshot"]
 
       # make sure the archive directory exists and all its parent directories
       if !File.directory?(Nabu::Application.config.archive_directory)
