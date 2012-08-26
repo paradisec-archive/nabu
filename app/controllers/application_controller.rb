@@ -17,8 +17,7 @@ class ApplicationController < ActionController::Base
     Time.zone = current_user.time_zone if current_user
   end
 
-  def sort_column
-    model = params[:controller].sub(/Controller/, '').singularize.camelize.constantize
+  def sort_column(model)
     model.sortable_columns.include?(params[:sort]) ? [params[:sort]] : model.sortable_columns[0, 2]
   end
 

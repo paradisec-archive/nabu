@@ -42,12 +42,4 @@ module ApplicationHelper
     link_to label, path, ({:class => 'active'} if controller.controller_name == cname)
   end
 
-  def item_archive_url item
-    if item.owned
-      link_to item_url(item), item_url(item)
-    else
-      "Item not owned by Paradisec."
-    end
-  end
-
 end

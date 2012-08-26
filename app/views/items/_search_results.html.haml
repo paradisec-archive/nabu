@@ -22,8 +22,8 @@
             = country.name
         %td= item.updated_at.to_date
         %td
-          = link_to 'View', item
-          = link_to 'Edit', edit_item_path(item) if can? :update, item
+          = link_to 'View', [item.collection, item]
+          = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
 
 -if @search.results.empty?
   %p.bold There were NO results for your search.

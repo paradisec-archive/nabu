@@ -1,16 +1,16 @@
 .right
-  = link_to 'Previous file', @essence.prev_essence, :class => 'button' if @essence.prev_essence
+  = link_to 'Previous file', [@collection, @item, @essence.prev_essence], :class => 'button' if @essence.prev_essence
   - if @essence.next_essence
-    = link_to 'Next file', @essence.next_essence, :class => 'button'
+    = link_to 'Next file', [@collection, @item, @essence.next_essence], :class => 'button'
   -else
-    = link_to 'Next file', @essence.next_essence, :class => 'button invisible'
+    = link_to 'Next file', [@collection, @item, @essence.next_essence], :class => 'button invisible'
 
 .clear{:style => "padding-top: 7px"}
 
 .twoup-1
   %fieldset
     %legend File details
-    
+
     %table.form.show
       %tr
         %th File
@@ -18,7 +18,11 @@
           .left
             %span= @essence.full_identifier
           .right<
-            = link_to '(Item Details)', @essence.item
+            = link_to '(Item Details)', [@collection, @item]
+
+      %tr
+        %th Archive link
+        %td= link_to(repository_essence_url(@collection, @item, @essence))
 
       %tr
         %th Path

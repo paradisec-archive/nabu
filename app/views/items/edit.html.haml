@@ -13,5 +13,5 @@
   = render :partial => 'form', :locals => {:f => f}
 
   .right
-    = link_to 'Cancel', item_path, :class => 'button'
+    = link_to 'Cancel', [@collection, @item], :class => 'button'
     = f.submit 'Save item'

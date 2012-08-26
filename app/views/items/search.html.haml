@@ -2,7 +2,7 @@
 
 
 .page-box
-  = form_tag items_path, :method => :get, :class => 'no-empty-submit' do |f|
+  = form_tag search_items_path, :method => :get, :class => 'no-empty-submit' do |f|
     .left
       - if params[:per_page]
         = hidden_field_tag :per_page, params[:per_page]
@@ -59,7 +59,7 @@
 
 
 
-  = render 'search_results'
+  = render 'items/search_results'
 
   %p
-    = link_to 'Export CSV (all items)', items_path(:format => :csv)
+    = link_to 'Export CSV (all items)', search_items_path(:format => :csv)
