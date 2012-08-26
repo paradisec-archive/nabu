@@ -123,7 +123,11 @@ namespace :archive do
 
     # remove all current information about essences in DB
     # comment this out after the seeding
+    puts "---------------------------------------------------------------"
+    puts "Deleting all existing essence information in Nabu..."
     Essence.delete_all
+    puts "...done"
+    puts "---------------------------------------------------------------"
 
     # get all subdirectories in archive
     subdirs = directories(archive)
