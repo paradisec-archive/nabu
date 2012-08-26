@@ -59,7 +59,7 @@
 
 
 
-  = render 'search_results'
+  = render 'collections/search_results'
 
   %p
-    = link_to 'Export CSV (all collections)', collections_path(:format => :csv)
+    = link_to 'Export CSV (all collections)', search_collections_path(:format => :csv)

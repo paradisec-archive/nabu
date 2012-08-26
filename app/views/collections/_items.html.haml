@@ -30,8 +30,8 @@
             %td TBD
             %td TBD
           %td
-            = link_to 'View', item if can? :read, item
-            = link_to 'Edit', edit_item_path(item) if can? :update, item
+            = link_to 'View', [item.collection, item] if can? :read, item
+            = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
 
   = paginate @items, :param_name => :items_page
 

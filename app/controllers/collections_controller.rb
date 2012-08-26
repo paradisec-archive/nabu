@@ -1,10 +1,10 @@
 class CollectionsController < ApplicationController
-  load_and_authorize_resource :find_by => :identifier
+  load_and_authorize_resource :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
 
-  def index
+  def search
     if params[:clear]
       params.delete(:search)
-      redirect_to collections_path
+      redirect_to search_collections_path
     end
 
     @search = Collection.solr_search do
@@ -16,7 +16,7 @@ class CollectionsController < ApplicationController
       with(:collector_id, params[:collector_id]) if params[:collector_id].present?
 
       with(:private, false) unless current_user && current_user.admin?
-      sort_column.each do |c|
+      sort_column(Collection).each do |c|
         order_by c, sort_direction
       end
       paginate :page => params[:page], :per_page => params[:per_page]
@@ -32,7 +32,6 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
-    # authorize! :advanced_search, Collection
     do_search
   end
 
@@ -88,7 +87,7 @@ class CollectionsController < ApplicationController
   def bulk_update
     @collections = Collection.accessible_by(current_ability).where :id => params[:collection_ids].split(' ')
 
-    update_params = params[:collection].delete_if {|k, v| v.blank?}
+    params[:collection].delete_if {|k, v| v.blank?}
 
     # Collect the fields we are appending to
     appendable = {}
@@ -154,8 +153,8 @@ class CollectionsController < ApplicationController
         with field.name, true
       end
 
-      with(:private, false) unless current_user.admin?
-      sort_column.each do |c|
+      with(:private, false) unless current_user && current_user.admin?
+      sort_column(Collection).each do |c|
         order_by c, sort_direction
       end
       paginate :page => params[:page], :per_page => params[:per_page]

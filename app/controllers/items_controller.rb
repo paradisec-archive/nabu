@@ -1,13 +1,12 @@
 class ItemsController < ApplicationController
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update, :advanced_search]
-  before_filter :find_by_full_identifier
-  load_and_authorize_resource :collection
-  load_and_authorize_resource :item, :through => :collection, :shallow => true
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
+  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
+  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
 
-  def index
+  def search
     if params[:clear]
       params.delete(:search)
-      redirect_to items_path
+      redirect_to search_items_path
     end
 
     @search = Item.solr_search do
@@ -19,7 +18,7 @@ class ItemsController < ApplicationController
       with(:country_ids, params[:country_id]) if params[:country_id].present?
 
       with(:private, false) unless current_user && current_user.admin?
-      sort_column.each do |c|
+      sort_column(Item).each do |c|
         order_by c, sort_direction
       end
       paginate :page => params[:page], :per_page => params[:per_page]
@@ -35,7 +34,6 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
-    # authorize! :advanced_search, Item
     do_search
   end
 
@@ -96,7 +94,7 @@ class ItemsController < ApplicationController
   def bulk_update
     @items = Item.accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
-    update_params = params[:item].delete_if {|k, v| v.blank?}
+    params[:item].delete_if {|k, v| v.blank?}
 
     # Collect the fields we are appending to
     appendable = {}
@@ -128,12 +126,13 @@ class ItemsController < ApplicationController
 
     if invalid_record
       do_search
-      render :action => "bulk_edit"
+      render :action => 'bulk_edit'
     else
       flash[:notice] = 'Items were successfully updated.'
       redirect_to advanced_search_items_path + "?#{params[:original_search_params]}"
     end
   end
+
 
   private
   def tidy_params
@@ -195,17 +194,19 @@ class ItemsController < ApplicationController
         with field.name, true
       end
 
-      with(:private, false) unless current_user.admin?
-      sort_column.each do |c|
+      with(:private, false) unless current_user && current_user.admin?
+      sort_column(Item).each do |c|
         order_by c, sort_direction
       end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
+
   end
+
 
   def find_by_full_identifier
     if params[:id]
-      collection_identifier, item_identifier = params[:id].split (/-/)
+      collection_identifier, item_identifier = params[:id].split(/-/)
       @collection = Collection.find_by_identifier collection_identifier
       @item = @collection.items.find_by_identifier item_identifier
     elsif params[:collection_id]

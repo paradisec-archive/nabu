@@ -24,7 +24,7 @@
           %td= file.mimetype
           %td= number_to_human_size file.size
           %td= number_to_human_duration file.duration
-          %td= link_to 'View', file if can? :read, file
+          %td= link_to 'View', [@collection, @item, file] if can? :read, file
       %tr
         %td
           %b== #{@files.length} files

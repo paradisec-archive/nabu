@@ -62,6 +62,7 @@ group :development, :test do
   gem 'thin'
   gem 'sqlite3'
   gem 'turn', '~> 0.8.3', :require => false
+  gem 'sextant'
 end
 
 group :test do

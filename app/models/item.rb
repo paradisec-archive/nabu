@@ -322,6 +322,6 @@ class Item < ActiveRecord::Base
   end
 
   def to_param
-    full_identifier
+    identifier
   end
 end

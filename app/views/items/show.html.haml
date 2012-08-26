@@ -1,13 +1,13 @@
 .right
-  = link_to 'Previous item', @item.prev_item, :class => 'button' if @item.prev_item
+  = link_to 'Previous item', [@collection, @item.prev_item], :class => 'button' if @item.prev_item
 
   - if can? :update, @item
-    = link_to 'Edit item', edit_item_path(@item), :class => 'button'
+    = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'
 
   - if @item.next_item
-    = link_to 'Next item', @item.next_item, :class => 'button'
+    = link_to 'Next item', [@collection, @item.next_item], :class => 'button'
   - else
-    = link_to 'Next item', @item.next_item, :class => 'button invisible'
+    = link_to 'Next item', [@collection, @item.next_item], :class => 'button invisible'
 
 .clear{:style => "padding-top: 7px"}
 
@@ -46,7 +46,7 @@
 
       %tr
         %th Archive link
-        %td= item_archive_url(@item)
+        %td= @item.owned ? link_to(repository_item_url(@collection, @item))  : 'Item not owned by Paradisec'
 
       %tr
         %th URL
@@ -246,4 +246,4 @@
 
   - if can? :update, @item
     .right
-      = link_to 'Edit item', edit_item_path(@item), :class => 'button'
+      = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'

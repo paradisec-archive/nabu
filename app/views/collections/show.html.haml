@@ -2,7 +2,7 @@
 .right
   - if can? :manage, @collection
     = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
-  
+
 .clear
 
 .twoup-1
@@ -28,6 +28,10 @@
       %tr
         %th Description
         %td= h(@collection.description).gsub(/\n/, '<br/>').html_safe
+
+      %tr
+        %th Archive link
+        %td= link_to(repository_collection_url(@collection))
 
       %tr
         %th Collector

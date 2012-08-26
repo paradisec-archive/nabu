@@ -1,14 +1,14 @@
 %h1 Advanced Search Collections
 
 .right
-  = link_to 'Basic Search', collections_path
+  = link_to 'Basic Search', search_collections_path
 .clear
 
 
 - if params.length > 2
   %p== #{@search.total} search results
 
-  = render 'search_results'
+  = render 'collections/search_results'
 
   .right
     = link_to 'Bulk edit results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
