@@ -127,16 +127,23 @@ namespace :archive do
     puts "Deleting all existing essence information in Nabu..."
     Essence.delete_all
     puts "...done"
-    puts "---------------------------------------------------------------"
 
     # get all subdirectories in archive
+    puts "---------------------------------------------------------------"
+    puts "Gathering all subdirectories in the archive..."
     subdirs = directories(archive)
+    puts "...done"
 
     # extract metadata from each essence file in each directory
     subdirs.each do |directory|
+      puts "==="
+      puts "---------------------------------------------------------------"
+      puts "Working through directory #{directory}"
       dir_contents = Dir.entries(directory)
       dir_contents -= [".", "..",".snapshot"]
       dir_contents.each do |file|
+        puts "---------------------------------------------------------------"
+        puts "Inspecting file #{file}..."
         next if File.directory?(directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
@@ -150,7 +157,6 @@ namespace :archive do
         end
 
         # extract media metadata from file
-        puts "---------------------------------------------------------------"
         import_metadata(directory, file, item)
       end
     end
@@ -162,7 +168,7 @@ namespace :archive do
   def directories(path)
     data = []
     Dir.foreach(path) do |entry|
-      next if (entry == '..' || entry == '.')
+      next if (entry == '..' || entry == '.' || entry == '.snapshot')
       full_path = File.join(path, entry)
       if File.directory?(full_path)
         data << full_path
