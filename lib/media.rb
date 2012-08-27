@@ -23,7 +23,7 @@ module Nabu
     end
 
     def samplerate
-      return if !is_media?
+      return if !is_media? || !has_audio?
       probe[:streams].select {|s| s['codec_type'] == 'audio'}.first['sample_rate'].to_i
     end
 
@@ -33,7 +33,7 @@ module Nabu
     end
 
     def channels
-      return if !is_media?
+      return if !is_media? || !has_audio?
       probe[:streams].select {|s| s['codec_type'] == 'audio'}.first['channels'].to_i
     end
 
@@ -66,6 +66,10 @@ module Nabu
 
     def is_media?
       mimetype =~ /^(audio|video)/
+    end
+
+    def has_audio?
+      probe[:streams].select {|s| s['codec_type'] == 'audio'}.size > 0
     end
 
     def probe
