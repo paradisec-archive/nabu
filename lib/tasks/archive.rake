@@ -96,6 +96,7 @@ namespace :archive do
         next if File.directory?(upload_directory + "/" + file)
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
+        puts "---------------------------------------------------------------"
 
         # make sure the archive directory for the collection and item exists
         # and move the file there
@@ -103,7 +104,6 @@ namespace :archive do
         FileUtils.mkdir_p(destination_path)
         FileUtils.mv(upload_directory + file, destination_path + file)
 
-        puts "---------------------------------------------------------------"
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
 
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
@@ -111,7 +111,9 @@ namespace :archive do
         next if basename.split('-').last == "PDSC_ADMIN"
 
         # extract media metadata from file
+        puts "Inspecting file #{file}..."
         import_metadata(destination_path, file, item)
+        puts "...done"
       end
     end
   end
