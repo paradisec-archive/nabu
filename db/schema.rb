@@ -133,7 +133,7 @@ ActiveRecord::Schema.define(:version => 20120819120641) do
     t.string  "mimetype"
     t.integer "bitrate"
     t.integer "samplerate"
-    t.integer "size"
+    t.integer "size",       :limit => 8
     t.float   "duration"
     t.integer "channels"
     t.integer "fps"
