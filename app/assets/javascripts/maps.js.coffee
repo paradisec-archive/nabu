@@ -73,6 +73,9 @@ $(document).ready ->
         $('.west_limit').val(sw.lng())
 
     $('.map').each (index, element) ->
+      cw = $('.map').width()
+      $('.map').css({'height':cw+'px'})
+
       options = {
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,
@@ -85,4 +88,5 @@ $(document).ready ->
       map = new google.maps.Map(element, options)
       $(element).data('map', map)
       $(element).trigger('update_map')
+
 

@@ -116,132 +116,125 @@
         %td= @item.citation.html_safe
 
 .twoup-2
-  .tabs
-    %ul
-      %li.tab= link_to "Content Files (#{@num_files})", '#content_item'
-      %li.tab= link_to 'Collection Information', '#collection'
 
-    #content_item
-      = render :partial => 'essences'
+  %fieldset
+    %legend= "Content Files (#{@num_files})"
+    = render :partial => 'essences'
 
-    #collection
+  %fieldset
+    %legend Collection Information
+    %table.form.show
+      %tr
+        %th Collection title
+        %td= @item.collection.title
+
+      %tr
+        %th Collection ID
+        %td= @item.collection.identifier
+
+      %tr
+        %th Description
+        %td= h(@item.collection.description).gsub(/\n/, '<br/>').html_safe
+
+      %tr
+        %th Countries
+        %td
+          - @item.collection.countries.each do |country|
+            = country.name
+            %br
+
+      %tr
+        %th Languages
+        %td
+          - @item.collection.languages.each do |language|
+            = language.name
+            %br
+
+  - if can? :manage, @item
+    %fieldset
+      %legend Archive Information
+
       %table.form.show
         %tr
-          %th Collection title
-          %td= @item.collection.title
-
-        %tr
-          %th Collection ID
-          %td= @item.collection.identifier
-
-        %tr
-          %th Description
-          %td= h(@item.collection.description).gsub(/\n/, '<br/>').html_safe
-
-        %tr
-          %th Countries
+          %td.empty
           %td
-            - @item.collection.countries.each do |country|
-              = country.name
+            = check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
+            Ready for metadata export
+        %tr
+          %td.empty
+          %td
+            = check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
+            Born digital
+        %tr
+          %td.empty
+          %td
+            = check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
+            Tapes returned to depositor
+        %tr
+          %th Original media
+          %td= @item.original_media
+
+        %tr
+          %th Data received
+          %td= @item.received_on
+
+        %tr
+          %th Date digitised
+          %td= @item.digitised_on
+
+        %tr
+          %th Ingest notes
+          %td= h(@item.ingest_notes).gsub(/\n/, '<br/>').html_safe
+
+        %tr
+          %th Metadata imported
+          %td= @item.metadata_imported_on
+
+        %tr
+          %th Metadata exported
+          %td= @item.metadata_exported_on
+
+        %tr
+          %th Tracking
+          %td= @item.tracking
+
+  - if can? :manage, @item
+    %fieldset
+      %legend Admin Information
+
+      %table.form.show
+        %tr
+          %th Record created
+          %td= @item.created_at.to_date
+        %tr
+          %th Record modified
+          %td= @item.updated_at.to_date
+
+        %tr
+          %th Edit access
+          %td
+            - @item.admins.each do |admin|
+              = admin.name
               %br
 
         %tr
-          %th Languages
-          %td
-            - @item.collection.languages.each do |language|
-              = language.name
-              %br
+          %th Data access conditions
+          %td= @item.access_condition_name
 
         %tr
-          %td.empty{:colspan => 2}
-            .map{:data => {:south_limit => @item.collection.south_limit, :north_limit => @item.collection.north_limit, :west_limit => @item.collection.west_limit, :east_limit => @item.collection.east_limit, :static => true}}
+          %th Data access narrative
+          %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
+
+        %tr
+          %th Comments
+          %td= h(@item.admin_comment).gsub(/\n/, '<br/>').html_safe
 
 
-  .tabs
-    %ul
-      %li.tab= link_to 'Comments', '#comment'
-      - if can? :manage, @item
-        %li.tab= link_to 'Archive information', '#archive'
-        %li.tab= link_to 'Admin information', '#admin'
+  %fieldset
+    %legend Comments
 
-    #comment
-      = render :partial => 'comments/new', :locals => { :item => @item }
-      = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
-
-    - if can? :manage, @item
-      #archive
-        %table.form.show
-          %tr
-            %td.empty
-            %td
-              = check_box_tag :checked, @item.metadata_exportable, @item.metadata_exportable, :disabled => true
-              Ready for metadata export
-          %tr
-            %td.empty
-            %td
-              = check_box_tag :checked, @item.born_digital, @item.born_digital, :disabled => true
-              Born digital
-          %tr
-            %td.empty
-            %td
-              = check_box_tag :checked, @item.tapes_returned, @item.tapes_returned, :disabled => true
-              Tapes returned to depositor
-          %tr
-            %th Original media
-            %td= @item.original_media
-
-          %tr
-            %th Data received
-            %td= @item.received_on
-
-          %tr
-            %th Date digitised
-            %td= @item.digitised_on
-
-          %tr
-            %th Ingest notes
-            %td= h(@item.ingest_notes).gsub(/\n/, '<br/>').html_safe
-
-          %tr
-            %th Metadata imported
-            %td= @item.metadata_imported_on
-
-          %tr
-            %th Metadata exported
-            %td= @item.metadata_exported_on
-
-          %tr
-            %th Tracking
-            %td= @item.tracking
-
-    - if can? :manage, @item
-      #admin
-        %table.form.show
-          %tr
-            %th Record created
-            %td= @item.created_at.to_date
-          %tr
-            %th Record modified
-            %td= @item.updated_at.to_date
-
-          %tr
-            %th Edit access
-            %td
-              - @item.admins.each do |admin|
-                = admin.name
-                %br
-
-          %tr
-            %th Data access conditions
-            %td= @item.access_condition_name
-
-          %tr
-            %th Data access narrative
-            %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
-
-          %tr
-            %th Comments
-            %td= h(@item.admin_comment).gsub(/\n/, '<br/>').html_safe
+    = render :partial => 'comments/new', :locals => { :item => @item }
+    = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
 
 
   - if can? :update, @item
