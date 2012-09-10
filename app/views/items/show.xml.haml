@@ -8,7 +8,7 @@
       %description= @item.description
       %originationDate= @item.originated_on
       %originationNarrative= @item.originated_on_narrative
-      %archiveLink= strip_tags(item_archive_url(@item))
+      %archiveLink= strip_tags(@item.full_path)
       %url= @item.url
       %collector= @item.collector_name
       %countries

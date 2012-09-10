@@ -49,7 +49,7 @@
             %description= h(item.description)
             %originationDate= item.originated_on
             %originationNarrative= item.originated_on_narrative
-            %xmlLink= "#{strip_tags(item_archive_url(item))}.xml"
+            %xmlLink= "#{strip_tags(item.full_path)}.xml"
             %url= h(item.url)
             %collector= h(item.collector_name)
             %countries

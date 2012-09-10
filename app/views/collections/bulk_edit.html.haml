@@ -1,9 +1,12 @@
 %h1 Collections Bulk Update
 
-.page-box
-  %p== #{@search.total} search results
+.right
+  = link_to 'Advanced Search', advanced_search_collections_path(:params => params.delete_if {|k,v| ['action', 'controller'].include? k})
+.clear
 
-  = render 'search_results'
+%p== #{@search.total} search results
+
+= render 'search_results'
 
 = form_for @collection, :url => bulk_update_collections_path, :method => :put do |f|
   - if @collection.errors.any?
@@ -17,10 +20,10 @@
   = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
   .right
-    = f.submit 'Update Collections'
+    = f.submit "Update #{@search.total} Collections", :confirm => "This will update #{@search.total} collections - are you sure?"
 
   = render :partial => 'form', :locals => {:f => f}
 
   .right
-    = f.submit 'Update Collections', :confirm => "This will update #{@search.total} collections - are you sure?"
+    = f.submit "Update #{@search.total} Collections", :confirm => "This will update #{@search.total} collections - are you sure?"
 

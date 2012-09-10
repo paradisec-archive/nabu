@@ -50,7 +50,7 @@ class ItemsController < ApplicationController
         if params[:xml_type]
           render :template => "items/show.#{params[:xml_type]}.xml.haml"
         else
-          render :template => "items/show"
+          render :template => "items/show.xml.haml"
         end
       end
     end
@@ -119,7 +119,7 @@ class ItemsController < ApplicationController
         break
       end
       # save updated item info to xml file
-      save_item_catalog_file(@item)
+      save_item_catalog_file(item)
     end
 
     appendable.each_pair do |k, v|
@@ -132,7 +132,7 @@ class ItemsController < ApplicationController
       render :action => 'bulk_edit'
     else
       flash[:notice] = 'Items were successfully updated.'
-      redirect_to advanced_search_items_path + "?#{params[:original_search_params]}"
+      redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
     end
   end
 
@@ -224,9 +224,11 @@ class ItemsController < ApplicationController
     # make sure the archive directory for the collection and item exist
     directory = Nabu::Application.config.archive_directory +
                 "#{item.collection.identifier}/#{item.identifier}/"
+
     FileUtils.mkdir_p(directory)
     # save file
-    data = render_to_string :template => 'items/show', :format => :xml
+    @item = item
+    data = render_to_string :template => 'items/show.xml.haml'
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     file = File.open(file, 'w') {|f| f.write(data)}
   end
