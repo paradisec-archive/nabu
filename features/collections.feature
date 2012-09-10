@@ -9,7 +9,7 @@ Feature: Collections
       And an admin user exists
       And a university exists with name: "University of Sydney"
       And a field of research exists with identifier: 420114, name: "Indonesian Languages"
-      And a country exists with name: "Indonesia"
+      And a country exists with name: "Indonesia", code: "ID"
       And a language exists with code: "ski", name: "Silka"
 
   Scenario: Non Admin users can't add collections
@@ -34,8 +34,10 @@ Feature: Collections
       And I select "Indonesia" from "Countries"
       And I select "ski - Silka" from "Languages"
       And I fill in "Region / Village" with "Sasak Village, Samalantan"
-      And I fill in "Longitude" with "108.905"
-      And I fill in "Latitude" with "1.006"
+      And I fill in "north_limit" with "24.625"
+      And I fill in "south_limit" with "23.99"
+      And I fill in "west_limit" with "121.122"
+      And I fill in "east_limit" with "122.046"
       And I fill in "Zoom" with "3"
       And I fill in "Description" with "This collection is awesome\nMoo"
       And I press "Add Collection"

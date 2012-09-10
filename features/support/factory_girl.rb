@@ -72,9 +72,10 @@ FactoryGirl.define do
     title 'Collection Title'
     description 'The awesome collection'
     region 'East Africa'
-    latitude 40.6
-    longitude -60.7
-    zoom 5
+    north_limit "24.625"
+    south_limit "23.99"
+    west_limit "121.122"
+    east_limit "122.046"
     field_of_research
     university
     collector
@@ -88,9 +89,10 @@ FactoryGirl.define do
     collector
     university
     operator
-    latitude 40.6
-    longitude -60.7
-    zoom 5
+    north_limit "24.625"
+    south_limit "23.99"
+    west_limit "121.122"
+    east_limit "122.046"
     subject_language
     content_language
     discourse_type
