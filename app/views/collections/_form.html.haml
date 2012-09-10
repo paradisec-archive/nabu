@@ -82,6 +82,9 @@
             = f.check_box :bulk_edit_append_region
         %td= f.text_field :region
 
+      %tr
+        %td.empty
+        %th= link_to 'Set map from language', '#', :id => 'set-map-from-language'
 
       %tr
         %td{:colspan => 2}
@@ -90,9 +93,6 @@
           = f.hidden_field :east_limit, :class => 'east_limit'
           = f.hidden_field :west_limit, :class => 'west_limit'
           .map{:data => {:south_limit => @collection.south_limit, :north_limit => @collection.north_limit, :west_limit => @collection.west_limit, :east_limit => @collection.east_limit, :editable => 'true'}}
-
-      %tr
-        %th= link_to 'Set map from language', '#', :id => 'set-map-from-language'
 
   %fieldset
     %legend Access Information
