@@ -61,6 +61,9 @@
             = f.check_box :bulk_edit_append_country_ids
             %br
           = f.label :country_ids, 'Countries'
+          %br
+          %small
+            = link_to 'Ethnologue list', 'http://www.ethnologue.com/country_index_bibl.asp', :target => '_blank'
         %td= f.hidden_field :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
       %tr
@@ -70,6 +73,9 @@
             = f.check_box :bulk_edit_append_language_ids
             %br
           = f.label :language_ids, 'Languages'
+          %br
+          %small
+            = link_to 'Ethnologue list', 'http://www.ethnologue.com/language_index.asp', :target => '_blank'
         %td
           = f.hidden_field :language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
