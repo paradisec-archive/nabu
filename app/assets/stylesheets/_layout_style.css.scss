@@ -207,13 +207,14 @@ body.bp {
     overflow-x: scroll;
     td {
       vertical-align: top;
+      min-width: 50px;
 
       .map {
         width: 100%;
         border: 1px solid grey;
       }
 
-      .error {
+      &.missing {
         font-style: italic;
         font-color: red;
       }

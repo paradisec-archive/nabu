@@ -22,16 +22,24 @@
           %th Archived
         %th Actions
     %tbody
-      - @items.order(:identifier).each do |item|
+      - if @items.length == 0
         %tr
-          %td= item.identifier
-          %td= item.title
-          - if can? :update, @collection
-            %td TBD
-            %td TBD
+          %td no items available
           %td
-            = link_to 'View', [item.collection, item] if can? :read, item
-            = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
+          %td
+          %td
+          %td
+      - else
+        - @items.order(:identifier).each do |item|
+          %tr
+            %td= item.identifier
+            %td= item.title
+            - if can? :update, @collection
+              %td TBD
+              %td TBD
+            %td
+              = link_to 'View', [item.collection, item] if can? :read, item
+              = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
 
   = paginate @items, :param_name => :items_page
 

@@ -64,11 +64,12 @@
         %td= @collection.region
 
       %tr
-        - if (@collection.north_limit == 0 && @collection.south_limit == 0 && @collection.west_limit == 0 && @collection.east_limit == 0)
+        - if !@collection.has_coordinates
           %th Map
-          %td.error No map data given - please add.
+          %td.missing No map data given - please add.
         - else
           %td.empty{:colspan => 2}
+            = @collection.has_no_coordinates
             .map{:data => {:south_limit => @collection.south_limit, :north_limit => @collection.north_limit, :west_limit => @collection.west_limit, :east_limit => @collection.east_limit}}
 
 
@@ -141,7 +142,9 @@
 
         %tr
           %th Field of research
-          %td= @collection.field_of_research.name_with_identifier
+          %td
+            -if @collection.field_of_research
+              = @collection.field_of_research.name_with_identifier
 
         %tr
           %th Funding body

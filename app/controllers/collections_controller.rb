@@ -5,6 +5,7 @@ class CollectionsController < ApplicationController
     if params[:clear]
       params.delete(:search)
       redirect_to search_collections_path
+      return
     end
 
     @search = Collection.solr_search do

@@ -7,7 +7,7 @@ class CreateCollections < ActiveRecord::Migration
       t.belongs_to :collector, :null => false
       t.belongs_to :operator
       t.belongs_to :university
-      t.belongs_to :field_of_research, :null => false
+      t.belongs_to :field_of_research, :null => true
       t.string     :region
       t.float      :latitude
       t.float      :longitude

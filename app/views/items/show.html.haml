@@ -90,9 +90,9 @@
         %td= @item.region
 
       %tr
-        - if (@item.north_limit == 0 && @item.south_limit == 0 && @item.west_limit == 0 && @item.east_limit == 0)
+        - if !@item.has_coordinates
           %th Map
-          %td.error No map data given - please add.
+          %td.missing No map data given - please add.
         - else
           %td.empty{:colspan => 2}
             .map{:data => {:south_limit => @item.south_limit, :north_limit => @item.north_limit, :west_limit => @item.west_limit, :east_limit => @item.east_limit, :static => true}}

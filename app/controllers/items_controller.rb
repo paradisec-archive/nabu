@@ -7,6 +7,7 @@ class ItemsController < ApplicationController
     if params[:clear]
       params.delete(:search)
       redirect_to search_items_path
+      return
     end
 
     @search = Item.solr_search do
