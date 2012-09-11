@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(:version => 20120819120641) do
     t.integer  "collector_id",          :null => false
     t.integer  "operator_id"
     t.integer  "university_id"
-    t.integer  "field_of_research_id",  :null => false
+    t.integer  "field_of_research_id"
     t.string   "region"
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
