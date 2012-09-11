@@ -129,12 +129,12 @@
     %legend Collection Information
     %table.form.show
       %tr
-        %th Collection title
-        %td= @item.collection.title
+        %th Collection ID
+        %td= link_to @item.collection.identifier, @item.collection
 
       %tr
-        %th Collection ID
-        %td= @item.collection.identifier
+        %th Collection title
+        %td= @item.collection.title
 
       %tr
         %th Description
