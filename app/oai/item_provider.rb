@@ -40,7 +40,7 @@ class ItemProvider < OAI::Provider::Base
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
-  source_model OAI::Provider::ActiveRecordWrapper.new(::Item, :limit => 100)
+  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.where(:private => false), :limit => 100)
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => '2012-05-15', 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
