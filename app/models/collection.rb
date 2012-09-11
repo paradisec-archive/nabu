@@ -207,7 +207,7 @@ class Collection < ActiveRecord::Base
           xml.rights do
             xml.accessRights access_condition_name
           end
-          xml.identifier xml_key, 'type' => 'uri'
+          xml.identifier full_path, 'type' => 'uri'
           xml.location do
             xml.address do
               xml.electronic 'type' => 'url' do
@@ -264,10 +264,10 @@ class Collection < ActiveRecord::Base
             unless items.map(&:originated_on).compact.empty?
               xml.temporal do
                 if items.map(&:originated_on).compact.min
-                  xml.date items.map(&:originated_on).compact.min.xmlschema, 'type' => 'dateFrom', 'dateFormat' => 'UTC'
+                  xml.date items.map(&:originated_on).compact.min.xmlschema, 'type' => 'dateFrom', 'dateFormat' => 'W3CDTF'
                 end
                 if items.map(&:originated_on).compact.max
-                  xml.date items.map(&:originated_on).compact.max.xmlschema, 'type' => 'dateTo', 'dateFormat' => 'UTC'
+                  xml.date items.map(&:originated_on).compact.max.xmlschema, 'type' => 'dateTo', 'dateFormat' => 'W3CDTF'
                 end
               end
             end
@@ -291,7 +291,7 @@ class Collection < ActiveRecord::Base
         xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
 
         xml.party 'type' => 'person', 'dateModified' => updated_at.xmlschema do
-          xml.identifier collector.xml_key, 'type' => 'local'
+          xml.identifier collector.full_path, 'type' => 'uri'
           xml.name 'type' => 'primary' do
             xml.namePart collector.first_name, 'type' => 'given'
             xml.namePart collector.last_name, 'type' => 'family'
@@ -315,7 +315,7 @@ class Collection < ActiveRecord::Base
           xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
 
           xml.party 'type' => 'group', 'dateModified' => updated_at.xmlschema do
-            xml.identifier university.xml_key, 'type' => 'local'
+            xml.identifier university.full_path, 'type' => 'uri'
             xml.name 'type' => 'primary' do
               xml.namePart university.name, 'type' => 'primary'
             end
