@@ -4,11 +4,14 @@
 .twoup-1
   %fieldset
     %legend Item details
-    .right
-      = f.check_box :private
-      = f.label :private
 
     %table.form
+      %tr
+        %td.empty
+        %td
+          = f.check_box :private
+          = f.label :private
+
       - unless params[:action] == 'bulk_edit'
         %tr
           %th= f.label :identifier, 'Item ID'
@@ -25,35 +28,34 @@
           = f.label :title
           %br
           %i (published)
-          - if params[:action] == 'bulk_edit'
-            %br
+        %td= f.text_field :title, {:placeholder => "Please enter a title"}
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_title
-        %td= f.text_field :title, {:placeholder => "Please enter a title"}
 
       %tr
         %th
           = f.label :description
           %br
           %i (published)
-          - if params[:action] == 'bulk_edit'
-            %br
+        %td= f.text_area :description, :rows => 5
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_description
-        %td= f.text_area :description, :rows => 5
 
       %tr
         %th= f.label :originated_on, 'Origination date'
         %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
 
       %tr
-        %th
-          = f.label :originated_on_narrative, 'Origination date free form'
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :originated_on_narrative, 'Origination date free form'
+        %td= f.text_field :originated_on_narrative
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_originated_on_narrative
-        %td= f.text_field :originated_on_narrative
 
       %tr
         %td
@@ -62,13 +64,12 @@
           = f.label :owned, 'Item held by Paradisec'
 
       %tr
-        %th
-          = f.label :url, 'URL'
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :url, 'URL'
+        %td= f.text_field :url
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_url
-        %td= f.text_field :url
 
       %tr
         %th= f.label :collector_id
@@ -76,68 +77,64 @@
 
       %tr
         %th
-          - if params[:action] == 'bulk_edit'
-            %small Append
-            = f.check_box :bulk_edit_append_country_ids
-            %br
           = f.label :country_ids, 'Countries'
           %br
           %small
             = link_to 'Ethnologue list', 'http://www.ethnologue.com/country_index_bibl.asp', :target => '_blank'
 
         %td= f.hidden_field :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_country_ids
 
       %tr
         %th
           = f.label :language, 'Language as given'
-          - if params[:action] == 'bulk_edit'
-            %br
-            %small Append
-            = f.check_box :bulk_edit_append_language
           %br
           %small
             = link_to 'Ethnologue list', 'http://www.ethnologue.com/language_index.asp', :target => '_blank'
         %td= f.text_field :language
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_language
 
       %tr
-        %th
-          - if params[:action] == 'bulk_edit'
-            %small Append
-            = f.check_box :bulk_edit_append_subject_language_ids
-            %br
-          = f.label :subject_language_ids, 'Subject languages'
+        %th= f.label :subject_language_ids, 'Subject languages'
         %td
           = f.hidden_field :subject_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
           = link_to 'Copy from Content language', '#', :id => 'copy-subject-language'
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_subject_language_ids
 
       %tr
-        %th
-          - if params[:action] == 'bulk_edit'
-            %small Append
-            = f.check_box :bulk_edit_append_content_language_ids
-            %br
-          = f.label :content_language_ids, 'Content language'
+        %th= f.label :content_language_ids, 'Content language'
         %td
           = f.hidden_field :content_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
           = link_to 'Copy from Subject language', '#', :id => 'copy-content-language'
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_content_language_ids
 
       %tr
-        %th
-          = f.label :dialect
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :dialect
+        %td= f.text_field :dialect
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_dialect
-        %td= f.text_field :dialect
 
       %tr
-        %th
-          = f.label :region, 'Region / village'
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :region, 'Region / village'
+        %td= f.text_field :region
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_region
-        %td= f.text_field :region
 
       %tr
         %td.empty
@@ -206,13 +203,12 @@
           = f.check_box :tapes_returned
           Tapes returned to depositor
       %tr
-        %th
-          = f.label :original_media
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :original_media
+        %td= f.text_field :original_media
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_original_media
-        %td= f.text_field :original_media
 
       %tr
         %th Date received
@@ -223,13 +219,12 @@
         %td= f.text_field :digitised_on, :class => 'dateinput short', :value => params[:digitised_on] || @item.digitised_on && @item.digitised_on.strftime('%d %B %Y')
 
       %tr
-        %th
-          = f.label :ingest_notes
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :ingest_notes
+        %td= f.text_area :ingest_notes, :rows => 5
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_ingest_notes
-        %td= f.text_area :ingest_notes, :rows => 5
 
       %tr
         %th= f.label :metadata_imported_on, 'Metadata imported'
@@ -240,45 +235,41 @@
         %td= f.text_field :metadata_exported_on, :class => 'dateinput short', :value => params[:metadata_exported_on] || @item.metadata_exported_on && @item.metadata_exported_on.strftime('%d %B %Y')
 
       %tr
-        %th
-          = f.label :tracking
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :tracking
+        %td= f.text_field :tracking
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_tracking
-        %td= f.text_field :tracking
 
 
   %fieldset
     %legend Admin information
     %table.form
       %tr
-        %th
-          - if params[:action] == 'bulk_edit'
+        %th= f.label :admin_ids, 'Edit access'
+        %td= f.hidden_field :admin_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_admin_ids
-            %br
-          = f.label :admin_ids, 'Edit access'
-        %td= f.hidden_field :admin_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 
       %tr
-        %th
-          = f.label :access_narrative, 'Data access details'
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :access_narrative, 'Data access details'
+        %td= f.text_area :access_narrative, :rows => 5
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_access_narrative
-        %td= f.text_area :access_narrative, :rows => 5
 
       %tr
-        %th
-          = f.label :admin_comment, 'Comments'
-          - if params[:action] == 'bulk_edit'
-            %br
+        %th= f.label :admin_comment, 'Comments'
+        %td= f.text_area :admin_comment, :rows => 5
+        - if params[:action] == 'bulk_edit'
+          %td.append
             %small Append
             = f.check_box :bulk_edit_append_admin_comments
-        %td= f.text_area :admin_comment, :rows => 5

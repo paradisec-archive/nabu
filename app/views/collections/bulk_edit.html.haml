@@ -1,7 +1,7 @@
 %h1 Collections Bulk Update
 
 .right
-  = link_to 'Advanced Search', advanced_search_collections_path(:params => params.delete_if {|k,v| ['action', 'controller'].include? k})
+  = link_to 'Advanced Search', advanced_search_collections_path(:params => params.clone.delete_if {|k,v| ['action', 'controller'].include? k})
 .clear
 
 %p== #{@search.total} search results

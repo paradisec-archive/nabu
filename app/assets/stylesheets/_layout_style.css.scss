@@ -219,6 +219,11 @@ body.bp {
         font-color: red;
       }
 
+      &.append {
+        line-height: 1.0;
+        padding-top: 0px;
+      }
+
       a {
         padding-left: 10px;
       }
