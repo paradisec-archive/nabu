@@ -379,54 +379,6 @@ body.bp {
     font-style: italic;
   }
 
-  // tabs for items show page
-  .tabs {
-    padding: 0px;
-    background: none;
-    border: none;
-    font: inherit;
-
-    .ui-tabs-nav {
-      padding-left: 0px;
-      background: transparent;
-      border: none;
-      li {
-        margin: 0.6em 5px 0 0;
-        font-size: 80%;
-        top: 3px;
-        border-bottom: 1px solid black;
-      }
-      li.ui-tabs-selected {
-        margin-top: 0em;
-        font-size: 100%;
-        border-bottom: none;
-        a {
-          color: black;
-          font-weight: normal;
-        }
-      }
-    }
-
-    .ui-tabs-nav .tab {
-      padding-left: 0px;
-      background: #EEE;
-      border: none;
-    }
-
-    .ui-tabs-panel {
-      border-top: none;
-      background: #EEE;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-
-    .ui-corner-all, .tabs .ui-corner-bottom {
-      border-radius: 0px;
-      -moz-border-radius: 0px;
-      -webkit-border-radius: 0px;
-    }
-  }
-
   // datepicker
   .ui-datepicker {
     table {

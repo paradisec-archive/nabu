@@ -22,7 +22,6 @@
 //= require datepicker
 //= require maps
 //= require sortable
-//= require tabs
 //= require remove_empty_fields
 //= require add_university
 //= require copy_language

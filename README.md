@@ -59,17 +59,17 @@ upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
  ssh deploy@115.146.93.26
  gzip -dc nabu.sql.gz | mysql -u root nabu
  cd /srv/www/nabu/current
- RAILS_ENV=production rake sunspot:reindex
+ RAILS_ENV=uat rake sunspot:reindex
 
 import archive files:
- RAILS_ENV=production rake archive:update_files
+ RAILS_ENV=staging rake archive:update_files
 
 # OAI-PMH
 
 OLAC available at:
   http://catalog.paradisec.org.au/oai/item
 
-The feed that OLCA tests:
+The feed that OLAC tests:
   http://localhost:3000/oai/item?verb=ListRecords&metadataPrefix=olac
 
 RIF-CS available at:
