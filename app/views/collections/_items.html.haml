@@ -26,8 +26,9 @@
         %tr
           %td no items available
           %td
-          %td
-          %td
+          - if can? :update, @collection
+            %td
+            %td
           %td
       - else
         - @items.order(:identifier).each do |item|
