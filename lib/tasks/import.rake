@@ -380,6 +380,9 @@ namespace :import do
 
   desc 'Import languages into NABU from ethnologue DB'
   task :languages => :environment do
+    puts "Importing languages from ethnologue DB (with geocodes from legacy)"
+    require 'iconv'
+
     # TODO Replace me with new data when we get it
     geo_codes = Hash.new
     client = connect
@@ -393,10 +396,12 @@ namespace :import do
       }
     end
 
-    puts "Importing languages from ethnologue DB (with geocodes from legacy)"
-    require 'iconv'
     data = File.open("#{Rails.root}/data/LanguageIndex.tab", "rb").read
     data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
+    # add three special language codes
+    data += "mul\tMULTIPLE\tL\tMultiple languages\r\n"
+    data += "und\tUNDETERMINED\tL\tUndetermined language\r\n"
+    data += "zxx\tZXX\tL\tNo linguistic content\r\n"
     data.each_line do |line|
       next if line =~ /^LangID/
       code, country_code, name_type, name = line.strip.split("\t")
