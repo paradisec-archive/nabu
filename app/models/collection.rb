@@ -37,7 +37,7 @@ class Collection < ActiveRecord::Base
     :bulk_edit_append_tape_location, :bulk_edit_append_grant_identifier,
     :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
   ]
-  attr_reader *bulk
+  attr_reader(*bulk)
 
   attr_accessible :identifier, :title, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
