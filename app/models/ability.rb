@@ -27,11 +27,19 @@ class Ability
       # Only collection_admins can manage a collection
       can :manage, Collection, :collection_admins => { :user_id => user.id }
       can :manage, Collection, :collector_id => user.id
+      cannot :search_csv, Collection
+      cannot :advanced_search, Collection
+      cannot :bulk_edit, Collection
+      cannot :bulk_update, Collection
 
       can :read,   Item, :private => false
       can :manage, Item, :collection  => { :collection_admins => { :user_id => user.id } }
       can :manage, Item, :collection  => { :collector_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
+      cannot :search_csv, Item
+      cannot :advanced_search, Item
+      cannot :bulk_edit, Item
+      cannot :bulk_update, Item
 
       can [:read, :download], Essence, :item => { :private => false }
       can [:read, :download], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }

@@ -62,4 +62,4 @@
   = render 'items/search_results'
 
   %p
-    = link_to 'Export CSV (all items)', search_items_path(:format => :csv)
+    = link_to 'Export CSV (visible results)', search_items_path(:format => :csv) if can? :search_csv, Item
