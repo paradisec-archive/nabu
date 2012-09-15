@@ -28,6 +28,7 @@ Nabu::Application.routes.draw do
       resources :essences, :only => [:show, :download] do
         member do
           get :download
+          get :display
         end
       end
     end

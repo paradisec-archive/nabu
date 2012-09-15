@@ -359,10 +359,12 @@ body.bp {
 
   // audio / video
   #media_item {
-    height: 200px;
-    margin: 8px;
-    border: 2px solid grey;
-    text-align: justify;
+    text-align: center;
+    img, video {
+      max-height: 800px;
+      width: 90%;
+      border: 5px solid black;
+    }
   }
 
   // comments
