@@ -1,5 +1,7 @@
 class PageController < ApplicationController
-  def index
+  def about
+    @coordinates = Collection.all.map(&:center_coordinate).compact
+    @content = render_to_string :partial => 'page/infowindow'
   end
 
   def dashboard

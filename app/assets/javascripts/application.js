@@ -16,6 +16,7 @@
 //= require jquery-ui
 //= require jquery-query
 //= require select2
+//= require markerclusterer
 //
 // Our Stuff
 //= require per_page

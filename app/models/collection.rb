@@ -175,6 +175,17 @@ class Collection < ActiveRecord::Base
     (east_limit && east_limit != 0)
   end
 
+  def center_coordinate
+    if has_coordinates
+      {
+        :lat => (north_limit + south_limit) / 2,
+        :lng => (west_limit + east_limit) / 2,
+        :title => title,
+        :id => identifier,
+      }
+    end
+  end
+
   def csv_countries
     countries.map(&:name).join(';')
   end

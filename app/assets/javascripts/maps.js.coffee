@@ -73,8 +73,8 @@ $(document).ready ->
         $('.west_limit').val(sw.lng())
 
     $('.map').each (index, element) ->
-      cw = $('.map').width()
-      $('.map').css({'height':cw+'px'})
+      cw = $(element).width()
+      $(element).css({'height':cw+'px'})
 
       options = {
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -88,5 +88,48 @@ $(document).ready ->
       map = new google.maps.Map(element, options)
       $(element).data('map', map)
       $(element).trigger('update_map')
+
+    $('.collection_map').each (index, element) ->
+      options = {
+        center: new google.maps.LatLng(20, 0),
+        zoom: 1,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: true,
+        scrollwheel: false,
+        zoomControl: true,
+        draggable: true,
+        disableDoubleClickZoom: false,
+      }
+
+      map = new google.maps.Map(element, options)
+      $(element).data('map', map)
+      coordinates = $(element).data('coordinates')
+      url = $(element).data('url')
+      cluster_options = {
+        gridSize: 15,
+        maxZoom: 15,
+        avgCenter: false,
+        minClusterSize: 5
+      }
+      clusterer = new MarkerClusterer(map, [], cluster_options)
+      for coord in coordinates
+        latlng = new google.maps.LatLng(coord['lat'],coord['lng'])
+
+        link = url + '/' + coord['id']
+        content = $(element).data('content')
+        content = content.replace(/TITLE/g, coord['title'])
+        content = content.replace(/ID/g, coord['id'])
+
+        marker = new google.maps.Marker({
+            position: latlng,
+            title: coord['title'],
+            clickable: true
+        })
+        marker.info = new google.maps.InfoWindow(content: content)
+
+        google.maps.event.addListener marker, 'click', ->
+          this.info.open(map, this)
+
+        clusterer.addMarker(marker)
 
 

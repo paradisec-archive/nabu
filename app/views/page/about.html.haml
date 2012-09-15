@@ -1,24 +1,13 @@
 
-%h1 Nabu
+%h1
+  Welcome to the catalog of the
+  %b PARADISEC
+  collection
 
 .twoup-1
   .page-box
 
-    %h4
-      Welcome to the catalog of the
-      %b PARADISEC
-      collection.
-
-  .page-box
-
-    %h4 What material does this collection contain?
-
-    %p.indent
-      %b PARADISEC
-      (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.
-
-    %p.indent
-      The catalog entry for an item is usually written by the depositor, and some are more detailed than others. In the case of collections that we have digitised from deceased researchers, we do the best we can to describe the records, but often there is little information available. By placing these items in the collection we hope that other researchers will enrich the descriptions as they use the material.
+    .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content}}
 
   .page-box
 
@@ -33,7 +22,19 @@
       =link_to 'PARADISEC website', 'http://paradisec.org.au', :target => "_blank"
       for further details.
 
+
 .twoup-2
+
+  .page-box
+
+    %h4 What material does this collection contain?
+
+    %p.indent
+      %b PARADISEC
+      (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.
+
+    %p.indent
+      The catalog entry for an item is usually written by the depositor, and some are more detailed than others. In the case of collections that we have digitised from deceased researchers, we do the best we can to describe the records, but often there is little information available. By placing these items in the collection we hope that other researchers will enrich the descriptions as they use the material.
 
   .page-box
 
