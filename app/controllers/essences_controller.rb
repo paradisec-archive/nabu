@@ -6,4 +6,12 @@ class EssencesController < ApplicationController
   def show
   end
 
+  def download
+    send_file @essence.path, :type => @essence.mimetype, :filename => @essence.filename
+  end
+
+  def display
+    send_file @essence.path, :disposition => 'inline', :type => @essence.mimetype
+  end
+
 end

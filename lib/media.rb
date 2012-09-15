@@ -10,7 +10,33 @@ module Nabu
     end
 
     def mimetype
-      @mimetype ||= FM.file @file, true
+      return @mimetype if @mimetype
+      @mimetype = FM.file @file, true
+      case @mimetype
+        when 'application/octet-stream'
+          extension = @file.split('.').last
+          @mimetype = case extension
+            when 'mp3' then 'audio/mpeg'
+            when 'jpg' then 'image/jpeg'
+            when 'mp4' then 'video/mp4'
+            when 'mxf' then 'application/mxf'
+            when 'dv'  then 'video/x-dv'
+            when 'tab','txt','cha' then 'text/plain'
+            else
+              Rails.logger.info "unknown mime type for #{@file}"
+              @mimetype
+          end
+        when 'text/x-c', 'text/x-fortran', 'text/x-pascal', 'text/troff'
+          @mimetype = 'text/plain'
+        when 'video/3gpp'
+          @mimetype = 'video/mp4'
+        when 'text/html'
+          extension = @file.split('.').last
+          if extension == 'xml'
+            @mimetype = 'text/xml'
+          end
+        else
+      end
     end
 
     def size

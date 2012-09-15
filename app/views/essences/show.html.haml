@@ -62,9 +62,22 @@
           - if @essence.bitrate
             == #{@essence.bitrate} bps
 
+      %tr
+        %td.empty
+        %td.empty= link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence)
+
 .twoup-2
   %fieldset
     %legend Preview
     
-    #media_item [video here] This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
+    #media_item
+      - case @essence.mimetype
+      - when /^image\/(jpeg|png|gif|tiff|bmp)/
+        = image_tag display_collection_item_essence_path(@collection, @item, @essence)
+      - when /^audio\/(mpeg|ogg|(x-)?wav)/
+        = audio_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+      - when /^video\/(mp4|mpeg|webm|ogg)/
+        = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+      - else
+        %i Can't display file preview
     
