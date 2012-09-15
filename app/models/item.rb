@@ -48,7 +48,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comments,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids, :bulk_edit_append_admin_ids
   ]
-  attr_reader *bulk
+  attr_reader(*bulk)
   attr_accessible :identifier, :title, :owned, :url, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
@@ -124,9 +124,8 @@ class Item < ActiveRecord::Base
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :code_textp do
-      full_identifier
-    end
+    text :identifier, :as => :code_textp
+    text :full_identifier, :as => :code_textp
     text :collector_name
     text :university_name
     text :operator_name
@@ -166,6 +165,7 @@ class Item < ActiveRecord::Base
     integer :id
     string :title
     string :identifier
+    string :full_identifier
     string :university_name
     string :collector_name
     string :region
