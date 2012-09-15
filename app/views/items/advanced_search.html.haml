@@ -145,6 +145,17 @@
 
   .twoup-2
     %fieldset
+      %legend Map Search
+      %table.form
+        %tr
+          %td{:colspan => 2}
+            = hidden_field_tag :north_limit, params[:north_limit], :class => 'north_limit'
+            = hidden_field_tag :south_limit, params[:south_limit], :class => 'south_limit'
+            = hidden_field_tag :east_limit,  params[:east_limit],  :class => 'east_limit'
+            = hidden_field_tag :west_limit,  params[:west_limit],  :class => 'west_limit'
+            .map{:data => {:editable => 'true'}}
+
+    %fieldset
       %legend Archive information
       %table.form
         %tr
@@ -214,7 +225,6 @@
             %br
             Blank
             = check_box_tag :tracking_blank, 1, params[:tracking_blank]
-
 
     %fieldset
       %legend Admin information
