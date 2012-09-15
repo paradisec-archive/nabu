@@ -76,7 +76,7 @@
           %small
             = link_to 'Ethnologue list', 'http://www.ethnologue.com/language_index.asp', :target => '_blank'
         %td
-          = f.hidden_field :language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          = f.hidden_field :language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#collection_country_ids', :multiple => true}, :class => 'select2 language'
           - if params[:action] == 'bulk_edit'
             %td.append
               %small Append

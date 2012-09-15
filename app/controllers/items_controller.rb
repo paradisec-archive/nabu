@@ -11,7 +11,8 @@ class ItemsController < ApplicationController
     end
 
     @search = Item.solr_search do
-      fulltext params[:search]
+      fulltext params[:search].gsub(/-/, ' ')
+
       facet :content_language_ids, :country_ids, :collector_id
 
       with(:collector_id, params[:collector_id]) if params[:collector_id].present?
