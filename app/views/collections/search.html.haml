@@ -11,7 +11,7 @@
       = submit_tag 'Clear', :name => :clear
 
     .right
-      = link_to 'Advanced Search', advanced_search_collections_path
+      = link_to 'Advanced Search', advanced_search_collections_path if can? :advanced_search, Collection
 
     .clear
 

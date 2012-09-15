@@ -23,7 +23,6 @@ class Ability
 
       # Anyone can view non-private collections
       can :read, Collection, :private => false
-      can :advanced_search, Collection
 
       # Only collection_admins can manage a collection
       can :manage, Collection, :collection_admins => { :user_id => user.id }

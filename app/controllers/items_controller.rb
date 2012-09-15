@@ -2,6 +2,7 @@ class ItemsController < ApplicationController
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
+  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
   def search
     if params[:clear]
