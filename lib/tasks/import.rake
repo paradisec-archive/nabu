@@ -561,9 +561,9 @@ namespace :import do
     CSV.foreach("#{Rails.root}/db/legacy/collections.csv", :col_sep => "\t", :headers => true) do |row|
       collection = Collection.find_by_identifier row['coll_id']
       if collection
-        collection.title = row['coll_description'] unless row['coll_description'].blank?
-        collection.description = row['coll_note']  unless row['coll_note'].blank?
-        collection.comments = row['coll_comments'] if collection.comments.blank?
+#        collection.title = row['coll_description'] unless row['coll_description'].blank?
+#        collection.description = row['coll_note']  unless row['coll_note'].blank?
+#        collection.comments = row['coll_comments'] if collection.comments.blank?
         field = FieldOfResearch.find_by_identifier(row['FOR'][/\d+/])
         if field
           collection.field_of_research = field
