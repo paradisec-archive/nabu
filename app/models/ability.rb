@@ -34,10 +34,10 @@ class Ability
       can :manage, Item, :collection  => { :collector_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
 
-      can :read, Essence, :item => {:private => false }
-      can :read, Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
-      can :read, Essence, :item => { :collection  => { :collector_id => user.id } }
-      can :read, Essence, :item => { :item_admins => { :user_id => user.id } }
+      can [:read, :download], Essence, :item => { :private => false }
+      can [:read, :download], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
+      can [:read, :download], Essence, :item => { :collection  => { :collector_id => user.id } }
+      can [:read, :download], Essence, :item => { :item_admins => { :user_id => user.id } }
 
       can :create, Comment, :commentable => { :private => false }
     end

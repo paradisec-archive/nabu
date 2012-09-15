@@ -25,7 +25,11 @@ Nabu::Application.routes.draw do
       put 'bulk_update' => 'collections#bulk_update'
     end
     resources :items do
-      resources :essences, :only => [:show]
+      resources :essences, :only => [:show, :download] do
+        member do
+          get :download
+        end
+      end
     end
   end
   resources :items, :only => [] do

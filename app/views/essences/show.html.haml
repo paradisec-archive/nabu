@@ -62,9 +62,13 @@
           - if @essence.bitrate
             == #{@essence.bitrate} bps
 
+      %tr
+        %td.empty
+        %td.empty= link_to 'Download', download_collection_item_essence_path(@essence.item.collection, @essence.item, @essence)
+
 .twoup-2
   %fieldset
     %legend Preview
     
-    #media_item [video here] This will initially hold a media element for the first essence, each essence will then have a play button in the first column which when clicked will reload this div with the media
+    #media_item TODO: media will display here
     
