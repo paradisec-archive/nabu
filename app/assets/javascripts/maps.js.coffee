@@ -116,9 +116,11 @@ $(document).ready ->
         latlng = new google.maps.LatLng(coord['lat'],coord['lng'])
 
         link = url + '/' + coord['id']
+        items = coord['items']
         content = $(element).data('content')
         content = content.replace(/TITLE/g, coord['title'])
         content = content.replace(/ID/g, coord['id'])
+        content = content.replace(/ITEMS/g, coord['items'])
 
         marker = new google.maps.Marker({
             position: latlng,

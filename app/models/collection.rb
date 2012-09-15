@@ -182,6 +182,7 @@ class Collection < ActiveRecord::Base
         :lng => (west_limit + east_limit) / 2,
         :title => title,
         :id => identifier,
+        :items => items.length,
       }
     end
   end
