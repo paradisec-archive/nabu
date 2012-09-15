@@ -127,4 +127,6 @@ ActiveAdmin.setup do |config|
   # To load a javascript file:
   config.register_javascript 'per_page.js'
   config.register_javascript 'jquery-query.js'
+  config.register_javascript 'maps.js'
+  config.register_javascript 'http://maps.googleapis.com/maps/api/js?sensor=false'
 end
