@@ -103,6 +103,17 @@ $(document).ready ->
 
       map = new google.maps.Map(element, options)
       $(element).data('map', map)
+
+      north_limit = $(this).data('north_limit')
+      south_limit = $(this).data('south_limit')
+      east_limit = $(this).data('east_limit')
+      west_limit = $(this).data('west_limit')
+      if north_limit
+        sw  = new google.maps.LatLng(south_limit, west_limit)
+        ne  = new google.maps.LatLng(north_limit, east_limit)
+        bounds = new google.maps.LatLngBounds(sw, ne)
+        map.fitBounds(bounds)
+
       coordinates = $(element).data('coordinates')
       url = $(element).data('url')
       cluster_options = {

@@ -22,7 +22,7 @@
           %th Files
         %th Actions
     %tbody
-      - if @items.length == 0
+      - if @num_items == 0
         %tr
           %td no items available
           %td
@@ -31,7 +31,7 @@
             %td
           %td
       - else
-        - @items.order(:identifier).each do |item|
+        - @items.each do |item|
           - if can? :read, item
             %tr
               %td= item.identifier

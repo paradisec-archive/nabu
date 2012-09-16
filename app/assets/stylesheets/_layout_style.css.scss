@@ -162,8 +162,13 @@ body.bp {
 
     .collection_map {
       height: 450px;
-      border: 1px solid grey;
     }
+  }
+
+  .collection_map {
+    border: 1px solid grey;
+    width: 500px;
+    height: 300px;
   }
 
   table.table {

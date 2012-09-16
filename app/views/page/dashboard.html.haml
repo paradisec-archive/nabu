@@ -1,36 +1,116 @@
-%h1 Dashboard
 
-- if can? :create, Collection
-  #actions
-    = link_to 'Add collection', new_collection_path, :class => 'button'
+%h1 Dashboard for #{@name}
 
+.twoup-1
 
   %fieldset
-    %legend My Collections
-    .fix-scroll-height
-      %table.table
-        %tr
-          %th ID
-          %th Title
-          %th Creation Date
-          %th Actions
+    %legend My Collections (#{@num_collections})
 
+    .right
+      %p
+        - if can? :create, Collection
+          = link_to 'Add collection', new_collection_path, :class => 'button'
+
+    .left
+      = paginate @collections, :param_name => :collections_page
+
+    .clear
+
+    %table.table
+      %thead
+        %tr
+          = sortable :identifier, 'ID'
+          = sortable :title
+          = sortable :created_at, 'Creation Date'
+          %th Actions
+      %tbody
+        - if @num_collections == 0
+          %tr
+            %td no collections available
+            %td
+            %td
+            %td
+        - else
           - @collections.each do |collection|
             %tr
               %td= collection.identifier
               %td= collection.title
-              %td= collection.created_at
+              %td= collection.created_at.to_date
               %td
                 = link_to 'View', collection if can? :read, collection
                 = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
 
+    = paginate @collections, :param_name => :collections_page
+
+    %p
+      %button.per_page{:data => {:per => 10, :param_name => :collections_per_page}} Show 10
+      %button.per_page{:data => {:per => 50, :param_name => :collections_per_page}} Show 50
+      %button.per_page{:data => {:per => @num_collections, :param_name => :collections_per_page}} Show all
+
+
 
   %fieldset
-    %legend My Items
-    .fix-scroll-height
+    %legend My Comments (#{@num_comments})
+    %table.table
+      %thead
+        %tr
+          %th Item
+          %th Title
+          %th Comment
+      %tbody
+        - if @num_comments == 0
+          %tr
+            %td
+            %td
+            %td you haven't left any comments on items
+        - else
+          - @comments.each do |comment|
+            %tr
+              %td= link_to comment.commentable.full_identifier, comment.commentable
+              %td= comment.commentable.title
+              %td= comment.body
+
+  %fieldset
+    %legend Comments on my items (#{@num_comments_left})
+    %table.table
+      %thead
+        %tr
+          %th Item
+          %th User
+          %th Comment
+      %tbody
+        - if @num_comments_left == 0
+          %tr
+            %td
+            %td
+            %td no comments left by users on your items
+        - else
+          - @comments_left.each do |comment|
+            %tr
+              %td= link_to comment.commentable.full_identifier, comment.commentable
+              %td= comment.owner.name
+              %td= comment.body
+
+
+.twoup-2
+
+  %fieldset
+    %legend Locations
+
+    .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content,
+    :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
+
+  %fieldset
+    %legend Recent edits to my items (#{@num_items})
+
+    .left
+      = paginate @items, :param_name => :items_page
+
+    .clear
+
       %table.table
         %tr
-          %th ID
+          %th Item
           %th Title
           %th Creation Date
           %th Actions
@@ -39,23 +119,9 @@
             %tr
               %td= item.full_identifier
               %td= item.title
-              %td= item.created_at
+              %td= item.created_at.to_date
               %td
                 = link_to 'View', [item.collection, item] if can? :read, item
-                = link_to 'Edit', edit_item_path(item.collection, item) if can? :update, item
+                = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
 
-
-  %fieldset
-    %legend My Comments
-    .fix-scroll-height
-      %table.table
-        %tr
-          %th Item
-          %th User
-          %th Comment
-        - @comments.each do |comment|
-          %tr
-            %td= link_to comment.commentable.full_identifier, comment.commentable
-            %td= comment.owner.name
-            %td= comment.body
 
