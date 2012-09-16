@@ -2,26 +2,24 @@
   %tr
     %td= number_with_delimiter Collection.count
     %td collections
-    %td= number_with_delimiter Comment.count
-    %td comments posted
   %tr
     %td= number_with_delimiter Item.count
     %td items
-    %td= number_with_delimiter Comment.approved.count
-    %td comments approved
   %tr
     %td= number_with_delimiter Essence.count
     %td essence objects
-    %td 0
-    %td comments pending
   %tr
     %td= number_with_delimiter User.count
     %td users
-    %td
-    %td
   %tr
     %td= number_with_delimiter University.count
     %td universities
-    %td
-    %td
-
+  %tr
+    %td= number_with_delimiter Comment.count
+    %td comments posted
+  %tr
+    %td= number_with_delimiter Comment.approved.count
+    %td comments approved
+  %tr
+    %td= number_with_delimiter Comment.unapproved.count
+    %td comments pending

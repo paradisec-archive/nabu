@@ -8,10 +8,9 @@ ActiveAdmin::Dashboards.build do
 
   section '10 Newest Collections', :priority => 10 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
-      column :id do |collection|
-        link_to collection.id, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
+      column :identifier do |collection|
+        link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
       end
-      column :identifier
       column :title
       default_actions
     end
@@ -19,10 +18,9 @@ ActiveAdmin::Dashboards.build do
 
   section '10 Newest Items', :priority => 20 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Item.order('id desc').limit(10) do
-      column :id do |item|
-        link_to item.id, item
+      column :full_identifier do |item|
+        link_to item.full_identifier, [item.collection, item]
       end
-      column :full_identifier
       column :title
       default_actions
     end
@@ -30,7 +28,9 @@ ActiveAdmin::Dashboards.build do
 
   section '10 Newest Comments', :priority => 30 do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Comment.order('id desc').limit(10) do
-      id_column
+      column :item_id do |comment|
+        link_to comment.commentable.full_identifier, [comment.commentable.collection, comment.commentable]
+      end
       column :body
       column :owner
     end
@@ -38,17 +38,18 @@ ActiveAdmin::Dashboards.build do
 
   section 'Unapproved Comments', :priority => 40, :if => Proc.new { Comment.unapproved.count > 0 } do
     insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Comment.unapproved.order('id desc').limit(10) do
-      id_column
+      column :item_id do |comment|
+        link_to comment.commentable.full_identifier, [comment.commentable.collection, comment.commentable]
+      end
       column :body
       column :owner
       default_actions
       column '', :sortable => false do |comment|
-        link_to 'Approve', approve_comment_path(comment)
+        link_to 'Approve', approve_comment_path(comment), :method => :post
       end
       column '', :sortable => false do |comment|
-        link_to 'Spam',    spam_comment_path(comment)
+        link_to 'Spam',    spam_comment_path(comment), :method => :post
       end
-
     end
   end
 
