@@ -90,6 +90,9 @@ $(document).ready ->
       $(element).trigger('update_map')
 
     $('.collection_map').each (index, element) ->
+      cw = $(element).width() - 100
+      $(element).css({'height':cw+'px'})
+
       options = {
         center: new google.maps.LatLng(20, 0),
         zoom: 1,
