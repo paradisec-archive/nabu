@@ -46,6 +46,16 @@ namespace :sunspot do
   end
   after 'deploy:restart', 'sunspot:restart'
 end
+namespace :monit do
+  task :unmonitor do
+    run "sudo /usr/bin/monit unmonitor all"
+  end
+  task :monitor do
+    run "sudo /usr/bin/monit monitor all"
+  end
+  after 'deploy:restart', 'monit:monitor'
+  before 'deploy:restart', 'monit:unmonitor'
+end
 
 require 'bundler/capistrano'
 require 'capistrano-unicorn'

@@ -39,7 +39,6 @@ gem 'nilify_blanks'
 
 # Search
 gem 'sunspot_rails'
-gem 'sunspot_with_kaminari'
 # FIXME move back to development once solr is running standalone on the server
 gem 'sunspot_solr'
 

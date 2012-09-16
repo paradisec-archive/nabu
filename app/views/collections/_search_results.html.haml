@@ -1,5 +1,5 @@
 
-= paginate @search
+= paginate @search.hits
 
 %table.table
   %tr
@@ -33,7 +33,7 @@
 -if @search.results.empty?
   %p.bold There were NO results for your search.
 
-= paginate @search
+= paginate @search.hits
 
 %p
   %button.per_page{:data => {:per => 10}} Show 10
