@@ -101,7 +101,7 @@
     :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
 
   %fieldset
-    %legend Recent edits to my items (#{@num_items})
+    %legend My Items (#{@num_items}) - ordered by recent edits
 
     .left
       = paginate @items, :param_name => :items_page
