@@ -27,10 +27,10 @@ class PageController < ApplicationController
     @num_comments_left = @comments_left.length
 
     @coordinates = @collections.map(&:center_coordinate).compact
-    @north_limit = @coordinates.map{|c| c[:lat]}.max + 5
-    @south_limit = @coordinates.map{|c| c[:lat]}.min - 5
-    @east_limit  = @coordinates.map{|c| c[:lng]}.max + 5
-    @west_limit  = @coordinates.map{|c| c[:lng]}.min - 5
+    @north_limit = @coordinates.map{|c| c[:lat]}.max
+    @south_limit = @coordinates.map{|c| c[:lat]}.min
+    @east_limit  = @coordinates.map{|c| c[:lng]}.max
+    @west_limit  = @coordinates.map{|c| c[:lng]}.min
     @content = render_to_string :partial => 'page/infowindow'
   end
 end
