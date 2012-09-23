@@ -26,6 +26,9 @@ class Item < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
 
+  has_many :item_data_categories, :dependent => :destroy
+  has_many :data_categories, :through => :item_data_categories, :validate => true
+
   has_many :essences, :dependent => :restrict
   has_many :comments, :as => :commentable, :dependent => :destroy
 
@@ -46,13 +49,14 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_originated_on_narrative, :bulk_edit_append_url, :bulk_edit_append_language,
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comments,
-    :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids, :bulk_edit_append_admin_ids
+    :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
+    :bulk_edit_append_admin_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :owned, :url, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
-                  :country_ids,
+                  :country_ids, :data_category_ids,
                   :content_language_ids, :subject_language_ids,
                   :admin_ids, :item_agents_attributes,
                   :access_condition_id,
@@ -148,6 +152,9 @@ class Item < ActiveRecord::Base
     text :countries do
       countries.map(&:name)
     end
+    text :data_categories do
+      data_categories.map(&:name)
+    end
 
     # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true
@@ -156,6 +163,7 @@ class Item < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
     integer :subject_language_ids, :references => Language, :multiple => true
+    integer :data_category_ids, :references => DataCategory, :multiple => true
     integer :discourse_type_id, :references => DiscourseType
     integer :access_condition_id, :references => AccessCondition
     integer :agent_ids, :references => User, :multiple => true
@@ -194,6 +202,9 @@ class Item < ActiveRecord::Base
     end
     string :countries, :multiple => true do
       countries.map(&:name)
+    end
+    string :data_categories, :multiple => true do
+      data_categories.map(&:name)
     end
 
     # Things we want to check blankness of
@@ -256,6 +267,10 @@ class Item < ActiveRecord::Base
 
   def csv_subject_languages
     subject_languages.map(&:name).join(';')
+  end
+
+  def csv_data_categories
+    data_categories.map(&:name).join(';')
   end
 
   def csv_item_agents

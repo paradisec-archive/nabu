@@ -136,6 +136,10 @@
           %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
         %tr
+          %th= label_tag :data_category_ids, 'Data Categories'
+          %td= hidden_field_tag :data_category_ids, params[:data_category_ids], :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+
+        %tr
           %th= label_tag :discourse_type_id
           %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
 

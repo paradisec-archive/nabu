@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120819120641) do
+ActiveRecord::Schema.define(:version => 20120923013322) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -121,6 +121,12 @@ ActiveRecord::Schema.define(:version => 20120819120641) do
 
   add_index "countries_languages", ["country_id", "language_id"], :name => "index_countries_languages_on_country_id_and_language_id", :unique => true
 
+  create_table "data_categories", :force => true do |t|
+    t.string "name"
+  end
+
+  add_index "data_categories", ["name"], :name => "index_data_categories_on_name", :unique => true
+
   create_table "discourse_types", :force => true do |t|
     t.string "name", :null => false
   end
@@ -184,6 +190,13 @@ ActiveRecord::Schema.define(:version => 20120819120641) do
   end
 
   add_index "item_countries", ["item_id", "country_id"], :name => "index_item_countries_on_item_id_and_country_id", :unique => true
+
+  create_table "item_data_categories", :force => true do |t|
+    t.integer "item_id",          :null => false
+    t.integer "data_category_id", :null => false
+  end
+
+  add_index "item_data_categories", ["item_id", "data_category_id"], :name => "index_item_data_categories_on_item_id_and_data_category_id", :unique => true
 
   create_table "item_subject_languages", :force => true do |t|
     t.integer "item_id",     :null => false

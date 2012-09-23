@@ -12,8 +12,7 @@ class Ability
     else
       # Users can manage themseleves
       can :manage, User, :id => user.id
-      # but can't see list of users
-      cannot :index, User
+      can :read, User
 
       # Anyone can create a university
       can :create, University
@@ -23,6 +22,12 @@ class Ability
 
       # Anyone can view non-private collections
       can :read, Collection, :private => false
+
+      # Anyone can read these entities - need them for creation
+      can :read, Language
+      can :read, Country
+      can :read, DataCategory
+      can :read, DiscourseType
 
       # Only collection_admins can manage a collection
       can :manage, Collection, :collection_admins => { :user_id => user.id }

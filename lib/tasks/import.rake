@@ -21,7 +21,7 @@ namespace :import do
                    :users, :contacts,
                    # for collections
                    :universities,
-                   :countries, :languages, :fields_of_research,
+                   :countries, :languages, :fields_of_research, :data_categories,
                    :collections, :csv,
                    :collection_languages, :collection_countries, :collection_admins,
                    # for items
@@ -45,12 +45,7 @@ namespace :import do
     puts "Creating MySQL DB from old PARADISEC system"
     system 'echo "DROP DATABASE IF EXISTS paradisec_legacy" | mysql -u root'
     system 'echo "CREATE DATABASE paradisec_legacy" | mysql -u root'
-    tables = %w{Retired_Codes Update_Mappings collection_language collection_language15 ethnologue ethnologue15 ethnologue16 ethnologue_country ethnologue_country15 ethnologue_country16 item_language item_language15 item_subjectlang item_subjectlang15}
-    sed = 's/ TYPE=MyISAM//;'
-    tables.each do |table|
-      sed << "/CREATE TABLE #{table} /,/Table structure for table/d;"
-    end
-    system "sed -e '#{sed}' #{Rails.root}/db/legacy/paradisecDump.sql | mysql -u root paradisec_legacy"
+    system "sed -e 's/ TYPE=MyISAM//;' #{Rails.root}/db/legacy/paradisecDump.sql | mysql -u root paradisec_legacy"
   end
 
 
@@ -64,6 +59,7 @@ namespace :import do
       add_column :items, :pd_coll_id, :string
       add_column :discourse_types, :pd_dt_id, :integer
       add_column :agent_roles, :pd_role_id, :integer
+      add_column :data_categories, :pd_cat_id, :integer
     end
   end
 
@@ -75,6 +71,7 @@ namespace :import do
     Item.reset_column_information
     DiscourseType.reset_column_information
     AgentRole.reset_column_information
+    DataCategory.reset_column_information
   end
 
   desc 'Remove paradisec_legacy identifier colums to DBs for import tasks'
@@ -156,7 +153,7 @@ namespace :import do
   def fixme(object, field, default = 'FIXME')
     msg = "#{object} has invalid field #{field}"
     if Rails.env == "development"
-#      $stderr.puts msg + " replacing with " + default
+      $stderr.puts msg + " replacing with " + default
     else
       raise msg
     end
@@ -210,7 +207,7 @@ namespace :import do
       end
 
       ## password
-      password = fixme(user, 'password', 'asdfgj')
+      password = 'asdfgj'
 
       ## create user
       new_user = User.new({:first_name => first_name,
@@ -279,7 +276,7 @@ namespace :import do
         end
         puts "Saved existing user " + cur_user.last_name + ", " + cur_user.first_name if @verbose
       else
-        password = fixme(user, 'password', 'asdfgh')
+        password = 'asdfgh'
         new_user = User.new({:first_name => first_name,
                             :last_name => last_name,
                             :email => email,
@@ -421,7 +418,8 @@ namespace :import do
         puts "Saved language #{code} - #{name}" if @verbose
       end
 
-      # save language - country mapping
+      # save language - country mapping except for special language codes
+      next if country_code == 'MULTIPLE' || country_code == 'UNDETERMINED' || country_code == 'ZXX'
       country = Country.find_by_code(country_code)
       if !country
         puts "Error: Country not in countries list #{country_code} - skipping"
@@ -456,6 +454,28 @@ namespace :import do
       end
       field.save!
       puts "Saved field of research #{id}, #{name}" if @verbose
+    end
+  end
+
+  desc 'Import data_categories into NABU from paradisec_legacy DB'
+  task :data_categories => :environment do
+    puts "Importing data categories from paradisec_legacy DB"
+    client = connect
+    categories = client.query("SELECT * FROM types")
+    categories.each do |cat|
+      category = DataCategory.new :name => cat['type_name']
+
+      ## save PARADISEC identifier
+      category.pd_cat_id = cat['type_id']
+      if !category.valid?
+        puts "Error adding category #{name}"
+        category.errors.each {|field, msg| puts "#{field}: #{msg}"}
+        if Rails.env == "development"
+          next
+        end
+      end
+      category.save!
+      puts "Saved category #{name}" if @verbose
     end
   end
 
@@ -500,7 +520,7 @@ namespace :import do
       title = coll['coll_description']
       title = fixme(coll, 'coll_description', 'PLEASE PROVIDE TITLE') if title.blank?
       description = coll['coll_note']
-      description = fixme(coll, 'coll_note', 'PLEASE PROVIDE DESCRIPTION')
+      description = fixme(coll, 'coll_note', 'PLEASE PROVIDE DESCRIPTION') if description.blank?
 
       ## prepare record
       new_coll = Collection.new :identifier => coll['coll_id'],
@@ -726,9 +746,9 @@ namespace :import do
 
       ## make sure title and description aren't blank
       title = item['item_description']
-      title = fixme(item, 'item_description', 'PLEASE PROVIDE TITLE') if title.blank?
+      title = 'PLEASE PROVIDE TITLE' if title.blank?
       description = item['item_note']
-      description = fixme(item, 'item_note', 'PLEASE PROVIDE DESCRIPTION') if description.blank?
+      description = item['item_description'] if description.blank?
 
       ## origination date
       originated_on = nil
@@ -851,10 +871,18 @@ namespace :import do
       end
       new_item.save!
 
+      ## save data categories for item
+      save_data_categories_for(client, new_item, item['item_pid'])
+
       ## fix created_at (updated_at is now)
       if item['item_date_created'] != nil
         begin
-          new_item.created_at = item['item_date_created'].to_date
+          ## weird import problem
+          if item['item_pid'] == 'MD5-PH00401'
+            new_item.created_at = "21-08-2007".to_date
+          else
+            new_item.created_at = item['item_date_created'].to_date
+          end
           new_item.save!
         rescue
           puts "Error importing item_date_created #{item['item_date_created']} for item #{item['item_pid']}"
@@ -873,6 +901,18 @@ namespace :import do
 
     item = collection.items.find_by_identifier identifier
     item
+  end
+
+  def save_data_categories_for(client, item, item_pid)
+    categories = client.query("SELECT * FROM item_type WHERE it_item_pid = '#{item_pid}'")
+    categories.each do |cat|
+      category = DataCategory.find_by_pd_cat_id(cat['it_type_id'])
+      begin
+        item_cat = ItemDataCategory.create! :item => item, :data_category => category
+      rescue ActiveRecord::RecordNotUnique
+      end
+      puts "Saved category #{name} for item #{item_pid}" if @verbose
+    end
   end
 
   desc 'Import item_content_languages into NABU from paradisec_legacy DB'
@@ -1010,7 +1050,7 @@ namespace :import do
       end
       if user.nil?
         ## let's create a new user without email
-        password = fixme(user, 'password', 'asdfgj')
+        password = 'asdfgj'
         if first_name.blank?
           first_name = last_name
           last_name = ''

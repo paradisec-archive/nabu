@@ -4,13 +4,12 @@ class CountriesController < ApplicationController
   respond_to :json
 
   def index
-    @countries = Country.order('name').where('name like ?', "%#{params[:q]}%").limit(10)
+    @countries = @countries.order('name').where('name like ?', "%#{params[:q]}%").limit(10)
 
     respond_with @countries
   end
 
   def show
-    @country = Country.find params[:id]
     respond_with @country
   end
 end

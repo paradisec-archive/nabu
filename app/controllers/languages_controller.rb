@@ -4,7 +4,7 @@ class LanguagesController < ApplicationController
   respond_to :json
 
   def index
-    @languages = Language.order('languages.name').where('languages.name like ?', "%#{params[:q]}%").limit(10)
+    @languages = @languages.order('languages.name').where('languages.name like ?', "%#{params[:q]}%").limit(10)
     if params[:country_ids]
       country_ids = params[:country_ids].split(/,/)
       # TODO there should be a better way of doing this
@@ -15,7 +15,6 @@ class LanguagesController < ApplicationController
   end
 
   def show
-    @language = Language.find params[:id]
     respond_with @language
   end
 end

@@ -30,6 +30,9 @@
         %west_limit= @item.west_limit
       %university= @item.university_name
       %operator= @item.operator_name
+      %dataCategories
+        - @item.data_categories.each do |category|
+          %category= category.name
       %discourseType= @item.discourse_type_name
       %agents
         - @item.item_agents.each do |item_agent|
