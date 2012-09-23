@@ -20,10 +20,10 @@
   = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
   .right
-    = f.submit "Update #{@search.total} Items", :confirm => "This will update #{@search.total} items - are you sure?"
+    = f.submit "Update #{@search.hits.length} Items", :confirm => "This will update #{@search.hits.length} items - are you sure?"
 
   = render :partial => 'items/form', :locals => {:f => f}
 
   .right
-    = f.submit "Update #{@search.total} Items", :confirm => "This will update #{@search.total} items - are you sure?"
+    = f.submit "Update #{@search.hits.length} Items", :confirm => "This will update #{@search.hits.length} items - are you sure?"
 
