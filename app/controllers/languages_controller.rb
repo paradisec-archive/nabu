@@ -11,6 +11,9 @@ class LanguagesController < ApplicationController
       @languages = @languages.where(:countries_languages => {:country_id => country_ids})
     end
 
+    @languages.push(Language.find_by_code("mul"));
+    @languages.push(Language.find_by_code("und"));
+    @languages.push(Language.find_by_code("zxx"));
     respond_with @languages
   end
 
