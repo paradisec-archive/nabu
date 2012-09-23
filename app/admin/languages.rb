@@ -1,5 +1,6 @@
 ActiveAdmin.register Language do
   menu :parent => "Other Entities"
+  config.sort_order = "name"
 
   # show page
   show do |language|
