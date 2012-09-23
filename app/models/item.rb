@@ -296,7 +296,6 @@ class Item < ActiveRecord::Base
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
 
-      # FIXME remove after next full import
       if originated_on
         xml.tag! 'dcterms:created', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
         xml.tag! 'dc:date', originated_on, 'xsi:type' => 'dcterms:W3CDTF'
@@ -306,8 +305,16 @@ class Item < ActiveRecord::Base
         xml.tag! 'dcterms:tableOfContents', essence.filename
       end
 
+      if collector
+        xml.tag! 'dc:contributor', collector_name, 'xsi:type' => 'olac:role', 'olac:code' => 'compiler'
+      end
+
+      if operator
+        xml.tag! 'dc:contributor', operator_name, 'xsi:type' => 'olac:role', 'olac:code' => 'depositor'
+      end
+
       item_agents.each do |agent|
-        xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => 'recorder'
+        xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => agent.agent_role.name
       end
 
       subject_languages.each do |language|
@@ -316,27 +323,60 @@ class Item < ActiveRecord::Base
       content_languages.each do |language|
         xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
-      # TODO bring this back
+
       format = ""
-      #format += "Digitised: #{born_digital? ? 'yes' : 'no'}"
+      format += "Digitised: #{digitised_on? ? 'yes' : 'no'}"
       format += "\nMedia: #{original_media}" unless original_media.blank?
       format += "\nAudio Notes: #{ingest_notes}" unless ingest_notes.blank?
       xml.tag! 'dc:format', format
       countries.each do |country|
         xml.tag! 'dc:coverage', country.code, 'xsi:type' => 'dcterms:ISO3166'
       end
-      # TODO GEO
-      #<dc:coverage xsi:type="dcterms:Box">northlimit=2.083; southlimit=1.006; westlimit=108.905; eastlimit=109.711</dc:coverage>
-      # TODO
-      # old item_type table
-      # <dc:type xsi:type="olac:linguistic-type" olac:code="primary_text"/>
-      # <dc:subject xsi:type="olac:linguistic-field" olac:code="text_and_corpus_linguistics"/>
-      # <dc:type xsi:type="olac:discourse-type" olac:code="singing"/>
-      # <dc:type xsi:type="dcterms:DCMIType">Sound</dc:type>
-      # <dc:type xsi:type="dcterms:DCMIType">MovingImage</dc:type>
-      # FIXME Remove if on the two lines below. ONly exists because of dodgey data
-      xml.tag! 'dcterms:accessRights', access_condition.name if access_condition
-      xml.tag! 'dc:rights', access_condition.name if access_condition
+
+      if has_coordinates
+        location = ""
+        location += "northlimit=#{north_limit}; southlimit=#{south_limit}; "
+        location += "westlimit=#{west_limit}; eastlimit=#{east_limit}"
+        xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
+      end
+
+      item_data_categories.each do |cat|
+        case cat.data_category.name
+        when 'Historical Reconstruction', 'historical_text'
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'historical_linguistics'
+        when 'language_description', 'lexicon', 'primary_text'
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'language_documentation'
+        when 'lexicon'
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'lexicography'
+        when 'primary_text'
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'text_and_corpus_linguistics'
+        when 'song'
+          xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
+        when 'Typological Analysis'
+          xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic' , 'olac:code' => 'typology'
+        when 'photo'
+          xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
+        when 'Movingimage'
+          xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
+        when 'Sound'
+          xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
+        when 'instrumental_music'
+          xml.tag! 'dc:type', 'instrumental music'
+        else
+          # ignore
+        end
+      end
+
+      if access_condition
+        access = access_condition.name
+        access += ", #{access_narrative}" if !access_narrative.blank?
+        xml.tag! 'dcterms:accessRights', access
+        xml.tag! 'dc:rights', access_condition.name
+      end
+
       xml.tag! 'dcterms:bibliographicCitation', strip_tags(citation)
       xml.tag! 'dc:description', (description + ". Language as given: #{language}")
     end

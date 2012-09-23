@@ -114,7 +114,7 @@ namespace :import do
       narrative = curr_cond
 
     when "Closed (subject to the following conditions)"
-      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+      ac = AccessCondition.find_by_name "Closed (subject to the access condition details)"
 
     when "restricted, no access except with depositor's permission",
          "Restricted, only acccessed by members of the families involved or by bona fide researchers with the permission of those members",
@@ -123,7 +123,7 @@ namespace :import do
          "Recorded under the request of the widow Helen Ufrafo.  The content is not to be further reproduced and/ or commented publicly.",
          "Restricted; access available through Jadran Mimica only. Contains culturally sensitive materials.",
          "Not for wider distribution"
-      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+      ac = AccessCondition.find_by_name "Closed (subject to the access condition details)"
       narrative = curr_cond
 
     when "", nil
@@ -131,7 +131,7 @@ namespace :import do
 
     else
       puts "ERROR: don't know what to do with access condition #{curr_cond} - marking closed"
-      ac = AccessCondition.find_by_name "Closed (subject to access condition details)"
+      ac = AccessCondition.find_by_name "Closed (subject to the access condition details)"
       narrative = curr_cond
 
     end

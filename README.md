@@ -69,8 +69,8 @@ import archive files:
 OLAC available at:
   http://catalog.paradisec.org.au/oai/item
 
-The feed that OLAC tests:
-  http://localhost:3000/oai/item?verb=ListRecords&metadataPrefix=olac
+The feed that OLAC harvests:
+  http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac
 
 RIF-CS available at:
   http://catalog.paradisec.org.au/oai/collection
