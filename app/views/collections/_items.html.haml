@@ -18,7 +18,7 @@
         %th Item
         %th Title
         - if can? :update, @collection
-          %th Ready
+          %th Digitised
           %th Files
         %th Actions
     %tbody
@@ -37,7 +37,9 @@
               %td= item.identifier
               %td= item.title
               - if can? :update, @collection
-                %td= item.metadata_exportable
+                %td
+                  - if item.digitised_on
+                    = item.digitised_on.strftime('%d/%m/%Y')
                 %td= item.essences.length
               %td
                 = link_to 'View', [item.collection, item]
