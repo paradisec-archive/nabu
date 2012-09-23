@@ -31,7 +31,7 @@ Feature: Collections
       And I fill in "Collection ID" with "AA1"
       And I select "University of Sydney" from "Originating university"
       And I select "420114 - Indonesian Languages" from "Field of research"
-      And I select "Indonesia" from "Countries"
+      And I select "Indonesia" from "country_ids"
       And I select "ski - Silka" from "Languages"
       And I fill in "Region / Village" with "Sasak Village, Samalantan"
       And I fill in "north_limit" with "24.625"

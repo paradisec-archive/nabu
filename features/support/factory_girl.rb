@@ -57,20 +57,29 @@ FactoryGirl.define do
     sequence(:name) {|n| "Discourse Type #{n}"}
   end
 
+  factory :access_condition do
+    sequence(:name) {|n| "Open / Closed / Mixed #{n}"}
+  end
+
   factory :language, :aliases => [:subject_language, :content_language] do
     sequence(:code) {|n| "sk#{n}"}
-    sequence(:name) {|n| "University of Awesome #{n}"}
+    sequence(:name) {|n| "Language #{n}"}
   end
 
   factory :field_of_research do
     sequence(:identifier) {|n| n}
-    sequence(:name) {|n| "Moo #{n}"}
+    sequence(:name) {|n| "East African Studies #{n}"}
+  end
+
+  factory :agent_role do
+    sequence(:name) {|n| "author #{n}"}
   end
 
   factory :collection do
     sequence(:identifier) {|n| "AA#{n}"}
     title 'Collection Title'
     description 'The awesome collection'
+    country
     region 'East Africa'
     north_limit "24.625"
     south_limit "23.99"
@@ -95,6 +104,7 @@ FactoryGirl.define do
     east_limit "122.046"
     subject_language
     content_language
+    country
     discourse_type
     collection
     originated_on Time.now
