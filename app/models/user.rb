@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   belongs_to :rights_transferred_to, :class_name => 'User'
 
   attr_accessible :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :party_identifier
-  attr_accessible :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :as => :admin
+  attr_accessible :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email, :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :as => :admin
   attr_accessible :first_name, :last_name, :password, :password_confirmation, :contact_only, :party_identifier, :as => :contact_only
 
   validates :first_name, :presence => true

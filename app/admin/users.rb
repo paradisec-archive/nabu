@@ -5,6 +5,16 @@ ActiveAdmin.register User do
   scope :admins
   scope :all_users
 
+  # allow saving admin-only fields in controller
+  controller do
+    def update_resource(object, attributes)
+      object.assign_attributes(*attributes, :as => :admin)
+      run_update_callbacks object do
+        save_resource(object)
+      end
+    end
+  end
+
   # add pagination buttons to index page sidebar
   sidebar :paginate, :only => :index  do
     para button_tag 'Show 10', :class => 'per_page', :data => {:per => 10}
@@ -96,6 +106,7 @@ ActiveAdmin.register User do
       f.input :address2
       f.input :country
       f.input :email
+      f.input :unconfirmed_email
       f.input :phone
       f.input :rights_transferred_to
       f.input :rights_transfer_reason
