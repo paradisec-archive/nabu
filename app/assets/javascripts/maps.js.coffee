@@ -6,6 +6,11 @@ $(document).ready ->
       south_limit = null
       east_limit = null
       west_limit = null
+
+      marker_bounds = new google.maps.LatLngBounds()
+
+      map = $('.map').data('map')
+
       for language_id in language_ids
         data = {}
         $.ajax(
@@ -15,24 +20,27 @@ $(document).ready ->
           success: (object) ->
             data = object
         )
-        north_limit ||= data['north_limit']
-        south_limit ||= data['south_limit']
-        east_limit ||=  data['east_limit']
-        west_limit ||= data['west_limit']
 
-        if data['north_limit'] > north_limit
-          north_limit = data['north_limit']
-        if data['south_limit'] < south_limit
-          south_limit = data['south_limit']
-        if data['east_limit'] > east_limit
-          east_limit = data['east_limit']
-        if data['west_limit'] < west_limit
-          west_limit = data['west_limit']
+        if !data['north_limit']
+          continue
 
-        $('.north_limit').val(north_limit)
-        $('.south_limit').val(south_limit)
-        $('.east_limit').val(east_limit)
-        $('.west_limit').val(west_limit)
+        north_limit = data['north_limit']
+        south_limit = data['south_limit']
+        east_limit =  data['east_limit']
+        west_limit = data['west_limit']
+
+        sw  = new google.maps.LatLng(south_limit, west_limit)
+        ne  = new google.maps.LatLng(north_limit, east_limit)
+        marker_bounds.extend(sw)
+        marker_bounds.extend(ne)
+
+      ne = marker_bounds.getNorthEast()
+      sw = marker_bounds.getSouthWest()
+
+      $('.north_limit').val(ne.lat())
+      $('.east_limit').val(ne.lng())
+      $('.south_limit').val(sw.lat())
+      $('.west_limit').val(sw.lng())
 
       $('.map').trigger('update_map')
       false
