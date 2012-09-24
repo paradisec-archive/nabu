@@ -7,12 +7,7 @@ ActiveAdmin.register User do
 
   # allow saving admin-only fields in controller
   controller do
-    def update_resource(object, attributes)
-      object.assign_attributes(*attributes, :as => :admin)
-      run_update_callbacks object do
-        save_resource(object)
-      end
-    end
+    with_role :admin
   end
 
   # add pagination buttons to index page sidebar
