@@ -254,6 +254,17 @@ class Collection < ActiveRecord::Base
             end
           end
 
+          if funding_body
+            xml.relatedObject do
+              if grant_identifier
+                xml.key full_grant_identifier
+              else
+                xml.key funding_body.key_prefix
+              end
+              xml.relation 'type' => 'isOutputOf'
+            end
+          end
+
           languages.each do |language|
             xml.subject language.name, 'type' => 'local'
             xml.subject language.code, 'type' => 'iso639-3'
