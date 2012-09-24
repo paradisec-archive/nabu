@@ -112,7 +112,7 @@ namespace :archive do
 
         # extract media metadata from file
         puts "Inspecting file #{file}..."
-        import_metadata(destination_path, file, item)
+        import_metadata(destination_path, file, item, extension)
         puts "...done"
       end
     end
@@ -161,7 +161,7 @@ namespace :archive do
         end
 
         # extract media metadata from file
-        import_metadata(directory, file, item)
+        import_metadata(directory, file, item, extension)
       end
     end
   end
@@ -200,11 +200,11 @@ namespace :archive do
   end
 
 
-  def import_metadata(path, file, item)
+  def import_metadata(path, file, item, extension)
     # extract media metadata from file
     media = Nabu::Media.new path + "/" + file
     if !media
-      puts "ERROR: was not able to parse #{file} of type #{extension} - skipping"
+      puts "ERROR: was not able to parse #{path + "/" + file} of type #{extension} - skipping"
       return
     end
 
