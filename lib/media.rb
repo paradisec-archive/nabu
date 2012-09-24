@@ -37,6 +37,7 @@ module Nabu
           end
         else
       end
+      @mimetype
     end
 
     def size
