@@ -4,7 +4,9 @@ Run "rake doc:app" to generate API documentation for your models, controllers, h
 
 ## Importing all data
 
-Just run "rake import:all" .
+Just run
+
+    $ rake import:all
 
 Below are descriptions of the individual import tasks.
 
@@ -23,8 +25,8 @@ To update them:
 
 * run the different rake tasks to import them
 
-    rake import:countries
-    rake import:languages
+    $ rake import:countries
+    $ rake import:languages
     
   The language codes of type "L" will be imported into Nabu.
 
@@ -43,7 +45,7 @@ To update them:
 
 * run the rake task to import them
 
-    rake import:fields_of_research
+    $ rake import:fields_of_research
     
 Done!
 
@@ -52,10 +54,19 @@ Done!
 
 * The legacy database has to be at db/legacy/paradisecDump.sql .
 
-* run the rake tasks to import the data
+* You don't want to import the tables individually, just run
 
-    rake import:setup
-    rake import:users
-    rake import:contacts
-    rake import:universities
-    rake import:collections
+    $ rake import:all
+
+
+===
+
+## What the geographic entities mean
+
+* Geographic boxes are specified based on Dublin Core specs: http://dublincore.org/documents/dcmi-box/
+
+* west - east: stretches from -180 to 180
+* north - south: stretches from 90 to -90
+
+* Examples: Western Hemisphere
+  westlimit=180; eastlimit=0
