@@ -879,7 +879,7 @@ namespace :import do
         begin
           ## weird import problem
           if item['item_pid'] == 'MD5-PH00401'
-            new_item.created_at = "21-08-2007".to_date
+            new_item.created_at = "20 Aug 2007".to_date
           else
             new_item.created_at = item['item_date_created'].to_date
           end
