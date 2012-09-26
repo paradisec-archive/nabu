@@ -219,6 +219,7 @@ namespace :import do
       password = 'asdfgj'
 
       ## create user
+      User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
       new_user = User.new({:first_name => first_name,
                           :last_name => last_name,
                           :email => email,
@@ -286,6 +287,7 @@ namespace :import do
         puts "Saved existing user " + cur_user.last_name + ", " + cur_user.first_name if @verbose
       else
         password = 'asdfgh'
+        User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
         new_user = User.new({:first_name => first_name,
                             :last_name => last_name,
                             :email => email,
@@ -926,7 +928,7 @@ namespace :import do
     categories.each do |cat|
       category = DataCategory.find_by_pd_cat_id(cat['it_type_id'])
       begin
-        item_cat = ItemDataCategory.create! :item => item, :data_category => category
+        ItemDataCategory.create! :item => item, :data_category => category
       rescue ActiveRecord::RecordNotUnique
       end
       puts "Saved category #{name} for item #{item_pid}" if @verbose
@@ -1073,6 +1075,7 @@ namespace :import do
           first_name = last_name
           last_name = ''
         end
+        User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
         new_user = User.create!({:first_name => first_name,
                                 :last_name => last_name,
                                 :contact_only => true,
@@ -1149,6 +1152,42 @@ namespace :import do
       essence.channels = media.channels
       essence.fps = media.fps
       essence.save!
+    end
+  end
+
+  desc 'Email users about new system'
+  task :email_users => :environment do
+    class PassMailer < ActionMailer::Base
+      default :from => 'support@paradisec.org.au'
+
+      TEMPLATE = <<-EOF
+
+      Dear <%= @user.name %>,
+
+      Welcome to the new nabu system.
+
+      Please click on the link below to set the password for your new account.
+
+      <%= edit_password_url(@user, :reset_password_token => @user.reset_password_token) %>
+
+      Cheers,
+      The Nabu Team
+
+      EOF
+      def welcome_email(user)
+        @user = user
+        @url  = 'http://paradisec.org.au/login'
+        mail :to => user.email, :subject => 'Welcome to My Awesome Site' do |format|
+          format.text { render :inline => TEMPLATE }
+        end
+      end
+    end
+
+    User.where(:confirmed_at => nil).where(:contact_only => false).each do |user|
+      user.confirmation_sent_at = Time.now
+      user.send(:generate_reset_password_token!)
+
+      PassMailer.welcome_email(user).deliver
     end
   end
 end
