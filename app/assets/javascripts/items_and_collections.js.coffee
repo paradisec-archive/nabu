@@ -82,9 +82,7 @@ $ ->
     form = $(this)
     form.find('input[type=hidden].select2').each ->
       if $(this).attr('name').match(/_ids]$/) and $(this).val() != ''
-        console.log('moo')
-        console.log $(this).val()
         ids = $(this).val().split(/,/)
         for id in ids
-          form.append($('<input name="' + $(this).attr('name') + '[]" value="' + id + '" />'))
+          form.append($('<input type=hidden name="' + $(this).attr('name') + '[]" value="' + id + '" />'))
           $(this).remove()
