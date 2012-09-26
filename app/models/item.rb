@@ -342,28 +342,28 @@ class Item < ActiveRecord::Base
 
       item_data_categories.each do |cat|
         case cat.data_category.name
-        when 'Historical Reconstruction', 'historical_text'
+        when 'historical reconstruction', 'historical_text'
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'historical_linguistics'
-        when 'language_description', 'lexicon', 'primary_text'
+        when 'language description', 'lexicon', 'primary_text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'language_documentation'
         when 'lexicon'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'lexicography'
-        when 'primary_text'
+        when 'primary text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'text_and_corpus_linguistics'
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
-        when 'Typological Analysis'
+        when 'typological analysis'
           xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic' , 'olac:code' => 'typology'
         when 'photo'
           xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
-        when 'Movingimage'
+        when 'moving image'
           xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
-        when 'Sound'
+        when 'sound'
           xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
-        when 'instrumental_music'
+        when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else
           # ignore

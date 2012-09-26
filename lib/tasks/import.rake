@@ -463,7 +463,10 @@ namespace :import do
     client = connect
     categories = client.query("SELECT * FROM types")
     categories.each do |cat|
-      category = DataCategory.new :name => cat['type_name']
+      ## fix up the names
+      cat_name = cat['type_name'].downcase.gsub('_', ' ')
+      cat_name = 'moving image' if cat_name == 'Movingimage'
+      category = DataCategory.new :name => cat_name
 
       ## save PARADISEC identifier
       category.pd_cat_id = cat['type_id']
