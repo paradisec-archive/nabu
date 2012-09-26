@@ -557,8 +557,14 @@ namespace :import do
         end
       end
 
-      ## TODO: when all items in coll have impl_ready, set complete to true
-      new_coll.complete = false
+      ## when all items in coll are private, set private to true, too
+      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'")
+      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true")
+      new_coll.private = new_coll.private || (itemsInColl == itemsPrivate)
+
+      ## when all items in coll have impl_ready, set complete to true
+      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true")
+      new_coll.complete = (itemsInColl == itemsReady)
 
       ## save record
       if !new_coll.valid?
