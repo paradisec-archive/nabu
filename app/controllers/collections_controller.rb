@@ -106,7 +106,11 @@ class CollectionsController < ApplicationController
     invalid_record = false
     @collections.each do |collection|
       appendable.each_pair do |k, v|
-        params[:collection][k.to_sym] = collection.send(k) + v unless v.blank?
+        if collection.send(k).nil?
+          params[:collection][k.to_sym] = v unless v.blank?
+        else
+          params[:collection][k.to_sym] = collection.send(k) + v unless v.blank?
+        end
       end
       unless collection.update_attributes(params[:collection])
         invalid_record = true
