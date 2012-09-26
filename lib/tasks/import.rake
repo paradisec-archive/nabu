@@ -6,7 +6,7 @@ namespace :import do
   task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:quiet, :dev_users, :add_identifiers, :access_cond_setup, :load_db]
+  task :setup => [:quiet, :dev_users, :add_identifiers, :access_cond_setup, :funding_bodies_setup, :load_db]
 
   task :quiet do
     if ENV['DEBUG'].nil?
@@ -80,15 +80,24 @@ namespace :import do
     AddIdentifiers.migrate(:down)
   end
 
-  ## SETUP access_cond table and mapping function
+  ## SETUP access_cond table, funding_bodies table and mapping function
 
   desc 'Create limited list of access conditions'
   task :access_cond_setup => :environment do
+    puts "Setting up access conditions list"
     AccessCondition.create! :name => "Open (subject to agreeing to PDSC access form)"
     AccessCondition.create! :name => "Open (subject to the access condition details)"
     AccessCondition.create! :name => "Closed (subject to the access condition details)"
     AccessCondition.create! :name => "Mixed (check individual items)"
     AccessCondition.create! :name => "As yet unspecified"
+  end
+
+  desc 'Pre-seed list of funding bodies'
+  task :funding_bodies_setup => :environment do
+    puts "Pre-seeding funding bodies list"
+    FundingBody.create! :name => "ARC - Australian Research Council", :key_prefix => "http://purl.org/au-research/grants/arc/"
+    FundingBody.create! :name => "ELDP - Endangered Languages Documentation Programme", :key_prefix => "htpp://paradisec.org.au/grants/eldp/"
+    FundingBody.create! :name => "Other", :key_prefix => "htpp://paradisec.org.au/grants/other/"
   end
 
   def getAccessCond(curr_cond)
