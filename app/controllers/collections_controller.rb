@@ -11,7 +11,8 @@ class CollectionsController < ApplicationController
 
     @search = Collection.solr_search do
       fulltext params[:search]
-      facet :language_ids, :country_ids, :collector_id
+      facet :language_ids, :country_ids
+      facet :collector_id, :limit => 100
 
       with(:language_ids, params[:language_id]) if params[:language_id].present?
       with(:country_ids, params[:country_id]) if params[:country_id].present?
@@ -105,7 +106,11 @@ class CollectionsController < ApplicationController
     invalid_record = false
     @collections.each do |collection|
       appendable.each_pair do |k, v|
-        params[:collection][k.to_sym] = collection.send(k) + v unless v.blank?
+        if collection.send(k).nil?
+          params[:collection][k.to_sym] = v unless v.blank?
+        else
+          params[:collection][k.to_sym] = collection.send(k) + v unless v.blank?
+        end
       end
       unless collection.update_attributes(params[:collection])
         invalid_record = true

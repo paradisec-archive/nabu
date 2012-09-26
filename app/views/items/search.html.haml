@@ -22,11 +22,11 @@
       %tr
         %td
           %fieldset
-            %legend Content Language
+            %legend Content Languages
             .fix-scroll-height
               %table
                 - @search.facet(:content_language_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
-                  - language, count = row.instance, row.count
+                  - language = row.instance
                   - params_with_facet = params.merge(:language_id => language.id)
                   %tr
                     %td
@@ -34,11 +34,11 @@
                       == (#{row.count})
         %td
           %fieldset
-            %legend Country
+            %legend Countries
             .fix-scroll-height
               %table
                 - @search.facet(:country_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
-                  - country, count = row.instance, row.count
+                  - country = row.instance
                   - params_with_facet = params.merge(:country_id => country.id)
                   %tr
                     %td
@@ -46,16 +46,16 @@
                       == (#{row.count})
         %td
           %fieldset
-            %legend Collector
+            %legend Top 100 Collectors
             .fix-scroll-height
               %table
                 - @search.facet(:collector_id).rows.sort {|a,b| a.instance.last_name <=> b.instance.last_name }.each do |row|
-                  - collector, count = row.instance, row.count
+                  - collector = row.instance
                   - params_with_facet = params.merge(:collector_id => collector.id)
                   %tr
                     %td
                       = link_to collector.name, params_with_facet
-                      == (#{count})
+                      == (#{row.count})
 
 
 

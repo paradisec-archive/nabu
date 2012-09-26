@@ -465,7 +465,10 @@ namespace :import do
     client = connect
     categories = client.query("SELECT * FROM types")
     categories.each do |cat|
-      category = DataCategory.new :name => cat['type_name']
+      ## fix up the names
+      cat_name = cat['type_name'].downcase.gsub('_', ' ')
+      cat_name = 'moving image' if cat_name == 'Movingimage'
+      category = DataCategory.new :name => cat_name
 
       ## save PARADISEC identifier
       category.pd_cat_id = cat['type_id']
@@ -556,8 +559,14 @@ namespace :import do
         end
       end
 
-      ## TODO: when all items in coll have impl_ready, set complete to true
-      new_coll.complete = false
+      ## when all items in coll are private, set private to true, too
+      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'")
+      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true")
+      new_coll.private = new_coll.private || (itemsInColl == itemsPrivate)
+
+      ## when all items in coll have impl_ready, set complete to true
+      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true")
+      new_coll.complete = (itemsInColl == itemsReady)
 
       ## save record
       if !new_coll.valid?
