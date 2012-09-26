@@ -476,7 +476,7 @@ namespace :import do
     categories.each do |cat|
       ## fix up the names
       cat_name = cat['type_name'].downcase.gsub('_', ' ')
-      cat_name = 'moving image' if cat_name == 'Movingimage'
+      cat_name = 'moving image' if cat_name == 'movingimage'
       category = DataCategory.new :name => cat_name
 
       ## save PARADISEC identifier
