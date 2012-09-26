@@ -210,6 +210,7 @@ namespace :import do
       password = 'asdfgj'
 
       ## create user
+      User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
       new_user = User.new({:first_name => first_name,
                           :last_name => last_name,
                           :email => email,
@@ -277,6 +278,7 @@ namespace :import do
         puts "Saved existing user " + cur_user.last_name + ", " + cur_user.first_name if @verbose
       else
         password = 'asdfgh'
+        User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
         new_user = User.new({:first_name => first_name,
                             :last_name => last_name,
                             :email => email,
@@ -1055,6 +1057,7 @@ namespace :import do
           first_name = last_name
           last_name = ''
         end
+        User.skip_callback(:create, :after, :send_on_create_confirmation_instructions)
         new_user = User.create!({:first_name => first_name,
                                 :last_name => last_name,
                                 :contact_only => true,
