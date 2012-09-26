@@ -36,7 +36,7 @@ namespace :sunspot do
 
   desc 'Stop solr'
   task :stop do
-    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=#{rails_env} || true"
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=#{rails_env}; sleep 5; killall -9 java || true"
   end
 
   desc 'Restart solr'
