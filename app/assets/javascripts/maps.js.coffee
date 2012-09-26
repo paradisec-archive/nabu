@@ -37,10 +37,16 @@ $(document).ready ->
       ne = marker_bounds.getNorthEast()
       sw = marker_bounds.getSouthWest()
 
-      $('.north_limit').val(ne.lat())
-      $('.east_limit').val(ne.lng())
-      $('.south_limit').val(sw.lat())
-      $('.west_limit').val(sw.lng())
+      if marker_bounds.isEmpty()
+        $('.north_limit').val(70)
+        $('.east_limit').val(170)
+        $('.south_limit').val(-70)
+        $('.west_limit').val(-170)
+      else
+        $('.north_limit').val(ne.lat())
+        $('.east_limit').val(ne.lng())
+        $('.south_limit').val(sw.lat())
+        $('.west_limit').val(sw.lng())
 
       $('.map').trigger('update_map')
       false
