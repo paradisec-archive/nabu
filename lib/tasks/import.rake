@@ -908,7 +908,7 @@ namespace :import do
     categories.each do |cat|
       category = DataCategory.find_by_pd_cat_id(cat['it_type_id'])
       begin
-        item_cat = ItemDataCategory.create! :item => item, :data_category => category
+        ItemDataCategory.create! :item => item, :data_category => category
       rescue ActiveRecord::RecordNotUnique
       end
       puts "Saved category #{name} for item #{item_pid}" if @verbose
