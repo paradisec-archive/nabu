@@ -1133,4 +1133,40 @@ namespace :import do
       essence.save!
     end
   end
+
+  desc 'Email users about new system'
+  task :email_users => :environment do
+    class PassMailer < ActionMailer::Base
+      default :from => 'support@paradisec.org.au'
+
+      TEMPLATE = <<-EOF
+
+      Dear <%= @user.name %>,
+
+      Welcome to the new nabu system.
+
+      Please click on the link below to set the password for your new account.
+
+      <%= edit_password_url(@user, :reset_password_token => @user.reset_password_token) %>
+
+      Cheers,
+      The Nabu Team
+
+      EOF
+      def welcome_email(user)
+        @user = user
+        @url  = 'http://paradisec.org.au/login'
+        mail :to => user.email, :subject => 'Welcome to My Awesome Site' do |format|
+          format.text { render :inline => TEMPLATE }
+        end
+      end
+    end
+
+    User.where(:confirmed_at => nil).where(:contact_only => false).each do |user|
+      user.confirmation_sent_at = Time.now
+      user.send(:generate_reset_password_token!)
+
+      PassMailer.welcome_email(user).deliver
+    end
+  end
 end
