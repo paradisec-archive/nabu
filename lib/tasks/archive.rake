@@ -176,7 +176,7 @@ namespace :archive do
   def parse_file_name(file, file_extension=nil)
     coll_id, item_id = file.split('-')
     extension = file.split('.').last
-    return if extension && file_extension == extension
+    return if file_extension && file_extension != extension
     basename = File.basename(file, "." + extension)
 
     collection = Collection.find_by_identifier coll_id
