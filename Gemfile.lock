@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/code4lib/ruby-oai
+  revision: 2539ecca058f4d3f4fe91fcbafbcf9907cbcb3b2
+  specs:
+    oai (0.2.1)
+      builder (>= 2.0.0)
+      faraday
+      faraday_middleware
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -186,10 +195,6 @@ GEM
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
     nokogiri (1.5.5)
-    oai (0.2.1)
-      builder (>= 2.0.0)
-      faraday
-      faraday_middleware
     options (2.3.0)
       fattr
     orm_adapter (0.4.0)
@@ -336,7 +341,7 @@ DEPENDENCIES
   meta_search (>= 1.1.0.pre)
   mysql2
   nilify_blanks
-  oai
+  oai!
   paper_trail (~> 2)
   pickle
   progress_bar
