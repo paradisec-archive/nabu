@@ -1,5 +1,5 @@
 class PageController < ApplicationController
-  def about
+  def home
     @coordinates = Collection.all.map(&:center_coordinate).compact
     @content = render_to_string :partial => 'page/infowindow'
   end
