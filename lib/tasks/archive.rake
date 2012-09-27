@@ -43,12 +43,12 @@ namespace :archive do
 
   def scan_directory(directory, file_extension, type, render_extension)
     dir_contents = Dir.entries(directory)
-    dir_contents -= ['.', '..', '.snapshot']
 
     # for each essence file, find its collection & item
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
+      next unless File.file? "#{directory}/#{file}"
       basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
       next if (extension != file_extension) || !collection || !item
 
@@ -76,20 +76,15 @@ namespace :archive do
     dir_list = Nabu::Application.config.upload_directories
 
     dir_list.each do |upload_directory|
-      next if !File.directory?(upload_directory)
+      next unless File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
-      dir_contents -= [".", "..",".shapshot"]
-
-      # make sure the archive directory exists and all its parent directories
-      if !File.directory?(Nabu::Application.config.archive_directory)
-        FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
-      end
 
       # for each essence file, find its collection & item
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
-        next if File.directory?(upload_directory + "/" + file)
+        next unless File.file? "#{upload_directory}/#{file}"
+
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
         puts "---------------------------------------------------------------"
@@ -138,11 +133,10 @@ namespace :archive do
       puts "---------------------------------------------------------------"
       puts "Working through directory #{directory}"
       dir_contents = Dir.entries(directory)
-      dir_contents -= [".", "..",".snapshot",".JS2-F04-A.wav.FpX8la"]
       dir_contents.each do |file|
+        next unless File.file? "#{directory}/#{file}"
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{file}..."
-        next if File.directory?(directory + "/" + file)
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{directory}/#{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
@@ -151,7 +145,7 @@ namespace :archive do
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-# Do this after go-live
+# TODO Do this after go-live
 #          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
