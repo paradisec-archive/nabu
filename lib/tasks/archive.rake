@@ -42,10 +42,6 @@ namespace :archive do
   end
 
   def scan_directory(directory, file_extension, type, render_extension)
-    # find essence files in Nabu::Application.config.scan_directory
-    unless Dir.exists? Nabu::Application.config.scan_directory
-      FileUtils.mkdir_p Nabu::Application.config.scan_directory
-    end
     dir_contents = Dir.entries(directory)
     dir_contents -= ['.', '..', '.snapshot']
 
