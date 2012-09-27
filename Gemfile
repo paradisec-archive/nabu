@@ -9,7 +9,6 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.1'
   gem 'compass-rails'
 
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   gem 'therubyracer'
 
   gem 'uglifier', '>= 1.0.3'
@@ -20,7 +19,7 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'
-gem 'oai'
+gem 'oai', :git => 'https://github.com/code4lib/ruby-oai' # FIxes iconv warning. Remove when > 0.2.1 comes out
 
 # Admin
 gem 'country-select'
