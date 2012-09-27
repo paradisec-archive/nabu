@@ -1191,7 +1191,7 @@ namespace :import do
       def welcome_email(user)
         @user = user
         @url  = 'http://paradisec.org.au/login'
-        mail :to => (user.unconfirmed_email || user.email), :subject => 'Welcome to My Awesome Site' do |format|
+        mail :to => (user.unconfirmed_email || user.email), :subject => 'Welcome to the new PARADISEC catalog' do |format|
           format.text { render :inline => TEMPLATE }
         end
       end
