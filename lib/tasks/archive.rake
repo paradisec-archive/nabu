@@ -49,8 +49,8 @@ namespace :archive do
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
       next unless File.file? "#{directory}/#{file}"
-      basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-      next if (extension != file_extension) || !collection || !item
+      basename, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
+      next if !collection || !item
 
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
@@ -173,9 +173,10 @@ namespace :archive do
   end
 
 
-  def parse_file_name(file)
+  def parse_file_name(file, file_extension=nil)
     coll_id, item_id = file.split('-')
     extension = file.split('.').last
+    return if extension && file_extension == extension
     basename = File.basename(file, "." + extension)
 
     collection = Collection.find_by_identifier coll_id
