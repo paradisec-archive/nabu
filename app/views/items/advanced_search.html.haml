@@ -73,8 +73,8 @@
             = check_box_tag :originated_on_narrative_blank, 1, params[:originated_on_narrative_blank]
 
         %tr
-          %th= label_tag :owned, 'Item held by Paradisec'
-          %td= select_tag :owned, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+          %th= label_tag :external, 'Item not held by Paradisec'
+          %td= select_tag :external, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
 
         %tr
           %th= label_tag :url, 'URL'

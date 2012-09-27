@@ -814,10 +814,10 @@ namespace :import do
         discourse_type = DiscourseType.find_by_pd_dt_id(item['item_discourse_type'])
       end
 
-      ## set "owned" boolean
-      item_owned = true
+      ## set "external" boolean
+      item_external = false
       if !item['item_url'].blank? && item['item_url'] !~ /paradisec/
-        item_owned = false
+        item_external = true
       end
 
       ## prepare record
@@ -828,7 +828,7 @@ namespace :import do
                           :language => item['item_source_language'],
                           :dialect => item['item_dialect'],
                           :url => item['item_url'],
-                          :owned => item_owned,
+                          :external => item_external,
                           :admin_comment => item['item_comments'],
                           :originated_on => originated_on,
                           :originated_on_narrative => originated_on_narrative,

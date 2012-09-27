@@ -53,7 +53,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_admin_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
-  attr_accessible :identifier, :title, :owned, :url, :description, :region,
+  attr_accessible :identifier, :title, :external, :url, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,
@@ -291,7 +291,7 @@ class Item < ActiveRecord::Base
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
-      xml.tag! 'dc:identifier', "http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if owned?
+      xml.tag! 'dc:identifier', "http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if external?
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
