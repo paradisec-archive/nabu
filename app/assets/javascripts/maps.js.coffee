@@ -73,7 +73,6 @@ $(document).ready ->
           bounds: bounds,
           editable: editable,
           map: map
-          # TODO Add colors etc
         })
         $(this).data('rect', rect)
 

@@ -569,12 +569,12 @@ namespace :import do
       end
 
       ## when all items in coll are private, set private to true, too
-      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'")
-      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true")
+      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'").map{|i| i}.first.values.first
+      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true").map{|i| i}.first.values.first
       new_coll.private = new_coll.private || (itemsInColl == itemsPrivate)
 
       ## when all items in coll have impl_ready, set complete to true
-      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true")
+      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true").map{|i| i}.first.values.first
       new_coll.complete = (itemsInColl == itemsReady)
 
       ## save record
