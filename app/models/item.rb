@@ -345,13 +345,13 @@ class Item < ActiveRecord::Base
         when 'historical reconstruction', 'historical_text'
           xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'historical_linguistics'
         when 'language description', 'lexicon', 'primary_text'
-          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'language_description'
           xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'language_documentation'
         when 'lexicon'
-          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'lexicon'
           xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'lexicography'
         when 'primary text'
-          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
+          xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'primary_text'
           xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'text_and_corpus_linguistics'
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
