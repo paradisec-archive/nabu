@@ -1158,20 +1158,34 @@ namespace :import do
   desc 'Email users about new system'
   task :email_users => :environment do
     class PassMailer < ActionMailer::Base
-      default :from => 'support@paradisec.org.au'
+      default :from => 'admin@paradisec.org.au'
 
       TEMPLATE = <<-EOF
 
       Dear <%= @user.name %>,
 
-      Welcome to the new nabu system.
+      PARADISEC has migrated to a new catalog system and the old system has now
+      been taken offline.
 
-      Please click on the link below to set the password for your new account.
+      You have an account in the new system!
 
+      Please click on the link below to set a password for your new account.
       <%= edit_password_url(@user, :reset_password_token => @user.reset_password_token) %>
 
-      Cheers,
-      The Nabu Team
+      If you have already deposited material with us, you will find your collections
+      and metadata in the system. We encourage you to review and update your metadata.
+
+      The new system has additional functionality for logged in users, including
+      the ability to leave comments on items and to preview files.
+
+      You can find the new catalog at http://catalog.paradisec.org.au/. While we
+      are still developing the help information, we encourage you to explore the
+      new system. We will write to you again when help information is online.
+
+      Feel free to contact us at admin@paradisec.org.au if you have any questions.
+
+      Best Regards,
+      The PARADISEC Team
 
       EOF
       def welcome_email(user)
