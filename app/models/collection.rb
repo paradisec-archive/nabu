@@ -187,7 +187,7 @@ class Collection < ActiveRecord::Base
         :lng => long,
         :title => title,
         :id => identifier,
-        :items => items.length,
+        :items => items.count,
       }
     end
   end

@@ -236,7 +236,7 @@ class Item < ActiveRecord::Base
     cite += ", #{originated_on.year}" if originated_on
     cite += '; ' unless cite == ""
     cite += "<i>#{sanitize(title)}</i>, "
-    last = essence_types.length - 1
+    last = essence_types.count - 1
     essence_types.each_with_index do |type, index|
         cite += type
         if index != last

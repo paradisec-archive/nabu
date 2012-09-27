@@ -10,7 +10,7 @@
       %th Duration
       %th Metadata
   %tbody
-    - if @files.length == 0
+    - if @files.count == 0
       %tr
         %td no files available
         %td
@@ -27,7 +27,7 @@
           %td= link_to 'View', [@collection, @item, file] if can? :read, file
       %tr
         %td
-          %b== #{@files.length} files
+          %b== #{@files.count} files
         %td== --
         %td
           %b= number_to_human_size @files.sum(&:size)

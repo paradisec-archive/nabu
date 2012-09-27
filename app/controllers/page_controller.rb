@@ -13,18 +13,18 @@ class PageController < ApplicationController
     else
       collections = collections.order('created_at desc')
     end
-    @num_collections = collections.length
+    @num_collections = collections.count
     @collections = collections.page(params[:collections_page]).per(params[:collections_per_page])
 
     items = Item.where(:collector_id => current_user).order(:updated_at)
-    @num_items = items.length
+    @num_items = items.count
     @items = items.page(params[:items_page]).per(params[:items_per_page])
 
     @comments = Comment.owned_by(current_user)
-    @num_comments = @comments.length
+    @num_comments = @comments.count
 
     @comments_left = Item.where(:collector_id => current_user).map(&:comments).flatten
-    @num_comments_left = @comments_left.length
+    @num_comments_left = @comments_left.count
 
     @coordinates = @collections.map(&:center_coordinate).compact
     @north_limit = @coordinates.map{|c| c[:lat]}.max

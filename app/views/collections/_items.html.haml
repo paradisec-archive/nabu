@@ -40,7 +40,7 @@
                 %td
                   - if item.digitised_on
                     = item.digitised_on.strftime('%d/%m/%Y')
-                %td= item.essences.length
+                %td= item.essences.count
               %td
                 = link_to 'View', [item.collection, item]
                 = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
