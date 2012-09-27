@@ -42,7 +42,7 @@
         %grantIdentifier= h(@collection.full_grant_identifier)
       %items{:numItems => @num_items, :readyForExport => @num_items_ready}
         - @collection.items.each do |item|
-          %item{:numComments => item.comments.length, :numFiles => item.essences.length}
+          %item{:numComments => item.comments.count, :numFiles => item.essences.count}
             %identifier= item.full_identifier
             %private= item.private
             %title= h(item.title)
@@ -77,7 +77,7 @@
                 %agent{:role => h(item_agent.agent_role.name)}
                   = h(item_agent.user.name)
             %citation= CGI.escapeHTML(strip_tags(item.citation))
-            %files{:numFiles => item.essences.length}
+            %files{:numFiles => item.essences.count}
               - item.essences.each do |essence|
                 %file
                   %name= essence.filename
@@ -107,7 +107,7 @@
               %dataAccessConditions= h(item.access_condition_name)
               %dataAccessNarrative= h(item.access_narrative)
               %adminComment= item.admin_comment
-            %userComments{:numComments => item.comments.length}
+            %userComments{:numComments => item.comments.count}
               - item.comments.each do |comment|
                 %comment
                   %author= h(comment.owner.name)

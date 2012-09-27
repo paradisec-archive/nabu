@@ -6,7 +6,7 @@ namespace :import do
   task :all => [:setup, :import, :clean]
 
   desc 'Setup database from old PARADISEC'
-  task :setup => [:quiet, :dev_users, :add_identifiers, :access_cond_setup, :load_db]
+  task :setup => [:quiet, :dev_users, :add_identifiers, :access_cond_setup, :funding_bodies_setup, :load_db]
 
   task :quiet do
     if ENV['DEBUG'].nil?
@@ -80,15 +80,24 @@ namespace :import do
     AddIdentifiers.migrate(:down)
   end
 
-  ## SETUP access_cond table and mapping function
+  ## SETUP access_cond table, funding_bodies table and mapping function
 
   desc 'Create limited list of access conditions'
   task :access_cond_setup => :environment do
+    puts "Setting up access conditions list"
     AccessCondition.create! :name => "Open (subject to agreeing to PDSC access form)"
     AccessCondition.create! :name => "Open (subject to the access condition details)"
     AccessCondition.create! :name => "Closed (subject to the access condition details)"
     AccessCondition.create! :name => "Mixed (check individual items)"
     AccessCondition.create! :name => "As yet unspecified"
+  end
+
+  desc 'Pre-seed list of funding bodies'
+  task :funding_bodies_setup => :environment do
+    puts "Pre-seeding funding bodies list"
+    FundingBody.create! :name => "ARC - Australian Research Council", :key_prefix => "http://purl.org/au-research/grants/arc/"
+    FundingBody.create! :name => "ELDP - Endangered Languages Documentation Programme", :key_prefix => "htpp://paradisec.org.au/grants/eldp/"
+    FundingBody.create! :name => "Other", :key_prefix => "htpp://paradisec.org.au/grants/other/"
   end
 
   def getAccessCond(curr_cond)
@@ -467,7 +476,7 @@ namespace :import do
     categories.each do |cat|
       ## fix up the names
       cat_name = cat['type_name'].downcase.gsub('_', ' ')
-      cat_name = 'moving image' if cat_name == 'Movingimage'
+      cat_name = 'moving image' if cat_name == 'movingimage'
       category = DataCategory.new :name => cat_name
 
       ## save PARADISEC identifier
@@ -560,12 +569,12 @@ namespace :import do
       end
 
       ## when all items in coll are private, set private to true, too
-      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'")
-      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true")
+      itemsInColl = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"'").map{|i| i}.first.values.first
+      itemsPrivate = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_hide_metadata=true").map{|i| i}.first.values.first
       new_coll.private = new_coll.private || (itemsInColl == itemsPrivate)
 
       ## when all items in coll have impl_ready, set complete to true
-      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true")
+      itemsReady = client.query("SELECT count(*) FROM items WHERE item_collection_id='"+coll['coll_id']+"' AND item_impxml_ready=true").map{|i| i}.first.values.first
       new_coll.complete = (itemsInColl == itemsReady)
 
       ## save record
@@ -805,10 +814,10 @@ namespace :import do
         discourse_type = DiscourseType.find_by_pd_dt_id(item['item_discourse_type'])
       end
 
-      ## set "owned" boolean
-      item_owned = true
+      ## set "external" boolean
+      item_external = false
       if !item['item_url'].blank? && item['item_url'] !~ /paradisec/
-        item_owned = false
+        item_external = true
       end
 
       ## prepare record
@@ -819,7 +828,7 @@ namespace :import do
                           :language => item['item_source_language'],
                           :dialect => item['item_dialect'],
                           :url => item['item_url'],
-                          :owned => item_owned,
+                          :external => item_external,
                           :admin_comment => item['item_comments'],
                           :originated_on => originated_on,
                           :originated_on_narrative => originated_on_narrative,
@@ -1149,20 +1158,34 @@ namespace :import do
   desc 'Email users about new system'
   task :email_users => :environment do
     class PassMailer < ActionMailer::Base
-      default :from => 'support@paradisec.org.au'
+      default :from => 'admin@paradisec.org.au'
 
       TEMPLATE = <<-EOF
 
       Dear <%= @user.name %>,
 
-      Welcome to the new nabu system.
+      PARADISEC has migrated to a new catalog system and the old system has now
+      been taken offline.
 
-      Please click on the link below to set the password for your new account.
+      You have an account in the new system!
 
+      Please click on the link below to set a password for your new account.
       <%= edit_password_url(@user, :reset_password_token => @user.reset_password_token) %>
 
-      Cheers,
-      The Nabu Team
+      If you have already deposited material with us, you will find your collections
+      and metadata in the system. We encourage you to review and update your metadata.
+
+      The new system has additional functionality for logged in users, including
+      the ability to leave comments on items and to preview files.
+
+      You can find the new catalog at http://catalog.paradisec.org.au/. While we
+      are still developing the help information, we encourage you to explore the
+      new system. We will write to you again when help information is online.
+
+      Feel free to contact us at admin@paradisec.org.au if you have any questions.
+
+      Best Regards,
+      The PARADISEC Team
 
       EOF
       def welcome_email(user)

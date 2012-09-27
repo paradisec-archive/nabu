@@ -39,7 +39,11 @@ module ApplicationHelper
   end
 
   def current_link_to label, path, cname
-    link_to label, path, ({:class => 'active'} if controller.controller_name == cname)
+    if controller.controller_name == 'page'
+      link_to label, path, ({:class => 'active'} if cname == controller.controller_name + "#" + controller.action_name)
+    else
+      link_to label, path, ({:class => 'active'} if cname == controller.controller_name)
+    end
   end
 
 end

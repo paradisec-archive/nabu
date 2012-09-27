@@ -53,7 +53,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_admin_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
-  attr_accessible :identifier, :title, :owned, :url, :description, :region,
+  attr_accessible :identifier, :title, :external, :url, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,
@@ -236,7 +236,7 @@ class Item < ActiveRecord::Base
     cite += ", #{originated_on.year}" if originated_on
     cite += '; ' unless cite == ""
     cite += "<i>#{sanitize(title)}</i>, "
-    last = essence_types.length - 1
+    last = essence_types.count - 1
     essence_types.each_with_index do |type, index|
         cite += type
         if index != last
@@ -291,7 +291,7 @@ class Item < ActiveRecord::Base
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
-      xml.tag! 'dc:identifier', "http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if owned?
+      xml.tag! 'dc:identifier', "http://paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if external?
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
@@ -343,20 +343,20 @@ class Item < ActiveRecord::Base
       item_data_categories.each do |cat|
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'historical_linguistics'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'historical_linguistics'
         when 'language description', 'lexicon', 'primary_text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'language_documentation'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'language_documentation'
         when 'lexicon'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'lexicography'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'lexicography'
         when 'primary text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'text_and_corpus_linguistics'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'text_and_corpus_linguistics'
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
-          xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic' , 'olac:code' => 'typology'
+          xml.tag! 'olac:subject', cat.data_category.name, 'xsi:type' => 'linguistic' , 'olac:code' => 'typology'
         when 'photo'
           xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
         when 'moving image'

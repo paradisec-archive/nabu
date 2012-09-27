@@ -38,10 +38,10 @@ $(document).ready ->
       sw = marker_bounds.getSouthWest()
 
       if marker_bounds.isEmpty()
-        $('.north_limit').val(70)
-        $('.east_limit').val(170)
-        $('.south_limit').val(-70)
-        $('.west_limit').val(-170)
+        $('.north_limit').val(80)
+        $('.east_limit').val(-40)
+        $('.south_limit').val(-80)
+        $('.west_limit').val(-20)
       else
         $('.north_limit').val(ne.lat())
         $('.east_limit').val(ne.lng())
@@ -52,10 +52,10 @@ $(document).ready ->
       false
 
     $('.map').bind 'update_map', (event) ->
-      north_limit = $('.north_limit').val() || $(this).data('north_limit') || 70
-      south_limit = $('.south_limit').val() || $(this).data('south_limit') || -70
-      east_limit = $('.east_limit').val() || $(this).data('east_limit') || 170
-      west_limit = $('.west_limit').val() || $(this).data('west_limit') || -170
+      north_limit = $('.north_limit').val() || $(this).data('north_limit') || 80
+      south_limit = $('.south_limit').val() || $(this).data('south_limit') || -80
+      east_limit = $('.east_limit').val() || $(this).data('east_limit') || -40
+      west_limit = $('.west_limit').val() || $(this).data('west_limit') || -20
       editable = $(this).data('editable') == true
 
       sw  = new google.maps.LatLng(south_limit, west_limit)
@@ -73,7 +73,6 @@ $(document).ready ->
           bounds: bounds,
           editable: editable,
           map: map
-          # TODO Add colors etc
         })
         $(this).data('rect', rect)
 
@@ -108,7 +107,7 @@ $(document).ready ->
       $(element).css({'height':cw+'px'})
 
       options = {
-        center: new google.maps.LatLng(20, 0),
+        center: new google.maps.LatLng(5, 140),
         zoom: 1,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true,

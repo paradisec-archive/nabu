@@ -15,7 +15,11 @@ class Essence < ActiveRecord::Base
 
   def type
     types = mimetype.split("/",2)
-    types[1].upcase
+    if types[1].nil?
+      "unknown"
+    else
+      types[1].upcase
+    end
   end
 
   def path
