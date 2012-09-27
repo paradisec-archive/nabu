@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(:version => 20120923013322) do
     t.datetime "metadata_exported_on"
     t.text     "tracking"
     t.text     "admin_comment"
-    t.boolean  "external",                   :default => false
+    t.boolean  "external",                :default => true
     t.text     "originated_on_narrative"
     t.float    "north_limit"
     t.float    "south_limit"
