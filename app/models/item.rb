@@ -343,20 +343,20 @@ class Item < ActiveRecord::Base
       item_data_categories.each do |cat|
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'historical_linguistics'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'historical_linguistics'
         when 'language description', 'lexicon', 'primary_text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'language_documentation'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'language_documentation'
         when 'lexicon'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'lexicography'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'lexicography'
         when 'primary text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => cat.data_category.name
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic',  'olac:code' => 'text_and_corpus_linguistics'
+          xml.tag! 'olac:subject', 'xsi:type' => 'linguistic',  'olac:code' => 'text_and_corpus_linguistics'
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
-          xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic' , 'olac:code' => 'typology'
+          xml.tag! 'olac:subject', cat.data_category.name, 'xsi:type' => 'linguistic' , 'olac:code' => 'typology'
         when 'photo'
           xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
         when 'moving image'
