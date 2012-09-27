@@ -177,9 +177,14 @@ class Collection < ActiveRecord::Base
 
   def center_coordinate
     if has_coordinates
+      if east_limit < west_limit
+        long = 180 + (west_limit + east_limit) / 2
+      else
+        long = (west_limit + east_limit) / 2
+      end
       {
         :lat => (north_limit + south_limit) / 2,
-        :lng => (west_limit + east_limit) / 2,
+        :lng => long,
         :title => title,
         :id => identifier,
         :items => items.length,
