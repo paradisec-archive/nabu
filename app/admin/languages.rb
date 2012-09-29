@@ -1,6 +1,7 @@
 ActiveAdmin.register Language do
   menu :parent => "Other Entities"
   config.sort_order = "name"
+  actions :all, :except => [:destroy]
 
   # show page
   show do |language|
