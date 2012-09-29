@@ -1,4 +1,4 @@
-set :stages, %w(production staging uat development)
+set :stages, %w(production uat development)
 set :default_stage, 'uat'
 require 'capistrano/ext/multistage'
 
