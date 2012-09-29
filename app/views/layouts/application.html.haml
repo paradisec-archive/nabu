@@ -1,56 +1,57 @@
 !!! html5
 %html
-%head
-  %title Nabu
-  = stylesheet_link_tag :screen, :media => 'screen, projection'
-  = stylesheet_link_tag :print,  :media => 'print'
-  /[if lt IE 8]
-    = stylesheet_link_tag :ie, :media => 'screen, projection'
+  %head
+    %title Nabu
+    = favicon_link_tag
+    = stylesheet_link_tag :screen, :media => 'screen, projection'
+    = stylesheet_link_tag :print,  :media => 'print'
+    /[if lt IE 8]
+      = stylesheet_link_tag :ie, :media => 'screen, projection'
 
-  = javascript_include_tag :application
-  = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+    = javascript_include_tag :application
+    = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
-  = csrf_meta_tags
+    = csrf_meta_tags
 
-%body.bp
+  %body.bp
 
-  #container
-    #header
-      .logo= image_tag 'paradisec.jpg', :height => 100
-      .name PARADISEC Catalog
-      .auth
-        .inner
+    #container
+      #header
+        .logo= image_tag 'paradisec.jpg', :height => 100
+        .name PARADISEC Catalog
+        .auth
+          .inner
+            - if user_signed_in?
+              = link_to current_user.name, current_user
+              |
+              = link_to 'Sign out', destroy_user_session_path, :method => :delete
+            - else
+              = link_to 'Sign up', new_user_registration_path
+              |
+              = link_to 'Sign in', new_user_session_path
+
+      #nav
+        %ul{:id => 'menu', :role => 'navigation'}
+          %li= current_link_to 'Home', root_path, 'page#home'
           - if user_signed_in?
-            = link_to current_user.name, current_user
+            %li= current_link_to 'Dashboard', dashboard_path, 'page#dashboard'
+          %li= current_link_to 'Collections', search_collections_path, 'collections'
+          %li= current_link_to 'Items', search_items_path, 'items'
+          %li= current_link_to 'Contact', contact_path, 'page#contact'
+
+      #flash
+        - flash.each do |name, msg|
+          - if msg.is_a?(String)
+            %div{:class => name}= msg
+
+      #content
+        = yield
+
+      #footer
+        %center
+          = link_to 'Glossary', glossary_path
+          - if admin_user_signed_in?
             |
-            = link_to 'Sign out', destroy_user_session_path, :method => :delete
-          - else
-            = link_to 'Sign up', new_user_registration_path
-            |
-            = link_to 'Sign in', new_user_session_path
-
-    #nav
-      %ul{:id => 'menu', :role => 'navigation'}
-        %li= current_link_to 'Home', root_path, 'page#home'
-        - if user_signed_in?
-          %li= current_link_to 'Dashboard', dashboard_path, 'page#dashboard'
-        %li= current_link_to 'Collections', search_collections_path, 'collections'
-        %li= current_link_to 'Items', search_items_path, 'items'
-        %li= current_link_to 'Contact', contact_path, 'page#contact'
-
-    #flash
-      - flash.each do |name, msg|
-        - if msg.is_a?(String)
-          %div{:class => name}= msg
-
-    #content
-      = yield
-
-    #footer
-      %center
-        = link_to 'Glossary', glossary_path
-        - if admin_user_signed_in?
-          |
-          = link_to 'Admin', admin_dashboard_path
+            = link_to 'Admin', admin_dashboard_path
 
 
