@@ -78,11 +78,15 @@ class ItemsController < ApplicationController
   end
 
   def destroy
-    @item.destroy
-    undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
-
-    flash[:notice] = "Item removed successfully (#{undo_link})."
-    redirect_to @collection
+    begin
+      @item.destroy
+      undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+      flash[:notice] = "Item removed successfully (#{undo_link})."
+      redirect_to @collection
+    rescue ActiveRecord::DeleteRestrictionError
+      flash[:error] = "Item has content files and cannot be removed."
+      redirect_to [@collection, @item]
+    end
   end
 
   def update
