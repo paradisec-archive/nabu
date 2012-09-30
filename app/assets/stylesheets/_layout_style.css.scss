@@ -118,6 +118,10 @@ body.bp {
 
   #flash {
     padding-top: 10px;
+    .undo {
+      color: blue;
+      text-decoration: underline;
+    }
   }
 
   .field_with_errors {

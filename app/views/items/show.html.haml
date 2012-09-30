@@ -250,4 +250,5 @@
 
   - if can? :update, @item
     .right
+      = link_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this item?'
       = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'

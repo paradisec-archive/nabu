@@ -42,7 +42,7 @@
       #flash
         - flash.each do |name, msg|
           - if msg.is_a?(String)
-            %div{:class => name}= msg
+            %div{:class => name}= raw(msg)
 
       #content
         = yield
