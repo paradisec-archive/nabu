@@ -27,7 +27,7 @@
 
       .right
         = select_tag :complete, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
-        = label_tag :complete, 'Collection completed'
+        = label_tag :complete, 'Ready for metadata export'
 
         = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
         = label_tag :private

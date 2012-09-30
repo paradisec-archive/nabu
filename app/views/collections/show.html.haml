@@ -11,7 +11,7 @@
     - if can? :manage, @collection
       .right
         = check_box_tag :checked, @collection.complete, @collection.complete, :disabled => true
-        Collection complete
+        Ready for metadata export
         = check_box_tag :private, @collection.private, @collection.private, :disabled => true
         Private
 

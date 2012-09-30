@@ -30,6 +30,6 @@ class CollectionProvider < OAI::Provider::Base
   repository_url 'http://catalog.paradisec.org.au/oai/collection'
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
-  source_model OAI::Provider::ActiveRecordWrapper.new(::Collection.where(:private => false), :limit => 100)
+  source_model OAI::Provider::ActiveRecordWrapper.new(::Collection.where(:private => false).where(:complete => true), :limit => 100)
 end
 
