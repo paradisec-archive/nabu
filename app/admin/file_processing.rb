@@ -41,7 +41,7 @@ ActiveAdmin.register_page "File Processing" do
 
     div :class => 'dashboard_section panel' do
       render 'paths'
-      para 'Note: the machine is set up to check directories once a minute.'
+      para 'Note: the machine is set up to check directories once every 5 minutes.'
     end
   end
 end
