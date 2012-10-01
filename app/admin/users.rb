@@ -108,8 +108,9 @@ ActiveAdmin.register User do
       f.input :contact_only
       f.input :admin
       f.input :party_identifier
+      f.input :password
     end
-    f.buttons
+    f.actions
   end
 
   # limit fields in csv export
