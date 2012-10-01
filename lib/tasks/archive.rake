@@ -52,6 +52,10 @@ namespace :archive do
       basename, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
       next if !collection || !item
 
+      # if metadata file exists, skip to the next file
+      metadata_filename = directory + basename + render_extension
+      next if File.file? "#{metadata_filename}"
+
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
       if !item.metadata_exportable
@@ -63,7 +67,6 @@ namespace :archive do
       template.item = item
       data = template.render_to_string :template => "items/show.#{type}.xml"
 
-      metadata_filename = directory + basename + render_extension
       File.open(metadata_filename, 'w') {|f| f.write(data)}
       puts "SUCCESS: metadata file #{metadata_filename} created for #{file}"
     end
