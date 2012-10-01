@@ -1191,14 +1191,14 @@ namespace :import do
       def welcome_email(user)
         @user = user
         @url  = 'http://paradisec.org.au/login'
-        mail :to => (user.unconfirmed_email || user.email), :subject => 'Welcome to My Awesome Site' do |format|
+        mail :to => (user.email), :subject => 'Welcome to the new PARADISEC catalog' do |format|
           format.text { render :inline => TEMPLATE }
         end
       end
     end
 
     User.where(:confirmed_at => nil).where(:contact_only => false).each do |user|
-      user.confirmation_sent_at = Time.now
+      user.confirm!
       user.send(:generate_reset_password_token!)
 
       PassMailer.welcome_email(user).deliver

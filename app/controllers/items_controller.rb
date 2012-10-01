@@ -77,6 +77,18 @@ class ItemsController < ApplicationController
   def edit
   end
 
+  def destroy
+    begin
+      @item.destroy
+      undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+      flash[:notice] = "Item removed successfully (#{undo_link})."
+      redirect_to @collection
+    rescue ActiveRecord::DeleteRestrictionError
+      flash[:error] = "Item has content files and cannot be removed."
+      redirect_to [@collection, @item]
+    end
+  end
+
   def update
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])

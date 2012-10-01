@@ -68,6 +68,18 @@ class CollectionsController < ApplicationController
     @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
 
+  def destroy
+    begin
+      @collection.destroy
+      undo_link = view_context.link_to("undo", revert_version_path(@collection.versions.last), :method => :post, :class => 'undo')
+      flash[:notice] = "Collection removed successfully (#{undo_link})."
+      redirect_to search_collections_path
+    rescue ActiveRecord::DeleteRestrictionError
+      flash[:error] = "Collection has items and cannot be removed."
+      redirect_to @collection
+    end
+  end
+
   def update
     if @collection.update_attributes(params[:collection])
       # Make the depositor an admin

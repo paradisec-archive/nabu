@@ -88,7 +88,7 @@ class Item < ActiveRecord::Base
 
   def full_path
     # FIX ME
-    "http://catalog.paradisec.org.au/items/#{full_identifier}"
+    "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
   end
 
   def xml_key

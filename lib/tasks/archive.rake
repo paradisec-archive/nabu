@@ -100,6 +100,7 @@ namespace :archive do
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
         next if basename.split('-').last == "PDSC_ADMIN"
+        next if basename.split('-').last == "CAT" || basename.split('-').last == "df"
 
         # extract media metadata from file
         puts "Inspecting file #{file}..."
@@ -107,6 +108,7 @@ namespace :archive do
         puts "...done"
       end
     end
+    puts "Importing files done"
   end
 
   desc 'Update essence metadata of existing files in the archive'
@@ -175,6 +177,8 @@ namespace :archive do
 
   def parse_file_name(file, file_extension=nil)
     coll_id, item_id = file.split('-')
+    return unless item_id
+
     extension = file.split('.').last
     return if file_extension && file_extension != extension
     basename = File.basename(file, "." + extension)

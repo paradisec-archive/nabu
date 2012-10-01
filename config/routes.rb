@@ -12,6 +12,8 @@ Nabu::Application.routes.draw do
   match '/dashboard' => 'page#dashboard'
   match '/glossary' => 'page#glossary'
 
+  post "versions/:id/revert" => "versions#revert", :as => "revert_version"
+
   resources :users
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
