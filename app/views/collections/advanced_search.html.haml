@@ -70,7 +70,7 @@
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td= collection_select :university_id, params[:university_id], University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, params[:university_id]), :include_blank => true, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
         %tr
           %th
@@ -100,7 +100,7 @@
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
-          %td= collection_select :access_condition_id, params[:access_condition_id], AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
+          %td= select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, params[:access_condition_id]), :include_blank => true, :data => {:placeholder => 'Choose a access condition...'}, :class => 'select2'
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'
@@ -191,11 +191,11 @@
 
         %tr
           %th= label_tag :field_of_research_id, 'Field of research'
-          %td= collection_select :field_of_research_id, params[:field_of_research_id], FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
+          %td= select_tag :field_of_research_id, options_from_collection_for_select(FieldOfResearch.alpha, :id, :name, params[:field_of_research_id]), :include_blank => true, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
         %tr
           %th= label_tag :funding_body_id, 'Funding body'
-          %td= collection_select :funding_body_id, params[:field_of_research_id], FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
+          %td= select_tag :funding_body_id, options_from_collection_for_select(FundingBody.alpha, :id, :name, params[:funding_body_id]), :include_blank => true, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
 
         %tr
           %th Grant identifier:
