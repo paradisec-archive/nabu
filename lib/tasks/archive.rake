@@ -108,7 +108,6 @@ namespace :archive do
         puts "...done"
       end
     end
-    puts "Importing files done"
   end
 
   desc 'Update essence metadata of existing files in the archive'
