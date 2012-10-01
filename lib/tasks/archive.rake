@@ -76,8 +76,6 @@ namespace :archive do
     dir_list = Nabu::Application.config.upload_directories
 
     dir_list.each do |upload_directory|
-      next if upload_directory =~ /server_backups/
-      next if upload_directory =~ /snapshot/
       next unless File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
 
@@ -177,7 +175,7 @@ namespace :archive do
   def directories(path)
     data = []
     Dir.foreach(path) do |entry|
-      next if (entry == '..' || entry == '.' || entry == '.snapshot')
+      next if (entry == '..' || entry == '.' || entry == '.snapshot' || entry == '.server_backups')
       full_path = File.join(path, entry)
       if File.directory?(full_path)
         data << full_path
