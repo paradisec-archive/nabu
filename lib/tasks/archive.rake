@@ -77,6 +77,7 @@ namespace :archive do
 
     dir_list.each do |upload_directory|
       next if upload_directory =~ /server_backups/
+      next if upload_directory =~ /snapshot/
       next unless File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
 
