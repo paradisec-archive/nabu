@@ -168,10 +168,12 @@ class CollectionsController < ApplicationController
       end
 
       # GEO Is special
-      with(:north_limit).less_than params[:north_limit] if params[:north_limit]
-      with(:south_limit).greater_than params[:south_limit] if params[:south_limit]
-      with(:west_limit).greater_than params[:west_limit] if params[:west_limit]
-      with(:east_limit).less_than params[:east_limit] if params[:east_limit]
+      all_of do
+        with(:north_limit).less_than params[:north_limit] if params[:north_limit]
+        with(:south_limit).greater_than params[:south_limit] if params[:south_limit]
+        with(:west_limit).greater_than params[:west_limit] if params[:west_limit]
+        with(:east_limit).less_than params[:east_limit] if params[:east_limit]
+      end
 
       # Blank Search
       Sunspot::Setup.for(Collection).fields.each do |field|
