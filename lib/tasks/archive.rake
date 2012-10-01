@@ -76,6 +76,7 @@ namespace :archive do
     dir_list = Nabu::Application.config.upload_directories
 
     dir_list.each do |upload_directory|
+      next if upload_directory =~ /server_backups/
       next unless File.directory?(upload_directory)
       dir_contents = Dir.entries(upload_directory)
 
