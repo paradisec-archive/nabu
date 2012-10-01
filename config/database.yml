@@ -3,26 +3,23 @@ common: &COMMON
   encoding: utf8
   pool: 5
   timeout: 5000
+  adapter: mysql2
+  host: localhost
+  user: root
+
+production:
+  <<: *COMMON
+  database: nabu
+
+uat:
+  <<: *COMMON
+  database: nabu
 
 development:
   <<: *COMMON
-  adapter: mysql2
   database: nabu_devel
-  host: localhost
-  user: root
 
-production: &PRODUCTION
+test:
   <<: *COMMON
-  adapter: mysql2
-  host: localhost
-  database: nabu
-  user: root
-
-uat:
-  <<: *PRODUCTION
-
-test: &test
-  <<: *COMMON
-  adapter: sqlite3
-  database: ":memory:"
+  database: nabu_test
   verbosity: quiet

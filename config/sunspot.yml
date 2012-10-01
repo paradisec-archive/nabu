@@ -1,17 +1,27 @@
 production:
   solr:
     hostname: localhost
+    bind_address: 127.0.0.1
     port: 8983
     log_level: WARNING
+
+uat:
+  solr:
+    hostname: localhost
+    bind_address: 127.0.0.1
+    port: 8983
+    log_level: INFO
 
 development:
   solr:
     hostname: localhost
+    bind_address: 127.0.0.1
     port: 8982
     log_level: INFO
 
 test:
   solr:
     hostname: localhost
+    bind_address: 127.0.0.1
     port: 8981
     log_level: WARNING
