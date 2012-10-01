@@ -69,4 +69,16 @@ class User < ActiveRecord::Base
   def xml_key
     "paradisec.org.au/user/#{id}"
   end
+
+  def destroy
+    ok_to_destroy? ? super : self
+  end
+
+  private
+
+  def ok_to_destroy?
+    errors.clear
+    errors.add(:base, "User owns items and cannot be removed.") if owned_items.count > 0
+    errors.empty?
+  end
 end

@@ -11,4 +11,16 @@ class FundingBody < ActiveRecord::Base
   end
 
   has_many :collections, :dependent => :restrict
+
+  def destroy
+    ok_to_destroy? ? super : self
+  end
+
+  private
+
+  def ok_to_destroy?
+    errors.clear
+    errors.add(:base, "Funding body used in collections and cannot be removed.") if collections.count > 0
+    errors.empty?
+  end
 end

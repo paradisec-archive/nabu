@@ -5,6 +5,17 @@ ActiveAdmin.register User do
   scope :admins
   scope :all_users
 
+  before_destroy :check_dependent
+
+  controller do
+    def check_dependent(object)
+      if object.owned_items.count > 0
+        flash[:error] = "ERROR: User owns items - cannot be removed."
+        return false
+      end
+    end
+  end
+
   # allow saving admin-only fields in controller
   controller do
     with_role :admin
