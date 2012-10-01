@@ -9,7 +9,7 @@
     .right
       %p
         - if can? :create, Collection
-          = link_to 'Add collection', new_collection_path, :class => 'button'
+          = link_to 'Add new collection', new_collection_path, :class => 'button'
 
     .left
       = paginate @collections, :param_name => :collections_page
