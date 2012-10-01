@@ -177,7 +177,10 @@
           = f.fields_for :item_agents do |c|
             = c.object.user.name
             == :
-            = c.object.agent_role.name
+            - if c.object.agent_role
+              = c.object.agent_role.name
+            - else
+              No role given
             &nbsp;&nbsp;&nbsp;
             = c.check_box :_destroy
             Delete
