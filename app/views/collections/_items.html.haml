@@ -5,7 +5,7 @@
   .right
     %p
       - if can? :create, @items.build # TODO this actually adds an item to the array is there a better way
-        = link_to 'Add item', new_collection_item_path(@collection), :class => 'button'
+        = link_to 'Add new item', new_collection_item_path(@collection), :class => 'button'
 
   .left
     = paginate @items, :param_name => :items_page
