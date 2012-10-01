@@ -48,7 +48,7 @@ namespace :sunspot do
 end
 namespace :monit do
   task :unmonitor do
-    run "sudo /usr/bin/monit unmonitor all"
+    run "sudo /usr/bin/monit unmonitor all || true"
   end
   task :monitor do
     run "sudo /usr/bin/monit monitor all"
