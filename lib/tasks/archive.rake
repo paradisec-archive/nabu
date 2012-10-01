@@ -87,6 +87,12 @@ namespace :archive do
       dir_contents.each do |file|
         next unless File.file? "#{upload_directory}/#{file}"
 
+        # skip files of size 0 bytes
+        if !File.size?("#{upload_directory}/#{file}")
+          puts "WARNING: file #{file} skipped, since it is empty"
+          next
+        end
+
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
         puts "---------------------------------------------------------------"
@@ -99,10 +105,14 @@ namespace :archive do
 
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
 
+        # move old style CAT and df files to the new naming scheme
+        if basename.split('-').last == "CAT" || basename.split('-').last == "df"
+          FileUtils.mv(destination_path + file, destination_path + "/" + basename + "-PDSC_ADMIN." + extension)
+        end
+
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
         next if basename.split('-').last == "PDSC_ADMIN"
-        next if basename.split('-').last == "CAT" || basename.split('-').last == "df"
 
         # extract media metadata from file
         puts "Inspecting file #{file}..."
@@ -148,8 +158,7 @@ namespace :archive do
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-# TODO Do this after go-live
-#          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
           next
         end
 
@@ -157,6 +166,9 @@ namespace :archive do
         import_metadata(directory, file, item, extension)
       end
     end
+    puts "==="
+    puts "Update Files finished."
+    puts "==="
   end
 
 
