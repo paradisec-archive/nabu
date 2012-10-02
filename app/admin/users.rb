@@ -119,7 +119,10 @@ ActiveAdmin.register User do
       f.input :contact_only
       f.input :admin
       f.input :party_identifier
-      f.input :password
+      if !f.object.new_record?
+        f.input :password
+        f.input :password_confirmation
+      end
     end
     f.actions
   end
