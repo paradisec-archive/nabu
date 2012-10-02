@@ -24,6 +24,8 @@ Nabu::Application.routes.draw do
       get 'advanced_search' => 'collections#advanced_search'
       get 'bulk_update' => 'collections#bulk_edit'
       put 'bulk_update' => 'collections#bulk_update'
+      get 'exsite9' => 'collections#new_from_exsite9'
+      post 'exsite9' => 'collections#create_from_exsite9'
     end
     resources :items do
       resources :essences, :only => [:show, :download] do

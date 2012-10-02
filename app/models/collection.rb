@@ -48,7 +48,10 @@ class Collection < ActiveRecord::Base
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
                   :complete, :private, :tape_location, :deposit_form_received,
+                  :exsite9,
                   *bulk
+
+  attr_accessor :exsite9
 
   paginates_per 10
 

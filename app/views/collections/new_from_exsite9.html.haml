@@ -1,0 +1,16 @@
+
+= form_for @collection, :url => exsite9_collections_path do |f|
+  - if @collection.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
+      %ul
+        - @collection.errors.full_messages.each do |msg|
+          %li= msg
+
+  .twoup-1
+    %table.form.show
+      %tr
+        %td= f.file_field :exsite9
+
+      %tr
+        %td= f.submit 'Add Collection from ExCite9 file'
