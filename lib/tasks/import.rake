@@ -1155,8 +1155,8 @@ namespace :import do
     end
   end
 
-  desc 'Email users about new system'
-  task :email_users => :environment do
+  desc 'Email user about new system'
+  task :email_user => :environment do
     class PassMailer < ActionMailer::Base
       default :from => 'admin@paradisec.org.au'
 
@@ -1197,11 +1197,10 @@ namespace :import do
       end
     end
 
-    User.where(:confirmed_at => nil).where(:contact_only => false).each do |user|
-      user.confirm!
-      user.send(:generate_reset_password_token!)
-
-      PassMailer.welcome_email(user).deliver
-    end
+    email = ENV['EMAIL'] || ENV['email'] || abort('please supply an email address using EMAIL=blah@blah')
+    user = User.where(:unconfirmed_email => email).first || User.where(:email => email).first || abort('user not found')
+    user.confirm!
+    user.send(:generate_reset_password_token!)
+    PassMailer.welcome_email(user).deliver
   end
 end
