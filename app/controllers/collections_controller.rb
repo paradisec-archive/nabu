@@ -255,6 +255,9 @@ class CollectionsController < ApplicationController
     # grant_identifier
     @collection.grant_identifier = project_info[0].xpath('//grantID').first.content
 
+    # physicalLocation
+    @collection.tape_location = project_info[0].xpath('//physicalLocation').first.content
+
 #    entries.each do |entry|
 #      item = @collection.build_item
 #      item.title = entry['title']
