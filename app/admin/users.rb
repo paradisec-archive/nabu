@@ -118,11 +118,12 @@ ActiveAdmin.register User do
       f.input :rights_transfer_reason
       f.input :contact_only
       f.input :admin
-      f.input :party_identifier
-      if !f.object.new_record?
+      buffer =f.input :party_identifier
+      if f.object.new_record?
         f.input :password
         f.input :password_confirmation
       end
+      buffer
     end
     f.actions
   end
