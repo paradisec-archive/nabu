@@ -23,6 +23,7 @@ ActiveAdmin.register_page "Activity Log" do
 
           column :changeset do |v|
             ul do
+              next unless v.changeset
               v.changeset.each do |k, vals|
                 from, to = vals
                 li do
