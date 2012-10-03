@@ -5,7 +5,7 @@ module OAI::Provider::Metadata
 
     def initialize
       @prefix = 'olac'
-      @schema = 'http://www.language-archives.org/OLAC/1.1/olac-archive.xsd'
+      @schema = 'http://www.language-archives.org/OLAC/1.1/olac.xsd'
       @namespace = 'http://www.language-archives.org/OLAC/1.1/'
       @element_namespace = 'olac'
     end
