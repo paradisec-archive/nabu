@@ -243,6 +243,25 @@ class CollectionsController < ApplicationController
     # region or village
     @collection.region = project_info[0].xpath('//placeOrRegionName').first.content
 
+    # physicalLocation
+    @collection.tape_location = project_info[0].xpath('//physicalLocation').first.content
+
+    # languages, separated by |
+    languages = project_info[0].xpath('//languages').first.content.split('|')
+    languages.each do |language|
+      code, name = language.split(' - ')
+      lang = Language.find_by_code(code)
+      @collection.languages << lang
+    end
+
+    # countries, separated by |
+    countries = project_info[0].xpath('//countries').first.content.split('|')
+    countries.each do |country|
+      code, name = country.split(' - ')
+      cntry = Country.find_by_code(code)
+      @collection.countries << cntry
+    end
+
     # fundingBody
     coll_body = project_info[0].xpath('//fundingBody').first.content
     funding_body = FundingBody.find_by_name(coll_body)
@@ -255,13 +274,31 @@ class CollectionsController < ApplicationController
     # grant_identifier
     @collection.grant_identifier = project_info[0].xpath('//grantID').first.content
 
-    # physicalLocation
-    @collection.tape_location = project_info[0].xpath('//physicalLocation').first.content
+    # relatedGrant
+    relatedGrant = project_info[0].xpath('//relatedGrant').first.content
+    if !@collection.grant_identifier
+      @collection.grant_identifier = relatedGrant
+    end
 
-#    entries.each do |entry|
-#      item = @collection.build_item
-#      item.title = entry['title']
-#    end
+    # datesOfCapture
+    datesOfCapture = project_info[0].xpath('//datesOfCapture').first.content
+    if datesOfCapture.nil?
+      @collection.comments = ""
+    else
+      @collection.comments = "Capture date: " + datesOfCapture + "; "
+    end
+
+    # relatedInformation
+    @collection.comments += project_info[0].xpath('//relatedInformation').first.content
+
+    # get the items (groups)
+    groups = project_info[0].xpath('//group')
+    groups.each do |group|
+      item = @collection.build_item
+      item.identifier = group['name']
+      item.description = group.xpath('//Description').first.content
+    end
+
     @collection.identifier = ""
     if @collection.valid?
       @collection.save!
