@@ -54,7 +54,11 @@
 
       %tr
         %th Collector
-        %td= @item.collector_name
+        %td
+          - if @item.collector_name && @item.collector
+            = link_to @item.collector_name, admin_user_path(@item.collector.id)
+          - else
+            = @item.collector_name
 
       %tr
         %th Countries
@@ -103,7 +107,11 @@
 
       %tr
         %th Operator
-        %td= @item.operator_name
+        %td
+          - if can? :manage, @item && @item.operator
+            = link_to @item.operator_name, admin_user_path(@item.operator.id)
+          - else
+            = @item.operator_name
 
       %tr
         %th Data Categories

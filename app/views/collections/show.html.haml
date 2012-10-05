@@ -35,11 +35,19 @@
 
       %tr
         %th Collector
-        %td= @collection.collector_name
+        %td
+          - if can? :manage, @collection && @collection.collector
+            = link_to @collection.collector_name, admin_user_path(@collection.collector.id)
+          - else
+            = @collection.collector_name
 
       %tr
         %th Operator
-        %td= @collection.operator_name
+        %td
+          - if can? :manage, @collection && @collection.operator
+            = link_to @collection.operator_name, admin_user_path(@collection.operator.id)
+          - else
+            = @collection.operator_name
 
       %tr
         %th Originating university
