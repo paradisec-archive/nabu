@@ -55,7 +55,7 @@
       %tr
         %th Collector
         %td
-          - if @item.collector_name && @item.collector
+          - if (can? :manage, @item) && @item.collector
             = link_to @item.collector_name, admin_user_path(@item.collector.id)
           - else
             = @item.collector_name
@@ -108,7 +108,7 @@
       %tr
         %th Operator
         %td
-          - if can? :manage, @item && @item.operator
+          - if (can? :manage, @item) && @item.operator
             = link_to @item.operator_name, admin_user_path(@item.operator.id)
           - else
             = @item.operator_name
