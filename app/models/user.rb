@@ -61,6 +61,11 @@ class User < ActiveRecord::Base
     false
   end
 
+  # Stop devise from sending emails for users without email
+  def active_for_authentication?
+    super && !(email.blank? && unconfirmed_email.blank?)
+  end
+
   def full_path
     # FIX ME
     "http://catalog.paradisec.org.au/admin/users/#{id}"
