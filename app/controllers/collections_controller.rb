@@ -1,4 +1,4 @@
-require 'nokogiri'
+require_dependency 'ExSite9'
 class CollectionsController < ApplicationController
   load_and_authorize_resource :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
@@ -153,151 +153,12 @@ class CollectionsController < ApplicationController
   def create_from_exsite9
     # get XML data
     data = params[:collection][:exsite9].read
-    # parse XML file
-    doc  = Nokogiri::XML data
-    puts doc.errors
-    if doc.errors.count > 0
-      flash[:error] = "ERROR: Unable to parse XML file (#{doc.errors.join(',')})."
-      render 'new_from_exsite9'
-      return
-    end
-    @collection = Collection.new
-    flash[:notice] = ""
+    # parse XML file as ExSite9
+    exsite9 = Nabu::ExSite9.new data
 
-    # get collection information =======
-    project_info = doc.xpath('//project_info')
-    if !project_info[0]
-      flash[:error] = "ERROR: Not an ExSite9 file."
-      render 'new_from_exsite9'
-      return
-    end
-
-    # is it a collection?
-    collectionType = project_info[0]['collectionType']
-    if collectionType != "Collection"
-      flash[:error] = "ERROR: ExSite9 file does not contains collection information (collectionType = #{collectionType})."
-      render 'new_from_exsite9'
-      return
-    end
-
-    # collection identifier
-    collectionId = project_info[0]['identifier']
-    coll = Collection.find_by_identifier(collectionId)
-    unless coll.nil?
-      flash[:error] = "ERROR: Not a new collection #{collectionId} - can't overwrite."
-      render 'new_from_exsite9'
-      return
-    end
-    @collection.identifier = collectionId
-
-    # collection title
-    @collection.title = project_info[0].xpath('//projectName').first.content
-
-    # description
-    @collection.description = project_info[0].xpath('//description').first.content
-
-    # collector
-    coll_name = project_info[0].xpath('//name').first.content
-    last_name, first_name = coll_name.split(/, /, 2)
-    if first_name.blank?
-      first_name, last_name = coll_name.split(/ /, 2)
-    end
-    collector = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
-    if collector.nil?
-      flash[:error] = "ERROR: Collector #{first_name} #{last_name} not found."
-      render 'new_from_exsite9'
-      return
-    end
-    @collection.collector = collector
-
-    # institution
-    coll_uni = project_info[0].xpath('//institution').first.content
-    university = University.find_by_name(coll_uni)
-    if university.nil?
-      flash[:notice] += "Note: institution '#{coll_uni}' ignored<br/>" unless coll_uni.blank?
-    else
-      @collection.university = university
-    end
-
-    # access rights
-    coll_access = project_info[0].xpath('//accessRights').first.content
-    access_cond = AccessCondition.find_by_name(coll_access)
-    if access_cond.nil?
-      flash[:notice] += "Note: accessRight '#{coll_access}' ignored<br/>" unless coll_access.blank?
-    else
-      @collection.access_condition = access_cond
-    end
-
-    # access narrative
-    @collection.access_narrative = project_info[0].xpath('//rightsStatement').first.content
-
-    # field or research
-    coll_for = project_info[0].xpath('//fieldOfResearch').first.content
-    field_of_research = FieldOfResearch.find_by_identifier(coll_for.split(/ - /))
-    if field_of_research.nil?
-      flash[:notice] += "Note: fieldOfResearch '#{coll_for}' ignored<br/>" unless coll_for.blank?
-    else
-      @collection.field_of_research = field_of_research
-    end
-
-    # region or village
-    @collection.region = project_info[0].xpath('//placeOrRegionName').first.content
-
-    # physicalLocation
-    @collection.tape_location = project_info[0].xpath('//physicalLocation').first.content
-
-    # languages, separated by |
-    languages = project_info[0].xpath('//languages').first.content.split('|')
-    languages.each do |language|
-      code, name = language.split(' - ')
-      lang = Language.find_by_code(code)
-      @collection.languages << lang
-    end
-
-    # countries, separated by |
-    countries = project_info[0].xpath('//countries').first.content.split('|')
-    countries.each do |country|
-      code, name = country.split(' - ')
-      cntry = Country.find_by_code(code)
-      @collection.countries << cntry
-    end
-
-    # fundingBody
-    coll_body = project_info[0].xpath('//fundingBody').first.content
-    funding_body = FundingBody.find_by_name(coll_body)
-    if funding_body.nil?
-      flash[:notice] += "Note: funding_body '#{funding_body}' ignored<br/>" unless coll_body.blank?
-    else
-      @collection.funding_body = funding_body
-    end
-
-    # grant_identifier
-    @collection.grant_identifier = project_info[0].xpath('//grantID').first.content
-
-    # relatedGrant
-    relatedGrant = project_info[0].xpath('//relatedGrant').first.content
-    if !@collection.grant_identifier
-      @collection.grant_identifier = relatedGrant
-    end
-
-    # datesOfCapture
-    datesOfCapture = project_info[0].xpath('//datesOfCapture').first.content
-    if datesOfCapture.nil?
-      @collection.comments = ""
-    else
-      @collection.comments = "Capture date: " + datesOfCapture + "; "
-    end
-
-    # relatedInformation
-    @collection.comments += project_info[0].xpath('//relatedInformation').first.content
-
-    # get the items (groups)
-    groups = project_info[0].xpath('//group')
-    groups.each do |group|
-      item = @collection.build_item
-      item.identifier = group['name']
-      item.description = group.xpath('//Description').first.content
-    end
+    @collection = exsite9.collection
+    flash[:notice] = exsite9.notices
+    flash[:error] = exsite9.errors unless exsite9.errors.blank?
 
     @collection.identifier = ""
     if @collection.valid?
