@@ -1,4 +1,4 @@
-require_dependency 'ExSite9'
+require 'ExSite9'
 class CollectionsController < ApplicationController
   load_and_authorize_resource :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
