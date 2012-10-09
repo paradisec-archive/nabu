@@ -10,6 +10,7 @@ class Collection < ActiveRecord::Base
   belongs_to :funding_body
 
   has_many :items, :dependent => :restrict
+  accepts_nested_attributes_for :items
 
   has_many :collection_languages, :dependent => :destroy
   has_many :languages, :through => :collection_languages, :validate => true

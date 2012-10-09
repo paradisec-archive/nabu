@@ -157,13 +157,12 @@ class CollectionsController < ApplicationController
     exsite9 = Nabu::ExSite9.new data
 
     @collection = exsite9.collection
-    flash[:notice] = exsite9.notices
+    flash[:notice] = exsite9.notices unless exsite9.notices.blank?
     flash[:error] = exsite9.errors unless exsite9.errors.blank?
 
-    @collection.identifier = ""
     if @collection.valid?
       @collection.save!
-      flash[:notice] += "SUCCESS: Collection created"
+      flash[:notice] ||= "SUCCESS: Collection created"
       redirect_to @collection
     else
       render 'new_from_exsite9'

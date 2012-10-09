@@ -7,4 +7,5 @@ class ItemAgent < ActiveRecord::Base
 
   validates :user_id, :presence => true
   validates :agent_role_id, :presence => true
+  validates_uniqueness_of :item_id, :scope => [:agent_role_id, :user_id]
 end

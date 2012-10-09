@@ -1,6 +1,8 @@
 require 'nokogiri'
 module Nabu
   class ExSite9
+    attr_accessor :notices, :errors, :collection
+
     def initialize(data)
       @errors = ""
       @notices = ""
@@ -12,24 +14,15 @@ module Nabu
         raise ParseError
       end
       @collection = Collection.new
-      parse(doc)
-    end
-
-    def errors
-      @errors
-    end
-
-    def notices
-      @notices
-    end
-
-    def collection
-      @collection
+      begin
+        parse(doc)
+      rescue ParseError
+      end
     end
 
     private
 
-    def user_from_str(name, create=false)
+    def user_from_str(name, create)
       last_name, first_name = name.split(/, /, 2)
       if first_name.blank?
         first_name, last_name = name.split(/ /, 2)
@@ -37,12 +30,15 @@ module Nabu
       user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
       if !user && create
         random_string = SecureRandom.base64(16)
-        user = User.create!({
+        user = User.new({
                  :first_name => first_name,
                  :last_name => last_name,
                  :password => random_string,
                  :password_confirmation => random_string,
                  :contact_only => true}, :as => :contact_only)
+        unless user.valid?
+          return nil
+        end
         @notices += "Note: Contact #{name} created<br/>"
       end
       user
@@ -50,21 +46,21 @@ module Nabu
 
     def parse(doc)
       # get collection information =======
-      project_info = doc.xpath('//project_info')
-      if !project_info[0]
+      project_info = doc.xpath('//project_info').first
+      if !project_info
         @errors = "ERROR: Not an ExSite9 file."
         raise ParseError
       end
 
       # is it a collection?
-      collectionType = project_info[0]['collectionType']
+      collectionType = project_info['collectionType']
       if collectionType != "Collection"
         @errors = "ERROR: ExSite9 file does not contains collection information (collectionType = #{collectionType})."
         raise ParseError
       end
 
       # collection identifier
-      collectionId = project_info[0]['identifier']
+      collectionId = project_info['identifier']
       coll = Collection.find_by_identifier(collectionId)
       unless coll.nil?
         @errors = "ERROR: Not a new collection #{collectionId} - can't overwrite."
@@ -73,18 +69,18 @@ module Nabu
       @collection.identifier = collectionId
 
       # collection title
-      if project_info[0].xpath('//projectName').first
-        @collection.title = project_info[0].xpath('//projectName').first.content
+      if project_info.xpath('projectName').first
+        @collection.title = project_info.xpath('projectName').first.content
       end
 
       # description
-      if project_info[0].xpath('//description').first
-        @collection.description = project_info[0].xpath('//description').first.content
+      if project_info.xpath('description').first
+        @collection.description = project_info.xpath('description').first.content
       end
 
       # collector
-      if project_info[0].xpath('//name').first
-        coll_name = project_info[0].xpath('//name').first.content
+      if project_info.xpath('name').first
+        coll_name = project_info.xpath('name').first.content
         @collection.collector = user_from_str(coll_name, false)
         if @collection.collector.nil?
           @errors = "ERROR: Collector #{coll_name} not found."
@@ -93,8 +89,8 @@ module Nabu
       end
 
       # institution
-      if project_info[0].xpath('//institution').first
-        coll_uni = project_info[0].xpath('//institution').first.content
+      if project_info.xpath('institution').first
+        coll_uni = project_info.xpath('institution').first.content
         university = University.find_by_name(coll_uni)
         if university.nil?
           coll_uni = coll.uni.split(/University of /)[1]
@@ -108,8 +104,8 @@ module Nabu
       end
 
       # access rights
-      if project_info[0].xpath('//accessRights').first
-        coll_access = project_info[0].xpath('//accessRights').first.content
+      if project_info.xpath('accessRights').first
+        coll_access = project_info.xpath('accessRights').first.content
         access_cond = AccessCondition.find_by_name(coll_access)
         if access_cond.nil?
           @notices += "Note: accessRight '#{coll_access}' ignored<br/>" unless coll_access.blank?
@@ -119,13 +115,13 @@ module Nabu
       end
 
       # access narrative
-      if project_info[0].xpath('//rightsStatement').first
-        @collection.access_narrative = project_info[0].xpath('//rightsStatement').first.content
+      if project_info.xpath('rightsStatement').first
+        @collection.access_narrative = project_info.xpath('rightsStatement').first.content
       end
 
       # field or research
-      if project_info[0].xpath('//fieldOfResearch').first
-        coll_for = project_info[0].xpath('//fieldOfResearch').first.content
+      if project_info.xpath('fieldOfResearch').first
+        coll_for = project_info.xpath('fieldOfResearch').first.content
         field_of_research = FieldOfResearch.find_by_identifier(coll_for.split(/ - /))
         if field_of_research.nil?
           @notices += "Note: fieldOfResearch '#{coll_for}' ignored<br/>" unless coll_for.blank?
@@ -135,18 +131,18 @@ module Nabu
       end
 
       # region or village
-      if project_info[0].xpath('//placeOrRegionName').first
-        @collection.region = project_info[0].xpath('//placeOrRegionName').first.content
+      if project_info.xpath('placeOrRegionName').first
+        @collection.region = project_info.xpath('placeOrRegionName').first.content
       end
 
       # physicalLocation
-      if project_info[0].xpath('//physicalLocation').first
-        @collection.tape_location = project_info[0].xpath('//physicalLocation').first.content
+      if project_info.xpath('physicalLocation').first
+        @collection.tape_location = project_info.xpath('physicalLocation').first.content
       end
 
       # languages, separated by |
-      if project_info[0].xpath('//languages').first
-        languages = project_info[0].xpath('//languages').first.content.split('|')
+      if project_info.xpath('languages').first
+        languages = project_info.xpath('languages').first.content.split('|')
         languages.each do |language|
           code, name = language.split(' - ')
           lang = Language.find_by_code(code)
@@ -155,8 +151,8 @@ module Nabu
       end
 
       # countries, separated by |
-      if project_info[0].xpath('//countries').first
-        countries = project_info[0].xpath('//countries').first.content.split('|')
+      if project_info.xpath('countries').first
+        countries = project_info.xpath('countries').first.content.split('|')
         countries.each do |country|
           code, name = country.split(' - ')
           cntry = Country.find_by_code(code)
@@ -165,8 +161,8 @@ module Nabu
       end
 
       # fundingBody
-      if project_info[0].xpath('//fundingBody').first
-        coll_body = project_info[0].xpath('//fundingBody').first.content
+      if project_info.xpath('fundingBody').first
+        coll_body = project_info.xpath('fundingBody').first.content
         funding_body = FundingBody.find_by_name(coll_body)
         if funding_body.nil?
           @notices += "Note: fundingBody '#{funding_body}' ignored<br/>" unless coll_body.blank?
@@ -176,21 +172,21 @@ module Nabu
       end
 
       # grant_identifier
-      if project_info[0].xpath('//grantID').first
-        @collection.grant_identifier = project_info[0].xpath('//grantID').first.content
+      if project_info.xpath('grantID').first
+        @collection.grant_identifier = project_info.xpath('grantID').first.content
       end
 
       # relatedGrant
-      if project_info[0].xpath('//relatedGrant').first
-        relatedGrant = project_info[0].xpath('//relatedGrant').first.content
+      if project_info.xpath('relatedGrant').first
+        relatedGrant = project_info.xpath('relatedGrant').first.content
         if !@collection.grant_identifier
           @collection.grant_identifier = relatedGrant
         end
       end
 
       # datesOfCapture
-      if project_info[0].xpath('//datesOfCapture').first
-        datesOfCapture = project_info[0].xpath('//datesOfCapture').first.content
+      if project_info.xpath('datesOfCapture').first
+        datesOfCapture = project_info.xpath('datesOfCapture').first.content
         if datesOfCapture.nil?
           @collection.comments = ""
         else
@@ -199,49 +195,99 @@ module Nabu
       end
 
       # relatedInformation
-      if project_info[0].xpath('//relatedInformation').first
-        @collection.comments += project_info[0].xpath('//relatedInformation').first.content
+      if project_info.xpath('relatedInformation').first
+        @collection.comments += project_info.xpath('relatedInformation').first.content
       end
 
       # get the items (groups)
-      groups = project_info[0].xpath('//group')
+      groups = project_info.xpath('//groups/group')
       groups.each do |group|
         item = @collection.items.build
+        item.collector = @collection.collector
         item.identifier = group['name']
-        item.title = group.xpath('//Title').first.content if group.xpath('//Title').first
-        item.description = group.xpath('//Description').first.content if group.xpath('//Description').first
-        if group.xpath('//Private').first && group.xpath('//Private').first.content == "True"
-          item.private = group.xpath('//Private').first.content == true
+        item.title = group.xpath('Title').first.content if group.xpath('Title').first
+        item.description = group.xpath('Description').first.content if group.xpath('Description').first
+        if group.xpath('Private').first && group.xpath('Private').first.content == "True"
+          item.private = group.xpath('Private').first.content == true
         else
           item.private = false
         end
-        item.originated_on = group.xpath('//originationDate').first.content.to_date if group.xpath('//originationDate').first
-        item.originated_on_narrative = group.xpath('//originationDateNarrative').first.content if group.xpath('//originationDateNarrative')
+        item.originated_on = group.xpath('originationDate').first.content.to_date if group.xpath('originationDate').first
+        item.originated_on_narrative = group.xpath('originationDateNarrative').first.content if group.xpath('originationDateNarrative')
+
+        # LanguageLocalName, RegionVillage
+        item.language = group.xpath('LanguageLocalName').first.content if group.xpath('LanguageLocalName').first
+        item.region = group.xpath('RegionVillage').first.content if group.xpath('RegionVillage').first
 
         # data_category
-        if group.xpath('//Linguistic_Data_Type').first
-          dataCategory = group.xpath('//Linguistic_Data_Type').first.content
-          data_category = FundingBody.find_by_name(dataCategory)
+        if group.xpath('Linguistic_Data_Type').first
+          dataCategory = group.xpath('Linguistic_Data_Type').first.content.downcase
+          data_category = DataCategory.find_by_name(dataCategory)
           if data_category.nil?
             @notices += "Note: Linguistic_Data_Type '#{dataCategory}' ignored<br/>" unless dataCategory.blank?
           else
-            item.data_category = data_category
+            item.data_categories << data_category
           end
         end
 
         # agents
-        agents = group.xpath('//Agent')
+        agents = group.xpath('Agent')
         agents.each do |agent|
-          itemAgent = item.item_agents.build
-          itemAgent.user = user_from_str(agent.content, true)
-          itemAgent.agent_role = AgentRole.find_by_name(agent['Role'])
-          if itemAgent.user.nil? || itemAgent.agent_role.nil?
+          item_agent = ItemAgent.new
+          item_agent.item = item
+          item_agent.user = user_from_str(agent.content, true)
+          item_agent.agent_role = AgentRole.find_by_name(agent['Role'])
+          if item_agent.user.nil? || item_agent.agent_role.nil?
             @notices += "Note: Agent #{agent.content} (#{agent['Role']}) ignored<br/>" unless agent.content.blank?
           end
-p itemAgent
+          if item.item_agents.select{|ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id}.size == 0
+            item.item_agents << item_agent
+          else
+            @notices += "Note: Duplicate item agent #{agent} ignored<br/>"
+          end
         end
 
-  p item
+        # discourse type
+        if group.xpath('Discourse_Type').first
+          discourseType = group.xpath('Discourse_Type').first.content.downcase
+          discourse_type = DiscourseType.find_by_name(discourseType)
+          if discourse_type.nil?
+            @notices += "Note: Discourse_Type '#{discourseType}' ignored<br/>" unless discourseType.blank?
+          else
+            item.discourse_type = discourse_type
+          end
+        end
+
+        # country (possibly repeated field)
+        if group.xpath('Country').first
+          countries = group.xpath('Country')
+          countries.each do |country|
+            code, name = country.content.split(' - ')
+            cntry = Country.find_by_code(code)
+            item.countries << cntry
+          end
+        end
+
+        # subject language (possibly repeated field)
+        if group.xpath('LanguageSubjectISO639-3').first
+          languages = group.xpath('LanguageSubjectISO639-3')
+          languages.each do |lang|
+            code, name = lang.content.split(' - ')
+            language = Language.find_by_code(code)
+            item.subject_languages << language
+          end
+        end
+
+        # content language (possibly repeated field)
+        if group.xpath('LanguageContentISO639-3').first
+          languages = group.xpath('LanguageContentISO639-3')
+          languages.each do |lang|
+            code, name = lang.content.split(' - ')
+            language = Language.find_by_code(code)
+            item.content_languages << language
+          end
+        end
+
       end
     end
   end

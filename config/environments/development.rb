@@ -36,4 +36,8 @@ Nabu::Application.configure do
   config.assets.debug = true
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+  # Reload exsite9 lib during development
+  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
+  ActiveSupport::Dependencies.explicitly_unloadable_constants << 'ExSite9'
 end
