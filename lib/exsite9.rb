@@ -187,7 +187,7 @@ module Nabu
       # datesOfCapture
       if project_info.xpath('datesOfCapture').first
         datesOfCapture = project_info.xpath('datesOfCapture').first.content
-        if datesOfCapture.nil?
+        if datesOfCapture.empty?
           @collection.comments = ""
         else
           @collection.comments = "Capture date: " + datesOfCapture + "; "

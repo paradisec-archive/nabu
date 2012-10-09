@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121001084308) do
+ActiveRecord::Schema.define(:version => 20121009140408) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -206,15 +206,15 @@ ActiveRecord::Schema.define(:version => 20121001084308) do
   add_index "item_subject_languages", ["item_id", "language_id"], :name => "index_item_subject_languages_on_item_id_and_language_id", :unique => true
 
   create_table "items", :force => true do |t|
-    t.integer  "collection_id",                             :null => false
-    t.string   "identifier",                                :null => false
+    t.integer  "collection_id",                              :null => false
+    t.string   "identifier",                                 :null => false
     t.boolean  "private"
-    t.string   "title",                                     :null => false
+    t.string   "title",                                      :null => false
     t.string   "url"
-    t.integer  "collector_id",                              :null => false
+    t.integer  "collector_id",                               :null => false
     t.integer  "university_id"
     t.integer  "operator_id"
-    t.text     "description",                               :null => false
+    t.text     "description",                                :null => false
     t.date     "originated_on"
     t.string   "language"
     t.string   "dialect"
@@ -222,8 +222,8 @@ ActiveRecord::Schema.define(:version => 20121001084308) do
     t.integer  "discourse_type_id"
     t.integer  "access_condition_id"
     t.text     "access_narrative"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.boolean  "metadata_exportable"
     t.boolean  "born_digital"
     t.boolean  "tapes_returned"
@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(:version => 20121001084308) do
     t.datetime "metadata_exported_on"
     t.text     "tracking"
     t.text     "admin_comment"
-    t.boolean  "external",                :default => true
+    t.boolean  "external",                :default => false
     t.text     "originated_on_narrative"
     t.float    "north_limit"
     t.float    "south_limit"
