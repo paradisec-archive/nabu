@@ -29,27 +29,26 @@ namespace :archive do
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
     # scan for WAV files .wav -> .imp.xml
-    scan_directory(Nabu::Application.config.scan_for_imp,
+    scan_directory(Nabu::Application.config.write_imp,
                    'wav',
                    'imp',
                    '.imp.xml')
 
     # scan for MP3 files .mp3 -> .id3.xml
-    scan_directory(Nabu::Application.config.scan_for_id3,
+    scan_directory(Nabu::Application.config.write_id3,
                    "mp3",
                    "id3",
                    ".id3.v2_3.xml")
   end
 
   def scan_directory(directory, file_extension, type, render_extension)
-    dir_contents = Dir.entries(directory)
+    dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
 
     # for each essence file, find its collection & item
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
-      next unless File.file? "#{directory}/#{file}"
-      basename, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
+      basename, extension, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
       next if !collection || !item
 
       # if metadata file exists, skip to the next file

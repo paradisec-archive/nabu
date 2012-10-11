@@ -77,7 +77,8 @@ Nabu::Application.configure do
     "/srv/nabu/archive_me/",
     "/srv/nabu/manual_uploads/"
   ]
-  config.scan_for_imp = '/srv/nabu/id3_import/'
-  config.scan_for_id3 = '/srv/nabu/xml_import/'
+  config.scan_directory = '/srv/nabu/scan_directory/'
+  config.write_id3 = '/srv/nabu/id3_export/'
+  config.write_imp = '/srv/nabu/xml_export/'
 
 end

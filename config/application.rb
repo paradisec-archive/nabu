@@ -85,9 +85,9 @@ module Nabu
     # .wav -> .imp.xml
     # .mp3 -> .id3.xml
     # .ogg -> .vorbiscomment (TODO)
-    scan_directory = "#{Rails.root}/public/system/prepare_for_sealing/"
-    config.scan_for_imp = "#{scan_directory}XMLImport/"
-    config.scan_for_id3 = "#{scan_directory}ID3Import/"
+    config.scan_directory = "#{Rails.root}/public/system/prepare_for_sealing/"
+    config.write_imp = "#{Rails.root}/public/system/XMLImport/"
+    config.write_id3 = "#{Rails.root}/public/system/ID3Import/"
   end
 end
 

@@ -14,8 +14,11 @@
           = dir
           %br
     %tr
-      %td Scan WAV files
-      %td= Nabu::Application.config.scan_for_imp
+      %td Scan WAV and MP3 files
+      %td= Nabu::Application.config.scan_directory
     %tr
-      %td Scan MP3 files
-      %td= Nabu::Application.config.scan_for_id3
+      %td Write imp.xml files
+      %td= Nabu::Application.config.write_imp
+    %tr
+      %td Write ID3 files
+      %td= Nabu::Application.config.write_id3
