@@ -48,6 +48,7 @@ namespace :archive do
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
+      next unless File.file? "#{Nabu::Application.config.scan_directory}/#{file}"
       basename, extension, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
       next if !collection || !item
 
