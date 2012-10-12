@@ -42,13 +42,15 @@ namespace :archive do
   end
 
   def scan_directory(directory, file_extension, type, render_extension)
+    verbose = ENV['VERBOSE'] ? true : false
+
     dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
 
     # for each essence file, find its collection & item
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
-      basename, extension, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
+      basename, _, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
       next if !collection || !item
 
       # if metadata file exists, skip to the next file
@@ -58,7 +60,7 @@ namespace :archive do
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
       if !item.metadata_exportable
-        puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping"
+        puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping" if verbose
         next
       end
 
@@ -74,6 +76,8 @@ namespace :archive do
 
   desc 'Import files into the archive'
   task :import_files => :environment do
+    verbose = ENV['VERBOSE'] ? true : false
+
     # find essence files in Nabu::Application.config.upload_directories
     dir_list = Nabu::Application.config.upload_directories
 
@@ -89,7 +93,7 @@ namespace :archive do
 
         # skip files of size 0 bytes
         if !File.size?("#{upload_directory}/#{file}")
-          puts "WARNING: file #{file} skipped, since it is empty"
+          puts "WARNING: file #{file} skipped, since it is empty" if verbose
           next
         end
 
