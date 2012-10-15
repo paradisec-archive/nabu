@@ -28,20 +28,7 @@ namespace :archive do
 
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
-    # scan for WAV files .wav -> .imp.xml
-    scan_directory(Nabu::Application.config.write_imp,
-                   'wav',
-                   'imp',
-                   '.imp.xml')
-
-    # scan for MP3 files .mp3 -> .id3.xml
-    scan_directory(Nabu::Application.config.write_id3,
-                   "mp3",
-                   "id3",
-                   ".id3.v2_3.xml")
-  end
-
-  def scan_directory(directory, file_extension, type, render_extension)
+    # scan for WAV files .wav and create .imp.xml & id3.xml
     dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
 
     # for each essence file, find its collection & item
@@ -49,12 +36,13 @@ namespace :archive do
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
       next unless File.file? "#{Nabu::Application.config.scan_directory}/#{file}"
-      basename, extension, coll_id, item_id, collection, item = parse_file_name(file, file_extension)
+      basename, extension, coll_id, item_id, collection, item = parse_file_name(file, 'wav')
       next if !collection || !item
 
-      # if metadata file exists, skip to the next file
-      metadata_filename = directory + basename + render_extension
-      next if File.file? "#{metadata_filename}"
+      # if metadata files exist, skip to the next file
+      metadata_filename_imp = Nabu::Application.config.write_imp + basename + ".imp.xml"
+      metadata_filename_id3 = Nabu::Application.config.write_id3 + basename + ".id3.v2_3.xml"
+      next if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
 
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
@@ -65,10 +53,12 @@ namespace :archive do
 
       template = ItemOfflineTemplate.new
       template.item = item
-      data = template.render_to_string :template => "items/show.#{type}.xml"
+      data_imp = template.render_to_string :template => "items/show.imp.xml"
+      data_id3 = template.render_to_string :template => "items/show.id3.xml"
 
-      File.open(metadata_filename, 'w') {|f| f.write(data)}
-      puts "SUCCESS: metadata file #{metadata_filename} created for #{file}"
+      File.open(metadata_filename_imp, 'w') {|f| f.write(data_imp)}
+      File.open(metadata_filename_id3, 'w') {|f| f.write(data_id3)}
+      puts "SUCCESS: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n created for #{file}"
     end
   end
 
