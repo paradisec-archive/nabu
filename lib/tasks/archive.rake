@@ -28,6 +28,8 @@ namespace :archive do
 
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
+    verbose = ENV['VERBOSE'] ? true : false
+
     # scan for WAV files .wav and create .imp.xml & id3.xml
     dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
 
