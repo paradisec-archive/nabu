@@ -184,6 +184,8 @@ namespace :archive do
 
 
   def parse_file_name(file, file_extension=nil)
+    verbose = ENV['VERBOSE'] ? true : false
+
     coll_id, item_id = file.split('-')
     return unless item_id
 
@@ -193,12 +195,12 @@ namespace :archive do
 
     collection = Collection.find_by_identifier coll_id
     if !collection
-      puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping"
+      puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
       return
     end
     item = collection.items.find_by_identifier item_id
     if !item
-      puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping"
+      puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return
     end
     [basename, extension, coll_id, item_id, collection, item]
