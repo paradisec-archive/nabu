@@ -11,7 +11,7 @@ ActiveAdmin.register_page "File Processing" do
           end
           column :sample_item do |collection|
             item = collection.items.where(:metadata_exportable => false).first
-            link_to item.identifier, item
+            link_to item.identifier, [collection, item]
           end
           column :title
           default_actions
@@ -24,7 +24,7 @@ ActiveAdmin.register_page "File Processing" do
       div :class => 'panel_contents' do
         insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Essence.order('id desc').limit(20) do
           column :id do |essence|
-            link_to essence.id, "/essences/#{essence.id}"
+            link_to essence.id, [essence.item.collection, essence.item, essence]
           end
           column :full_identifier
           column :mimetype

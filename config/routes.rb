@@ -47,7 +47,7 @@ Nabu::Application.routes.draw do
 
   match '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
   match '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
-  match '/repository/:collection_identifier/:item_identifier/:essence_identifier' => 'repository#essence', :as => 'repository_essence'
+  match '/repository/:collection_identifier/:item_identifier/:essence_id' => 'repository#essence', :as => 'repository_essence'
 
   resources :comments, :shallow => true do
     match 'approve' => 'comments#approve', :on => :member, :via => :post
