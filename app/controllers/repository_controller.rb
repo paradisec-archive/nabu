@@ -6,6 +6,9 @@ class RepositoryController < ApplicationController
   end
 
   def item
+    if params[:full_identifier]
+      params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split(/-/)
+    end
     collection = Collection.find_by_identifier params[:collection_identifier]
     item = collection.items.find_by_identifier params[:item_identifier]
     redirect_to [collection, item]

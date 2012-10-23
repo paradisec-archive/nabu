@@ -234,9 +234,7 @@ class ItemsController < ApplicationController
       end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
-
   end
-
 
   def find_by_full_identifier
     if params[:id]
