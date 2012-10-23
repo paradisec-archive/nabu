@@ -1190,7 +1190,7 @@ namespace :import do
       EOF
       def welcome_email(user)
         @user = user
-        @url  = 'http://paradisec.org.au/login'
+        @url  = 'http://catalog.paradisec.org.au/users/sign_in'
         mail :to => (user.email), :subject => 'Welcome to the new PARADISEC catalog' do |format|
           format.text { render :inline => TEMPLATE }
         end
