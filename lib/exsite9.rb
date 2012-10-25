@@ -36,7 +36,10 @@ module Nabu
                  :password => random_string,
                  :password_confirmation => random_string,
                  :contact_only => true}, :as => :contact_only)
-        return nil unless user.valid?
+        if not user.valid?
+          @errors += "Couldn't create user #{name}<br/>"
+          return nil 
+        end
         @notices += "Note: Contact #{name} created<br/>"
       end
       user.save if user.valid?
@@ -234,8 +237,7 @@ module Nabu
         agents.each do |agent|
           item_agent = ItemAgent.new
           item_agent.item = item
-          user = user_from_str(agent.content, true)
-          item_agent.user = user
+          item_agent.user = user_from_str(agent.content, true)
           item_agent.agent_role = AgentRole.find_by_name(agent['Role'])
           if item_agent.user.nil? || item_agent.agent_role.nil?
             @notices += "Note: Agent #{agent.content} (#{agent['Role']}) ignored<br/>" unless agent.content.blank?
