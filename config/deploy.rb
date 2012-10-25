@@ -10,6 +10,7 @@ set :deploy_to, "/srv/www/#{application}"
 set :user, 'deploy'
 set :use_sudo, false
 set :deploy_via, :remote_cache
+set :keep_releases, 5
 
 set :ssh_options, { :forward_agent => true, }
 
