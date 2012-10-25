@@ -193,15 +193,42 @@ class CollectionsController < ApplicationController
       end
 
       # GEO Is special
-      all_of do
-        with(:north_limit).less_than params[:north_limit] if params[:north_limit]
-        with(:south_limit).greater_than params[:south_limit] if params[:south_limit]
-        if params[:west_limit].to_i >= params[:east_limit].to_i
-          with(:west_limit).greater_than params[:west_limit] if params[:west_limit]
-          with(:east_limit).less_than params[:east_limit] if params[:east_limit]
-        else
-          with(:west_limit).less_than params[:west_limit] if params[:west_limit]
-          with(:east_limit).greater_than params[:east_limit] if params[:east_limit]
+      if params[:north_limit]
+        all_of do
+          with(:north_limit).less_than    params[:north_limit]
+          with(:north_limit).greater_than params[:south_limit]
+
+          with(:south_limit).less_than    params[:north_limit]
+          with(:south_limit).greater_than params[:south_limit]
+
+          if params[:west_limit] <= params[:east_limit]
+            with(:west_limit).greater_than params[:west_limit]
+            with(:west_limit).less_than    params[:east_limit]
+
+            with(:east_limit).greater_than params[:west_limit]
+            with(:east_limit).less_than    params[:east_limit]
+          else
+            any_of do
+              all_of do
+                with(:west_limit).greater_than params[:west_limit]
+                with(:west_limit).less_than    180
+              end
+              all_of do
+                with(:west_limit).less_than    params[:east_limit]
+                with(:west_limit).greater_than(-180)
+              end
+            end
+            any_of do
+              all_of do
+                with(:east_limit).greater_than params[:west_limit]
+                with(:east_limit).less_than    180
+              end
+              all_of do
+                with(:east_limit).less_than    params[:east_limit]
+                with(:east_limit).greater_than(-180)
+              end
+            end
+          end
         end
       end
 
