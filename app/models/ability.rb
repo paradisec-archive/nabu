@@ -46,10 +46,10 @@ class Ability
       cannot :bulk_edit, Item
       cannot :bulk_update, Item
 
-      can [:read, :download], Essence, :item => { :private => false }
-      can [:read, :download], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
-      can [:read, :download], Essence, :item => { :collection  => { :collector_id => user.id } }
-      can [:read, :download], Essence, :item => { :item_admins => { :user_id => user.id } }
+      can [:read, :display],  Essence, :item => { :private => false }
+      can [:read, :download, :display], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
+      can [:read, :download, :display], Essence, :item => { :collection  => { :collector_id => user.id } }
+      can [:read, :download, :display], Essence, :item => { :item_admins => { :user_id => user.id } }
 
       can :create, Comment, :commentable => { :private => false }
     end

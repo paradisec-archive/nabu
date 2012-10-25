@@ -64,7 +64,9 @@
 
       %tr
         %td.empty
-        %td.empty= link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence)
+        %td.empty
+          - if can? :download, @essence
+            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence)
 
 .twoup-2
   %fieldset
