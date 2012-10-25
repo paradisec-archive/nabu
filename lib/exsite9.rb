@@ -36,9 +36,7 @@ module Nabu
                  :password => random_string,
                  :password_confirmation => random_string,
                  :contact_only => true}, :as => :contact_only)
-        unless user.valid?
-          return nil
-        end
+        return nil unless user.valid?
         @notices += "Note: Contact #{name} created<br/>"
       end
       user
@@ -144,7 +142,7 @@ module Nabu
       if project_info.xpath('languages').first
         languages = project_info.xpath('languages').first.content.split('|')
         languages.each do |language|
-          code, name = language.split(' - ')
+          code, _ = language.split(' - ')
           lang = Language.find_by_code(code)
           @collection.languages << lang
         end
@@ -154,7 +152,7 @@ module Nabu
       if project_info.xpath('countries').first
         countries = project_info.xpath('countries').first.content.split('|')
         countries.each do |country|
-          code, name = country.split(' - ')
+          code, _ = country.split(' - ')
           cntry = Country.find_by_code(code)
           @collection.countries << cntry
         end
@@ -235,10 +233,16 @@ module Nabu
         agents.each do |agent|
           item_agent = ItemAgent.new
           item_agent.item = item
-          item_agent.user = user_from_str(agent.content, true)
+          user = user_from_str(agent.content, true)
+          if user && user.new_record?
+            item_agent.build_user(user.attributes)
+          else
+            item_agent.user = user
+          end
           item_agent.agent_role = AgentRole.find_by_name(agent['Role'])
           if item_agent.user.nil? || item_agent.agent_role.nil?
             @notices += "Note: Agent #{agent.content} (#{agent['Role']}) ignored<br/>" unless agent.content.blank?
+            next
           end
           if item.item_agents.select{|ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id}.size == 0
             item.item_agents << item_agent
@@ -262,7 +266,7 @@ module Nabu
         if group.xpath('Country').first
           countries = group.xpath('Country')
           countries.each do |country|
-            code, name = country.content.split(' - ')
+            code, _ = country.content.split(' - ')
             cntry = Country.find_by_code(code)
             item.countries << cntry
           end
@@ -272,7 +276,7 @@ module Nabu
         if group.xpath('LanguageSubjectISO639-3').first
           languages = group.xpath('LanguageSubjectISO639-3')
           languages.each do |lang|
-            code, name = lang.content.split(' - ')
+            code, _ = lang.content.split(' - ')
             language = Language.find_by_code(code)
             item.subject_languages << language
           end
@@ -282,7 +286,7 @@ module Nabu
         if group.xpath('LanguageContentISO639-3').first
           languages = group.xpath('LanguageContentISO639-3')
           languages.each do |lang|
-            code, name = lang.content.split(' - ')
+            code, _ = lang.content.split(' - ')
             language = Language.find_by_code(code)
             item.content_languages << language
           end
