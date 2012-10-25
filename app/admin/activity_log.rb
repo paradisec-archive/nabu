@@ -44,7 +44,7 @@ ActiveAdmin.register_page "Activity Log" do
 
           column :collection_id do |v|
             item = v.reify
-            if item
+            if item && item.collection
               link_to item.full_identifier, Rails.application.routes.url_helpers.collection_items_path(item.collection, item)
             else
               'NONE'
