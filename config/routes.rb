@@ -5,12 +5,10 @@ Nabu::Application.routes.draw do
   devise_for :users
 
   root :to => 'page#home'
-  root :to => 'page#dashboard'
-  root :to => 'page#glossary'
 
-  match '/contact' => 'page#contact'
+  match '/contact'   => 'page#contact'
   match '/dashboard' => 'page#dashboard'
-  match '/glossary' => 'page#glossary'
+  match '/glossary'  => 'page#glossary'
 
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 
