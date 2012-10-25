@@ -93,7 +93,7 @@ module Nabu
         coll_uni = project_info.xpath('institution').first.content
         university = University.find_by_name(coll_uni)
         if university.nil?
-          coll_uni = coll.uni.split(/University of /)[1]
+          coll_uni = coll_uni.split(/University of /)[1]
           university = University.find_by_name(coll_uni)
         end
         if university.nil?
