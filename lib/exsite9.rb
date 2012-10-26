@@ -30,12 +30,12 @@ module Nabu
       user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
       if !user && create
         random_string = SecureRandom.base64(16)
-        user = User.new({
-                 :first_name => first_name,
-                 :last_name => last_name,
-                 :password => random_string,
-                 :password_confirmation => random_string,
-                 :contact_only => true}, :as => :contact_only)
+        user = User.new()
+        user.first_name = first_name
+        user.last_name = last_name
+        user.password = random_string
+        user.password_confirmation = random_string
+        user.contact_only = true
         if not user.valid?
           @errors += "Couldn't create user #{name}<br/>"
           return nil 
