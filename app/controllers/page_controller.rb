@@ -9,7 +9,6 @@ class PageController < ApplicationController
 
     collections = Collection.where("collector_id = ? OR operator_id = ?", current_user.id, current_user.id)
     collections &&= Collection.joins(:collection_admins).where("collection_admins.user_id = ? ", 2)
-    puts collections.to_s
     if (params[:sort])
       collections = collections.order(params[:sort] + ' ' + params[:direction])
     else
