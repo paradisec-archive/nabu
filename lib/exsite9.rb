@@ -215,7 +215,7 @@ module Nabu
           item.private = false
         end
         item.originated_on = group.xpath('originationDate').first.content.to_date if group.xpath('originationDate').first
-        item.originated_on_narrative = group.xpath('originationDateNarrative').first.content if group.xpath('originationDateNarrative')
+        item.originated_on_narrative = group.xpath('originationDateNarrative').first.content if group.xpath('originationDateNarrative').first
 
         # LanguageLocalName, RegionVillage
         item.language = group.xpath('LanguageLocalName').first.content if group.xpath('LanguageLocalName').first
