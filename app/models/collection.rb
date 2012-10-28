@@ -75,6 +75,9 @@ class Collection < ActiveRecord::Base
     # Things we want to perform full text search on
     text :title
     text :identifier, :as => :code_textp
+    text :identifier2 do
+      identifier
+    end
     text :university_name
     text :collector_name
     text :region
