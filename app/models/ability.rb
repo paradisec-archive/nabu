@@ -50,8 +50,8 @@ class Ability
       cannot :bulk_edit, Item
       cannot :bulk_update, Item
 
-      # FIXME(SP): users should be allowed to :display items which have "open" access rights
-      can [:read],  Essence, :item => { :private => false }
+      # FIXME(SP): users should be able to :download open files, but that needs to be tracked
+      can [:read, :show_terms, :agree_to_terms, :display],  Essence, :item => { :access_condition => { :name => "Open (subject to agreeing to PDSC access form)"} }
       can [:read, :download, :display], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
       can [:read, :download, :display], Essence, :item => { :collection  => { :collector_id => user.id } }
       can [:read, :download, :display], Essence, :item => { :item_admins => { :user_id => user.id } }

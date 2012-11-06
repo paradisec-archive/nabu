@@ -30,6 +30,8 @@ Nabu::Application.routes.draw do
         member do
           get :download
           get :display
+          get :show_terms
+          get :agree_to_terms
         end
       end
     end

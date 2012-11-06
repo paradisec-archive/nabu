@@ -1,0 +1,52 @@
+
+%h1 Conditions of Access
+
+.page-box
+  %p The following are general conditions for obtaining material from the Pacific And Regional Archive for Digital Sources in Endangered Cultures (hereinafter called PARADISEC). They assume that the depositor's permission has been obtained for copying. Specific restrictions accompany each item in PARADISEC.
+
+.page-box
+  %p In consideration of PARADISEC agreeing to supply me with certain data in machine-readable form together with supporting documentation, I hereby undertake: -
+
+.page-box
+  %p
+    %b Purpose:
+    To use the data for purposes of private scholarly research and/or for purposes of educational use, and not for profit (this shall not preclude the publication in a scholarly context of analyses or interpretations derived from the data, unless such publication is precluded by the conditions of deposit of the data in the PARADISEC).
+
+.page-box
+  %p
+    %b Acknowledgement:
+    To acknowledge in any work, published or unpublished, based in whole or in part on analyses of the data, both the original depositors of the data and PARADISEC (by use of the PARADISEC persistent identifier and citation form).
+
+.page-box
+  %p
+    %b Copyright:
+    Not to copy the data in whole or in part except insofar as this may be necessary for security purposes or for my own personal use. Not to distribute the data to third parties, nor to publish or reproduce it in any way. Copyright of all machine-readable data issued by PARADISEC is reserved.
+
+.page-box
+  %p
+    %b Access:
+    To give access to the data only to persons directly associated with me or working under my control and to require of such persons signed undertakings neither to use the data except in connection with my academic or educational purposes, nor to give access to the datas to others; these signed undertakings to be made available to PARADISEC on request.
+  Not to give access to any third party if the conditions of deposit preclude this.
+
+.page-box
+  %p
+    %b Errors:
+    Not to hold PARADISEC liable for any errors of transcription or marking-up which may be found in the data, but to notify PARADISEC of such errors wherever possible.
+
+.page-box
+  %p
+    %b Revisions:
+    Where substantial revisions or reformatting of the data is permitted by the conditions of deposit and carried out as a part of my research, to inform PARADISEC, and also the original depositor if this is a condition of deposit, of the nature of such revisions and to deposit any such revised version at PARADISEC subject to the conditions of deposit of the original.
+
+.page-box
+  %p
+    %b Charges:
+    To pay such charges as PARADISEC may require to cover the cost of supplying the data (not applicable unless an invoice accompanies the data).
+
+= form_tag agree_to_terms_collection_item_essence_path, :method => :get, :class => 'no-empty-submit' do
+  .page-box
+    %p
+      = check_box_tag :agree
+      By clicking here I agree that I will not contravene this licence.
+
+  = submit_tag 'Submit'
