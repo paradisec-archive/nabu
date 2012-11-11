@@ -86,6 +86,13 @@ ActiveAdmin.setup do |config|
   # Default:
   config.logout_link_method = :delete
 
+  # == Root
+  #
+  # Set the action to call for the root path. You can set different
+  # roots for each namespace.
+  #
+  # Default:
+  # config.root_to = 'dashboard#index'
 
   # == Admin Comments
   #
@@ -102,6 +109,13 @@ ActiveAdmin.setup do |config|
   #   config.namespace :without_comments do |without_comments|
   #     without_comments.allow_comments = false
   #   end
+
+
+  # == Batch Actions
+  #
+  # Enable and disable Batch Actions
+  #
+  config.batch_actions = true
 
 
   # == Controller Filters
@@ -129,4 +143,9 @@ ActiveAdmin.setup do |config|
   config.register_javascript 'jquery-query.js'
   config.register_javascript 'maps.js'
   config.register_javascript 'http://maps.googleapis.com/maps/api/js?sensor=false'
+
+  # == CSV options
+  #
+  # Set the CSV builder separator (default is ",")
+  # config.csv_column_separator = ','
 end
