@@ -27,3 +27,15 @@
 // .active_admin       applies to any Active Admin namespace
 // .admin_namespace    applies to the admin namespace (eg: /admin)
 // .other_namespace    applies to a custom namespace named other (eg: /other)
+
+.active_admin {
+  #title_bar {
+  .action_items {
+    a {
+      &.green { background: rgb(110, 199, 125); }
+      &.red { background: rgb(240, 164, 146); }
+    }
+  }
+}
+}
+

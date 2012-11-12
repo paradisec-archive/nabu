@@ -4,9 +4,9 @@ ActiveAdmin.register_page "Dashboard" do
 
   action_item do
     if File.exist? "#{Rails.root}/tmp/pids/disable_cron"
-      link_to 'Enable Cron Jobs!', admin_dashboard_cron_path(:state => 'on')
+      link_to 'Enable Cron Jobs!', admin_dashboard_cron_path(:state => 'on'), :class => 'red'
     else
-      link_to 'Disbale Cron Jobs!', admin_dashboard_cron_path(:state => 'off')
+      link_to 'Disable Cron Jobs!', admin_dashboard_cron_path(:state => 'off'), :class => 'green'
     end
   end
 
