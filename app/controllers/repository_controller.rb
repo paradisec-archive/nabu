@@ -17,7 +17,8 @@ class RepositoryController < ApplicationController
   def essence
     collection = Collection.find_by_identifier params[:collection_identifier]
     item = collection.items.find_by_identifier params[:item_identifier]
-    essence = item.essences.find params[:essence_id]
+    essence = item.essences.find_by_filename params[:essence_filename]
+
     redirect_to [collection, item, essence]
   end
 
