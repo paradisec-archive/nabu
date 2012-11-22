@@ -23,3 +23,21 @@
   %tr
     %td= number_with_delimiter Comment.unapproved.count
     %td comments pending
+  %tr
+    %td= number_to_human_size Essence.sum(:size)
+    %td of essence files in archive
+  %tr
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').sum(:size)
+    %td of video files in archive
+  %tr
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').sum(:size)
+    %td of audio files in archive
+  %tr
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').sum(:size)
+    %td of image files in archive
+  %tr
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').sum(:size)
+    %td of application files in archive
+  %tr
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').sum(:size)
+    %td of text files in archive
