@@ -34,4 +34,9 @@ class PageController < ApplicationController
     @west_limit  = @coordinates.map{|c| c[:lng]}.min
     @content = render_to_string :partial => 'page/infowindow'
   end
+
+  def glossary
+    @universities = University.all
+    @fundingBodies = FundingBody.all
+  end
 end

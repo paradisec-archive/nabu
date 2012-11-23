@@ -55,3 +55,23 @@
 
   %h3 catalog metadata
   %p Collections and items in the PARADISEC catalog have metadata recorded.
+
+
+%h2 List of Institutions in Catalog
+
+.page-box
+
+  %p
+    %ul
+      - @universities.each do |uni|
+        %li= uni.name
+
+
+%h2 List of Grant Bodies in Catalog
+
+.page-box
+
+  %p
+    %ul
+      - @fundingBodies.each do |fb|
+        %li= fb.name
