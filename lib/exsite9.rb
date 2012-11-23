@@ -70,6 +70,9 @@ module Nabu
       end
       @collection.identifier = collectionId
 
+      # set private flag for reviews
+      @collection.private = true
+
       # collection title
       if project_info.xpath('projectName').first
         @collection.title = project_info.xpath('projectName').first.content
@@ -165,9 +168,14 @@ module Nabu
       # fundingBody
       if project_info.xpath('fundingBody').first
         coll_body = project_info.xpath('fundingBody').first.content
-        funding_body = FundingBody.find_by_name(coll_body)
+        funding_body = FundingBody.where("name LIKE '%#{coll_body}%'").first
         if funding_body.nil?
-          @notices += "Note: fundingBody '#{funding_body}' ignored<br/>" unless coll_body.blank?
+          if !coll_body.blank?
+            funding_body = FundingBody.create!({
+                :name => coll_body
+            })
+            @notices += "CHECK: fundingBody '#{funding_body}' created<br/>"
+          end
         else
           @collection.funding_body = funding_body
         end
@@ -176,14 +184,6 @@ module Nabu
       # grant_identifier
       if project_info.xpath('grantID').first
         @collection.grant_identifier = project_info.xpath('grantID').first.content
-      end
-
-      # relatedGrant
-      if project_info.xpath('relatedGrant').first
-        relatedGrant = project_info.xpath('relatedGrant').first.content
-        if !@collection.grant_identifier
-          @collection.grant_identifier = relatedGrant
-        end
       end
 
       # datesOfCapture
@@ -206,6 +206,7 @@ module Nabu
       groups.each do |group|
         item = @collection.items.build
         item.collector = @collection.collector
+        item.university = @collection.university
         item.identifier = group['name']
         item.title = group.xpath('Title').first.content if group.xpath('Title').first
         item.description = group.xpath('Description').first.content if group.xpath('Description').first
