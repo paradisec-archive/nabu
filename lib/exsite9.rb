@@ -73,6 +73,9 @@ module Nabu
       # set private flag for reviews
       @collection.private = true
 
+      # set current user as the operator
+      @collection.operator = current_user
+
       # collection title
       if project_info.xpath('projectName').first
         @collection.title = project_info.xpath('projectName').first.content
