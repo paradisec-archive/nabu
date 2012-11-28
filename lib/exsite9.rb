@@ -62,13 +62,16 @@ module Nabu
       end
 
       # collection identifier
-      collectionId = project_info['identifier']
+      collectionId = project_info['identifier'].strip
       coll = Collection.find_by_identifier(collectionId)
       unless coll.nil?
         @errors = "ERROR: Not a new collection #{collectionId} - can't overwrite."
         raise ParseError
       end
       @collection.identifier = collectionId
+
+      # set private flag for reviews
+      @collection.private = true
 
       # collection title
       if project_info.xpath('projectName').first
@@ -92,7 +95,7 @@ module Nabu
 
       # institution
       if project_info.xpath('institution').first
-        coll_uni = project_info.xpath('institution').first.content
+        coll_uni = project_info.xpath('institution').first.content.strip
         university = University.find_by_name(coll_uni)
         if university.nil?
           coll_uni = coll_uni.split(/University of /)[1]
@@ -107,7 +110,7 @@ module Nabu
 
       # access rights
       if project_info.xpath('accessRights').first
-        coll_access = project_info.xpath('accessRights').first.content
+        coll_access = project_info.xpath('accessRights').first.content.strip
         access_cond = AccessCondition.find_by_name(coll_access)
         if access_cond.nil?
           @notices += "Note: accessRight '#{coll_access}' ignored<br/>" unless coll_access.blank?
@@ -118,12 +121,12 @@ module Nabu
 
       # access narrative
       if project_info.xpath('rightsStatement').first
-        @collection.access_narrative = project_info.xpath('rightsStatement').first.content
+        @collection.access_narrative = project_info.xpath('rightsStatement').first.content.strip
       end
 
       # field or research
       if project_info.xpath('fieldOfResearch').first
-        coll_for = project_info.xpath('fieldOfResearch').first.content
+        coll_for = project_info.xpath('fieldOfResearch').first.content.strip
         field_of_research = FieldOfResearch.find_by_identifier(coll_for.split(/ - /))
         if field_of_research.nil?
           @notices += "Note: fieldOfResearch '#{coll_for}' ignored<br/>" unless coll_for.blank?
@@ -146,8 +149,9 @@ module Nabu
       if project_info.xpath('languages').first
         languages = project_info.xpath('languages').first.content.split('|')
         languages.each do |language|
-          code, _ = language.split(' - ')
-          lang = Language.find_by_code(code)
+          code, _ = language.strip.split(' - ')
+          lang = Language.find_by_code(code.strip)
+          next if !lang
           @collection.languages << lang
         end
       end
@@ -156,8 +160,9 @@ module Nabu
       if project_info.xpath('countries').first
         countries = project_info.xpath('countries').first.content.split('|')
         countries.each do |country|
-          code, _ = country.split(' - ')
-          cntry = Country.find_by_code(code)
+          code, _ = country.strip.split(' - ')
+          cntry = Country.find_by_code(code.strip)
+          next if !cntry
           @collection.countries << cntry
         end
       end
@@ -165,9 +170,14 @@ module Nabu
       # fundingBody
       if project_info.xpath('fundingBody').first
         coll_body = project_info.xpath('fundingBody').first.content
-        funding_body = FundingBody.find_by_name(coll_body)
+        funding_body = FundingBody.where("name LIKE '%#{coll_body}%'").first
         if funding_body.nil?
-          @notices += "Note: fundingBody '#{funding_body}' ignored<br/>" unless coll_body.blank?
+          if !coll_body.blank?
+            funding_body = FundingBody.create!({
+                :name => coll_body
+            })
+            @notices += "CHECK: fundingBody '#{funding_body}' created<br/>"
+          end
         else
           @collection.funding_body = funding_body
         end
@@ -176,14 +186,6 @@ module Nabu
       # grant_identifier
       if project_info.xpath('grantID').first
         @collection.grant_identifier = project_info.xpath('grantID').first.content
-      end
-
-      # relatedGrant
-      if project_info.xpath('relatedGrant').first
-        relatedGrant = project_info.xpath('relatedGrant').first.content
-        if !@collection.grant_identifier
-          @collection.grant_identifier = relatedGrant
-        end
       end
 
       # datesOfCapture
@@ -206,6 +208,7 @@ module Nabu
       groups.each do |group|
         item = @collection.items.build
         item.collector = @collection.collector
+        item.university = @collection.university
         item.identifier = group['name']
         item.title = group.xpath('Title').first.content if group.xpath('Title').first
         item.description = group.xpath('Description').first.content if group.xpath('Description').first
@@ -223,7 +226,7 @@ module Nabu
 
         # data_category
         if group.xpath('Linguistic_Data_Type').first
-          dataCategory = group.xpath('Linguistic_Data_Type').first.content.downcase
+          dataCategory = group.xpath('Linguistic_Data_Type').first.content.downcase.strip
           data_category = DataCategory.find_by_name(dataCategory)
           if data_category.nil?
             @notices += "Note: Linguistic_Data_Type '#{dataCategory}' ignored<br/>" unless dataCategory.blank?
@@ -238,7 +241,7 @@ module Nabu
           item_agent = ItemAgent.new
           item_agent.item = item
           item_agent.user = user_from_str(agent.content, true)
-          item_agent.agent_role = AgentRole.find_by_name(agent['Role'])
+          item_agent.agent_role = AgentRole.find_by_name(agent['Role'].strip)
           if item_agent.user.nil? || item_agent.agent_role.nil?
             @notices += "Note: Agent #{agent.content} (#{agent['Role']}) ignored<br/>" unless agent.content.blank?
             next
@@ -252,7 +255,20 @@ module Nabu
 
         # discourse type
         if group.xpath('Discourse_Type').first
-          discourseType = group.xpath('Discourse_Type').first.content.downcase
+          discourseType = group.xpath('Discourse_Type').first.content.downcase.strip
+          discourseType = case discourseType
+            when "dialogue"
+              "interactive_discourse"
+            when "formulaic"
+              "formulaic_discourse"
+            when "ludic"
+              "language_play"
+            when "procedural"
+              "procedural_discourse"
+            when "unintelligible"
+              "unintelligible_speech"
+            else discourseType
+          end
           discourse_type = DiscourseType.find_by_name(discourseType)
           if discourse_type.nil?
             @notices += "Note: Discourse_Type '#{discourseType}' ignored<br/>" unless discourseType.blank?
@@ -265,8 +281,9 @@ module Nabu
         if group.xpath('Country').first
           countries = group.xpath('Country')
           countries.each do |country|
-            code, _ = country.content.split(' - ')
-            cntry = Country.find_by_code(code)
+            code, _ = country.content.strip.split(' - ')
+            cntry = Country.find_by_code(code.strip)
+            next if !cntry
             item.countries << cntry
           end
         end
@@ -275,8 +292,9 @@ module Nabu
         if group.xpath('LanguageSubjectISO639-3').first
           languages = group.xpath('LanguageSubjectISO639-3')
           languages.each do |lang|
-            code, _ = lang.content.split(' - ')
-            language = Language.find_by_code(code)
+            code, _ = lang.content.strip.split(' - ')
+            language = Language.find_by_code(code.strip)
+            next if !language
             item.subject_languages << language
           end
         end
@@ -285,8 +303,9 @@ module Nabu
         if group.xpath('LanguageContentISO639-3').first
           languages = group.xpath('LanguageContentISO639-3')
           languages.each do |lang|
-            code, _ = lang.content.split(' - ')
-            language = Language.find_by_code(code)
+            code, _ = lang.content.strip.split(' - ')
+            language = Language.find_by_code(code.strip)
+            next if !langauge
             item.content_languages << language
           end
         end

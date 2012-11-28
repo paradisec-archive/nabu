@@ -47,7 +47,7 @@ Nabu::Application.routes.draw do
 
   match '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
   match '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
-  match '/repository/:collection_identifier/:item_identifier/:essence_id' => 'repository#essence', :as => 'repository_essence'
+  match '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence', :as => 'repository_essence', :constraints => { :essence_filename => /.*/ }
 
   match '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
 

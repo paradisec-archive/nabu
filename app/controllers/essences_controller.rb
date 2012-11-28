@@ -9,7 +9,14 @@ class EssencesController < ApplicationController
         redirect_to show_terms_collection_item_essence_path
       elsif params[:agree] == false
         flash[:error] = 'You must agree to the PDSC access form before you can view files'
-        redirect_to @essence.item
+        redirect_to @item
+      end
+    elsif @essence.item.access_condition.name == 'Open (subject to the access condition details)'
+      if params[:agree].nil?
+        redirect_to show_terms_collection_item_essence_path
+      elsif params[:agree] == false
+        flash[:error] = 'You must agree to the PDSC access form before you can view files'
+        redirect_to @item
       end
     end
   end

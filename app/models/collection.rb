@@ -64,7 +64,11 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
   def full_grant_identifier
-    "#{funding_body.key_prefix if funding_body}#{grant_identifier}"
+    if grant_identifier.blank?
+      ""
+    else
+      "#{funding_body.key_prefix if funding_body}#{grant_identifier}"
+    end
   end
 
   def self.sortable_columns
