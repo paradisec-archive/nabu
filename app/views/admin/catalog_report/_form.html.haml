@@ -1,0 +1,4 @@
+%form{:method => :get}
+  = select_month month, :field_name => 'month', :prefix => ''
+  = select_year year, :field_name => 'year', :prefix => ''
+  = submit_tag :change

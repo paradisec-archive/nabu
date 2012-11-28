@@ -1,43 +1,47 @@
+%h2 Repository Metrics
 %table
   %tr
-    %td= number_with_delimiter Collection.count
+    %td= number_with_delimiter Collection.where('created_at <= ?', date.end_of_month).count
     %td collections
   %tr
-    %td= number_with_delimiter Item.count
+    %td= number_with_delimiter Item.where('created_at <= ?', date.end_of_month).count
     %td items
   %tr
-    %td= number_with_delimiter Essence.count
+    %td= number_with_delimiter Essence.where('created_at <= ?', date.end_of_month).count
     %td essence objects
   %tr
-    %td= number_with_delimiter User.count
+    %td= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
+    %td hours
+  %tr
+    %td= number_with_delimiter User.where('created_at <= ?', date.end_of_month).count
     %td users
   %tr
-    %td= number_with_delimiter University.count
+    %td= number_with_delimiter University.where('created_at <= ?', date.end_of_month).count
     %td universities
   %tr
-    %td= number_with_delimiter Comment.count
-    %td comments posted
+    %td= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %td posted comments
   %tr
-    %td= number_with_delimiter Comment.approved.count
-    %td comments approved
+    %td= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
+    %td approved comments
   %tr
-    %td= number_with_delimiter Comment.unapproved.count
-    %td comments pending
+    %td= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
+    %td pending comments
   %tr
-    %td= number_to_human_size Essence.sum(:size)
-    %td of essence files in archive
+    %td= number_to_human_size Essence.where('created_at <= ?', date.end_of_month).sum(:size)
+    %td of essence objects
   %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').sum(:size)
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of video files in archive
   %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').sum(:size)
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of audio files in archive
   %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').sum(:size)
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of image files in archive
   %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').sum(:size)
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of application files in archive
   %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').sum(:size)
+    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of text files in archive
