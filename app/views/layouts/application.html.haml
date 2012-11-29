@@ -1,6 +1,7 @@
 !!! html5
 %html
   %head
+    = raw analytical.head_prepend_javascript
     %title Nabu
     = favicon_link_tag
     = stylesheet_link_tag :screen, :media => 'screen, projection'
@@ -12,8 +13,11 @@
     = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
     = csrf_meta_tags
+    - analytical.identify(current_user.id, :email => current_user.email) if current_user
+    = raw analytical.head_append_javascript
 
   %body.bp
+    = raw analytical.body_prepend_javascript
 
     #container
       #header
@@ -54,4 +58,4 @@
             |
             = link_to 'Admin', admin_dashboard_path
 
-
+    = raw analytical.body_append_javascript

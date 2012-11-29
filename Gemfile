@@ -21,6 +21,7 @@ gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'
 #gem 'oai', :git => 'https://github.com/code4lib/ruby-oai' # FIxes iconv warning. Remove when > 0.2.1 comes out
 gem 'oai', :git => 'https://github.com/johnf/ruby-oai', :branch => 'xml_whitespace' # Fixes #10 in XML revert to above when merged https://github.com/code4lib/ruby-oai/pull/25
+gem 'analytical'
 
 # Admin
 gem 'country-select'
