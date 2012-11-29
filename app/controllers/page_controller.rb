@@ -7,8 +7,7 @@ class PageController < ApplicationController
   def dashboard
     @name = current_user.name
 
-    collections = Collection.where("collector_id = ? OR operator_id = ?", current_user.id, current_user.id)
-    collections &&= Collection.joins(:collection_admins).where("collection_admins.user_id = ? ", 2)
+    collections = Collection.where('collector_id = :user_id OR operator_id = :user_id', :user_id => current_user.id)
     if (params[:sort])
       collections = collections.order(params[:sort] + ' ' + params[:direction])
     else
