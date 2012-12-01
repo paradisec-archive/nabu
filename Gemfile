@@ -66,16 +66,13 @@ group :development, :test do
 end
 
 group :test do
-  gem 'cucumber-rails'
-  gem 'rspec-rails'
+  gem 'rspec-rails', '~> 2.0'
   gem 'factory_girl_rails'
-  gem 'pickle'
-  gem 'database_cleaner'
   gem 'email_spec'
   gem 'launchy'
 
   # Guard
-  gem 'guard-cucumber'
   gem 'guard-bundler'
   gem 'guard-rails'
+  gem 'guard-spin'
 end
