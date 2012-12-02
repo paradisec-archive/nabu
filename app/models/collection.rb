@@ -63,6 +63,23 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :funding_body,      :prefix => true, :allow_nil => true
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
+  before_save :check_complete
+
+  def check_complete
+    present = [
+      :identifier, :title, :description, :collector, :university,
+      :north_limit, :south_limit, :east_limit, :west_limit,
+      :field_of_research
+    ]
+
+    length = [
+      :languages, :countries
+    ]
+    if present.all? {|method| self.send(method).present? } and length.all? {|method| self.send(method).size > 0} and items.any? {|item| item.originated_on.present?}
+      self.complete = true
+    end
+  end
+
   def full_grant_identifier
     if grant_identifier.blank?
       ""
