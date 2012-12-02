@@ -218,6 +218,7 @@ module Nabu
       groups.each do |group|
         item = @collection.items.build
         item.collector = @collection.collector
+        item.operator = @collection.operator
         item.university = @collection.university
         item.identifier = group['name']
         item.title = group.xpath('Title').first.content if group.xpath('Title').first
