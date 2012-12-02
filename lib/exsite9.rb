@@ -3,7 +3,7 @@ module Nabu
   class ExSite9
     attr_accessor :notices, :errors, :collection
 
-    def initialize(data)
+    def initialize(data, current_user)
       @errors = ""
       @notices = ""
       @collection = nil
@@ -15,7 +15,7 @@ module Nabu
       end
       @collection = Collection.new
       begin
-        parse(doc)
+        parse(doc, current_user)
       rescue ParseError
       end
     end
@@ -46,7 +46,7 @@ module Nabu
       user
     end
 
-    def parse(doc)
+    def parse(doc, current_user)
       # get collection information =======
       project_info = doc.xpath('//project_info').first
       if !project_info
@@ -72,6 +72,9 @@ module Nabu
 
       # set private flag for reviews
       @collection.private = true
+
+      # set current user as the operator
+      @collection.operator = current_user
 
       # collection title
       if project_info.xpath('projectName').first
@@ -156,6 +159,13 @@ module Nabu
         end
       end
 
+      # set collection map from language
+      language = @collection.languages.first
+      @collection.north_limit = language.north_limit
+      @collection.east_limit = language.east_limit
+      @collection.south_limit = language.south_limit
+      @collection.west_limit = language.west_limit
+
       # countries, separated by |
       if project_info.xpath('countries').first
         countries = project_info.xpath('countries').first.content.split('|')
@@ -208,6 +218,7 @@ module Nabu
       groups.each do |group|
         item = @collection.items.build
         item.collector = @collection.collector
+        item.operator = @collection.operator
         item.university = @collection.university
         item.identifier = group['name']
         item.title = group.xpath('Title').first.content if group.xpath('Title').first
@@ -305,7 +316,7 @@ module Nabu
           languages.each do |lang|
             code, _ = lang.content.strip.split(' - ')
             language = Language.find_by_code(code.strip)
-            next if !langauge
+            next if !language
             item.content_languages << language
           end
         end

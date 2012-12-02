@@ -153,7 +153,7 @@ class CollectionsController < ApplicationController
     # get XML data
     data = params[:collection][:exsite9].read
     # parse XML file as ExSite9
-    exsite9 = Nabu::ExSite9.new data
+    exsite9 = Nabu::ExSite9.new data, current_user
 
     @collection = exsite9.collection
     flash[:notice] = exsite9.notices unless exsite9.notices.blank?
