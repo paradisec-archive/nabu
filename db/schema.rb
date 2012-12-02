@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121009140408) do
+ActiveRecord::Schema.define(:version => 20121027032001) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -134,15 +134,17 @@ ActiveRecord::Schema.define(:version => 20121009140408) do
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
 
   create_table "essences", :force => true do |t|
-    t.integer "item_id"
-    t.string  "filename"
-    t.string  "mimetype"
-    t.integer "bitrate"
-    t.integer "samplerate"
-    t.integer "size",       :limit => 8
-    t.float   "duration"
-    t.integer "channels"
-    t.integer "fps"
+    t.integer  "item_id"
+    t.string   "filename"
+    t.string   "mimetype"
+    t.integer  "bitrate"
+    t.integer  "samplerate"
+    t.integer  "size",       :limit => 8
+    t.float    "duration"
+    t.integer  "channels"
+    t.integer  "fps"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "essences", ["item_id"], :name => "index_essences_on_item_id"

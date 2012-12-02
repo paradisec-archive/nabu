@@ -29,7 +29,7 @@ ActiveAdmin.register_page "Dashboard" do
       column do
         panel 'Statistics' do
           div do
-            render 'admin/dashboard/statistics'
+            render :partial => 'admin/dashboard/statistics', :locals => {:date => Date.today}
           end
         end
       end

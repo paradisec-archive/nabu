@@ -1,0 +1,5 @@
+production:
+  google:
+    key: UA-36256674-1
+development:
+test:

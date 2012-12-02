@@ -4,6 +4,8 @@ class ApplicationController < ActionController::Base
   before_filter :make_action_mailer_use_request_host
   before_filter :set_timezone
 
+  analytical :modules => [:google]
+
   private
   def make_action_mailer_use_request_host
     ActionMailer::Base.default_url_options[:host] = request.host_with_port
