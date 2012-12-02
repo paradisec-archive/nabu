@@ -38,7 +38,7 @@ module Nabu
         user.contact_only = true
         if not user.valid?
           @errors += "Couldn't create user #{name}<br/>"
-          return nil 
+          return nil
         end
         @notices += "Note: Contact #{name} created<br/>"
       end

@@ -5,5 +5,5 @@ class ItemContentLanguage < ActiveRecord::Base
   attr_accessible :language_id, :language, :item_id, :item
 
   validates :language_id, :presence => true
-  validates :item_id, :presence => true
+  #validates :item_id, :presence => true
 end

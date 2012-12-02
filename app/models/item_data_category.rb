@@ -5,5 +5,5 @@ class ItemDataCategory < ActiveRecord::Base
   attr_accessible :data_category_id, :data_category, :item_id, :item
 
   validates :data_category_id, :presence => true
-  validates :item_id, :presence => true
+  #validates :item_id, :presence => true
 end
