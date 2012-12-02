@@ -4,19 +4,9 @@ class EssencesController < ApplicationController
   load_and_authorize_resource :essence, :through => :item
 
   def show
-    if @essence.item.access_condition.name == 'Open (subject to agreeing to PDSC access form)'
-      if params[:agree].nil?
+    if ['Open (subject to agreeing to PDSC access form)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
+      unless session["terms_#{@collection.id}"] == true
         redirect_to show_terms_collection_item_essence_path
-      elsif params[:agree] == false
-        flash[:error] = 'You must agree to the PDSC access form before you can view files'
-        redirect_to @item
-      end
-    elsif @essence.item.access_condition.name == 'Open (subject to the access condition details)'
-      if params[:agree].nil?
-        redirect_to show_terms_collection_item_essence_path
-      elsif params[:agree] == false
-        flash[:error] = 'You must agree to the PDSC access form before you can view files'
-        redirect_to @item
       end
     end
   end
@@ -30,10 +20,17 @@ class EssencesController < ApplicationController
   end
 
   def show_terms
+
   end
 
   def agree_to_terms
-    redirect_to collection_item_essence_path(:agree => params[:agree])
+    if params[:agree] == '1'
+      session["terms_#{@collection.id}"] = true
+      redirect_to [@collection, @item, @essence]
+    else
+      flash[:error] = 'You must agree to the PDSC access form before you can view files'
+      redirect_to [@collection, @item]
+    end
   end
 
   def destroy
