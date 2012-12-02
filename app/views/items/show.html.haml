@@ -248,6 +248,11 @@
           %th Comments
           %td= h(@item.admin_comment).gsub(/\n/, '<br/>').html_safe
 
+        - if admin_user_signed_in?
+          %tr
+            %th CAT-PDSC file
+            %td= link_to 'View item XML file', display_collection_item_path(@collection, @item)
+
 
   %fieldset
     %legend Comments

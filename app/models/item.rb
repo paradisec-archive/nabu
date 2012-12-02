@@ -92,6 +92,12 @@ class Item < ActiveRecord::Base
     "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
   end
 
+  def path
+    basepath = Nabu::Application.config.archive_directory + '/' + collection.identifier + '/' + identifier + '/'
+    filename = "#{full_identifier}-CAT-PDSC_ADMIN.xml"
+    basepath + filename
+  end
+
   def xml_key
     "paradisec.org.au/item/#{full_identifier}"
   end

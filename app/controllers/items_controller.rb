@@ -158,6 +158,10 @@ class ItemsController < ApplicationController
     end
   end
 
+  def display
+    send_file @item.path, :disposition => 'inline', :type => 'text/xml'
+  end
+
 
   private
   def tidy_params
