@@ -9,6 +9,7 @@ Nabu::Application.routes.draw do
   match '/contact'   => 'page#contact'
   match '/dashboard' => 'page#dashboard'
   match '/glossary'  => 'page#glossary'
+  match '/apidoc' => 'page#apidoc'
 
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 

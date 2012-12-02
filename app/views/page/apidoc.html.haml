@@ -1,0 +1,47 @@
+%h1 PARADISEC API Documentation
+
+.page-box
+  %p
+    The PARADISEC catalog exposes a number of APIs for harvesting the public data of the site. PARADISEC makes use of
+    = link_to 'OAI-PMH', 'http://www.openarchives.org/pmh/'
+    for its harvesting APIs.
+
+%h2 Harvesting Collections
+
+.page-box
+
+  %h3
+    = link_to 'RIF-CS', 'http://www.ands.org.au/resource/rif-cs.html'
+
+  %p
+    A RIF-CS feed is available at
+    = link_to 'http://catalog.paradisec.org.au/oai/collection', 'http://catalog.paradisec.org.au/oai/collection'
+
+  %p
+    For example, you can get a feed of all publicly available collections of PARADISEC:
+    %br
+    = link_to 'http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif', 'http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif'
+
+  %p
+    About RIF-CS:
+    = link_to 'http://ands.org.au/guides/cpguide/cpgrifcs.html', 'http://ands.org.au/guides/cpguide/cpgrifcs.html'
+
+%h2 Harvesting Items
+
+.page-box
+
+  %h3
+    = link_to 'OLAC', 'http://www.language-archives.org/'
+
+  %p
+    A OLAC feed is available at
+    = link_to 'http://catalog.paradisec.org.au/oai/item', 'http://catalog.paradisec.org.au/oai/item'
+
+  %p
+    For example, you can get a feed of all publicly available items of PARADISEC:
+    %br
+    = link_to 'http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac', 'http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac'
+
+  %p
+    About OLAC:
+    = link_to 'http://www.language-archives.org/documents.html#Standards', 'http://www.language-archives.org/documents.html#Standards'

@@ -54,6 +54,8 @@
       #footer
         %center
           = link_to 'Glossary', glossary_path
+          |
+          = link_to 'APIs', apidoc_path
           - if admin_user_signed_in?
             |
             = link_to 'Admin', admin_dashboard_path
