@@ -7,7 +7,7 @@
         - @collection.errors.full_messages.each do |msg|
           %li= msg
 
-  .right
+  .right.first
     = f.submit 'Add Collection'
 
   = render :partial => 'form', :locals => {:f => f}

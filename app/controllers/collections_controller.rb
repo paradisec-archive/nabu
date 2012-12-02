@@ -57,6 +57,7 @@ class CollectionsController < ApplicationController
     unless @collection.admins.include? current_user
       @collection.admins << current_user
     end
+
     if @collection.save
       flash[:notice] = 'Collection was successfully created.'
       redirect_to @collection

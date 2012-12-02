@@ -10,6 +10,7 @@ group :assets do
   gem 'compass-rails'
 
   gem 'therubyracer'
+  gem 'libv8'
 
   gem 'uglifier', '>= 1.0.3'
 end
@@ -19,7 +20,7 @@ gem 'jquery-rails'
 gem 'haml-rails'
 gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'
-gem 'oai', :git => 'https://github.com/code4lib/ruby-oai' # FIxes iconv and whitespace warning. Remove when > 0.2.1 comes out
+gem 'oai'
 gem 'analytical'
 
 # Admin
@@ -57,14 +58,15 @@ gem 'paper_trail', '~> 2'
 gem 'quiet_assets'
 
 group :development, :test do
-  gem 'thin'
-  gem 'sqlite3'
   gem 'turn', '~> 0.8.3', :require => false
+  gem 'rspec-rails', '~> 2.0'
   gem 'sextant'
+  gem 'thin'
 end
 
 group :test do
-  gem 'rspec-rails', '~> 2.0'
+  gem 'capybara'
+  gem 'poltergeist'
   gem 'factory_girl_rails'
   gem 'email_spec'
   gem 'launchy'
@@ -73,4 +75,6 @@ group :test do
   gem 'guard-bundler'
   gem 'guard-rails'
   gem 'guard-spin'
+  gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
+  gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
 end

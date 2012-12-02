@@ -41,10 +41,7 @@ Running the app:
 
 test:
 
-    $ rake cucumber:wip
-    $ bundle exec cucumber --profile wip
-    $ rake cucumber:ok
-    $ bundle exec cucumber features/xxx
+    $ guard
 
 DB load:
 

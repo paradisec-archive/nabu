@@ -1,1 +1,1 @@
---color
+--colour --fail-fast --format documentation --tag ~slow
