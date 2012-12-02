@@ -3,7 +3,7 @@ module Nabu
   class ExSite9
     attr_accessor :notices, :errors, :collection
 
-    def initialize(data)
+    def initialize(data, current_user)
       @errors = ""
       @notices = ""
       @collection = nil
@@ -15,7 +15,7 @@ module Nabu
       end
       @collection = Collection.new
       begin
-        parse(doc)
+        parse(doc, current_user)
       rescue ParseError
       end
     end
@@ -46,7 +46,7 @@ module Nabu
       user
     end
 
-    def parse(doc)
+    def parse(doc, current_user)
       # get collection information =======
       project_info = doc.xpath('//project_info').first
       if !project_info
@@ -158,6 +158,13 @@ module Nabu
           @collection.languages << lang
         end
       end
+
+      # set collection map from language
+      language = @collection.languages.first
+      @collection.north_limit = language.north_limit
+      @collection.east_limit = language.east_limit
+      @collection.south_limit = language.south_limit
+      @collection.west_limit = language.west_limit
 
       # countries, separated by |
       if project_info.xpath('countries').first
@@ -308,7 +315,7 @@ module Nabu
           languages.each do |lang|
             code, _ = lang.content.strip.split(' - ')
             language = Language.find_by_code(code.strip)
-            next if !langauge
+            next if !language
             item.content_languages << language
           end
         end
