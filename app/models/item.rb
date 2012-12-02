@@ -36,6 +36,7 @@ class Item < ActiveRecord::Base
   validates :identifier, :presence => true,
             :uniqueness => {:scope => [:collection_id, :identifier]},
             :format => { :with => /^[a-zA-Z0-9_]*$/, :message => "error - only letters and numbers and '_' allowed" }
+  validates_length_of :identifier, :within => 2..30
   validates :title, :presence => true
   validates :collector_id, :presence => true
 

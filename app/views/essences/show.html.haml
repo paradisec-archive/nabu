@@ -93,4 +93,7 @@
         %p
           To request access, contact
           =link_to 'admin@paradisec.org.au', 'mailto:admin@paradisec.org.au'
-    
+
+  - if admin_user_signed_in?
+    .right
+      = link_to 'Delete essence', collection_item_essence_path(@collection, @item, @essence), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this file and its metadata from the archive (no undo possible)?'

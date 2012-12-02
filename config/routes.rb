@@ -26,7 +26,7 @@ Nabu::Application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
     end
     resources :items do
-      resources :essences, :only => [:show, :download] do
+      resources :essences, :only => [:show, :download, :destroy] do
         member do
           get :download
           get :display

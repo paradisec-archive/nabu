@@ -35,4 +35,17 @@ class EssencesController < ApplicationController
   def agree_to_terms
     redirect_to collection_item_essence_path(:agree => params[:agree])
   end
+
+  def destroy
+    output = %x{rm #{@essence.path} 2>&1}
+    result = $?
+    item = @essence.item
+    @essence.destroy
+    if result.success?
+      flash[:notice] = "Essence removed successfully, also from archive (undo not possible)."
+    else
+      flash[:error] = "Essence removed, but file removing had error: #{output}"
+    end
+    redirect_to [item.collection, item]
+  end
 end

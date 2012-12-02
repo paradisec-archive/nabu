@@ -102,7 +102,7 @@ module Nabu
     def probe
       return @data if @data
 
-      output = %x{ffprobe -show_format -show_streams #@file 2> /dev/null}
+      output = %x{ffprobe -show_format -show_streams #@file 2>&1}
       raise "Error running ffprobe, returned #{$?} output: #{output}" unless $?.success?
 
       # deal with invlaid UTF-8
