@@ -1,7 +1,6 @@
 GIT
-  remote: https://github.com/johnf/ruby-oai
-  revision: ef02a97b43f6730d19bd60e028cb630b424dac75
-  branch: xml_whitespace
+  remote: https://github.com/code4lib/ruby-oai
+  revision: ec5483cdaefaf0e26ae2c9449bfeb07ab9dd03de
   specs:
     oai (0.2.1)
       builder (>= 2.0.0)
