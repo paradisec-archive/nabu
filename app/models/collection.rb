@@ -281,9 +281,14 @@ class Collection < ActiveRecord::Base
 
           if university
             xml.relatedObject do
-              xml.key university.xml_key
-              xml.relation 'type' => 'isOutputOf' do
-                xml.url university.full_path
+              if university.party_identifier
+                xml.key university.party_identifier
+                xml.relation 'type' => 'isOutputOf'
+              else
+                xml.key university.xml_key
+                xml.relation 'type' => 'isOutputOf' do
+                  xml.url university.full_path
+                end
               end
             end
           end
@@ -370,7 +375,7 @@ class Collection < ActiveRecord::Base
         end
       end
 
-      if university
+      if !university.party_identifier
         xml.registryObject 'group' => 'PARADISEC' do
           xml.key university.xml_key
           xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
