@@ -363,6 +363,10 @@ class Collection < ActiveRecord::Base
               end
             end
           end
+          xml.relatedObject do
+            xml.key 'paradisec.org.au'
+            xml.relation 'type' => 'isParticipantIn'
+          end
         end
       end
 
@@ -385,6 +389,10 @@ class Collection < ActiveRecord::Base
                   xml.addressPart university.name, 'type' => 'locationDescriptor'
                 end
               end
+            end
+            xml.relatedObject do
+              xml.key 'paradisec.org.au'
+              xml.relation 'type' => 'isParticipantIn'
             end
           end
         end
