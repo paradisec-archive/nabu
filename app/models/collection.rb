@@ -395,10 +395,6 @@ class Collection < ActiveRecord::Base
                 end
               end
             end
-            xml.relatedObject do
-              xml.key 'paradisec.org.au'
-              xml.relation 'type' => 'isParticipantIn'
-            end
           end
         end
       end
