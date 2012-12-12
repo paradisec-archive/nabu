@@ -5,5 +5,6 @@ class ItemAdmin < ActiveRecord::Base
   attr_accessible :user_id, :user, :item_id, :item
 
   validates :user_id, :presence => true
-  validates :item_id, :presence => true
+# RAILS bug - can't save item_admin without item having been saved
+#  validates :item_id, :presence => true
 end

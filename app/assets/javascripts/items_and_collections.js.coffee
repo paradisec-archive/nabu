@@ -35,7 +35,7 @@ setup_select2 = (element) ->
       }
       options['initSelection'] = (element, callback) ->
         results = []
-        ids = $(element).val().split(/,/)
+        ids = $(element).val().split(/, /)
         for id in ids
           data = {}
           $.ajax(
