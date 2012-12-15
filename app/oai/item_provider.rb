@@ -53,7 +53,7 @@ class ItemProvider < OAI::Provider::Base
       xml.tag! 'shortLocation', 'Melbourne, Sydney, Canberra, Australia'
       xml.tag! 'location', 'Project Director based at the Department of Linguistics, University of Sydney, Transient Building, F12 University of Sydney, NSW 2006. Project Manager based at the School of Linguistics and Applied Linguistics, University of Melbourne, Victoria 3010, Australia'
       xml.tag! 'synopsis', 'PARADISEC (Pacific And Regional Archive for Digital Sources in Endangered Cultures) offers a facility for digital conservation and access for endangered ethnographic materials from the Pacific region, defined broadly to include Oceania and East and South east Asia. Only 6702 of the items listed here are currently digitised. The non-digitised items are part of an assessment of the scope of work that needs to be digitised. They also make otherwise inaccessible material discoverable.'
-      xml.tag! 'access', 'The current focus of PARADISEC is securing endangered materials. Access to the datastore is by password and is currently only available to depositors via the following URL: http://www.paradisec.org.au/repository/[CollectionID]/[ItemID]. Page images of some fieldnotes can be located online.'
+      xml.tag! 'access', 'The current focus of PARADISEC is securing endangered materials. Access to the datastore is by password and is currently only available to depositors via the following URL: http://catalog.paradisec.org.au/collections/[CollectionID]/items/[ItemID]. Page images of some fieldnotes can be located online.'
     end
   end
   extra_description xml.target!
