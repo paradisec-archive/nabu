@@ -184,6 +184,7 @@ class Item < ActiveRecord::Base
     string :university_name
     string :collector_name
     string :region
+    string :language
     string :identifier
     string :collection_identifier do
       collection.identifier
