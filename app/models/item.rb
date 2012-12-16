@@ -129,7 +129,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{identifier title university_name collector_name updated_at language}
+    %w{full_identifier title university_name collector_name updated_at language}
   end
 
   searchable do
