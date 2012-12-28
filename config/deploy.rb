@@ -40,6 +40,11 @@ namespace :sunspot do
     run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:solr:stop RAILS_ENV=#{rails_env}; sleep 5; killall -9 java || true"
   end
 
+  desc 'Reindex solr'
+  task :reindex do
+    run "cd #{deploy_to}/current && /usr/bin/env rake sunspot:reindex RAILS_ENV=#{rails_env}"
+  end
+
   desc 'Restart solr'
   task :restart do
     stop
