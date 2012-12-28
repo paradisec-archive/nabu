@@ -43,6 +43,10 @@ class User < ActiveRecord::Base
     "#{first_name} #{last_name}"
   end
 
+  def sortname
+    "#{last_name} #{first_name}"
+  end
+
   def admin?
     admin
   end
