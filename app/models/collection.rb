@@ -58,6 +58,7 @@ class Collection < ActiveRecord::Base
 
   delegate :name, :to => :university,        :prefix => true, :allow_nil => true
   delegate :name, :to => :collector,         :prefix => true, :allow_nil => true
+  delegate :sortname, :to => :collector,     :prefix => true, :allow_nil => true
   delegate :name, :to => :operator,          :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition,  :prefix => true, :allow_nil => true
   delegate :name, :to => :funding_body,      :prefix => true, :allow_nil => true
@@ -89,7 +90,7 @@ class Collection < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{identifier title university_name collector_name created_at}
+    %w{identifier title collector_sortname university_name created_at}
   end
 
   searchable do
@@ -141,6 +142,7 @@ class Collection < ActiveRecord::Base
     string :identifier
     string :university_name
     string :collector_name
+    string :collector_sortname
     string :region
     string :languages, :multiple => true do
       languages.map(&:name)
