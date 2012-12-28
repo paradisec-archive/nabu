@@ -186,6 +186,7 @@ class Item < ActiveRecord::Base
     string :collector_name
     string :collector_sortname
     string :region
+    string :language
     string :identifier
     string :collection_identifier do
       collection.identifier
