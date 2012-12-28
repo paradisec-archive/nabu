@@ -73,6 +73,7 @@ class Item < ActiveRecord::Base
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 
   delegate :name, :to => :collector, :prefix => true, :allow_nil => true
+  delegate :sortname, :to => :collector, :prefix => true, :allow_nil => true
   delegate :name, :to => :operator, :prefix => true, :allow_nil => true
   delegate :name, :to => :university, :prefix => true, :allow_nil => true
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
@@ -129,7 +130,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{full_identifier title university_name collector_name updated_at language}
+    %w{full_identifier title collector_sortname updated_at language}
   end
 
   searchable do
@@ -183,6 +184,7 @@ class Item < ActiveRecord::Base
     string :full_identifier
     string :university_name
     string :collector_name
+    string :collector_sortname
     string :region
     string :language
     string :identifier

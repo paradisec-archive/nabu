@@ -60,6 +60,7 @@ roll out to production server:
 
 if necessary:
 
+    $ cap production sunspot:reindex
     $ cap production deploy:migrate
 
 upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
