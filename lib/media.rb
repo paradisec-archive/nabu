@@ -121,6 +121,8 @@ module Nabu
         elsif line =~ /^\[FORMAT\]/
           type = :format
           @data[:format] = Hash.new
+        elsif type.nil?
+          next
         else
           key, value = line.split(/=/)
           next if key.blank? || value.blank?
@@ -128,11 +130,14 @@ module Nabu
             @data[:format][key.strip] = value.strip
           elsif type == :stream
             @data[:streams].last[key.strip] = value.strip
-          else
-            raise "Unexpected line #{line}"
           end
         end
       end
+
+      if @data[:streams] == [] and @data[:format] = {}
+        raise "No metadata in output - #{output}"
+      end
+
       @data
     end
   end
