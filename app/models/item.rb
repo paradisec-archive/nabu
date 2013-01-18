@@ -255,7 +255,7 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " #{full_path},"
+    cite += " #{full_path}"
     cite += " #{Date.today}."
     cite
   end

@@ -194,7 +194,7 @@ class Collection < ActiveRecord::Base
     cite += '; ' unless cite == ""
     cite += "<i>#{sanitize(title)}</i>, "
     cite += "Digital collection managed by PARADISEC. "
-    cite += " #{full_path},"
+    cite += " #{full_path}"
     cite += " #{Date.today}."
     cite
   end
