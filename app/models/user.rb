@@ -24,6 +24,8 @@ class User < ActiveRecord::Base
   has_many :item_admins
   has_many :items, :through => :item_admins, :dependent => :destroy
 
+  has_many :item_users
+
   has_many :item_agents, :dependent => :destroy
 
   has_many :owned_items, :class_name => 'Item', :foreign_key => :collector_id, :dependent => :restrict

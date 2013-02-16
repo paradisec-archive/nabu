@@ -23,6 +23,9 @@ class Item < ActiveRecord::Base
   has_many :item_admins, :dependent => :destroy
   has_many :admins, :through => :item_admins, :validate => true, :source => :user
 
+  has_many :item_users, :dependent => :destroy
+  has_many :users, :through => :item_users, :validate => true, :source => :user
+
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
 
@@ -51,7 +54,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comments,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-    :bulk_edit_append_admin_ids, :bulk_edit_append_data_category_ids
+    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :external, :url, :description, :region,
@@ -59,7 +62,7 @@ class Item < ActiveRecord::Base
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,
                   :content_language_ids, :subject_language_ids,
-                  :admin_ids, :item_agents_attributes,
+                  :admin_ids, :user_ids, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
                   :admin_comment,
@@ -176,6 +179,7 @@ class Item < ActiveRecord::Base
     integer :access_condition_id, :references => AccessCondition
     integer :agent_ids, :references => User, :multiple => true
     integer :admin_ids, :references => User, :multiple => true
+    integer :user_ids, :references => User, :multiple => true
 
     # Things we want to sort or use :with on
     integer :id

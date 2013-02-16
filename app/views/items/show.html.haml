@@ -237,6 +237,13 @@
               %br
 
         %tr
+          %th View/Download access
+          %td
+            - @item.users.each do |user|
+              = user.name
+              %br
+
+        %tr
           %th Data access conditions
           %td= @item.access_condition_name
 
