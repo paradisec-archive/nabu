@@ -42,10 +42,10 @@ ActiveAdmin.register_page "Activity Log" do
       div :class => 'panel_contents' do
         insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Version.where(:item_type => 'Item').order('created_at desc').limit(10) do
 
-          column :collection_id do |v|
+          column :identifier do |v|
             item = v.reify
             if item && item.collection
-              link_to item.full_identifier, Rails.application.routes.url_helpers.collection_items_path(item.collection, item)
+              link_to item.full_identifier, Rails.application.routes.url_helpers.collection_item_path(item.collection, item)
             else
               'NONE'
             end
