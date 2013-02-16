@@ -265,6 +265,14 @@
             = f.check_box :bulk_edit_append_admin_ids
 
       %tr
+        %th= f.label :user_ids, 'Read/Download access'
+        %td= f.hidden_field :user_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_user_ids
+
+      %tr
         %th= f.label :access_condition, 'Data access conditions'
         %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
 

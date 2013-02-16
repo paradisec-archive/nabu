@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121027032001) do
+ActiveRecord::Schema.define(:version => 20130216085814) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -206,6 +206,13 @@ ActiveRecord::Schema.define(:version => 20121027032001) do
   end
 
   add_index "item_subject_languages", ["item_id", "language_id"], :name => "index_item_subject_languages_on_item_id_and_language_id", :unique => true
+
+  create_table "item_users", :force => true do |t|
+    t.integer "item_id", :null => false
+    t.integer "user_id", :null => false
+  end
+
+  add_index "item_users", ["item_id", "user_id"], :name => "index_item_users_on_item_id_and_user_id", :unique => true
 
   create_table "items", :force => true do |t|
     t.integer  "collection_id",                              :null => false
