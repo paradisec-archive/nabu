@@ -142,13 +142,6 @@ namespace :archive do
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
-    # remove all current information about essences in DB
-    # comment this out after the seeding
-    puts "---------------------------------------------------------------"
-    puts "Deleting all existing essence information in Nabu..."
-    Essence.delete_all
-    puts "...done"
-
     # get all subdirectories in archive
     puts "---------------------------------------------------------------"
     puts "Gathering all subdirectories in the archive..."
@@ -168,7 +161,10 @@ namespace :archive do
         puts "---------------------------------------------------------------"
         puts "Inspecting file #{directory}/#{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        next if !collection || !item
+        if !collection || !item
+          puts "ERROR: skipping file #{file} - does not relate to an item #{coll_id}-#{item_id}"
+          next
+        end
 
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
@@ -254,8 +250,13 @@ namespace :archive do
       essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
       return
     end
-    essence.save!
-
-    puts "SUCCESS: file #{file} metadata imported into Nabu"
+    if essence.new_record? || (essence.changed? && ENV['force'] == 'true')
+      essence.save!
+      puts "SUCCESS: file #{file} metadata imported into Nabu"
+    end
+    if essence.changed? && ENV['force'] != 'true'
+      puts "WARNING: file #{file} metadata is different to DB - use 'force=true archive:update_file' to update"
+      puts e.changes.inspect
+    end
   end
 end
