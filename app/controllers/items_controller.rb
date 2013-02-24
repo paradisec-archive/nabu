@@ -81,6 +81,8 @@ class ItemsController < ApplicationController
     begin
       @item.destroy
       undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+      # remove directory and PDSC_ADMIN files on disk
+      delete_directory(@item)
       flash[:notice] = "Item removed successfully (#{undo_link})."
       redirect_to @collection
     rescue ActiveRecord::DeleteRestrictionError
@@ -295,5 +297,16 @@ class ItemsController < ApplicationController
     data = render_to_string :template => 'items/show.xml.haml'
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     file = File.open(file, 'w') {|f| f.write(data)}
+  end
+
+  def delete_directory(item)
+    return if !File.directory?(Nabu::Application.config.archive_directory)
+    directory = Nabu::Application.config.archive_directory +
+                "#{item.collection.identifier}/#{item.identifier}/"
+    return if !File.directory?(directory)
+    # delete all PDSC_ADMIN files
+    file = directory + "#{item.full_identifier}*-PDSC_ADMIN.*"
+    FileUtils.rm_f(file)
+    FileUtils.rmdir(directory)
   end
 end
