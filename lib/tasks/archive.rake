@@ -108,7 +108,7 @@ namespace :archive do
           puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
           next
         end
-        FileUtils.mv(upload_directory + file, destination_path + file)
+        FileUtils.cp(upload_directory + file, destination_path + file)
 
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
 
@@ -119,11 +119,19 @@ namespace :archive do
 
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
-        next if basename.split('-').last == "PDSC_ADMIN"
+        if basename.split('-').last != "PDSC_ADMIN"
+          # extract media metadata from file
+          puts "Inspecting file #{file}..."
+          begin
+            import_metadata(destination_path, file, item, extension)
+          rescue
+            puts "WARNING: file #{file} skipped - error importing metadata" if verbose
+            next
+          end
+        end
 
-        # extract media metadata from file
-        puts "Inspecting file #{file}..."
-        import_metadata(destination_path, file, item, extension)
+        # if everything went well, remove file from original directory
+        FileUtils.rm(upload_directory + file)
         puts "...done"
       end
     end
