@@ -90,12 +90,24 @@ namespace :archive do
 
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
+
+        # skip files with item_id longer than 30 chars, because OLAC can't deal with them
+        if item_id.length > 30
+          puts "WARNING: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
+          next
+        end
+
         puts "---------------------------------------------------------------"
 
         # make sure the archive directory for the collection and item exists
         # and move the file there
-        destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
-        FileUtils.mkdir_p(destination_path)
+        begin
+          destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+          FileUtils.mkdir_p(destination_path)
+        rescue
+          puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
+          next
+        end
         FileUtils.mv(upload_directory + file, destination_path + file)
 
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
