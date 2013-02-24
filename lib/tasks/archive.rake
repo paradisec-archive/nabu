@@ -212,12 +212,12 @@ namespace :archive do
     collection = Collection.find_by_identifier coll_id
     if !collection
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
-      return [basename, extension, coll_id, item_id, 0, 0]
+      return [basename, extension, coll_id, item_id, nil, nil]
     end
     item = collection.items.find_by_identifier item_id
     if !item
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
-      return [basename, extension, coll_id, item_id, 0, 0]
+      return [basename, extension, coll_id, item_id, nil, nil]
     end
     [basename, extension, coll_id, item_id, collection, item]
   end
