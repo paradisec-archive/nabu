@@ -139,6 +139,8 @@ namespace :archive do
 
   desc 'Update essence metadata of existing files in the archive'
   task :update_files => :environment do
+    verbose = ENV['VERBOSE'] ? true : false
+
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
@@ -150,16 +152,14 @@ namespace :archive do
 
     # extract metadata from each essence file in each directory
     subdirs.each do |directory|
-      puts "==="
-      puts "---------------------------------------------------------------"
-      puts "Working through directory #{directory}"
+      puts "===" if verbose
+      puts "---------------------------------------------------------------" if verbose
+      puts "Working through directory #{directory}" if verbose
       dir_contents = Dir.entries(directory)
       dir_contents.each do |file|
         next unless File.file? "#{directory}/#{file}"
-        puts "---------------------------------------------------------------"
+        puts "---------------------------------------------------------------" if verbose
         puts "Inspecting file #{file}..."
-        puts "---------------------------------------------------------------"
-        puts "Inspecting file #{directory}/#{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         if !collection || !item
           puts "ERROR: skipping file #{file} - does not relate to an item #{coll_id}-#{item_id}"
@@ -177,9 +177,9 @@ namespace :archive do
         import_metadata(directory, file, item, extension)
       end
     end
-    puts "==="
-    puts "Update Files finished."
-    puts "==="
+    puts "===" if verbose
+    puts "Update Files finished." if verbose
+    puts "===" if verbose
   end
 
 
@@ -212,12 +212,12 @@ namespace :archive do
     collection = Collection.find_by_identifier coll_id
     if !collection
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
-      return
+      return [basename, extension, coll_id, item_id, 0, 0]
     end
     item = collection.items.find_by_identifier item_id
     if !item
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
-      return
+      return [basename, extension, coll_id, item_id, 0, 0]
     end
     [basename, extension, coll_id, item_id, collection, item]
   end
@@ -250,13 +250,13 @@ namespace :archive do
       essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
       return
     end
-    if essence.new_record? || (essence.changed? && ENV['force'] == 'true')
+    if essence.new_record? || (essence.changed? && ENV['FORCE'] == 'true')
       essence.save!
       puts "SUCCESS: file #{file} metadata imported into Nabu"
     end
-    if essence.changed? && ENV['force'] != 'true'
-      puts "WARNING: file #{file} metadata is different to DB - use 'force=true archive:update_file' to update"
-      puts e.changes.inspect
+    if essence.changed? && ENV['FORCE'] != 'true'
+      puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
+      puts essence.changes.inspect
     end
   end
 end

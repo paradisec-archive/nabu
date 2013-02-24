@@ -55,7 +55,6 @@ after commit local to roll out to user acceptance testing server:
 
 roll out to production server:
 
-    $ cap staging deploy
     $ cap production deploy
 
 if necessary:
@@ -74,7 +73,7 @@ upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
 
 import archive files:
 
-    $ RAILS_ENV=staging rake archive:update_files
+    $ RAILS_ENV=uat rake archive:update_files
 
 
 # OAI-PMH
