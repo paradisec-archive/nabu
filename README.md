@@ -75,6 +75,10 @@ import archive files:
 
     $ RAILS_ENV=uat rake archive:update_files
 
+check if all files that have been uploaded are ok:
+    $ cd /srv/www/nabu/current
+    $ RAILS_ENV=production rake --trace archive:update_files > log/update_fiels.log
+
 
 # OAI-PMH
 

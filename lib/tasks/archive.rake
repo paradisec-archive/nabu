@@ -242,7 +242,7 @@ namespace :archive do
     essence.size       = media.size
     essence.bitrate    = media.bitrate
     essence.samplerate = media.samplerate
-    essence.duration   = media.duration
+    essence.duration   = number_to_human_duration media.duration
     essence.channels   = media.channels
     essence.fps        = media.fps
     if !essence.valid?
