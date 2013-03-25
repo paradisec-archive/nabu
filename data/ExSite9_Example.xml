@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project>
+  <project_info collectionType="Collection" identifier="LB9">
+    <projectName>20121016 Linda Barwick test metadata</projectName>
+    <name>Barwick, Linda</name>
+    <institution>University of Sydney</institution>
+    <email>Linda.Barwick@sydney.edu.au</email>
+    <description>Metadata package for testing ExSite9 import capability of NABU - using dummy LB1 files for example.</description>
+    <rightsStatement>Any additional comments</rightsStatement>
+    <accessRights>Open (subject to agreeing to PDSC access form)</accessRights>
+    <license/>
+    <subject/>
+    <electronicLocation/>
+    <physicalLocation>locked cabinet in room 235, Transient Building F12, University of Sydney</physicalLocation>
+    <placeOrRegionName>Burgos and Vigan, Ilocos Sur, Philippines</placeOrRegionName>
+    <geographicalCoverage/>
+    <datesOfCapture>1993-1995</datesOfCapture>
+    <citationInformation/>
+    <countries>PH - Philippines | AU - Australia</countries>
+    <languages>ilo - Ilocano | en - English</languages>
+    <fieldOfResearch>190404 - Drama, Theatre and Performance Studies</fieldOfResearch>
+    <fundingBody>Australian Research Council</fundingBody>
+    <grantID>456789</grantID>
+    <relatedParty>Pertierra, Raul</relatedParty>
+    <relatedGrant>Sung Popular Theatre in Tuscany and the Australasian region</relatedGrant>
+    <relatedInformation/>
+  </project_info>
+  <groups numGroups="11">
+    <group name="93NOT">
+      <Title>1993 Fieldnotes</Title>
+      <Description>Linda Barwick's 1993 Philippines fieldnotes from trip to record komedya in Burgos (Ilocos Sur) in February 1993</Description>
+      <Private>False</Private>
+      <originationDate>1993-02-01</originationDate>
+      <Agent Role="Author">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Language Description</Linguistic_Data_Type>
+      <Discourse_Type>Report</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="18">
+        <file>
+          <name>LB9-93NOT-070.jpg</name>
+          <path>93NOT/LB9-93NOT-070.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-071.jpg</name>
+          <path>93NOT/LB9-93NOT-071.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-072.jpg</name>
+          <path>93NOT/LB9-93NOT-072.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-073.jpg</name>
+          <path>93NOT/LB9-93NOT-073.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-074.jpg</name>
+          <path>93NOT/LB9-93NOT-074.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-075.jpg</name>
+          <path>93NOT/LB9-93NOT-075.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-076.jpg</name>
+          <path>93NOT/LB9-93NOT-076.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-077.jpg</name>
+          <path>93NOT/LB9-93NOT-077.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-078.jpg</name>
+          <path>93NOT/LB9-93NOT-078.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-079.jpg</name>
+          <path>93NOT/LB9-93NOT-079.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-080.jpg</name>
+          <path>93NOT/LB9-93NOT-080.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-081.jpg</name>
+          <path>93NOT/LB9-93NOT-081.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-082.jpg</name>
+          <path>93NOT/LB9-93NOT-082.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-083.jpg</name>
+          <path>93NOT/LB9-93NOT-083.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-084.jpg</name>
+          <path>93NOT/LB9-93NOT-084.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-091.jpg</name>
+          <path>93NOT/LB9-93NOT-091.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-CAT.xml</name>
+          <path>93NOT/LB9-93NOT-CAT.xml</path>
+        </file>
+        <file>
+          <name>LB9-93NOT-df.pdf</name>
+          <path>93NOT/LB9-93NOT-df.pdf</path>
+        </file>
+      </files>
+    </group>
+    <group name="93PIX">
+      <Title>1993 Philippines photographs</Title>
+      <Description>Linda Barwick's 1993 Philippines photos from trip to record komedya in Burgos (Ilocos Sur) in February 1993</Description>
+      <Private>False</Private>
+      <originationDate>1993-02-01</originationDate>
+      <Agent Role="Photographer">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageContentISO639-3>zxx - No linguistic content</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="6">
+        <file>
+          <name>LB9-93PIX-000.jpg</name>
+          <path>93PIX/LB9-93PIX-000.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PIX-001.jpg</name>
+          <path>93PIX/LB9-93PIX-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PIX-002.jpg</name>
+          <path>93PIX/LB9-93PIX-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PIX-003.jpg</name>
+          <path>93PIX/LB9-93PIX-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PIX-004.jpg</name>
+          <path>93PIX/LB9-93PIX-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PIX-005.jpg</name>
+          <path>93PIX/LB9-93PIX-005.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="93PROG">
+      <Title>Programme of the Burgos Town Fiesta, 15 February 1993</Title>
+      <Description>Programme of the Burgos Town Fiesta, 15 February 1993, including names of the komedya performers</Description>
+      <Private>False</Private>
+      <originationDate>1993-02-01</originationDate>
+      <Agent Role="Author">Burgos Town Fiesta Committee</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Procedural</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageLocalName>Tagalog</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageContentISO639-3>tgl - Tagalog</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="5">
+        <file>
+          <name>LB9-93PROG-001.jpg</name>
+          <path>93PROG/LB9-93PROG-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PROG-002.jpg</name>
+          <path>93PROG/LB9-93PROG-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PROG-003.jpg</name>
+          <path>93PROG/LB9-93PROG-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PROG-004.jpg</name>
+          <path>93PROG/LB9-93PROG-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-93PROG-005.jpg</name>
+          <path>93PROG/LB9-93PROG-005.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="95NOT">
+      <Title>1995 Philippines fieldnotes</Title>
+      <Description>Linda Barwick's 1995 Philippines fieldnotes from trip to record komedya in Vigan (Ilocos Sur) in April 1995</Description>
+      <Private>False</Private>
+      <originationDate>1995-04-01</originationDate>
+      <Agent Role="Author">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Language Description</Linguistic_Data_Type>
+      <Discourse_Type>Report</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Vigan, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="6">
+        <file>
+          <name>LB9-95NOT-001.jpg</name>
+          <path>95NOT/LB9-95NOT-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95NOT-002.jpg</name>
+          <path>95NOT/LB9-95NOT-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95NOT-003.jpg</name>
+          <path>95NOT/LB9-95NOT-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95NOT-004.jpg</name>
+          <path>95NOT/LB9-95NOT-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95NOT-005.jpg</name>
+          <path>95NOT/LB9-95NOT-005.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95NOT-006.jpg</name>
+          <path>95NOT/LB9-95NOT-006.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="95PIX">
+      <Title>1995 Philippines photos</Title>
+      <Description>Linda Barwick's 1995 Philippines photographs from trip to record komedya in Vigan (Ilocos Sur) in April 1995</Description>
+      <Private>False</Private>
+      <originationDate>1995-04-01</originationDate>
+      <Agent Role="Photographer">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Vigan, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageContentISO639-3>zxx - No linguistic content</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="5">
+        <file>
+          <name>LB9-95PIX-001.jpg</name>
+          <path>95PIX/LB9-95PIX-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PIX-002.jpg</name>
+          <path>95PIX/LB9-95PIX-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PIX-003.jpg</name>
+          <path>95PIX/LB9-95PIX-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PIX-004.jpg</name>
+          <path>95PIX/LB9-95PIX-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PIX-005.jpg</name>
+          <path>95PIX/LB9-95PIX-005.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="95PROG">
+      <Title>1995 Vigan Town Fiesta Programme</Title>
+      <Description>Programme of the Vigan Town Fiesta, 30 April-1 May 1995, including names of the various komedya companies and details of other performances recorded.</Description>
+      <Private>False</Private>
+      <originationDate>1995-04-01</originationDate>
+      <Agent Role="Author">Vigan Town Fiesta Committee</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Procedural</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Vigan, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageLocalName>Tagalog</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageContentISO639-3>tgl - Tagalog</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="6">
+        <file>
+          <name>LB9-95PROG-001.jpg</name>
+          <path>95PROG/LB9-95PROG-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PROG-002.jpg</name>
+          <path>95PROG/LB9-95PROG-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PROG-003.jpg</name>
+          <path>95PROG/LB9-95PROG-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PROG-004.jpg</name>
+          <path>95PROG/LB9-95PROG-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PROG-005.jpg</name>
+          <path>95PROG/LB9-95PROG-005.jpg</path>
+        </file>
+        <file>
+          <name>LB9-95PROG-006.jpg</name>
+          <path>95PROG/LB9-95PROG-006.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="ARTICLE">
+      <Title>Article by Linda Barwick on Komedya compared to the Italian Maggio performance tradition</Title>
+      <Description>Barwick, L. (1994). The Filipino Komedya and the Italian Maggio: Cross-Cultural Perspectives on Related Genres of Popular Music Theatre. In A. M. Gibbs (Ed.), Masks of Time: Drama and its Contexts (pp. 71-108). Canberra: Australian Academy of the Humanities.</Description>
+      <Private>False</Private>
+      <originationDate>1994-01-01</originationDate>
+      <Agent Role="Author">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Language Description</Linguistic_Data_Type>
+      <Discourse_Type>Report</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <RegionVillage>Garfagnana, Provincia di Lucca, Italia</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageLocalName>Italian</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageContentISO639-3>ita - Italian</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <LanguageSubjectISO639-3>ita - Italian</LanguageSubjectISO639-3>
+      <files numFiles="7">
+        <file>
+          <name>LB9-ARTICLE-001.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-002.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-003.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-004.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-004.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-005.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-005.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-006.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-006.jpg</path>
+        </file>
+        <file>
+          <name>LB9-ARTICLE-007.jpg</name>
+          <path>ARTICLE/LB9-ARTICLE-007.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="AT0301">
+      <Title>Audio tape 1</Title>
+      <Description>Audio tape 1, rehearsal of the Komedya "Kabibiag ni Floramante" on 13 February 1993</Description>
+      <Private>False</Private>
+      <originationDate>1993-02-13</originationDate>
+      <Agent Role="Recorder">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Discourse_Type>Singing</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="4">
+        <file>
+          <name>LB9-AT0301-A.mp3</name>
+          <path>AT0301/LB9-AT0301-A.mp3</path>
+        </file>
+        <file>
+          <name>LB9-AT0301-A.wav</name>
+          <path>AT0301/LB9-AT0301-A.wav</path>
+        </file>
+        <file>
+          <name>LB9-AT0301-B.mp3</name>
+          <path>AT0301/LB9-AT0301-B.mp3</path>
+        </file>
+        <file>
+          <name>LB9-AT0301-B.wav</name>
+          <path>AT0301/LB9-AT0301-B.wav</path>
+        </file>
+      </files>
+    </group>
+    <group name="KOMEDYA">
+      <Title>Text of the Burgos komedya "Kabibiag ni Floramante" by Tomas Daproza</Title>
+      <Description>Text of the Burgos komedya "Kabibiag ni Floramante" by Tomas Daproza, in Ilocano, composed circa 1975</Description>
+      <Private>False</Private>
+      <originationDate>1975-01-01</originationDate>
+      <Agent Role="Author">Daproza, Tomas</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="4">
+        <file>
+          <name>LB9-KOMEDYA-001.jpg</name>
+          <path>KOMEDYA/LB9-KOMEDYA-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-KOMEDYA-002.jpg</name>
+          <path>KOMEDYA/LB9-KOMEDYA-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-KOMEDYA-003.jpg</name>
+          <path>KOMEDYA/LB9-KOMEDYA-003.jpg</path>
+        </file>
+        <file>
+          <name>LB9-KOMEDYA-004.jpg</name>
+          <path>KOMEDYA/LB9-KOMEDYA-004.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="KOMEDYATRANS">
+      <Title>Translation of the komedya "Kabibiag ni Floramante" by Tomas Daproza, translated into English by Medel Verzosa in 1995</Title>
+      <Description>Translation of the Burgos komedya "Kabibiag ni Floramante" by Tomas Daproza, translated into English by Medel Verzosa in 1995. Translation commissioned by Linda Barwick</Description>
+      <Private>False</Private>
+      <originationDate>1995-01-01</originationDate>
+      <Agent Role="Author">Daproza, Tomas</Agent>
+      <Agent Role="Translator">Verzosa, Medel</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageLocalName>English</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageContentISO639-3>eng - English</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="3">
+        <file>
+          <name>LB9-KOMEDYATRANS-001.jpg</name>
+          <path>KOMEDYATRANS/LB9-KOMEDYATRANS-001.jpg</path>
+        </file>
+        <file>
+          <name>LB9-KOMEDYATRANS-002.jpg</name>
+          <path>KOMEDYATRANS/LB9-KOMEDYATRANS-002.jpg</path>
+        </file>
+        <file>
+          <name>LB9-KOMEDYATRANS-003.jpg</name>
+          <path>KOMEDYATRANS/LB9-KOMEDYATRANS-003.jpg</path>
+        </file>
+      </files>
+    </group>
+    <group name="VT9301">
+      <Title>Videotape 1 recording the Burgos Komedya performed for the Burgos Town Fiesta, 15 February 1993</Title>
+      <Description>Videotape 1 recording the Burgos Komedya performed for the Burgos Town Fiesta, 15 February 1993 (digitised from Hi-8)</Description>
+      <Private>False</Private>
+      <originationDate>1993-02-15</originationDate>
+      <Agent Role="Recorder">Barwick, Linda</Agent>
+      <Linguistic_Data_Type>Primary Text</Linguistic_Data_Type>
+      <Discourse_Type>Drama</Discourse_Type>
+      <Discourse_Type>Singing</Discourse_Type>
+      <Linguistic_Subject>Language Documentation</Linguistic_Subject>
+      <Country>PH - Philippines</Country>
+      <RegionVillage>Burgos, Ilocos Sur, Philippines</RegionVillage>
+      <LanguageLocalName>Ilocano</LanguageLocalName>
+      <LanguageContentISO639-3>ilo - Ilocano</LanguageContentISO639-3>
+      <LanguageSubjectISO639-3>ilo - Ilocano</LanguageSubjectISO639-3>
+      <files numFiles="3">
+        <file>
+          <name>LB9-VT9301-A.eaf</name>
+          <path>VT9301/LB9-VT9301-A.eaf</path>
+        </file>
+        <file>
+          <name>LB9-VT9301-A.mp4</name>
+          <path>VT9301/LB9-VT9301-A.mp4</path>
+        </file>
+        <file>
+          <name>LB9-VT9301-A.wav</name>
+          <path>VT9301/LB9-VT9301-A.wav</path>
+        </file>
+      </files>
+    </group>
+  </groups>
+</project>

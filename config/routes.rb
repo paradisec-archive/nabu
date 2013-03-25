@@ -23,8 +23,9 @@ Nabu::Application.routes.draw do
       get 'advanced_search' => 'collections#advanced_search'
       get 'bulk_update' => 'collections#bulk_edit'
       put 'bulk_update' => 'collections#bulk_update'
-      get 'exsite9' => 'collections#new_from_exsite9'
+      get 'metadata' => 'collections#new_from_metadata'
       post 'exsite9' => 'collections#create_from_exsite9'
+      post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
     resources :items do
       member do

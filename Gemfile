@@ -56,6 +56,7 @@ gem 'capistrano-unicorn'
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'
 gem 'quiet_assets'
+gem 'spreadsheet'
 
 group :development, :test do
   gem 'turn', '~> 0.8.3', :require => false

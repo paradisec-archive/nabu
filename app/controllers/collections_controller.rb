@@ -1,4 +1,6 @@
 require 'exsite9'
+require 'nabu_spreadsheet'
+
 class CollectionsController < ApplicationController
   load_and_authorize_resource :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
@@ -146,26 +148,56 @@ class CollectionsController < ApplicationController
     end
   end
 
-  def new_from_exsite9
+  def new_from_metadata
     @collection = Collection.new
   end
 
   def create_from_exsite9
     # get XML data
-    data = params[:collection][:exsite9].read
+    data = params[:collection][:metadata].read
     # parse XML file as ExSite9
-    exsite9 = Nabu::ExSite9.new data, current_user
+    exsite9 = Nabu::ExSite9.new
+    exsite9.parse data, current_user
 
-    @collection = exsite9.collection
-    flash[:notice] = exsite9.notices unless exsite9.notices.blank?
-    flash[:error] = exsite9.errors unless exsite9.errors.blank?
-
-    if @collection.valid?
+    if exsite9.valid?
+      @collection = exsite9.collection
       @collection.save!
       flash[:notice] ||= "SUCCESS: Collection created"
+      flash[:notice] += exsite9.notices.join("<br/>") unless exsite9.notices.blank?
       redirect_to @collection
     else
-      render 'new_from_exsite9'
+      @collection = Collection.new unless @collection
+      flash[:notice] = exsite9.notices.join("<br/>") unless exsite9.notices.blank?
+      flash[:error] = exsite9.errors.join("<br/>") unless exsite9.errors.blank?
+      render 'new_from_metadata'
+    end
+  end
+
+  def create_from_spreadsheet
+    # get XSL data
+    data = params[:collection][:metadata].read
+    # parse XML file as Spreadsheet
+    sheet = Nabu::NabuSpreadsheet.new
+    sheet.parse data, current_user
+
+    if sheet.valid?
+      @collection = sheet.collection
+      @collection.save!
+      saved_items = 0
+      sheet.items.each do |item|
+        if item.valid? #just making sure - even though NabuSpreadsheet already check this
+          item.save!
+          saved_items += 1
+        end
+      end
+      flash[:notice] = "SUCCESS: Collection and #{saved_items} items created<br/>"
+      flash[:notice] += sheet.notices.join("<br/>") unless sheet.notices.empty?
+      redirect_to @collection
+    else
+      @collection = Collection.new unless @collection
+      flash[:notice] = sheet.notices.join("<br/>") unless sheet.notices.empty?
+      flash[:error] = sheet.errors.join("<br/>") unless sheet.errors.empty?
+      render 'new_from_metadata'
     end
   end
 

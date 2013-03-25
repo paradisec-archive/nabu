@@ -3,21 +3,25 @@ module Nabu
   class ExSite9
     attr_accessor :notices, :errors, :collection
 
-    def initialize(data, current_user)
-      @errors = ""
-      @notices = ""
-      @collection = nil
+    def initialize
+      @errors = []
+      @notices = []
+    end
+
+    def parse(data, current_user)
       # parse XML file
       doc  = Nokogiri::XML data
       if doc.errors.count > 0
-        @errors = "ERROR: Unable to parse XML file (#{doc.errors.join(',')})."
-        raise ParseError
+        @errors << "ERROR: Unable to parse XML file (#{doc.errors.join(',')})."
+        return
       end
       @collection = Collection.new
-      begin
-        parse(doc, current_user)
-      rescue ParseError
-      end
+      parse_fields(doc, current_user)
+    end
+
+    def valid?
+puts collection.inspect
+      @errors.empty? && @collection.valid?
     end
 
     private
@@ -46,27 +50,27 @@ module Nabu
       user
     end
 
-    def parse(doc, current_user)
+    def parse_fields(doc, current_user)
       # get collection information =======
       project_info = doc.xpath('//project_info').first
       if !project_info
-        @errors = "ERROR: Not an ExSite9 file."
-        raise ParseError
+        @errors << "ERROR: Not an ExSite9 file."
+        return
       end
 
       # is it a collection?
       collectionType = project_info['collectionType']
       if collectionType != "Collection"
-        @errors = "ERROR: ExSite9 file does not contains collection information (collectionType = #{collectionType})."
-        raise ParseError
+        @errors << "ERROR: ExSite9 file does not contains collection information (collectionType = #{collectionType})."
+        return
       end
 
       # collection identifier
       collectionId = project_info['identifier'].strip
       coll = Collection.find_by_identifier(collectionId)
       unless coll.nil?
-        @errors = "ERROR: Not a new collection #{collectionId} - can't overwrite."
-        raise ParseError
+        @errors << "ERROR: Not a new collection #{collectionId} - can't overwrite."
+        return
       end
       @collection.identifier = collectionId
 
@@ -91,8 +95,8 @@ module Nabu
         coll_name = project_info.xpath('name').first.content
         @collection.collector = user_from_str(coll_name, false)
         if @collection.collector.nil?
-          @errors = "ERROR: Collector #{coll_name} not found."
-          raise ParseError
+          @errors << "ERROR: Collector #{coll_name} not found."
+          return
         end
       end
 
@@ -105,7 +109,7 @@ module Nabu
           university = University.find_by_name(coll_uni)
         end
         if university.nil?
-          @notices += "Note: institution '#{coll_uni}' ignored<br/>" unless coll_uni.blank?
+          @notices << "Note: institution '#{coll_uni}' ignored" unless coll_uni.blank?
         else
           @collection.university = university
         end
@@ -116,7 +120,7 @@ module Nabu
         coll_access = project_info.xpath('accessRights').first.content.strip
         access_cond = AccessCondition.find_by_name(coll_access)
         if access_cond.nil?
-          @notices += "Note: accessRight '#{coll_access}' ignored<br/>" unless coll_access.blank?
+          @notices << "Note: accessRight '#{coll_access}' ignored" unless coll_access.blank?
         else
           @collection.access_condition = access_cond
         end
@@ -132,7 +136,7 @@ module Nabu
         coll_for = project_info.xpath('fieldOfResearch').first.content.strip
         field_of_research = FieldOfResearch.find_by_identifier(coll_for.split(/ - /))
         if field_of_research.nil?
-          @notices += "Note: fieldOfResearch '#{coll_for}' ignored<br/>" unless coll_for.blank?
+          @notices << "Note: fieldOfResearch '#{coll_for}' ignored" unless coll_for.blank?
         else
           @collection.field_of_research = field_of_research
         end
@@ -186,7 +190,7 @@ module Nabu
             funding_body = FundingBody.create!({
                 :name => coll_body
             })
-            @notices += "CHECK: fundingBody '#{funding_body}' created<br/>"
+            @notices << "CHECK: fundingBody '#{funding_body}' created"
           end
         else
           @collection.funding_body = funding_body
@@ -240,7 +244,7 @@ module Nabu
           dataCategory = group.xpath('Linguistic_Data_Type').first.content.downcase.strip
           data_category = DataCategory.find_by_name(dataCategory)
           if data_category.nil?
-            @notices += "Note: Linguistic_Data_Type '#{dataCategory}' ignored<br/>" unless dataCategory.blank?
+            @notices << "Note: Linguistic_Data_Type '#{dataCategory}' ignored" unless dataCategory.blank?
           else
             item.data_categories << data_category
           end
@@ -254,13 +258,13 @@ module Nabu
           item_agent.user = user_from_str(agent.content, true)
           item_agent.agent_role = AgentRole.find_by_name(agent['Role'].strip)
           if item_agent.user.nil? || item_agent.agent_role.nil?
-            @notices += "Note: Agent #{agent.content} (#{agent['Role']}) ignored<br/>" unless agent.content.blank?
+            @notices << "Note: Agent #{agent.content} (#{agent['Role']}) ignored" unless agent.content.blank?
             next
           end
           if item.item_agents.select{|ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id}.size == 0
             item.item_agents << item_agent
           else
-            @notices += "Note: Duplicate item agent #{agent} ignored<br/>"
+            @notices << "Note: Duplicate item agent #{agent} ignored"
           end
         end
 
@@ -282,7 +286,7 @@ module Nabu
           end
           discourse_type = DiscourseType.find_by_name(discourseType)
           if discourse_type.nil?
-            @notices += "Note: Discourse_Type '#{discourseType}' ignored<br/>" unless discourseType.blank?
+            @notices << "Note: Discourse_Type '#{discourseType}' ignored" unless discourseType.blank?
           else
             item.discourse_type = discourse_type
           end

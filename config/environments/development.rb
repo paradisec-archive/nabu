@@ -40,4 +40,5 @@ Nabu::Application.configure do
   # Reload exsite9 lib during development
   ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
   ActiveSupport::Dependencies.explicitly_unloadable_constants << 'ExSite9'
+  ActiveSupport::Dependencies.explicitly_unloadable_constants << 'NabuSpreadsheet'
 end

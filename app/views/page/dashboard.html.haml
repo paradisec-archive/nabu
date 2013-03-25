@@ -10,7 +10,7 @@
       %p
         - if can? :create, Collection
           = link_to 'Add new collection', new_collection_path, :class => 'button'
-          = link_to 'Upload ExSite9 file', exsite9_collections_path, :class => 'button'
+          = link_to 'Upload metadata file', metadata_collections_path, :class => 'button'
 
     .left
       = paginate @collections, :param_name => :collections_page

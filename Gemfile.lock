@@ -259,6 +259,7 @@ GEM
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
     ruby-filemagic (0.4.2)
+    ruby-ole (1.2.11.6)
     rubyzip (0.9.9)
     sass (3.2.5)
     sass-rails (3.2.6)
@@ -275,6 +276,8 @@ GEM
       rails (>= 3.2)
     slop (3.4.3)
     spin (0.6.0)
+    spreadsheet (0.8.3)
+      ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -361,6 +364,7 @@ DEPENDENCIES
   ruby-filemagic
   sass-rails (~> 3.2.3)
   sextant
+  spreadsheet
   squeel
   sunspot_rails
   sunspot_solr

@@ -30,9 +30,7 @@ module ApplicationHelper
 
   def number_to_human_duration(t)
     return nil if t.nil?
-
     ms = t - t.to_i
-
     mm, ss = t.divmod(60)
     hh, mm = mm.divmod(60)
     "%02d:%02d:%02d.%d" % [hh, mm, ss, ms * 1000]
