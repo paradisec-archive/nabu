@@ -79,6 +79,10 @@ check if all files that have been uploaded are ok:
     $ cd /srv/www/nabu/current
     $ RAILS_ENV=production rake --trace archive:update_files > log/update_fiels.log
 
+restart web server
+    $ cap uat unicorn:stop
+    $ ps aux #kill any remaining unicorns
+    $ cap uat unicorn:start
 
 # OAI-PMH
 
