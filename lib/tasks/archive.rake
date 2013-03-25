@@ -238,13 +238,20 @@ namespace :archive do
     end
 
     # update essence entry with metadata from file
-    essence.mimetype   = media.mimetype
-    essence.size       = media.size
-    essence.bitrate    = media.bitrate
-    essence.samplerate = media.samplerate
-    essence.duration   = number_to_human_duration media.duration
-    essence.channels   = media.channels
-    essence.fps        = media.fps
+    begin
+      essence.mimetype   = media.mimetype
+      essence.size       = media.size
+      essence.bitrate    = media.bitrate
+      essence.samplerate = media.samplerate
+      essence.duration   = number_to_human_duration media.duration
+      essence.channels   = media.channels
+      essence.fps        = media.fps
+    rescue => e
+      puts "ERROR: unable to process file - skipping"
+      puts" #{e}"
+      return
+    end
+
     if !essence.valid?
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
