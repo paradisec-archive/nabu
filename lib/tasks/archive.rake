@@ -1,4 +1,5 @@
 require 'media'
+include ActionView::Helpers::NumberHelper
 
 class OfflineTemplate < AbstractController::Base
   include AbstractController::Rendering
@@ -243,7 +244,7 @@ namespace :archive do
       essence.size       = media.size
       essence.bitrate    = media.bitrate
       essence.samplerate = media.samplerate
-      essence.duration   = number_to_human_duration media.duration
+      essence.duration   = number_with_precision(media.duration, :precision => 3)
       essence.channels   = media.channels
       essence.fps        = media.fps
     rescue => e
