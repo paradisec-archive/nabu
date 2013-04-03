@@ -2,7 +2,7 @@ class Language < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :code, :presence => true, :uniqueness => true
 
-  attr_accessible :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit
+  attr_accessible :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, :countries_languages_attributes
 
   default_scope includes(:countries)
   scope :alpha, order(:name)
@@ -12,6 +12,7 @@ class Language < ActiveRecord::Base
 
   has_many :countries_languages
   has_many :countries, :through => :countries_languages, :dependent => :restrict
+  accepts_nested_attributes_for :countries_languages, :allow_destroy => true
 
   has_many :item_content_languages
   has_many :items_for_content, :through => :item_content_languages, :dependent => :restrict

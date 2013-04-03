@@ -17,4 +17,5 @@ class Country < ActiveRecord::Base
 
   has_many :collection_languages
   has_many :collections, :through => :collection_languages, :dependent => :restrict
+
 end

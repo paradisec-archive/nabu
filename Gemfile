@@ -25,7 +25,7 @@ gem 'analytical'
 
 # Admin
 gem 'country-select'
-gem 'activeadmin'
+gem 'activeadmin', :github => 'gregbell/active_admin' #revert after 0.5.3 is released
 gem 'sass-rails',  '~> 3.2.3'
 gem 'meta_search', '>= 1.1.0.pre'
 

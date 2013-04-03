@@ -30,15 +30,21 @@
 
 .active_admin {
   #title_bar {
-  .action_items {
-    a {
-      &.green { background: rgb(110, 199, 125); color: white; }
-      &.red { background: rgb(240, 164, 146); color: white; }
-    }
-    a:hover {
-      color: gray;
+    .action_items {
+      a {
+        &.green { background: rgb(110, 199, 125); color: white; }
+        &.red { background: rgb(240, 164, 146); color: white; }
+      }
+      a:hover {
+        color: gray;
+      }
     }
   }
-}
+  #main_content > table {
+    background: none repeat scroll 0 0 #F4F4F4;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 4px #DDDDDD inset;
+    margin-bottom: 20px;
+  }
 }
 
