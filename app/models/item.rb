@@ -305,7 +305,7 @@ class Item < ActiveRecord::Base
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
-      xml.tag! 'dc:identifier', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if external?
+      xml.tag! 'dc:identifier', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' if !external?
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
