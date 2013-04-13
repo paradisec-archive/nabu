@@ -11,14 +11,14 @@ class Language < ActiveRecord::Base
   end
 
   has_many :countries_languages
-  has_many :countries, :through => :countries_languages, :dependent => :restrict
+  has_many :countries, :through => :countries_languages, :dependent => :destroy
   accepts_nested_attributes_for :countries_languages, :allow_destroy => true
 
   has_many :item_content_languages
-  has_many :items_for_content, :through => :item_content_languages, :dependent => :restrict
+  has_many :items, :through => :item_content_languages, :dependent => :restrict
 
   has_many :item_subject_languages
-  has_many :items_for_subject, :through => :item_subject_languages, :dependent => :restrict
+  has_many :items, :through => :item_subject_languages, :dependent => :restrict
 
   has_many :collection_languages
   has_many :collections, :through => :collection_languages, :dependent => :restrict

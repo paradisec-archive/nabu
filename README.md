@@ -92,6 +92,9 @@ OLAC available at:
 The feed that OLAC harvests:
   * http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac
 
+Individual item:
+  * http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac
+
 RIF-CS available at:
   * http://catalog.paradisec.org.au/oai/collection
 
