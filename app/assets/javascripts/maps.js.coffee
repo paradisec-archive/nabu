@@ -52,10 +52,10 @@ $(document).ready ->
       false
 
     $('.map').bind 'update_map', (event) ->
-      north_limit = $('.north_limit').val() || $(this).data('north_limit') || 80
-      south_limit = $('.south_limit').val() || $(this).data('south_limit') || -80
-      east_limit = $('.east_limit').val() || $(this).data('east_limit') || -40
-      west_limit = $('.west_limit').val() || $(this).data('west_limit') || -20
+      north_limit = $('.north_limit').val() || $(this).data('north-limit') || 80
+      south_limit = $('.south_limit').val() || $(this).data('south-limit') || -80
+      east_limit = $('.east_limit').val() || $(this).data('east-limit') || -40
+      west_limit = $('.west_limit').val() || $(this).data('west-limit') || -20
       editable = $(this).data('editable') == true
 
       sw  = new google.maps.LatLng(south_limit, west_limit)
