@@ -89,8 +89,11 @@ restart web server
 OLAC available at:
   * http://catalog.paradisec.org.au/oai/item
 
-The feed that OLAC harvests:
+The feeds that OLAC harvests:
   * http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac
+  * http://catalog.paradisec.org.au/oai/item?verb=Identify (Archive identification)
+  * http://catalog.paradisec.org.au/oai/item?verb=ListMetadataFormats
+  * http://catalog.paradisec.org.au/oai/item?verb=ListIdentifiers&metadataPrefix=olac
 
 Individual item:
   * http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac
