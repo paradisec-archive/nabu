@@ -58,5 +58,18 @@ module OAI::Provider
                         :limit => @limit, :order => "#{model.primary_key} asc")
       end
     end
+
+    def token_conditions(token)
+      last = token.last
+      sql = sql_conditions token.to_conditions_hash
+
+      return sql if 0 == last
+      # Now add last id constraint
+      sql.first << " AND #{model.table_name}.#{model.primary_key} > :id"
+      sql.last[:id] = last
+
+      return sql
+    end
+
   end
 end
