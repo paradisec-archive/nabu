@@ -41,10 +41,10 @@ class ItemProvider < OAI::Provider::Base
   admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
   update_granularity OAI::Const::Granularity::LOW
-  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.where(:private => false), :limit => 100)
+  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.public, :limit => 100, :timestamp_field => 'items.updated_at')
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
-    xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => '2012-05-15', 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
+    xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => Time.now().strftime('%Y-%m-%d'), 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
       xml.tag! 'archiveURL', 'http://catalog.paradisec.org.au'
       xml.tag! 'participant', 'name' => 'Linda Barwick',  'role' => 'Project Director', 'email' => 'Linda.Barwick@arts.usyd.edu.au'
       xml.tag! 'participant', 'name' => 'Nick Thieberger', 'role' => 'Project Manager',  'email' => 'thien@unimelb.edu.au'

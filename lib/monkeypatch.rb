@@ -7,6 +7,10 @@ module OAI::Provider::Response
     def identifier_for(record)
       "#{provider.prefix}:#{record.full_identifier}"
     end
+
+    def timestamp_for(record)
+      record.send(provider.model.timestamp_field.split('.').last).utc.xmlschema
+    end
   end
 
   class Base
@@ -23,6 +27,20 @@ module OAI::Provider::Response
         collection = Collection.where(:identifier => full_identifier).first
         collection.id
       end
+    end
+  end
+end
+
+module OAI::Provider
+  class ActiveRecordWrapper
+    def earliest
+      earliest_obj = model.find(:first, :order => "#{timestamp_field} asc")
+      earliest_obj.nil? ? Time.at(0) : earliest_obj.send(timestamp_field.split('.').last)
+    end
+
+    def latest
+      latest_obj = model.find(:first, :order => "#{timestamp_field} desc")
+      latest_obj.nil? ? Time.now : latest_obj.send(timestamp_field.split('.').last)
     end
   end
 end

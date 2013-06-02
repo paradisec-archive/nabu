@@ -62,4 +62,4 @@
   = render 'collections/search_results'
 
   %p
-    = link_to 'Export CSV (visible results)', search_collections_path(:format => :csv) if can? :search_csv, Collection
+    = link_to 'Export CSV (visible results)', search_collections_path(:format => :csv, :params => params) if can? :search_csv, Collection

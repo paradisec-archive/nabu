@@ -86,6 +86,7 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
+  scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
   def full_identifier
     collection.identifier + '-' + identifier
