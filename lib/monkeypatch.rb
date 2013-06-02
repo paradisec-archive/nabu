@@ -19,7 +19,7 @@ module OAI::Provider::Response
       Rails.logger.debug id
       full_identifier = id.sub(/#{provider.prefix}:/, '')
       if full_identifier =~ /-/
-        collection_identifier, item_identifier = full_identifier.split /-/
+        collection_identifier, item_identifier = full_identifier.split(/-/)
         collection = Collection.where(:identifier => collection_identifier).first
         item = collection.items.where(:identifier => item_identifier).first
         item.id
@@ -42,6 +42,21 @@ module OAI::Provider
       latest_obj = model.find(:first, :order => "#{timestamp_field} desc")
       latest_obj.nil? ? Time.now : latest_obj.send(timestamp_field.split('.').last)
     end
+
+    # Request the next set in this sequence.
+    def next_set(find_scope, token_string)
+      raise OAI::ResumptionTokenException.new unless @limit
+
+      token = ResumptionToken.parse(token_string)
+      total = find_scope.count("#{model.table_name}.id", :conditions => token_conditions(token))
+
+      if @limit < total
+        select_partial(find_scope, token)
+      else # end of result set
+        find_scope.find(:all,
+                        :conditions => token_conditions(token),
+                        :limit => @limit, :order => "#{model.primary_key} asc")
+      end
+    end
   end
 end
-
