@@ -248,6 +248,9 @@ class Collection < ActiveRecord::Base
         xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
 
         xml.collection 'type' => 'collection', 'dateModified' => updated_at.xmlschema do
+          xml.dates 'type' => 'dc.created' do
+              xml.date created_at.xmlschema, 'type' => 'dateFrom', 'dateFormat' => 'W3CDTF'
+          end
           xml.name 'type' => 'primary' do
             xml.namePart title
           end
