@@ -359,7 +359,7 @@ class Item < ActiveRecord::Base
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'historical_linguistics'
-        when 'language description', 'lexicon', 'primary_text'
+        when 'language description'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'language_description'
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'language_documentation'
         when 'lexicon'
