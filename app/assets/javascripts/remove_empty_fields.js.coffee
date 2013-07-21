@@ -1,7 +1,6 @@
 $ ->
   $('form.no-empty-submit').submit ->
-    # This is not quite perfect. The select 2 identifiers still get sent v4 may fix this
-    $(this).find('input').each (index, element) ->
+    $(this).find('input, select, textarea').each (index, element) ->
       if element.value == ''
         element.disabled = 'disabled'
 
