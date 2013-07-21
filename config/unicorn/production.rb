@@ -3,7 +3,7 @@ app_path = '/srv/www/nabu/current'
 # Set unicorn options
 worker_processes 5
 preload_app true
-timeout 180
+timeout 300
 listen '/srv/www/nabu/shared/sockets/unicorn.sock'
 
 # Spawn unicorn master worker for user apps (group: apps)
