@@ -37,7 +37,6 @@ gem 'cancan'
 gem 'squeel'
 gem 'nilify_blanks'
 
-
 # Search
 gem 'sunspot_rails'
 gem 'sunspot_solr'
@@ -51,6 +50,9 @@ gem 'ruby-filemagic'
 # Deployment
 gem 'capistrano'
 gem 'capistrano-unicorn'
+
+# Logging
+gem 'rollbar'
 
 # Misc
 gem 'progress_bar'

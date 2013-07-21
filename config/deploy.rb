@@ -18,6 +18,13 @@ set :default_shell, '/bin/bash --login'
 
 set :shared_children, fetch(:shared_children) + ['tmp/sockets']
 
+namespace :deploy do
+  task :shared_config_symlink, :except => { :no_release => true } do
+    run "ln -nfs #{shared_path}/config #{release_path}/config/shared"
+  end
+  after 'deploy:create_symlink', 'deploy:shared_config_symlink'
+end
+
 namespace :sunspot do
   task :setup, :except => { :no_release => true } do
     run "mkdir -p #{shared_path}/solr/data"
@@ -52,6 +59,7 @@ namespace :sunspot do
   end
   after 'deploy:restart', 'sunspot:restart'
 end
+
 namespace :monit do
   task :unmonitor do
     run "sudo /usr/bin/monit unmonitor all || true"
