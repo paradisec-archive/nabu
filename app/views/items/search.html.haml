@@ -63,3 +63,5 @@
 
   %p
     = link_to 'Export CSV (visible results)', search_items_path(:format => :csv, :params => params) if can? :search_csv, Item
+  %p
+    = link_to 'Export CSV (all results)', search_items_path(:format => :csv, :params => params.merge(:per_page => @search.total, :page => 1)) if can? :search_csv, Item
