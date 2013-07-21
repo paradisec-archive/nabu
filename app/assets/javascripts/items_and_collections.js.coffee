@@ -4,6 +4,7 @@ setup_select2 = (element) ->
       options['allowClear'] = false
     else
       options['allowClear'] = true
+
     options['placeholder'] = $(element).data('placeholder')
 
     if $(element).data('multiple')
@@ -35,7 +36,7 @@ setup_select2 = (element) ->
       }
       options['initSelection'] = (element, callback) ->
         results = []
-        ids = $(element).val().split(/, /)
+        ids = $(element).val().split(/, ?/)
         for id in ids
           data = {}
           $.ajax(
