@@ -1,88 +1,118 @@
-Nabu Catalog
-====
+# Nabu Catalog
 
-
-# Ruby help
+## Ruby help
 
 plugins/gems/bundles:
 
-    $ gem -v
-    $ bundle update
-    $ bundle install
+``` bash
+gem -v
+bundle update
+bundle install
+```
 
 Installing ruby:
 
-    $ rbenv install [TAB][TAB]
-    $ rbenv install 1.9.3-XXX
-    $ rbenv global 1.9.3-XXX
-    $ gem install bundler --no-ri --no-rdoc
+``` bash
+rbenv install [TAB][TAB]
+rbenv install 1.9.3-XXX
+rbenv global 1.9.3-XXX
+gem install bundler --no-ri --no-rdoc
+```
 
 DB setup:
 
-    $ rake db:drop
-    $ rake db:create
-    $ rake db:migrate
+``` bash
+rake db:drop
+rake db:create
+rake db:migrate
+```
 
 Importing old PARADISEC data:
 
-    $ rake import:all
+``` bash
+rake import:all
+```
 
 Running solr:
 
-    $ rake sunspot:solr:start
+``` bash
+rake sunspot:solr:start
+```
 
 After import:
 
-    $ rake sunspot:reindex
+``` bash
+rake sunspot:reindex
+```
 
 Running the app:
 
-    $ script/rails s
+``` bash
+script/rails s
+```
 
 test:
 
-    $ guard
+``` bash
+guard
+```
 
 DB load:
 
-    $ rake db:schema:load
-    $ APP_ENV=test rake db:schema:load
+``` bash
+rake db:schema:load
+APP_ENV=test rake db:schema:load
+```
 
 after commit local to roll out to user acceptance testing server:
 
-    $ cap uat deploy
-    $ cap -T
+``` bash
+cap uat deploy
+cap -T
+```
 
 roll out to production server:
 
-    $ cap production deploy
+``` bash
+cap production deploy
+```
 
 if necessary:
 
-    $ cap production sunspot:reindex
-    $ cap production deploy:migrate
+``` bash
+cap production deploy:migrate
+cap production sunspot:reindex
+```
 
 upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
 
-    $ mysqldump -u root nabu_devel | gzip > nabu.sql.gz
-    $ scp nabu.sql.gz deploy@115.146.93.26:
-    $ ssh deploy@115.146.93.26
-    $ gzip -dc nabu.sql.gz | mysql -u root nabu
-    $ cd /srv/www/nabu/current
-    $ RAILS_ENV=uat rake sunspot:reindex
+``` bash
+mysqldump -u root nabu_devel | gzip > nabu.sql.gz
+scp nabu.sql.gz deploy@115.146.93.26:
+ssh deploy@115.146.93.26
+gzip -dc nabu.sql.gz | mysql -u root nabu
+cd /srv/www/nabu/current
+RAILS_ENV=uat rake sunspot:reindex
+```
 
 import archive files:
 
-    $ RAILS_ENV=uat rake archive:update_files
+``` bash
+RAILS_ENV=uat rake archive:update_files
+```
 
 check if all files that have been uploaded are ok:
-    $ cd /srv/www/nabu/current
-    $ RAILS_ENV=production rake --trace archive:update_files > log/update_fiels.log
+``` bash
+cd /srv/www/nabu/current
+RAILS_ENV=production rake --trace archive:update_files > log/update_fiels.log
+```
 
 restart web server
-    $ cap uat unicorn:stop
-    $ ps aux #kill any remaining unicorns
-    $ cap uat unicorn:start
+``` bash
+cap uat unicorn:stop
+ps aux #kill any remaining unicorns
+cap uat unicorn:start
+```
 
 # OAI-PMH
 
