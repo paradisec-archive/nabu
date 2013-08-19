@@ -38,7 +38,7 @@ class Ability
       cannot :bulk_edit, Collection
       cannot :bulk_update, Collection
 
-      can :read,   Item, :public => true
+      can :read,   Item, :public? => true
       can :read,   Item, :item_users => { :user_id => user.id }
       can :manage, Item, :collector_id => user.id
       can :manage, Item, :operator_id => user.id

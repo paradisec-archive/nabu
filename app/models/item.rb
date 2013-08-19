@@ -88,6 +88,10 @@ class Item < ActiveRecord::Base
 
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
+  def public?
+    self.private == false && self.collection.private == false
+  end
+
   def full_identifier
     collection.identifier + '-' + identifier
   end
