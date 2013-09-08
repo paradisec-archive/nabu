@@ -123,9 +123,9 @@ Download the latest version of the following tables from
 * CountryCodes.tab
 * LanguageIndex.tab
 
-Copy them into the data directory, overwriting the existing files there
+Copy them into the data directory, overwriting the existing files there.
 
-run the different rake tasks to import them
+Run the following rake tasks to import them (in this order):
 
     $ rake import:countries
     $ rake import:languages
@@ -134,6 +134,23 @@ All new countries will be added to the Nabu countries table.
 The new language codes of type "L" will be added to the Nabu language table.
 All mappings of language to countries will also be added to the countries_languages table.
 
+# Retire Ethnologue data
+
+Download the latest version of the retired codes from
+
+    http://www-01.sil.org/iso639-3/download.asp#retiredDownloads
+
+* iso-639-3_Retirements.tab
+
+Copy it into the data directory, overwriting the existing file there.
+
+Run the following rake task to import them:
+
+    $ rake import:retired
+
+All existing codes that are retired are marked as such, incl name change.
+Where name changes occurred items in CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage are updated with the replacement language code.
+Where splits happened, a message is printed.
 
 # OAI-PMH
 

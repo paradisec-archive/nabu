@@ -21,8 +21,7 @@ namespace :import do
                    :users, :contacts,
                    # for collections
                    :universities,
-                   :countries, :languages,
-                   :init_languages, :fields_of_research, :data_categories,
+                   :countries, :init_languages, :fields_of_research, :data_categories,
                    :collections, :csv,
                    :collection_languages, :collection_countries, :collection_admins,
                    # for items
@@ -429,6 +428,54 @@ namespace :import do
         puts "Error saving country - language mapping lang=#{language.code} country=#{country.code}" if @verbose
         lang_country.errors.each {|field, msg| puts "#{field}: #{msg}"} if @verbose
       end
+    end
+  end
+
+  desc 'Import retired language codes into NABU from ethnologue DB'
+  task :retired => :environment do
+    puts "Importing retired languages from ethnologue DB"
+    data = File.open("#{Rails.root}/data/iso-639-3_Retirements.tab", "rb").read
+    data.each_line do |line|
+      next if line =~ /Ref_Name/
+      code, name, reason, change_to, instructions, effective = line.strip.split("\t")
+
+      # find language and set to retired if it's not already retired
+      language = Language.find_by_code(code)
+      if !language
+        puts "Language #{code} not found - skipping" if @verbose
+        next
+      end
+      next if language.retired
+      language.retired = true
+      language.name = language.name + " (retired)"
+      language.save!
+      puts "Saved Retired language code #{code} #{name} effective #{effective}"
+
+      # if change reason is C=change, D=duplicate, M=merge, fix existing entries
+      if (reason == "C" || reason == "D" || reason == "M") && change_to
+        newLang = Language.find_by_code(change_to)
+
+        num = CollectionLanguage.update_all({:language_id => newLang.id}, {:language_id => language.id})
+        puts "Updated #{num} records in collection_languages"
+
+        num = ItemContentLanguage.update_all({:language_id => newLang.id}, {:language_id => language.id})
+        puts "Updated #{num} records in item_content_languages"
+
+        num = ItemSubjectLanguage.update_all({:language_id => newLang.id}, {:language_id => language.id})
+        puts "Updated #{num} records in item_subject_languages"
+      else
+        puts "INSTRUCTIONS: " + instructions
+
+        num = CollectionLanguage.where(language_id: language.id).count
+        puts "Edit #{num} records in collection_languages"
+
+        num = ItemContentLanguage.where(language_id: language.id).count
+        puts "Edit #{num} records in item_content_languages"
+
+        num = ItemSubjectLanguage.where(language_id: language.id).count
+        puts "Edit #{num} records in item_subject_languages"
+      end
+      puts "---"
     end
   end
 
