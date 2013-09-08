@@ -369,12 +369,14 @@ namespace :import do
     puts "Importing countries from ethnologue DB"
     require 'iconv'
     data = File.open("#{Rails.root}/data/CountryCodes.tab", "rb").read
-    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
+## newer data is UTF-8, so this is not needed any more
+#    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
     data.each_line do |line|
-      next if line =~ /^CountryID/
+      next if line =~ /CountryID/
       code, name, area = line.split("\t")
       country = Country.new :name => name, :code => code
       if !country.valid?
+        next if country.errors.messages[:code] == ["has already been taken"]
         puts "Error adding country #{code}, #{name}, #{area}"
         country.errors.each {|field, msg| puts "#{field}: #{msg}"}
         if Rails.env == "development"
@@ -382,7 +384,7 @@ namespace :import do
         end
       end
       country.save!
-      puts "Saved country #{code} - #{name}" if @verbose
+      puts "Saved country #{code} - #{name}"
     end
   end
 

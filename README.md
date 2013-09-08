@@ -104,7 +104,7 @@ RAILS_ENV=uat rake archive:update_files
 check if all files that have been uploaded are ok:
 ``` bash
 cd /srv/www/nabu/current
-RAILS_ENV=production rake --trace archive:update_files > log/update_fiels.log
+RAILS_ENV=production rake --trace archive:update_files > log/update_files.log
 ```
 
 restart web server
@@ -113,6 +113,23 @@ cap uat unicorn:stop
 ps aux #kill any remaining unicorns
 cap uat unicorn:start
 ```
+
+# NEW Ethnologue data
+
+Download the latest version of the following tables from
+
+    http://www.ethnologue.com/codes/default.asp#downloading
+
+* CountryCodes.tab
+
+Copy them into the data directory, overwriting the existing files there
+
+run the different rake tasks to import them
+
+    $ rake import:countries
+
+All new countries will be added to the Nabu countries table.
+
 
 # OAI-PMH
 
