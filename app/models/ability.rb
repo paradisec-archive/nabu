@@ -52,12 +52,13 @@ class Ability
       cannot :bulk_update, Item
 
       # FIXME(SP): users should be able to :download open files, but that needs to be tracked
-      can [:read, :show_terms, :agree_to_terms, :display],  Essence, :item => { :access_condition => { :name => "Open (subject to agreeing to PDSC access form)"} }
-      can [:read, :show_terms, :agree_to_terms, :display],  Essence, :item => { :access_condition => { :name => "Open (subject to the access condition details)"} }
+      can [:read, :download, :show_terms, :agree_to_terms, :display],  Essence, :item => { :access_condition => { :name => "Open (subject to agreeing to PDSC access form)"} }
+      can [:read, :download, :show_terms, :agree_to_terms, :display],  Essence, :item => { :access_condition => { :name => "Open (subject to the access condition details)"} }
       can [:read, :download, :display], Essence, :item => { :collection  => { :collection_admins => { :user_id => user.id } } }
       can [:read, :download, :display], Essence, :item => { :collection  => { :collector_id => user.id } }
       can [:read, :download, :display], Essence, :item => { :item_admins => { :user_id => user.id } }
       can [:read, :download, :display], Essence, :item => { :item_users => { :user_id => user.id } }
+
 
       can :create, Comment, :commentable => { :private => false }
     end
