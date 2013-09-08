@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130216085814) do
+ActiveRecord::Schema.define(:version => 20130908032747) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -132,6 +132,16 @@ ActiveRecord::Schema.define(:version => 20130216085814) do
   end
 
   add_index "discourse_types", ["name"], :name => "index_discourse_types_on_name", :unique => true
+
+  create_table "downloads", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "essence_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "downloads", ["essence_id"], :name => "index_downloads_on_essence_id"
+  add_index "downloads", ["user_id"], :name => "index_downloads_on_user_id"
 
   create_table "essences", :force => true do |t|
     t.integer  "item_id"

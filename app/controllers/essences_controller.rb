@@ -14,6 +14,7 @@ class EssencesController < ApplicationController
   end
 
   def download
+    Download.create! :user => current_user, :essence => @essence
     send_file @essence.path, :type => @essence.mimetype, :filename => @essence.filename
   end
 
