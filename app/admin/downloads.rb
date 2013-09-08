@@ -1,4 +1,4 @@
-ActiveAdmin.register User do
+ActiveAdmin.register Download do
   sidebar :paginate, :only => :index  do
     para button_tag 'Show 10', :class => 'per_page', :data => {:per => 10}
     para button_tag 'Show 50', :class => 'per_page', :data => {:per => 50}
