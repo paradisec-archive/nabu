@@ -21,7 +21,8 @@ namespace :import do
                    :users, :contacts,
                    # for collections
                    :universities,
-                   :countries, :languages, :fields_of_research, :data_categories,
+                   :countries, :languages,
+                   :init_languages, :fields_of_research, :data_categories,
                    :collections, :csv,
                    :collection_languages, :collection_countries, :collection_admins,
                    # for items
@@ -367,7 +368,7 @@ namespace :import do
   desc 'Import countries into NABU from ethnologue DB'
   task :countries => :environment do
     puts "Importing countries from ethnologue DB"
-    require 'iconv'
+#    require 'iconv'
     data = File.open("#{Rails.root}/data/CountryCodes.tab", "rb").read
 ## newer data is UTF-8, so this is not needed any more
 #    data = Iconv.iconv('UTF8', 'ISO-8859-1', data).first.force_encoding('UTF-8')
@@ -390,7 +391,50 @@ namespace :import do
 
   desc 'Import languages into NABU from ethnologue DB'
   task :languages => :environment do
-    puts "Importing languages from ethnologue DB (with geocodes from legacy)"
+    puts "Importing new languages from ethnologue DB (no geocodes)"
+    data = File.open("#{Rails.root}/data/LanguageIndex.tab", "rb").read
+    data.each_line do |line|
+      next if line =~ /LangID/
+      code, country_code, name_type, name = line.strip.split("\t")
+      next unless name_type == "L"
+
+      # save language only if new
+      next if language = Language.find_by_code_and_name(code, name)
+      if !language
+        language = Language.new :code => code, :name => name
+        if language.valid?
+          language.save!
+          puts "Saved language #{code} - #{name}"
+        else
+          puts "Skipping adding language #{code}, #{name}" if @verbose
+          language.errors.each {|field, msg| puts "#{field}: #{msg}"} if @verbose
+          # it's still possible to have the same language code mapped
+          # to multiple countries, so continue finding the country
+          language = Language.find_by_code(code)
+        end
+      end
+
+      # save language - country mapping if it doesn't already exist
+      country = Country.find_by_code(country_code)
+      if !country
+        puts "Error: Country not in countries list #{country_code} - skipping"
+        next
+      end
+      next if CountriesLanguage.find_by_country_id_and_language_id(country.id, language.id)
+      lang_country = CountriesLanguage.new :country => country, :language => language
+      if lang_country.valid?
+        lang_country.save!
+        puts "Saved mapping language #{language.code} - country #{country.code}"
+      else
+        puts "Error saving country - language mapping lang=#{language.code} country=#{country.code}" if @verbose
+        lang_country.errors.each {|field, msg| puts "#{field}: #{msg}"} if @verbose
+      end
+    end
+  end
+
+  desc 'Import old languages into NABU from ethnologue DB & old DB'
+  task :init_languages => :environment do
+    puts "Importing old languages from ethnologue DB (with geocodes from legacy)"
     require 'iconv'
 
     # TODO Replace me with new data when we get it

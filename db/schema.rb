@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130908032747) do
+ActiveRecord::Schema.define(:version => 20130908073708) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -274,6 +274,8 @@ ActiveRecord::Schema.define(:version => 20130908032747) do
     t.float   "west_limit"
     t.float   "east_limit"
   end
+
+  add_index "languages", ["code"], :name => "index_languages_on_code", :unique => true
 
   create_table "universities", :force => true do |t|
     t.string   "name"

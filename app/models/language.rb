@@ -1,5 +1,5 @@
 class Language < ActiveRecord::Base
-  validates :name, :presence => true, :uniqueness => true
+  validates :name, :presence => true
   validates :code, :presence => true, :uniqueness => true
 
   attr_accessible :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, :countries_languages_attributes
