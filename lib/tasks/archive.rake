@@ -109,7 +109,13 @@ namespace :archive do
           puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
           next
         end
-        FileUtils.cp(upload_directory + file, destination_path + file)
+
+        begin
+          FileUtils.cp(upload_directory + file, destination_path + file)
+        rescue
+          puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+          next
+        end
 
         puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
 
