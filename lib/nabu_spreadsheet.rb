@@ -20,22 +20,26 @@ module Nabu
       coll_id = sheet1.row(3)[1]
       @collection = Collection.find_by_identifier coll_id
       collector = user_from_str(sheet1.row(6)[1], false)
+      if !collector
+        @errors << "ERROR collector does not exist"
+        return
+      end
       if !@collection
-        if collector
-          @collection = Collection.new
-          @collection.identifier = coll_id
-          @collection.title = sheet1.row(4)[1]
-          @collection.description = sheet1.row(5)[1]
-          @collection.collector = collection
-          @collection.private = true
-          if @collection.save
-            @notices << "Created collection #{coll_id}, #{collection.title}, #{collection.description}"
-          else
-            @errors << "ERROR creating collection #{coll_id}, #{collection.title}, #{collection.description}"
-            return
-          end
+        @collection = Collection.new
+        @collection.identifier = coll_id
+        @collection.title = sheet1.row(4)[1]
+        @collection.description = sheet1.row(5)[1]
+        @collection.collector = collector
+        @collection.private = true
+        if @collection.save
+          @notices << "Created collection #{coll_id}, #{collection.title}, #{collection.description}"
         else
           @errors << "ERROR creating collection #{coll_id}, #{collection.title}, #{collection.description}"
+          return
+        end
+      else
+        if @collection.collector != collector
+          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
           return
         end
       end
@@ -44,9 +48,9 @@ module Nabu
       sheet1.each 12 do |row|
         break if row[0].nil? # if first cell empty
 
-        coll_id, item_id = row[0].split('-')
+        item_id = row[0]
 
-        item = Item.find_by_identifier(item_id)
+        item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
         if item
           @notices << "WARNING: item #{row[0]} already exists - skipped"
           next
@@ -83,13 +87,21 @@ module Nabu
         end
 
         # content and subject language
-        content_language = Language.find_by_name(row[3])
-        if content_language
-          item.content_languages << content_language
+        if !row[3].blank?
+          content_language = Language.find_by_name(row[3])
+          if content_language
+            item.content_languages << content_language
+          else
+            @notices << "Item #{item.identifier} : Content language not found"
+          end
         end
-        subject_language = Language.find_by_name(row[4])
-        if subject_language
-          item.subject_languages << subject_language
+        if !row[4].blank?
+          subject_language = Language.find_by_name(row[4])
+          if subject_language
+            item.subject_languages << subject_language
+          else
+            @notices << "Item #{item.identifier} : Subject language not found"
+          end
         end
 
         # countries
@@ -97,12 +109,29 @@ module Nabu
         countries.each do |country|
           code, _ = country.strip.split(' - ')
           cntry = Country.find_by_code(code.strip)
-          next if !cntry
+          if !cntry
+            # try country name
+            cntry = Country.find_by_name(code.strip)
+            if !cntry
+              @notices << "Item #{item.identifier} : Country not found - Item skipped"
+              next
+            end
+          end
           item.countries << cntry
         end
 
         # origination date
-        item.originated_on = row[6].to_date unless row[6].blank?
+        date = row[6].to_s
+        if date.length == 4 ## take a guess they forgot the month & day
+          date = date + "-01-01"
+        end
+        begin
+          date_conv = date.to_date
+        rescue
+          @notices << "Item #{item.identifier} : Date invalid - Item skipped"
+          next
+        end
+        item.originated_on = date_conv unless date_conv.blank?
 
         if item.valid?
           @items << item
@@ -130,7 +159,11 @@ module Nabu
         first_name, last_name = name.split(/ /, 2)
       end
       user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
-      if !user && create
+      if !user
+        if !create
+          @errors << "Please create user #{name} first<br/>"
+          return nil
+        end
         random_string = SecureRandom.base64(16)
         user = User.new()
         user.first_name = first_name
