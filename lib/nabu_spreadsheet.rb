@@ -45,6 +45,7 @@ module Nabu
       end
 
       # parse items in XSL file
+      existing_items = ""
       sheet1.each 12 do |row|
         break if row[0].nil? # if first cell empty
 
@@ -52,7 +53,7 @@ module Nabu
 
         item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
         if item
-          @notices << "WARNING: item #{row[0]} already exists - skipped"
+          existing_items += "#{row[0]}, "
           next
         end
 
@@ -135,11 +136,12 @@ module Nabu
 
         if item.valid?
           @items << item
-          @notices << "Item #{item.identifier} added"
         else
-          @notices << "WARNING: item #{item.identifier} invalid - skipped, #{item.errors.inspect}"
+          @notices << "WARNING: item #{item.identifier} invalid - skipped"
         end
       end
+
+      @notices << "Existing items: #{existing_items.chomp(', ')}"
 
     end #parse
 

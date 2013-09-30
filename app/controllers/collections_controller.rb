@@ -184,14 +184,17 @@ class CollectionsController < ApplicationController
       @collection = sheet.collection
       @collection.save!
       saved_items = 0
+      added_items = ""
       sheet.items.each do |item|
         if item.valid? #just making sure - even though NabuSpreadsheet already check this
           item.save!
           saved_items += 1
+          added_items += "#{item.identifier}, "
         end
       end
-      flash[:notice] = "SUCCESS: Collection and #{saved_items} items created<br/>"
+      flash[:notice] = "SUCCESS: #{saved_items} items created for collection #{@collection.identifier}<br/>"
       flash[:notice] += sheet.notices.join("<br/>") unless sheet.notices.empty?
+      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}"
       redirect_to @collection
     else
       @collection = Collection.new unless @collection

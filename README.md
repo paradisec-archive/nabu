@@ -95,7 +95,7 @@ cd /srv/www/nabu/current
 RAILS_ENV=uat rake sunspot:reindex
 ```
 
-import archive files:
+import archive files (e.g. on uat server):
 
 ``` bash
 RAILS_ENV=uat rake archive:update_files
