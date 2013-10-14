@@ -27,21 +27,24 @@ module Nabu
       if !@collection
         @collection = Collection.new
         @collection.identifier = coll_id
-        @collection.title = sheet1.row(4)[1]
-        @collection.description = sheet1.row(5)[1]
         @collection.collector = collector
         @collection.private = true
-        if @collection.save
-          @notices << "Created collection #{coll_id}, #{collection.title}, #{collection.description}"
-        else
-          @errors << "ERROR creating collection #{coll_id}, #{collection.title}, #{collection.description}"
-          return
-        end
+        @collection.title = 'PLEASE PROVIDE TITLE'
+        @collection.description = 'PLEASE PROVIDE DESCRIPTION'
+        # update collection details
+        @collection.title = sheet1.row(4)[1] unless sheet1.row(4)[1].blank?
+        @collection.description = sheet1.row(5)[1] unless sheet1.row(5)[1].blank?
       else
         if @collection.collector != collector
           @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
           return
         end
+      end
+      if @collection.save
+        @notices << "Saved collection #{coll_id}, #{collection.title}"
+      else
+        @errors << "ERROR saving collection #{coll_id}, #{collection.title}, #{collection.description}"
+        return
       end
 
       # parse items in XSL file
@@ -52,42 +55,33 @@ module Nabu
         item_id = row[0]
 
         item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
-        if item
-          existing_items += "#{row[0]}, "
-          next
+        if !item
+          item = Item.new
+          item.identifier = item_id
+          item.collection = @collection
+          item.private = true
+          item.collector = collector
+
+          # inherit from collection
+          item.university_id = @collection.university_id
+          item.operator_id = @collection.operator_id
+          item.region = @collection.region
+          item.north_limit = @collection.north_limit
+          item.south_limit = @collection.south_limit
+          item.west_limit = @collection.west_limit
+          item.east_limit = @collection.east_limit
+          item.access_condition_id = @collection.access_condition_id
+          item.access_narrative = @collection.access_narrative
+          item.admin_ids = @collection.admin_ids
+          item.title = 'PLEASE PROVIDE TITLE'
+          item.description = 'PLEASe PROVIDE DESCRIPTION'
         end
 
-        item = Item.new
-        item.identifier = item_id
-        item.collection = @collection
-        item.private = true
-        item.collector = collector
+        # update title and description
+        item.title = row[1] unless row[1].blank?
+        item.description = row[2] unless row[2].blank?
 
-        # inherit from collection
-        item.university_id = @collection.university_id
-        item.operator_id = @collection.operator_id
-        item.region = @collection.region
-        item.north_limit = @collection.north_limit
-        item.south_limit = @collection.south_limit
-        item.west_limit = @collection.west_limit
-        item.east_limit = @collection.east_limit
-        item.access_condition_id = @collection.access_condition_id
-        item.access_narrative = @collection.access_narrative
-        item.admin_ids = @collection.admin_ids
-
-        # title and description
-        if row[1].blank?
-          item.title = "Please supply a title"
-        else
-          item.title = row[1]
-        end
-        if row[2].blank?
-          item.description = "Please supply a description"
-        else
-          item.description = row[2]
-        end
-
-        # content and subject language
+        # add content and subject language
         if !row[3].blank?
           content_language = Language.find_by_name(row[3])
           if content_language
@@ -99,13 +93,13 @@ module Nabu
         if !row[4].blank?
           subject_language = Language.find_by_name(row[4])
           if subject_language
-            item.subject_languages << subject_language
+            item.subject_languages << subject_language unless item.subject_languages.include? subject_language
           else
             @notices << "Item #{item.identifier} : Subject language not found"
           end
         end
 
-        # countries
+        # add countries
         countries = row[5].split('|')
         countries.each do |country|
           code, _ = country.strip.split(' - ')
@@ -118,21 +112,23 @@ module Nabu
               next
             end
           end
-          item.countries << cntry
+          item.countries << cntry unless item.countries.include? cntry
         end
 
-        # origination date
-        date = row[6].to_s
-        if date.length == 4 ## take a guess they forgot the month & day
-          date = date + "-01-01"
+        # add origination date
+        if !row[6].to_s.empty?
+          date = row[6].to_s
+          if date.length == 4 ## take a guess they forgot the month & day
+            date = date + "-01-01"
+          end
+          begin
+            date_conv = date.to_date
+          rescue
+            @notices << "Item #{item.identifier} : Date invalid - Item skipped"
+            next
+          end
+          item.originated_on = date_conv unless date_conv.blank?
         end
-        begin
-          date_conv = date.to_date
-        rescue
-          @notices << "Item #{item.identifier} : Date invalid - Item skipped"
-          next
-        end
-        item.originated_on = date_conv unless date_conv.blank?
 
         if item.valid?
           @items << item
