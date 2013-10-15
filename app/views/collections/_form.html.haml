@@ -9,7 +9,7 @@
       = f.label :complete, 'Ready for metadata export'
 
       = f.check_box :private
-      = f.label :private
+      = f.label :private, 'Private: Hide metadata from all users'
 
     %table.form
       - unless params[:action] == 'bulk_edit'

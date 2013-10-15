@@ -10,7 +10,7 @@
         %td.empty
         %td
           = f.check_box :private
-          = f.label :private
+          = f.label :private, 'Private: Hide metadata from all users'
 
       - unless params[:action] == 'bulk_edit'
         %tr

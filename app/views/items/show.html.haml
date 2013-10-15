@@ -17,7 +17,7 @@
     - if can? :manage, @item
       .right
         = check_box_tag :private, @item.private, @item.private, :disabled => true
-        Private
+        Private: Hide metadata from all users
 
     %table.form.show
       %tr

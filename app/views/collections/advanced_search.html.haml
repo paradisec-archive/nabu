@@ -30,7 +30,7 @@
         = label_tag :complete, 'Ready for metadata export'
 
         = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
-        = label_tag :private
+        = label_tag :private, 'Private: Hide metadata from all users'
       .clear
 
       %table.form
