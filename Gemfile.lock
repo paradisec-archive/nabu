@@ -365,6 +365,7 @@ DEPENDENCIES
   progress_bar
   quiet_assets
   rails (= 3.2.11)
+  rake
   rb-fsevent
   rb-inotify
   rollbar
