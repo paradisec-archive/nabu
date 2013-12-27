@@ -46,13 +46,13 @@ class ItemProvider < OAI::Provider::Base
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => Time.now().strftime('%Y-%m-%d'), 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
       xml.tag! 'archiveURL', 'http://catalog.paradisec.org.au'
-      xml.tag! 'participant', 'name' => 'Linda Barwick',  'role' => 'Project Director', 'email' => 'Linda.Barwick@arts.usyd.edu.au'
-      xml.tag! 'participant', 'name' => 'Nick Thieberger', 'role' => 'Project Manager',  'email' => 'thien@unimelb.edu.au'
+      xml.tag! 'participant', 'name' => 'Nick Thieberger', 'role' => 'Project Director',  'email' => 'thien@unimelb.edu.au'
+      xml.tag! 'participant', 'name' => 'Linda Barwick',  'role' => 'Project Manager', 'email' => 'Linda.Barwick@arts.usyd.edu.au'
       xml.tag! 'institution', 'A consortium made up of the University of Melbourne, University of Sydney, and the Australian National University'
       xml.tag! 'institutionURL', 'http://paradisec.org.au'
       xml.tag! 'shortLocation', 'Melbourne, Sydney, Canberra, Australia'
-      xml.tag! 'location', 'Project Director based at the Department of Linguistics, University of Sydney, Transient Building, F12 University of Sydney, NSW 2006. Project Manager based at the School of Linguistics and Applied Linguistics, University of Melbourne, Victoria 3010, Australia'
-      xml.tag! 'synopsis', 'PARADISEC (Pacific And Regional Archive for Digital Sources in Endangered Cultures) offers a facility for digital conservation and access for endangered ethnographic materials from the Pacific region, defined broadly to include Oceania and East and South east Asia. Only 6702 of the items listed here are currently digitised. The non-digitised items are part of an assessment of the scope of work that needs to be digitised. They also make otherwise inaccessible material discoverable.'
+      xml.tag! 'location', 'Project Director based at the Department of Linguistics, University of Sydney, Transient Building, F12 University of Sydney, NSW 2006. Project Manager based at the School of Linguistics and Applied Linguistics, University of Melbourne, Victoria 3010, Australia NSW 2006 Australia.'
+      xml.tag! 'synopsis', 'PARADISEC (Pacific And Regional Archive for Digital Sources in Endangered Cultures) offers a facility for digital conservation and access for endangered ethnographic materials from the Pacific region, defined broadly to include Oceania and East and South east Asia. Not all of the items listed here are currently digitised. The non-digitised items are part of an assessment of the scope of work that needs to be digitised. They also make otherwise inaccessible material discoverable.'
       xml.tag! 'access', 'The current focus of PARADISEC is securing endangered materials. Access to the datastore is by password and is currently only available to depositors via the following URL: http://catalog.paradisec.org.au/collections/[CollectionID]/items/[ItemID]. Page images of some fieldnotes can be located online.'
     end
   end
