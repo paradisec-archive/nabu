@@ -23,13 +23,21 @@ ActiveAdmin.register Download do
     id_column
     column :user
     column :essence do |download|
-      link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+      if download && download.essence
+        link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+      else
+        "Essence #{download.essence_id}, now removed"
+      end
     end
     column :item do |download|
-      link_to download.item.full_identifier, Rails.application.routes.url_helpers.collection_item_path(download.collection, download.item)
+      if download && download.essence
+        link_to download.item.full_identifier, Rails.application.routes.url_helpers.collection_item_path(download.collection, download.item)
+      end
     end
     column :collection do |download|
-      link_to download.collection.identifier, Rails.application.routes.url_helpers.collection_path(download.collection)
+      if download && download.essence
+        link_to download.collection.identifier, Rails.application.routes.url_helpers.collection_path(download.collection)
+      end
     end
     column :created_at
     default_actions
