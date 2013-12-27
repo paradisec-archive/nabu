@@ -6,7 +6,6 @@ plugins/gems/bundles:
 
 ``` bash
 gem -v
-bundle update
 bundle install
 ```
 
@@ -61,7 +60,7 @@ DB load:
 
 ``` bash
 rake db:schema:load
-APP_ENV=test rake db:schema:load
+RAILS_ENV=test rake db:schema:load
 ```
 
 after commit local to roll out to user acceptance testing server:
