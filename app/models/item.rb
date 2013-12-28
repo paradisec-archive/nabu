@@ -201,6 +201,7 @@ class Item < ActiveRecord::Base
       collection.identifier
     end
     boolean :private
+    boolean :external
     date :originated_on
     float :north_limit
     float :south_limit
