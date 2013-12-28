@@ -229,7 +229,7 @@ class CollectionsController < ApplicationController
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
         when Sunspot::Type::BooleanType
-          with field.name, params[field.name] == 'true' ? true : false
+          with field.name, params[field.name] =~ /^true|1$/ ? true : false
         when Sunspot::Type::TimeType
           with(field.name).between (Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day)
         else
@@ -275,13 +275,6 @@ class CollectionsController < ApplicationController
             end
           end
         end
-      end
-
-      # Blank Search
-      Sunspot::Setup.for(Collection).fields.each do |field|
-        next unless field.name =~ /_blank$/
-        next unless params[field.name] == '1'
-        with field.name, true
       end
 
       with(:private, false) unless current_user && current_user.admin?
