@@ -9,7 +9,10 @@
       %tr
         %td.empty
         %td
-          = f.check_box :private
+          - if params[:action] == 'bulk_edit'
+            = f.select :private, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :private
           = f.label :private, 'Private: Hide metadata from all users'
 
       - unless params[:action] == 'bulk_edit'
@@ -60,7 +63,10 @@
       %tr
         %td
         %td
-          = f.check_box :external
+          - if params[:action] == 'bulk_edit'
+            = f.select :external, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :external
           = f.label :external, 'Item not held by Paradisec'
 
       %tr
@@ -201,17 +207,26 @@
       %tr
         %td.empty
         %td
-          = f.check_box :metadata_exportable
+          - if params[:action] == 'bulk_edit'
+            = f.select :metadata_exportable, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :metadata_exportable
           Ready for metadata export
       %tr
         %td.empty
         %td
-          = f.check_box :born_digital
+          - if params[:action] == 'bulk_edit'
+            = f.select :born_digital, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :born_digital
           Born digital
       %tr
         %td.empty
         %td
-          = f.check_box :tapes_returned
+          - if params[:action] == 'bulk_edit'
+            = f.select :tapes_returned, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :tapes_returned
           Tapes returned to depositor
       %tr
         %th= f.label :original_media
