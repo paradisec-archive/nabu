@@ -37,6 +37,15 @@ class User < ActiveRecord::Base
   scope :admins, where(:admin => true)
   scope :all_users
 
+  # Set random password for contacts
+  before_validation do
+    return unless self.contact_only?
+    password = Devise.friendly_token.first(12)
+    p password
+    self.password = password
+    self.password_confirmation = password
+  end
+
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}
   end
