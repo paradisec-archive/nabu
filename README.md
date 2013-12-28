@@ -26,12 +26,6 @@ rake db:create
 rake db:migrate
 ```
 
-Importing old PARADISEC data:
-
-``` bash
-rake import:all
-```
-
 Running solr:
 
 ``` bash
