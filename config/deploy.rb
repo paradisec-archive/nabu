@@ -52,7 +52,7 @@ namespace :sunspot do
 
   desc 'Reindex solr'
   task :reindex do
-    run "cd #{deploy_to}/current && bundle exex rake sunspot:reindex RAILS_ENV=#{rails_env}"
+    run "cd #{deploy_to}/current && bundle exec rake sunspot:reindex RAILS_ENV=#{rails_env}"
   end
 
   desc 'Restart solr'
