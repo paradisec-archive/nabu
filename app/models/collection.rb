@@ -105,7 +105,6 @@ class Collection < ActiveRecord::Base
     text :region
     text :description
     text :operator_name
-    text :access_condition_name
     text :field_of_research do
       field_of_research_name
     end
@@ -135,6 +134,7 @@ class Collection < ActiveRecord::Base
     integer :field_of_research_id, :references => FieldOfResearch
     integer :funding_body_id, :references => FundingBody
     integer :admin_ids, :references => User, :multiple => true
+    integer :access_condition_id, :references => AccessCondition
 
     # Things we want to sort or use :with on
     integer :id

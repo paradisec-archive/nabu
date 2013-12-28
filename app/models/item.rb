@@ -154,7 +154,6 @@ class Item < ActiveRecord::Base
     text :dialect
     text :region
     text :discourse_type_name
-    text :access_condition_name
     text :access_narrative
     text :ingest_notes
     text :tracking
