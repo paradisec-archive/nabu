@@ -1,73 +1,28 @@
 # Nabu Catalog
 
-## Ruby help
+## Setting up your dev environment
 
-plugins/gems/bundles:
+This application has been configured with *guard*, it will ensure
+
+* Tests are run
+* Solr is running for dev and test
+* Development web server is started
+* All of the above is restarted when you edit files
 
 ``` bash
-gem -v
 bundle install
-```
-
-Installing ruby:
-
-``` bash
-rbenv install [TAB][TAB]
-rbenv install 1.9.3-XXX
-rbenv global 1.9.3-XXX
-gem install bundler --no-ri --no-rdoc
-```
-
-DB setup:
-
-``` bash
-rake db:drop
-rake db:create
-rake db:migrate
-```
-
-Running solr:
-
-``` bash
-rake sunspot:solr:start
-```
-
-After import:
-
-``` bash
-rake sunspot:reindex
-```
-
-Running the app:
-
-``` bash
-script/rails s
-```
-
-test:
-
-``` bash
+spring rake db:create
+spring rake db:schema:load
+RAILS_ENV=test spring rake db:schema:load
 guard
 ```
 
-DB load:
+## Deployment
+
+We are using Capistrano for deployment.
 
 ``` bash
-rake db:schema:load
-RAILS_ENV=test rake db:schema:load
-```
-
-after commit local to roll out to user acceptance testing server:
-
-``` bash
-cap uat deploy
-cap -T
-```
-
-roll out to production server:
-
-``` bash
-cap production deploy
+cap deploy
 ```
 
 if necessary:
@@ -77,16 +32,16 @@ cap production deploy:migrate
 cap production sunspot:reindex
 ```
 
-upload DB: (devcatalog.paradisec.org.au, or catalog.paradisec.org.au)
+## Importing a production database into your development environment
 
 ``` bash
-mysqldump -u root nabu_devel | gzip > nabu.sql.gz
-scp nabu.sql.gz deploy@115.146.93.26:
-ssh deploy@115.146.93.26
-gzip -dc nabu.sql.gz | mysql -u root nabu
-cd /srv/www/nabu/current
-RAILS_ENV=uat rake sunspot:reindex
+ssh deploy@catalog.paradisec.org.au "mysqldump -u root nabu | gzip > nabu.sql.gz"
+scp deploy@catalog.paradisec.org.au:abu.sql.gz .
+gzip -dc nabu.sql.gz | mysql -u root nabu_devel
+spring rake sunspot:reindex
 ```
+
+## Production Tasks
 
 import archive files (e.g. on uat server):
 
@@ -98,13 +53,6 @@ check if all files that have been uploaded are ok:
 ``` bash
 cd /srv/www/nabu/current
 RAILS_ENV=production rake --trace archive:update_files > log/update_files.log
-```
-
-restart web server
-``` bash
-cap uat unicorn:stop
-ps aux #kill any remaining unicorns
-cap uat unicorn:start
 ```
 
 # NEW Ethnologue data
@@ -205,7 +153,7 @@ symlinked by cap.
 echo ROLLBAR_API_KEY > /srv/www/nabu/shared/config/rollbar.txt
 ```
 
-alternatively you can pass it in as an environment variable at server start up,
+Alternatively you can pass it in as an environment variable at server start up,
 for example.
 
 ``` bash
