@@ -234,6 +234,22 @@
       %legend Admin information
       %table.form
         %tr
+          %th Record created
+          %td
+            = text_field_tag :created_at, params[:created_at], :class => 'dateinput short'
+            %br
+            Blank
+            = check_box_tag :created_at_blank, 1, params[:created_at_blank]
+
+        %tr
+          %th Record modified
+          %td
+            = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short'
+            %br
+            Blank
+            = check_box_tag :updated_at_blank, 1, params[:updated_at_blank]
+
+        %tr
           %th= label_tag :admin_ids, 'Edit access'
           %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
 

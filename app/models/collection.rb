@@ -158,6 +158,7 @@ class Collection < ActiveRecord::Base
     boolean :private
     boolean :deposit_form_received
     time :created_at
+    time :updated_at
 
     # Things we want to check blankness of
     blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location, :grant_identifier]
