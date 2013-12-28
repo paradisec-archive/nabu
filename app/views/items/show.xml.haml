@@ -1,80 +1,77 @@
 -if can? :manage, @item
-  %xml{:version => "1.0", :encoding => "UTF-8"}
-    %item
-      %identifier= @item.full_identifier
-      %collectionId= @item.collection_id
-      %private= @item.private
-      %title= @item.title
-      %description= @item.description
-      %originationDate= @item.originated_on
-      %originationNarrative= @item.originated_on_narrative
-      %archiveLink= strip_tags(@item.full_path)
-      %url= @item.url
-      %collector= @item.collector_name
-      %countries
-        - @item.countries.each do |country|
-          %country= country.name_with_code
-      %language= @item.language
-      %subjectLanguages
-        - @item.subject_languages.each do |language|
-          %language= language.name_with_code
-      %contentLanguages
-        - @item.content_languages.each do |language|
-          %language= language.name_with_code
-      %dialect= @item.dialect
-      %region= @item.region
-      %geographicLocation
-        %south_limit= @item.south_limit
-        %north_limit= @item.north_limit
-        %east_limit= @item.east_limit
-        %west_limit= @item.west_limit
-      %university= @item.university_name
-      %operator= @item.operator_name
-      %dataCategories
-        - @item.data_categories.each do |category|
-          %category= category.name
-      %discourseType= @item.discourse_type_name
-      %agents
-        - @item.item_agents.each do |item_agent|
-          %agent{:role => h(item_agent.agent_role.name)}
-            = h(item_agent.user.name)
-      %citation= strip_tags(@item.citation)
-      %files{:numFiles => @item.essences.count}
-        - @item.essences.each do |essence|
-          %file
-            %name= essence.filename
-            %mimeType= essence.mimetype
-            %fileSize= number_to_human_size essence.size
-            %duration= number_to_human_duration essence.duration
-            %bitrate= number_to_human_rate essence.bitrate
-            %sampleRate= "#{essence.samplerate} Hz" if essence.samplerate
-            %channels= number_to_human_channels essence.channels
-            %frameRate= "#{essence.fps} FPS" if essence.fps
-      %archiveInfo
-        %bornDigital= @item.born_digital
-        %tapesReturned= @item.tapes_returned
-        %originalMedia= @item.original_media
-        %dateReceived= @item.received_on
-        %dateDigitised= @item.digitised_on
-        %ingestNotes= @item.ingest_notes
-        %metadataImportedOn= @item.metadata_imported_on
-        %metadataExportedOn= @item.metadata_exported_on
-        %tracking= @item.tracking
-      %adminInfo
-        %recordCreated= @item.created_at
-        %recordLastModified= @item.updated_at
-        %adminAccess
-          - @item.admins.each do |admin|
-            %userName= admin.name
-        %dataAccessConditions= @item.access_condition_name
-        %dataAccessNarrative= @item.access_narrative
-        %adminComment= @item.admin_comment
-      %userComments{:numComments => @item.comments.count}
-        - @item.comments.each do |comment|
-          %comment
-            %author= comment.owner.name
-            %description= comment.body
-            %createdAt= comment.created_at
-            
-          
-
+  !!! XML
+  %item
+    %identifier= @item.full_identifier
+    %collectionId= @item.collection_id
+    %private= @item.private
+    %title= @item.title
+    %description= @item.description
+    %originationDate= @item.originated_on
+    %originationNarrative= @item.originated_on_narrative
+    %archiveLink= strip_tags(@item.full_path)
+    %url= @item.url
+    %collector= @item.collector_name
+    %countries
+      - @item.countries.each do |country|
+        %country= country.name_with_code
+    %language= @item.language
+    %subjectLanguages
+      - @item.subject_languages.each do |language|
+        %language= language.name_with_code
+    %contentLanguages
+      - @item.content_languages.each do |language|
+        %language= language.name_with_code
+    %dialect= @item.dialect
+    %region= @item.region
+    %geographicLocation
+      %south_limit= @item.south_limit
+      %north_limit= @item.north_limit
+      %east_limit= @item.east_limit
+      %west_limit= @item.west_limit
+    %university= @item.university_name
+    %operator= @item.operator_name
+    %dataCategories
+      - @item.data_categories.each do |category|
+        %category= category.name
+    %discourseType= @item.discourse_type_name
+    %agents
+      - @item.item_agents.each do |item_agent|
+        %agent{:role => h(item_agent.agent_role.name)}
+          = h(item_agent.user.name)
+    %citation= strip_tags(@item.citation)
+    %files{:numFiles => @item.essences.count}
+      - @item.essences.each do |essence|
+        %file
+          %name= essence.filename
+          %mimeType= essence.mimetype
+          %fileSize= number_to_human_size essence.size
+          %duration= number_to_human_duration essence.duration
+          %bitrate= number_to_human_rate essence.bitrate
+          %sampleRate= "#{essence.samplerate} Hz" if essence.samplerate
+          %channels= number_to_human_channels essence.channels
+          %frameRate= "#{essence.fps} FPS" if essence.fps
+    %archiveInfo
+      %bornDigital= @item.born_digital
+      %tapesReturned= @item.tapes_returned
+      %originalMedia= @item.original_media
+      %dateReceived= @item.received_on
+      %dateDigitised= @item.digitised_on
+      %ingestNotes= @item.ingest_notes
+      %metadataImportedOn= @item.metadata_imported_on
+      %metadataExportedOn= @item.metadata_exported_on
+      %tracking= @item.tracking
+    %adminInfo
+      %recordCreated= @item.created_at
+      %recordLastModified= @item.updated_at
+      %adminAccess
+        - @item.admins.each do |admin|
+          %userName= admin.name
+      %dataAccessConditions= @item.access_condition_name
+      %dataAccessNarrative= @item.access_narrative
+      %adminComment= @item.admin_comment
+    %userComments{:numComments => @item.comments.count}
+      - @item.comments.each do |comment|
+        %comment
+          %author= comment.owner.name
+          %description= comment.body
+          %createdAt= comment.created_at
