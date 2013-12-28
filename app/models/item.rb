@@ -330,10 +330,6 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:contributor', collector_name, 'xsi:type' => 'olac:role', 'olac:code' => 'compiler'
       end
 
-      if operator
-        xml.tag! 'dc:contributor', operator_name, 'xsi:type' => 'olac:role', 'olac:code' => 'depositor'
-      end
-
       item_agents.each do |agent|
         xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => agent.agent_role.name
       end
