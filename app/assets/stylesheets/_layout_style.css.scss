@@ -263,6 +263,10 @@ body.bp {
       background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
       background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     }
+
+    select.bool {
+      width: auto;
+    }
   }
 
   table.form.show {

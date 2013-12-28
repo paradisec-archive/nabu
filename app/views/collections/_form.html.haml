@@ -5,10 +5,16 @@
   %fieldset
     %legend Collection details
     .right
-      = f.check_box :complete
+      - if params[:action] == 'bulk_edit'
+        = f.select :complete, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+      - else
+        = f.check_box :complete
       = f.label :complete, 'Ready for metadata export'
 
-      = f.check_box :private
+      - if params[:action] == 'bulk_edit'
+        = f.select :private, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+      - else
+        = f.check_box :private
       = f.label :private, 'Private: Hide metadata from all users'
 
     %table.form
@@ -170,7 +176,11 @@
     %table.form
       %tr
         %th= f.label :deposit_form_received
-        %td= f.check_box :deposit_form_received
+        %td
+          - if params[:action] == 'bulk_edit'
+            = f.select :deposit_form_received, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
+          - else
+            = f.check_box :deposit_form_received
 
       %tr
         %th= f.label :tape_location
