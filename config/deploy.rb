@@ -85,6 +85,3 @@ after :deploy, 'notify_rollbar'
 
 require 'bundler/capistrano'
 require 'capistrano-unicorn'
-
-after 'deploy:restart', 'unicorn:restart'   # app preloaded
-
