@@ -25,6 +25,10 @@ body.bp {
     padding: 0px 2px 0px 2px;
   }
 
+  th {
+    white-space: nowrap;
+  }
+
   #container {
     overflow: visible;
   }
