@@ -89,6 +89,12 @@ namespace :archive do
           next
         end
 
+        # Skip files that are currently uploading
+        last_updated = File.stat("#{upload_directory}/#{file}").mtime
+        if (Time.now - last_updated) < 60*10
+          next
+        end
+
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next if !collection || !item
 
