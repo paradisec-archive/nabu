@@ -26,10 +26,10 @@
       %legend Collection details
 
       .right
-        = select_tag :complete, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+        = select_tag :complete, options_for_select([['True', 'true'], ['False', 'false']], params[:complete]), :include_blank => true
         = label_tag :complete, 'Ready for metadata export'
 
-        = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+        = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']], params[:private]), :include_blank => true
         = label_tag :private, 'Private: Hide metadata from all users'
       .clear
 
@@ -179,7 +179,7 @@
       %table.form
         %tr
           %th= label_tag :deposit_form_received
-          %td= select_tag :deposit_form_received, options_for_select([['True', 'true'], ['False', 'false']]), :include_blank => true
+          %td= select_tag :deposit_form_received, options_for_select([['True', 'true'], ['False', 'false']], params[:deposit_form_received]), :include_blank => true
 
         %tr
           %th Location data stored:
