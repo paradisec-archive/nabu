@@ -66,6 +66,18 @@ group :development, :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'sextant'
   gem 'thin'
+
+  gem 'spring'
+  gem 'spring-commands-rspec'
+
+  # Guard
+  gem 'guard-bundler'
+  gem 'guard-rails'
+  gem 'guard-rspec'
+  gem 'guard-sunspot'
+
+  gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
+  gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
 end
 
 group :test do
@@ -74,11 +86,4 @@ group :test do
   gem 'factory_girl_rails'
   gem 'email_spec'
   gem 'launchy'
-
-  # Guard
-  gem 'guard-bundler'
-  gem 'guard-rails'
-  gem 'guard-spin'
-  gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
-  gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
 end
