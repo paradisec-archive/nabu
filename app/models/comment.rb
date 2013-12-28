@@ -17,6 +17,7 @@ class Comment < ActiveRecord::Base
 
   before_save :strip_html_tags
   before_create :moderation
+  after_save :send_email
 
 
   private
@@ -32,6 +33,10 @@ class Comment < ActiveRecord::Base
     else
       self.status = 'unapproved'
     end
+  end
+
+  def send_email
+    CommentMailer.comment_email(self).deliver
   end
 
 end

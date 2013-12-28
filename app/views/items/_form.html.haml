@@ -16,12 +16,12 @@
         %tr
           %th= f.label :identifier, 'Item ID'
           %td
-            = @item.collection.identifier
-            == -
             - if @item.new_record?
+              = @item.collection.identifier
+              == -
               = f.text_field :identifier, :class => 'short'
             - else
-              = @item.identifier
+              = @item.full_identifier
 
       %tr
         %th

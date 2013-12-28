@@ -5,6 +5,7 @@ class PageController < ApplicationController
   end
 
   def dashboard
+    authenticate_user!
     @name = current_user.name
 
     collections = Collection.where('collector_id = :user_id OR operator_id = :user_id', :user_id => current_user.id)
