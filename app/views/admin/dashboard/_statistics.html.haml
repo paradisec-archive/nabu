@@ -1,4 +1,4 @@
-%h2 Repository Metrics
+%h3 Repository Objects
 %table
   %tr
     %td= number_with_delimiter Collection.where('created_at <= ?', date.end_of_month).count
@@ -10,9 +10,6 @@
     %td= number_with_delimiter Essence.where('created_at <= ?', date.end_of_month).count
     %td essence objects
   %tr
-    %td= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
-    %td hours
-  %tr
     %td= number_with_delimiter User.where('created_at <= ?', date.end_of_month).count
     %td users
   %tr
@@ -20,13 +17,14 @@
     %td universities
   %tr
     %td= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
-    %td posted comments
+    %td comments
+
+
+%h3 Essence
+%table
   %tr
-    %td= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
-    %td approved comments
-  %tr
-    %td= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
-    %td pending comments
+    %td= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
+    %td hours
   %tr
     %td= number_to_human_size Essence.where('created_at <= ?', date.end_of_month).sum(:size)
     %td of essence objects
@@ -45,3 +43,15 @@
   %tr
     %td= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').where('created_at <= ?', date.end_of_month).sum(:size)
     %td of text files in archive
+
+%h3 Comments
+%table
+  %tr
+    %td= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %td posted comments
+  %tr
+    %td= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
+    %td approved comments
+  %tr
+    %td= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
+    %td pending comments
