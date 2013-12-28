@@ -11,10 +11,10 @@ This application has been configured with *guard*, it will ensure
 
 ``` bash
 bundle install
-spring rake db:create
-spring rake db:schema:load
-RAILS_ENV=test spring rake db:schema:load
-guard
+bundle exec spring rake db:create
+bundle exec spring rake db:schema:load
+RAILS_ENV=test bundle exec spring rake db:schema:load
+bundle exec guard
 ```
 
 ## Deployment
@@ -28,31 +28,31 @@ cap deploy
 if necessary:
 
 ``` bash
-cap production deploy:migrate
-cap production sunspot:reindex
+cap deploy:migrate
+cap sunspot:reindex
 ```
 
 ## Importing a production database into your development environment
 
 ``` bash
 ssh deploy@catalog.paradisec.org.au "mysqldump -u root nabu | gzip > nabu.sql.gz"
-scp deploy@catalog.paradisec.org.au:abu.sql.gz .
+scp deploy@catalog.paradisec.org.au:nabu.sql.gz .
 gzip -dc nabu.sql.gz | mysql -u root nabu_devel
 spring rake sunspot:reindex
 ```
 
 ## Production Tasks
 
-import archive files (e.g. on uat server):
+import archive files
 
 ``` bash
-RAILS_ENV=uat rake archive:update_files
+RAILS_ENV=production bundle exec rake archive:update_files
 ```
 
 check if all files that have been uploaded are ok:
 ``` bash
 cd /srv/www/nabu/current
-RAILS_ENV=production rake --trace archive:update_files > log/update_files.log
+RAILS_ENV=production bundle exec rake --trace archive:update_files > log/update_files.log
 ```
 
 # NEW Ethnologue data
@@ -68,8 +68,10 @@ Copy them into the data directory, overwriting the existing files there.
 
 Run the following rake tasks to import them (in this order):
 
-    $ rake import:countries
-    $ rake import:languages
+``` bash
+bundle exec rake import:countries
+bundle exec rake import:languages
+```
 
 All new countries will be added to the Nabu countries table.
 The new language codes of type "L" will be added to the Nabu language table.
@@ -87,7 +89,9 @@ Copy it into the data directory, overwriting the existing file there.
 
 Run the following rake task to import them:
 
-    $ rake import:retired
+``` bash
+bundle exec rake import:retired
+```
 
 All existing codes that are retired are marked as such, incl name change.
 Where name changes occurred items in CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage are updated with the replacement language code.
@@ -114,9 +118,11 @@ testing:
   * install localtunnel to port forward your local webserver
   * http://progrium.com/localtunnel/
 
-    $ gem install localtunnel
-    $ rbenv rehash
-    $ localtunnel 3000
+``` bash
+gem install localtunnel
+rbenv rehash
+localtunnel 3000
+```
 
   use resulting server on an OAI repository explorer:
   * http://www.language-archives.org/register/register.php (OLAC)
