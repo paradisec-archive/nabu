@@ -210,10 +210,12 @@ class Item < ActiveRecord::Base
     boolean :metadata_exportable
     boolean :born_digital
     boolean :tapes_returned
-    date :received_on
-    date :digitised_on
-    date :created_at
-    date :updated_at
+    time :received_on
+    time :digitised_on
+    time :metadata_imported_on
+    time :metadata_exported_on
+    time :created_at
+    time :updated_at
     string :content_languages, :multiple => true do
       content_languages.map(&:name)
     end
