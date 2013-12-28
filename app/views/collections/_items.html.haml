@@ -15,8 +15,8 @@
   %table.table
     %thead
       %tr
-        %th Item
-        %th Title
+        = sortable :identifier, 'Item'
+        = sortable :title
         - if can? :update, @collection
           %th Digitised
           %th Files

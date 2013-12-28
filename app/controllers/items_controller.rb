@@ -50,6 +50,10 @@ class ItemsController < ApplicationController
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
+    if params[:sort]
+      @files = @files.order("#{params[:sort]} #{params[:direction]}")
+    end
+
     respond_to do |format|
       format.html
       format.xml do

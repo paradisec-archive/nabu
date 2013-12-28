@@ -51,7 +51,13 @@ class CollectionsController < ApplicationController
     @num_items_ready = @collection.items.where{ digitised_on != nil }.count
     @num_essences = Essence.where(:item_id => @collection.items).count
 
-    @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.page(params[:items_page]).per(params[:items_per_page])
+
+    if params[:sort]
+      @items = @items.order("#{params[:sort]} #{params[:direction]}")
+    else
+      @items = @items.order(:identifier)
+    end
   end
 
   def create

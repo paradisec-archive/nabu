@@ -4,10 +4,10 @@
 %table.table
   %thead
     %tr
-      %th Filename
-      %th Type
-      %th File size
-      %th Duration
+      = sortable :filename
+      = sortable :mimetype, 'Type'
+      = sortable :size, 'File size'
+      = sortable :duration
       %th Metadata
   %tbody
     - if @files.count == 0
