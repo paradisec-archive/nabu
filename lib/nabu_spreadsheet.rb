@@ -85,7 +85,7 @@ module Nabu
         if !row[3].blank?
           content_language = Language.find_by_name(row[3])
           if content_language
-            item.content_languages << content_language
+            item.content_languages << content_language unless item.content_languages.include? content_language
           else
             @notices << "Item #{item.identifier} : Content language not found"
           end
