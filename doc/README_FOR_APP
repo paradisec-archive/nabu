@@ -70,3 +70,17 @@ Done!
 
 * Examples: Western Hemisphere
   westlimit=180; eastlimit=0
+
+===
+
+## Crontab setup
+
+Crontab is set up such that the metadata export script and the file import script are run every hour. However, at 3am, they are run in VERBOSE mode, such that if there are any messages, these will be printed and subsequently sent via email.
+
+Note that the cron jobs check if they are disabled from the app (via a disabling file), and that no other job currently runs that is doing the same.
+
+0 0-2,4-23 * * * if [ ! -f /srv/www/nabu/shared/pids/disable_cron ]; then pgrep -f "[b]in/rake archive:export_metadata" > /dev/null; if [ $? = 1 ]; then cd /srv/www/nabu/current && RAILS_ENV=production /usr/local/bin/bundle exec rake archive:export_metadata; fi ; fi
+0 0-2,4-23 * * * if [ ! -f /srv/www/nabu/shared/pids/disable_cron ]; then pgrep -f "[b]in/rake archive:import_files" > /dev/null; if [ $? = 1 ]; then cd /srv/www/nabu/current && RAILS_ENV=production /usr/local/bin/bundle exec rake archive:import_files; fi ; fi
+
+0 3 * * * if [ ! -f /srv/www/nabu/shared/pids/disable_cron ]; then pgrep -f "[b]in/rake archive:export_metadata" > /dev/null; if [ $? = 1 ]; then cd /srv/www/nabu/current && RAILS_ENV=production VERBOSE=true /usr/local/bin/bundle exec rake archive:export_metadata; fi ; fi
+0 3 * * * if [ ! -f /srv/www/nabu/shared/pids/disable_cron ]; then pgrep -f "[b]in/rake archive:import_files" > /dev/null; if [ $? = 1 ]; then cd /srv/www/nabu/current && RAILS_ENV=production VERBOSE=true /usr/local/bin/bundle exec rake archive:import_files; fi ; fi
