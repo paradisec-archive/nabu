@@ -149,3 +149,9 @@ ActiveAdmin.setup do |config|
   # Set the CSV builder separator (default is ",")
   # config.csv_column_separator = ','
 end
+
+# TODO: remove when moving to active_admin 0.5.x
+# https://github.com/gregbell/active_admin/issues/2036
+ActiveAdmin.after_load do
+  I18n.reload!
+end
