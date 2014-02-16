@@ -46,11 +46,6 @@ class User < ActiveRecord::Base
     self.password_confirmation = password
   end
 
-  # Don't send email for contacts
-  before_create do
-    self.skip_confirmation! if self.contact_only?
-  end
-
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}
   end
@@ -105,5 +100,12 @@ class User < ActiveRecord::Base
     errors.clear
     errors.add(:base, "User owns items and cannot be removed.") if owned_items.count > 0
     errors.empty?
+  end
+
+  protected
+
+  # Don't send email for contacts
+  def confirmation_required?
+    !confirmed? && !self.contact_only?
   end
 end
