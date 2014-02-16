@@ -46,6 +46,12 @@ class User < ActiveRecord::Base
     self.password_confirmation = password
   end
 
+  # Don't send email for contacts
+  before_save :require_confirmation, :on => :create
+  def require_confirmation
+     self.skip_confirmation! if self.contact_only?
+  end
+
   def self.sortable_columns
     %w{last_name first_name id address adress2 country email phone admin contact_only}
   end
