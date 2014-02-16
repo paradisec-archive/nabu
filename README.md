@@ -55,6 +55,12 @@ cd /srv/www/nabu/current
 RAILS_ENV=production bundle exec rake --trace archive:update_files > log/update_files.log
 ```
 
+check if all *-CAT-PDSC_ADMIN.xml files exist and create if necessary:
+``` bash
+cd /srv/www/nabu/current
+RAILS_ENV=production bundle exec rake --trace archive:admin_files > log/admin_files.log
+```
+
 # NEW Ethnologue data
 
 Download the latest version of the following tables from
