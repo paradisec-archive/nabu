@@ -1,6 +1,6 @@
 require 'rollbar/rails'
 Rollbar.configure do |config|
-  rollbar_file = "#{Rails.env}/config/shared/rollbar.txt"
+  rollbar_file = "#{Rails.root}/config/shared/rollbar.txt"
   if File.exists? rollbar_file
     config.access_token = File.read(rollbar_file).strip
   else
