@@ -1,6 +1,10 @@
 require 'media'
 include ActionView::Helpers::NumberHelper
 
+require "#{Rails.root}/app/helpers/application_helper"
+include ApplicationHelper
+
+
 class OfflineTemplate < AbstractController::Base
   include AbstractController::Rendering
   include AbstractController::Helpers
@@ -192,6 +196,50 @@ namespace :archive do
     end
     puts "===" if verbose
     puts "Update Files finished." if verbose
+    puts "===" if verbose
+  end
+
+
+  desc 'Create all missing PDSC_ADMIN files'
+  task :admin_files => :environment do
+    verbose = ENV['VERBOSE'] ? true : false
+
+    # find essence files in Nabu::Application.config.archive_directory
+    archive = Nabu::Application.config.archive_directory
+
+    # get all subdirectories in archive
+    puts "---------------------------------------------------------------"
+    puts "Gathering all subdirectories in the archive..."
+    subdirs = directories(archive)
+    puts "...done"
+
+    # extract metadata from each essence file in each directory
+    subdirs.each do |directory|
+      puts "===" if verbose
+      puts "---------------------------------------------------------------" if verbose
+      puts "Working through directory #{directory}" if verbose
+
+      path, item_id = File.split(directory)
+      path, coll_id = File.split(path)
+
+      puts "item #{coll_id}-#{item_id}"
+      collection = Collection.find_by_identifier coll_id
+      next if !collection
+      item = collection.items.find_by_identifier item_id
+      next if !item
+
+      file = directory + "/#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
+
+      next if File.exists?(file)
+
+      template = ItemOfflineTemplate.new
+      template.item = item
+      data = template.render_to_string :template => "items/show.xml.haml"
+      File.open(file, 'w') {|f| f.write(data)}
+      puts "created #{file}"
+    end
+    puts "===" if verbose
+    puts "Check and create PDSC_ADMIN Files finished." if verbose
     puts "===" if verbose
   end
 
