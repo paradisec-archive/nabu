@@ -47,9 +47,8 @@ class User < ActiveRecord::Base
   end
 
   # Don't send email for contacts
-  before_save :require_confirmation, :on => :create
-  def require_confirmation
-     self.skip_confirmation! if self.contact_only?
+  before_create do
+    self.skip_confirmation! if self.contact_only?
   end
 
   def self.sortable_columns
