@@ -30,6 +30,8 @@ class Ability
       can :read, DiscourseType
 
       # Only collection_admins can manage a collection
+      can :read,   Collection, :items => { :item_users => { :user_id => user.id } }
+      can :read,   Collection, :items => { :item_admins => { :user_id => user.id } }
       can :manage, Collection, :collection_admins => { :user_id => user.id }
       can :manage, Collection, :operator_id => user.id
       can :manage, Collection, :collector_id => user.id
@@ -40,6 +42,7 @@ class Ability
 
       can :read,   Item, :public? => true
       can :read,   Item, :item_users => { :user_id => user.id }
+      can :read,   Item, :item_admins => { :user_id => user.id }
       can :manage, Item, :collector_id => user.id
       can :manage, Item, :operator_id => user.id
       can :manage, Item, :collection  => { :collection_admins => { :user_id => user.id } }
