@@ -175,28 +175,12 @@ class ItemsController < ApplicationController
       params[:item][:item_agents_attributes] ||= {}
       params[:item][:item_agents_attributes].each_pair do |id, iaa|
         name = iaa['user_id']
-        next unless name =~ /^NEWCONTACT:/
-        name = name.gsub(/^NEWCONTACT:/, '')
-
-        last_space = name.rindex(' ')
-        if last_space
-          first_name = name[0..last_space-1]
-          last_name = name[last_space+1..-1]
-        else
-          first_name = name
+        if name =~ /^NEWCONTACT:/
+          iaa['user_id'] = create_contact(name)
         end
-
-        contact = User.where(:first_name => first_name, :last_name => last_name).first
-        if contact.nil?
-          random_string = SecureRandom.base64(16)
-          contact = User.create!({
-            :first_name => first_name,
-            :last_name => last_name,
-            :password => random_string,
-            :password_confirmation => random_string,
-            :contact_only => true}, :as => :contact_only)
-        end
-        iaa['user_id'] = contact.id
+      end
+      if params[:item][:collector_id] =~ /^NEWCONTACT:/
+        params[:item][:collector_id] = create_contact(params[:item][:collector_id])
       end
     end
   end

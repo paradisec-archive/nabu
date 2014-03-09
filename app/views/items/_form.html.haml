@@ -79,7 +79,7 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.hidden_field :collector_id, :data => {:placeholder => 'Choose a collector...', :required => true, :url => users_path}, :class => 'select2'
+        %td= f.hidden_field :collector_id, :data => {:placeholder => 'Choose a collector...', :required => true, :url => users_path, :createable => true}, :class => 'select2'
 
       %tr
         %th

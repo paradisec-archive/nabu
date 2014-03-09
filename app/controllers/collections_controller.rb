@@ -2,6 +2,7 @@ require 'exsite9'
 require 'nabu_spreadsheet'
 
 class CollectionsController < ApplicationController
+  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
@@ -211,6 +212,13 @@ class CollectionsController < ApplicationController
   end
 
   private
+  def tidy_params
+    if params[:collection]
+      if params[:collection][:collector_id] =~ /^NEWCONTACT:/
+        params[:collection][:collector_id] = create_contact(params[:collection][:collector_id])
+      end
+    end
+  end
 
   def do_search
     @fields = Sunspot::Setup.for(Collection).fields

@@ -34,4 +34,29 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
    dashboard_path
   end
+
+  # used by collections_controller and items_controller for creating Collectors and Agents
+  def create_contact(name)
+    name = name.gsub(/^NEWCONTACT:/, '')
+
+    last_space = name.rindex(' ')
+    if last_space
+      first_name = name[0..last_space-1]
+      last_name = name[last_space+1..-1]
+    else
+      first_name = name
+    end
+
+    contact = User.where(:first_name => first_name, :last_name => last_name).first
+    if contact.nil?
+      random_string = SecureRandom.base64(16)
+      contact = User.create!({
+        :first_name => first_name,
+        :last_name => last_name,
+        :password => random_string,
+        :password_confirmation => random_string,
+        :contact_only => true}, :as => :contact_only)
+    end
+    contact.id
+  end
 end
