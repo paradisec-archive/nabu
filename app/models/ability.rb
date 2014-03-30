@@ -7,8 +7,10 @@ class Ability
     if user.new_record? # Guests
       can :read, Collection, :private => false
       can :read, Item,       :private => false
+
     elsif user.admin? # System admins
       can :manage, :all
+
     else
       # Users can manage themseleves
       can :manage, User, :id => user.id
@@ -17,11 +19,11 @@ class Ability
       # Anyone can create a university
       can :create, University
 
-      # Anyone can create a collection
-      can :create, Collection
-
       # Anyone can view non-private collections
       can :read, Collection, :private => false
+
+      # Only admins can create a collection
+      cannot :create, Collection
 
       # Anyone can read these entities - need them for creation
       can :read, Language
@@ -32,9 +34,9 @@ class Ability
       # Only collection_admins can manage a collection
       can :read,   Collection, :items => { :item_users => { :user_id => user.id } }
       can :read,   Collection, :items => { :item_admins => { :user_id => user.id } }
-      can :manage, Collection, :collection_admins => { :user_id => user.id }
-      can :manage, Collection, :operator_id => user.id
-      can :manage, Collection, :collector_id => user.id
+      can :update, Collection, :collection_admins => { :user_id => user.id }
+      can :update, Collection, :operator_id => user.id
+      can :update, Collection, :collector_id => user.id
       cannot :search_csv, Collection
       cannot :advanced_search, Collection
       cannot :bulk_edit, Collection
