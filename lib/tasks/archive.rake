@@ -93,6 +93,12 @@ namespace :archive do
           next
         end
 
+        # skip files that can't be read
+        if !File.readable?("#{upload_directory}/#{file}")
+          puts "ERROR: file #{file} skipped, since it's not readable"
+          next
+        end
+
         # Skip files that are currently uploading
         last_updated = File.stat("#{upload_directory}/#{file}").mtime
         if (Time.now - last_updated) < 60*10
