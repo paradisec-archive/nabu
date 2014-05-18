@@ -271,6 +271,15 @@ namespace :archive do
     puts "Deleting collection #{collection.identifier}"
     collection.destroy
     puts "...done"
+
+    # now check files in directory
+    archive = Nabu::Application.config.archive_directory
+
+    files = Dir.glob(archive + "#{coll_id}/*")
+    if files.length > 0
+      puts "\nNOW PLEASE REMOVE ARCHIVE FILES AND FOLDERS FOR COLLECTION #{coll_id}:"
+      puts files
+    end
   end
 
 
