@@ -61,6 +61,12 @@ cd /srv/www/nabu/current
 RAILS_ENV=production bundle exec rake --trace archive:admin_files > log/admin_files.log
 ```
 
+delete a collection with all its items:
+``` bash
+cd /srv/www/nabu/current
+RAILS_ENV=production bundle exec rake archive:delete_collection[PA1]
+
+
 # NEW Ethnologue data
 
 Download the latest version of the following tables from

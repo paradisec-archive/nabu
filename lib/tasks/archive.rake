@@ -249,6 +249,30 @@ namespace :archive do
     puts "===" if verbose
   end
 
+  desc 'Delete collection with all items'
+  task :delete_collection, [:coll_id] => :environment do |t, args|
+    coll_id = args[:coll_id]
+    collection = Collection.find_by_identifier coll_id
+    if !collection
+      abort("ERROR: no such collection #{coll_id}")
+    end
+    items = collection.items.size
+    print "Do you really want to delete collection #{coll_id} with all its #{items} items? (y/n) "
+    input = STDIN.gets.strip
+    if input != 'y'
+      abort("...aborted collection deletion.")
+    end
+    collection.items.each do |item|
+      puts "Deleting item #{item.collection.identifier}-#{item.identifier}"
+      item.destroy
+    end
+    # reload collection so it loses its now deleted item links
+    collection = Collection.find_by_identifier coll_id
+    puts "Deleting collection #{collection.identifier}"
+    collection.destroy
+    puts "...done"
+  end
+
 
   # HELPERS
 
