@@ -95,7 +95,7 @@ namespace :archive do
 
         # skip files that can't be read
         if !File.readable?("#{upload_directory}/#{file}")
-          puts "ERROR: file #{file} skipped, since it's not readable"
+          puts "ERROR: file #{file} skipped, since it's not readable" if verbose
           next
         end
 
