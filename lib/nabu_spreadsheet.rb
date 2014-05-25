@@ -17,7 +17,7 @@ module Nabu
       sheet1 = book.worksheet 0
 
       # parse collection in XSL file
-      coll_id = sheet1.row(3)[1]
+      coll_id = sheet1.row(3)[1].to_s
       @collection = Collection.find_by_identifier coll_id
       collector = user_from_str(sheet1.row(6)[1], false)
       if !collector
@@ -52,7 +52,7 @@ module Nabu
       sheet1.each 12 do |row|
         break if row[0].nil? # if first cell empty
 
-        item_id = row[0]
+        item_id = row[0].to_s
 
         item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
         if !item
@@ -74,12 +74,12 @@ module Nabu
           item.access_narrative = @collection.access_narrative
           item.admin_ids = @collection.admin_ids
           item.title = 'PLEASE PROVIDE TITLE'
-          item.description = 'PLEASe PROVIDE DESCRIPTION'
+          item.description = 'PLEASE PROVIDE DESCRIPTION'
         end
 
         # update title and description
-        item.title = row[1] unless row[1].blank?
-        item.description = row[2] unless row[2].blank?
+        item.title = row[1].to_s unless row[1].blank?
+        item.description = row[2].to_s unless row[2].blank?
 
         # add content and subject language
         if !row[3].blank?
@@ -87,7 +87,7 @@ module Nabu
           if content_language
             item.content_languages << content_language unless item.content_languages.include? content_language
           else
-            @notices << "Item #{item.identifier} : Content language not found"
+            @notices << "Item #{item.identifier} : Content language '#{row[3]}' not found"
           end
         end
         if !row[4].blank?
@@ -95,7 +95,7 @@ module Nabu
           if subject_language
             item.subject_languages << subject_language unless item.subject_languages.include? subject_language
           else
-            @notices << "Item #{item.identifier} : Subject language not found"
+            @notices << "Item #{item.identifier} : Subject language '#{row[4]}' not found"
           end
         end
 
