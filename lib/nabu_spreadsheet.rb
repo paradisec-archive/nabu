@@ -54,6 +54,9 @@ module Nabu
 
         item_id = row[0].to_s
 
+        # if collection_id is part of item_id string, remove it
+        item_id.slice! "#{@collection.identifier}-"
+
         item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
         if !item
           item = Item.new
