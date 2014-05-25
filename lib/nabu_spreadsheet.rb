@@ -86,19 +86,25 @@ module Nabu
 
         # add content and subject language
         if !row[3].blank?
-          content_language = Language.find_by_name(row[3])
-          if content_language
-            item.content_languages << content_language unless item.content_languages.include? content_language
-          else
-            @notices << "Item #{item.identifier} : Content language '#{row[3]}' not found"
+          content_languages = row[3].split('|')
+          content_languages.each do |language|
+            content_language = Language.find_by_name(language)
+            if content_language
+              item.content_languages << content_language unless item.content_languages.include? content_language
+            else
+              @notices << "Item #{item.identifier} : Content language '#{language}' not found"
+            end
           end
         end
         if !row[4].blank?
-          subject_language = Language.find_by_name(row[4])
-          if subject_language
-            item.subject_languages << subject_language unless item.subject_languages.include? subject_language
-          else
-            @notices << "Item #{item.identifier} : Subject language '#{row[4]}' not found"
+          subject_languages = row[4].split('|')
+          subject_languages.each do |language|
+            subject_language = Language.find_by_name(language)
+            if subject_language
+              item.subject_languages << subject_language unless item.subject_languages.include? subject_language
+            else
+              @notices << "Item #{item.identifier} : Subject language '#{language}' not found"
+            end
           end
         end
 
