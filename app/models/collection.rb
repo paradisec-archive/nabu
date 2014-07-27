@@ -381,7 +381,7 @@ class Collection < ActiveRecord::Base
         end
       end
 
-      if !university.party_identifier
+      if university && !university.party_identifier
         xml.registryObject 'group' => 'PARADISEC' do
           xml.key university.xml_key
           xml.originatingSource 'http://catalog.paradisec.org.au', 'type' => 'authoritative'
