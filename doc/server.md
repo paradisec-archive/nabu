@@ -118,3 +118,8 @@
 # monit
 
 http://railscasts.com/episodes/375-monit
+
+
+# media processing
+
+    sudo apt-get install libav-tools

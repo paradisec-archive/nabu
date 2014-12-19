@@ -102,8 +102,8 @@ module Nabu
     def probe
       return @data if @data
 
-      output = %x{ffprobe -show_format -show_streams #@file 2>&1}
-      raise "Error running ffprobe, returned #{$?} output: #{output}" unless $?.success?
+      output = %x{avprobe -show_format -show_streams #@file 2>&1}
+      raise "Error running avprobe, returned #{$?} output: #{output}" unless $?.success?
 
       # deal with invlaid UTF-8
       output.encode!('UTF-8', 'UTF-8', :invalid => :replace)
