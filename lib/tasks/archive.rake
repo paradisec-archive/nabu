@@ -347,7 +347,7 @@ namespace :archive do
       essence.channels   = media.channels
       essence.fps        = media.fps
     rescue => e
-      puts "ERROR: unable to process file - skipping"
+      puts "ERROR: unable to process file #{file} - skipping"
       puts" #{e}"
       return
     end
