@@ -1,0 +1,105 @@
+## Ruby help
+
+plugins/gems/bundles:
+
+``` bash
+gem -v
+bundle install
+```
+
+Installing ruby:
+
+``` bash
+rbenv install [TAB][TAB]
+rbenv install 1.9.3-XXX
+rbenv global 1.9.3-XXX
+gem install bundler --no-ri --no-rdoc
+```
+
+DB setup:
+
+``` bash
+rake db:drop
+rake db:create
+rake db:migrate
+```
+
+Importing old PARADISEC data:
+
+``` bash
+rake import:all
+```
+
+Running solr:
+
+``` bash
+rake sunspot:solr:start
+```
+
+After import:
+
+``` bash
+rake sunspot:reindex
+```
+
+Running the app:
+
+``` bash
+script/rails s
+```
+
+test:
+
+``` bash
+guard
+```
+
+DB load:
+
+``` bash
+rake db:schema:load
+RAILS_ENV=test rake db:schema:load
+```
+
+roll out to production server:
+
+``` bash
+cap deploy
+```
+
+if necessary:
+
+``` bash
+cap deploy:migrate
+cap sunspot:reindex
+```
+
+upload DB: (catalog.paradisec.org.au)
+
+``` bash
+mysqldump -u root nabu_devel | gzip > nabu.sql.gz
+scp nabu.sql.gz deploy@115.146.93.26:
+ssh deploy@115.146.93.26
+gzip -dc nabu.sql.gz | mysql -u root nabu
+cd /srv/www/nabu/current
+RAILS_ENV=production rake sunspot:reindex
+```
+
+
+restart web server
+``` bash
+cap unicorn:stop
+ps aux #kill any remaining unicorns
+cap unicorn:start
+```
+
+
+Update essence metadata of existing files in the archive
+``` bash
+ssh catalog.paradisec.org.au
+cd /srv/www/nabu/current/
+screen
+su deploy
+VERBOSE=true
+RAILS_ENV=production /usr/local/bin/bundle exec rake archive:update_files
+```
