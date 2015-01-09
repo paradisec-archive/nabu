@@ -44,6 +44,16 @@ class ItemsController < ApplicationController
   end
 
   def new
+
+    #For creating duplicate items
+    if (params[:id])
+      existing = Item.find(params[:id])
+      attributes = existing.attributes.select do |attr, value|
+        Item.column_names.include?(attr.to_s)
+      end
+      @item.assign_attributes(attributes, :without_protection => true)
+    end
+
   end
 
   def show

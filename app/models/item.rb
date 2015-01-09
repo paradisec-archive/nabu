@@ -57,7 +57,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
-  attr_accessible :identifier, :title, :external, :url, :description, :region,
+  attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,

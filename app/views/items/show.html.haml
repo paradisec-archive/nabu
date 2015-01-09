@@ -4,6 +4,9 @@
   - if can? :update, @item
     = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'
 
+  - if can? :update, @item
+    = link_to 'Duplicate Item', "/collections/#{@collection.identifier}/items/new?id=#{@item.id}", :class => 'button'
+
   - if @item.next_item
     = link_to 'Next item', [@collection, @item.next_item], :class => 'button'
   - else
