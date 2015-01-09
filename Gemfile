@@ -28,6 +28,7 @@ gem 'country-select'
 gem 'activeadmin'
 gem 'sass-rails',  '~> 3.2.3'
 gem 'meta_search', '>= 1.1.0.pre'
+gem 'sass', '3.2.10'
 
 # Authentications
 gem 'devise', '2.2.3'

@@ -275,7 +275,7 @@ GEM
     ruby-filemagic (0.4.2)
     ruby-ole (1.2.11.6)
     rubyzip (0.9.9)
-    sass (3.2.14)
+    sass (3.2.10)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
@@ -381,6 +381,7 @@ DEPENDENCIES
   rollbar
   rspec-rails (~> 2.0)
   ruby-filemagic
+  sass (= 3.2.10)
   sass-rails (~> 3.2.3)
   sextant
   spreadsheet
