@@ -170,6 +170,7 @@ class Item < ActiveRecord::Base
     text :data_categories do
       data_categories.map(&:name)
     end
+    #Add extra search terms here once the search is working again!
 
     # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true

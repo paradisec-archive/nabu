@@ -25,3 +25,4 @@ test:
     bind_address: 127.0.0.1
     port: 8981
     log_level: WARNING
+    path: /solr/default
