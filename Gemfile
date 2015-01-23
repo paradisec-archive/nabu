@@ -39,8 +39,8 @@ gem 'squeel'
 gem 'nilify_blanks'
 
 # Search
-gem 'sunspot_solr', github: 'sunspot/sunspot', branch: 'master'
-gem 'sunspot_rails', github: 'sunspot/sunspot', branch: 'master'
+gem 'sunspot_solr', '~> 2.0.0'
+gem 'sunspot_rails', '~> 2.0.0'
 
 # Web Server
 gem 'unicorn'
