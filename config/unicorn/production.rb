@@ -6,9 +6,6 @@ preload_app true
 timeout 300
 listen '/srv/www/nabu/shared/sockets/unicorn.sock'
 
-# Spawn unicorn master worker for user apps (group: apps)
-user 'deploy', 'deploy'
-
 # Fill path to your app
 working_directory app_path
 

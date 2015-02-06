@@ -1,16 +1,16 @@
-role :web, 'catalog.paradisec.org.au'
-role :app, 'catalog.paradisec.org.au'
-role :db,  'catalog.paradisec.org.au', :primary => true # This is where Rails migrations will run
+role :web, '144.6.225.96'
+role :app, '144.6.225.96'
+role :db,  '144.6.225.96', :primary => true # This is where Rails migrations will run
 
 set :rails_env,   'production'
 set :unicorn_env, 'production'
 set :app_env,     'production'
 set :application, 'nabu'
-set :repository,  'git@github.com:nabu-catalog/nabu'
+set :repository,  'git@github.com:WillBagley/nabu'
 set :scm, :git
 
 set :deploy_to, "/srv/www/#{application}"
-set :user, 'deploy'
+set :user, 'ubuntu'
 set :use_sudo, false
 set :deploy_via, :remote_cache
 set :keep_releases, 5
@@ -82,6 +82,18 @@ task :notify_rollbar, :roles => :app do
   run "curl https://api.rollbar.com/api/1/deploy/ -F access_token=#{rollbar_token} -F environment=#{rails_env} -F revision=#{revision} -F local_username=#{local_user} >/dev/null 2>&1", :once => true
 end
 after :deploy, 'notify_rollbar'
+
+namespace :rails do
+  desc "Remote console"
+  task :console, roles: :app do
+    run_interactively "bundle exec rails console #{rails_env}"
+  end
+end
+
+def run_interactively(command, server=nil)
+  server ||= find_servers_for_task(current_task).first
+  exec %Q(ssh -l #{user} #{server} -t 'cd #{current_path} && #{command}')
+end
 
 require 'bundler/capistrano'
 require 'capistrano-unicorn'
