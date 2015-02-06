@@ -170,7 +170,21 @@ class Item < ActiveRecord::Base
     text :data_categories do
       data_categories.map(&:name)
     end
-    #Add extra search terms here once the search is working again!
+    text :filename do
+      essences.map(&:filename)
+    end
+    text :mimetype do
+      essences.map(&:mimetype)
+    end
+    text :fps do
+      essences.map(&:fps)
+    end
+    text :samplerate do
+      essences.map(&:samplerate)
+    end
+    text :channels do
+      essences.map(&:channels)
+    end
 
     # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true
@@ -227,6 +241,12 @@ class Item < ActiveRecord::Base
     end
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
+    end
+    string :filename, multiple: true do
+      essences.map(&:filename)
+    end
+    string :mimetype, multiple: true do
+      essences.map(&:mimetype)
     end
 
     # Things we want to check blankness of

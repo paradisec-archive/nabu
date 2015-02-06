@@ -196,6 +196,7 @@ class ItemsController < ApplicationController
   end
 
   def do_search
+    puts params
     @fields = Sunspot::Setup.for(Item).fields
     @text_fields = Sunspot::Setup.for(Item).all_text_fields
     @search = Item.solr_search do
