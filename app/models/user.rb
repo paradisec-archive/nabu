@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{last_name first_name id address adress2 country email phone admin contact_only}
+    %w{last_name first_name id address address2 country email phone admin contact_only}
   end
 
   def name
