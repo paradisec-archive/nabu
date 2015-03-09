@@ -1,4 +1,7 @@
 class ItemsController < ApplicationController
+  # store and retrieve search params in session to mimic result set behaviour and allow 'return to last search' action
+  # FIXME: this re-runs the search every time, and may become resource intensive if the datastore gets large
+  # FIXME: may be worth just re-implementing result sets
   before_filter :manage_session_search_params, :only => [:search, :advanced_search]
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
