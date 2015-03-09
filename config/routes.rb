@@ -19,6 +19,7 @@ Nabu::Application.routes.draw do
   resources :data_categories, :only => [:index, :show]
   resources :collections do
     collection do
+      get 'last_search' => 'collections#return_to_last_search'
       get 'search' => 'collections#search'
       get 'advanced_search' => 'collections#advanced_search'
       get 'bulk_update' => 'collections#bulk_edit'

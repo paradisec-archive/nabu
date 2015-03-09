@@ -1,28 +1,13 @@
 class ItemsController < ApplicationController
-  # store and retrieve search params in session to mimic result set behaviour and allow 'return to last search' action
-  # FIXME: this re-runs the search every time, and may become resource intensive if the datastore gets large
-  # FIXME: may be worth just re-implementing result sets
-  before_filter :manage_session_search_params, :only => [:search, :advanced_search]
+  include HasReturnToLastSearch
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
-  authorize_resource :only => [:return_to_last_search, :advanced_search, :bulk_update, :bulk_edit]
-
-  def return_to_last_search
-    if session[:search_item_from] and session[:search_item_params]
-      redirect_to session.delete(:search_item_from).merge(session.delete(:search_item_params))
-      return #avoid falling through to default redirect
-    end
-
-    # fall back to search page
-    redirect_to search_items_path
-  end
+  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
   def search
     if params[:clear]
-      session.delete(:search_item_from)
-      session.delete(:search_item_params)
       params.delete(:search)
       redirect_to search_items_path
       return
@@ -186,32 +171,6 @@ class ItemsController < ApplicationController
   end
 
   private
-
-  # utility method to keep the multiple uses of this proc consistent w/ no typos
-  def only_action_params
-    Proc.new {|k,v| %w(controller action).include?(k)}
-  end
-
-  def should_apply_session_params?
-    # if we're coming to the same page (e.g. visiting basic search with saved basic search)...
-    if session[:search_item_from] == params.select(&only_action_params)
-      # ... and there are saved params
-      return session[:search_item_params].present?
-    end
-    false
-  end
-
-  # store or retrieve search params to mimic result sets
-  def manage_session_search_params
-    if (params.keys - %w(action controller utf8)).any?
-      session[:search_item_from] = params.select(&only_action_params)
-      session[:search_item_params] = params.reject(&only_action_params)
-    elsif should_apply_session_params?
-      redirect_to session.delete(:search_item_from).merge(session.delete(:search_item_params))
-    end
-
-    true
-  end
 
   def tidy_params
     if params[:item]
