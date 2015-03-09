@@ -268,6 +268,13 @@
     = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
 
 
+  - if can? :manage, @item
+    .left{style: 'border: 1px solid grey; border-radius: 0.4rem; padding: 0.2rem;'}
+      = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
+        = submit_tag 'Inherit from Collection', class: 'button'
+        = check_box_tag :override_existing
+        = label_tag :override_existing, 'Override Existing Values?'
+
   - if can? :update, @item
     .right
       = link_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this item?'
