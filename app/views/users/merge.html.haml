@@ -1,0 +1,157 @@
+:javascript
+  function importFields(event) {
+    event.preventDefault();
+    jQuery('.twoup-2 select').each(function () {
+      importFieldFromDup(jQuery(this));
+    });
+  }
+
+  function importFieldFromDup($selectSibling) {
+    var value = $selectSibling.val();
+
+    $targetField = jQuery('.twoup-1').find('#user_'+$selectSibling.attr('id'));
+
+    if ($targetField.attr('type') == 'checkbox') {
+      $targetField.prop('checked', (value == 'true'));
+      value = (value == 'true' ? '1' : '0');
+    }
+
+    $targetField.val(value);
+  }
+
+= form_for @user, url: merge_user_path do |f|
+  - if @user.errors.any?
+    #error_explanation
+      %h2== #{pluralize(@user.errors.count, 'error')} prohibited this merged user from being saved:
+      %ul
+        - @user.errors.full_messages.each do |msg|
+          %li= msg
+
+  .left
+    %h1 Merge user details
+
+  .clear{:style => "padding-top: 7px"}
+
+  .twoup-1
+    %fieldset
+      %table.form
+        %tr
+          %th= f.label :first_name, '* First name'
+          %td
+            = f.text_field :first_name, type: :hidden
+            %em= @user.first_name
+
+        %tr
+          %th= f.label :last_name, '* Last name'
+          %td
+            = f.text_field :last_name, type: :hidden
+            %em= @user.last_name
+
+        %tr
+          %th= f.label :email, '* Email'
+          %td= f.text_field :email
+
+        %tr
+          %th= f.label :address
+          %td= f.text_field :address
+
+        %tr
+          %th= f.label :address2, 'Address'
+          %td= f.text_field :address2
+
+        %tr
+          %th= f.label :country
+          %td= f.text_field :country
+
+        %tr
+          %th= f.label :phone
+          %td= f.text_field :phone, :autocomplete => :off
+
+        - if admin_user_signed_in?
+          %tr
+            %th
+              Access level:
+            %td
+              = f.check_box :admin
+              = f.label :admin
+
+          %tr
+            %th
+              Contact Only:
+            %td
+              = f.check_box :contact_only
+              = f.label :contact_only
+          -# FIXME: Work out what to do with these fields, and password fields as well
+          -#
+          -#%tr
+          -#  %th= f.label :rights_transferred_to_id
+          -#  %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'select2'
+          -#
+          -#%tr
+          -#  %th= f.label :rights_transfer_reason
+          -#  %td= f.text_field :rights_transfer_reason, :autocomplete => :off
+          -#
+          -#%tr
+          -#  %th= f.label 'NLA Persistent Identifier'
+          -#  %td= f.text_field :party_identifier, :autocomplete => :off
+    .right
+      = link_to 'Cancel', user_path, :class => 'button'
+      = f.submit 'Complete Merge', 'data-confirm' => "This action will delete all other users with the same name and assign their items to this user.\n\nAre you sure you want to continue?"
+
+  .twoup-2
+    %fieldset
+      %table.form
+        %tr
+          %td
+            %em= @user.first_name
+        %tr
+          %td
+            %em= @user.last_name
+        %tr
+          %td
+            = select_tag :email, options_for_select(@merge_user.email)
+
+        %tr
+          %td
+            = select_tag :address, options_for_select(@merge_user.address)
+
+        %tr
+          %td
+            = select_tag :address2, options_for_select(@merge_user.address2)
+
+        %tr
+          %td
+            = select_tag :country, options_for_select(@merge_user.country)
+
+        %tr
+          %td
+            = select_tag :phone, options_for_select(@merge_user.phone)
+
+        - if admin_user_signed_in?
+          %tr
+            %td
+              %label Admin?
+              = select_tag :admin, options_for_select(@merge_user.admin)
+
+          %tr
+            %td
+              %label Contact Only?
+              = select_tag :contact_only, options_for_select(@merge_user.contact_only)
+
+          %tr
+            %td
+              %button{style: 'float: right;', onclick: 'importFields(event); return false;'} Apply Selected Changes
+          -#%tr
+          -#  %td
+          -#    
+          -#    = select_tag :admin, options_for_select(@merge_user.admin)
+          -#
+          -#%tr
+          -#  %td
+          -#    
+          -#    = f.text_field :rights_transfer_reason, :autocomplete => :off
+          -#
+          -#%tr
+          -#  %td
+          -#    
+          -#    = f.text_field :party_identifier, :autocomplete => :off

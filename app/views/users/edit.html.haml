@@ -95,6 +95,14 @@
             %br
             %i (we need your current password to confirm your changes)
 
-    .right
-      = link_to 'Cancel', users_path, :class => 'button'
-      = f.submit 'Save user'
+    -if admin_user_signed_in? and User.duplicates_of(@user.first_name, @user.last_name).any?
+      %fieldset
+        %h3 Potential duplicate accounts
+        %p
+          There are multiple accounts with the same user name in the system.<br/>
+          For more details, or to merge accounts,
+          %a{href: merge_user_path} click here
+
+  .right
+    = link_to 'Cancel', dashboard_path, :class => 'button'
+    = f.submit 'Save user'

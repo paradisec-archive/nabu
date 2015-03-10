@@ -32,6 +32,16 @@ class User < ActiveRecord::Base
 
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
 
+  # find all users with multiple entries by name
+  scope :all_duplicates, select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1')
+
+  # find identifying info for single user with duplicates
+  scope :duplicates_of, ->(first, last) {
+    User.joins('''inner join (select first_name, last_name from users group by first_name, last_name having count(*) > 1) d
+            on users.first_name = d.first_name and users.last_name = d.last_name''')
+      .where(first_name: first, last_name: last)
+  }
+
   scope :users, where(:contact_only => false)
   scope :contacts, where(:contact_only => true)
   scope :admins, where(:admin => true)

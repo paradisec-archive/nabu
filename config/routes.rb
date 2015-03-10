@@ -13,7 +13,12 @@ Nabu::Application.routes.draw do
 
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 
-  resources :users
+  resources :users do
+    member do
+      get 'merge'
+      put 'merge' => 'users#merge'
+    end
+  end
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
   resources :data_categories, :only => [:index, :show]
