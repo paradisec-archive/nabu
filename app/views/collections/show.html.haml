@@ -154,14 +154,18 @@
               = @collection.field_of_research.name_with_identifier
 
         %tr
-          %th Funding body
+          %th Funding bodies / Grant IDs
           %td
-            -if @collection.funding_body
-              = @collection.funding_body.name
-
-        %tr
-          %th Grant identifier
-          %td= h(@collection.full_grant_identifier).gsub(/\n/, '<br/>').html_safe
+            %ul{style: 'margin: 0;'}
+              -@collection.funding_bodies.each do |funding_body|
+                %li
+                  %span= funding_body.name
+                  -if @collection.grant_identifier.present?
+                    -grant_id = @collection.full_grant_identifier(funding_body).strip
+                    -if grant_id =~ /^http/
+                      %a{href: grant_id, style: 'padding: 0;'}= "(#{grant_id})"
+                    -else
+                      %span="(#{grant_id})"
         %tr
           %th #Items in collections
           %td= number_to_human @num_items
