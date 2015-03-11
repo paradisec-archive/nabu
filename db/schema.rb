@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130908073708) do
+ActiveRecord::Schema.define(:version => 20150311051003) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -276,6 +276,17 @@ ActiveRecord::Schema.define(:version => 20130908073708) do
   end
 
   add_index "languages", ["code"], :name => "index_languages_on_code", :unique => true
+
+  create_table "latlon_boundaries", :force => true do |t|
+    t.integer "country_id",                                                   :null => false
+    t.decimal "east_limit",  :precision => 6, :scale => 3,                    :null => false
+    t.decimal "west_limit",  :precision => 6, :scale => 3,                    :null => false
+    t.decimal "north_limit", :precision => 6, :scale => 3,                    :null => false
+    t.decimal "south_limit", :precision => 6, :scale => 3,                    :null => false
+    t.boolean "wrapped",                                   :default => false
+  end
+
+  add_index "latlon_boundaries", ["country_id"], :name => "index_latlon_boundaries_on_country_id"
 
   create_table "universities", :force => true do |t|
     t.string   "name"
