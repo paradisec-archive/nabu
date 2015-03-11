@@ -174,6 +174,11 @@
 
 
     .right
-      -confirm_message = (@collection.items.any? ? "This collection contains items which will be permanently deleted if you continue - This action can not be undone!\n\n" : '')
-      = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', :confirm => "#{confirm_message}Do you really want to delete this collection?"
-      = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
+      -if @collection.items.any?
+        %p{style: 'border: 2px solid #880022; padding: 0.2rem; text-align: center;'}
+          %strong This collection contains items. If you choose to delete it, they will be deleted as well as any content files they contain. This action can not be undone!
+        = link_to 'Delete collection and contents', collection_path(@collection, delete_items: true), :method => :delete,
+          :class => 'button', :confirm => 'Do you really want to delete this collection and all of its items?'
+      -else
+        = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this collection?'
+      = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button right'

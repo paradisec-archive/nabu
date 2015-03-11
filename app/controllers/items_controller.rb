@@ -82,29 +82,14 @@ class ItemsController < ApplicationController
   end
 
   def destroy
-    begin
-      essence_destruction_errors = delete_essences if params[:delete_essences]
+    response = ItemDestructionService.new(@item, params[:delete_essences]).destroy
 
-      @item.destroy
-      # remove directory and PDSC_ADMIN files on disk
-      delete_directory(@item)
+    flash[:notice] = response[:messages][:notice]
+    flash[:error] = response[:messages][:error]
 
-      if params[:delete_essences]
-        flash[:notice] = 'Item and all its contents removed permanently (no undo possible)'
-
-        # if there were any issues deleting the essence files, show them as well
-        if essence_destruction_errors.present?
-          flash[:error] = "Some errors occurred while removing dependent essence files:<br/>\n#{essence_destruction_errors}"
-        end
-      else
-        undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
-        flash[:notice] = "Item removed successfully (#{undo_link})."
-      end
+    if response[:success]
       redirect_to @collection
-    rescue ActiveRecord::DeleteRestrictionError => e
-      puts e.message
-      puts e.backtrace.join("\n")
-      flash[:error] = 'Item has content files and cannot be removed.'
+    else
       redirect_to [@collection, @item]
     end
   end
@@ -184,17 +169,6 @@ class ItemsController < ApplicationController
 
 
   private
-
-  def delete_essences
-    # delete all related essences and collect up the response messages
-    messages = @item.essences.collect do |ess|
-      EssenceDestructionService.destroy(ess)
-    end
-    @item.essences = [] # force item to have no essences
-
-    # only bother returning errors
-    messages.collect {|msg| msg[:error]}.uniq.join("<br/>\n")
-  end
 
   def tidy_params
     if params[:item]
@@ -308,16 +282,5 @@ class ItemsController < ApplicationController
     data = render_to_string :template => 'items/show.xml.haml'
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     file = File.open(file, 'w') {|f| f.write(data)}
-  end
-
-  def delete_directory(item)
-    return if !File.directory?(Nabu::Application.config.archive_directory)
-    directory = Nabu::Application.config.archive_directory +
-                "#{item.collection.identifier}/#{item.identifier}/"
-    return if !File.directory?(directory)
-    # delete all PDSC_ADMIN files
-    file = directory + "#{item.full_identifier}*-PDSC_ADMIN.*"
-    FileUtils.rm_f(file)
-    FileUtils.rmdir(directory)
   end
 end
