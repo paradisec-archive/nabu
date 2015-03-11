@@ -83,14 +83,28 @@ class ItemsController < ApplicationController
 
   def destroy
     begin
+      essence_destruction_errors = delete_essences if params[:delete_essences]
+
       @item.destroy
-      undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
       # remove directory and PDSC_ADMIN files on disk
       delete_directory(@item)
-      flash[:notice] = "Item removed successfully (#{undo_link})."
+
+      if params[:delete_essences]
+        flash[:notice] = 'Item and all its contents removed permanently (no undo possible)'
+
+        # if there were any issues deleting the essence files, show them as well
+        if essence_destruction_errors.present?
+          flash[:error] = "Some errors occurred while removing dependent essence files:<br/>\n#{essence_destruction_errors}"
+        end
+      else
+        undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+        flash[:notice] = "Item removed successfully (#{undo_link})."
+      end
       redirect_to @collection
-    rescue ActiveRecord::DeleteRestrictionError
-      flash[:error] = "Item has content files and cannot be removed."
+    rescue ActiveRecord::DeleteRestrictionError => e
+      puts e.message
+      puts e.backtrace.join("\n")
+      flash[:error] = 'Item has content files and cannot be removed.'
       redirect_to [@collection, @item]
     end
   end
@@ -170,6 +184,18 @@ class ItemsController < ApplicationController
 
 
   private
+
+  def delete_essences
+    # delete all related essences and collect up the response messages
+    messages = @item.essences.collect do |ess|
+      EssenceDestructionService.destroy(ess)
+    end
+    @item.essences = [] # force item to have no essences
+
+    # only bother returning errors
+    messages.collect {|msg| msg[:error]}.uniq.join("<br/>\n")
+  end
+
   def tidy_params
     if params[:item]
       params[:item][:item_agents_attributes] ||= {}

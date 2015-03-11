@@ -174,5 +174,6 @@
 
 
     .right
-      = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this collection?'
+      -confirm_message = (@collection.items.any? ? "This collection contains items which will be permanently deleted if you continue - This action can not be undone!\n\n" : '')
+      = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', :confirm => "#{confirm_message}Do you really want to delete this collection?"
       = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
