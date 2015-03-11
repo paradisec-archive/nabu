@@ -61,22 +61,4 @@ class UsersController < ApplicationController
       render :action => 'edit'
     end
   end
-
-  def merge
-    @primary_user = @user || User.find(params[:id])
-    dups = User.duplicates_of(@primary_user.first_name, @primary_user.last_name)
-    @merge_user = MergeUser.new(dups)
-
-    if params[:user]
-      # get the updated parameters from the form merge
-      @primary_user.assign_attributes(params[:user], :as => current_user.admin? ? :admin : nil)
-
-      # then do all the underlying ownership changes
-      if UserMergerService.new(@primary_user, dups).call
-        redirect_to edit_user_path, notice: "Successfully merged user! [#{@primary_user.name}]"
-      else
-        redirect_to merge_user_path, alert: "Failed to merge user! [#{@primary_user.name}]"
-      end
-    end
-  end
 end

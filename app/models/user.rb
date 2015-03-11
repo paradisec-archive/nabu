@@ -68,6 +68,10 @@ class User < ActiveRecord::Base
     "#{last_name} #{first_name}"
   end
 
+  def identifiable_name
+    "#{id} - #{first_name} #{last_name} - #{email}"
+  end
+
   def admin?
     admin
   end
