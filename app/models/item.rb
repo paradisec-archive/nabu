@@ -139,6 +139,8 @@ class Item < ActiveRecord::Base
   end
 
   def inherit_details_from_collection(override = false)
+    return unless collection
+
     inherited_attributes = {
       subject_languages: collection.languages,
       content_languages: collection.languages,
@@ -153,7 +155,10 @@ class Item < ActiveRecord::Base
 
     unless override
       # by default, only inherit attributes which don't already have a value
-      existing_attributes = Hash[inherited_attributes.keys.map {|key| [key.to_sym, self.send(key)] }]
+      existing_attributes = Hash[inherited_attributes.keys.map do |key|
+                                   val = self.send(key)
+                                   [key.to_sym, val] unless val == nil or val.blank?
+                                 end]
       # -> this merge causes the current attribute value to replace the inherited one before we update
       inherited_attributes = inherited_attributes.merge(existing_attributes)
     end
