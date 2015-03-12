@@ -95,7 +95,8 @@ class CollectionsController < ApplicationController
         if item_destruction_errors.length <= 5
           item_destruction_errors = item_destruction_errors.join("<br/>\n")
         else
-          item_destruction_errors = "There were #{item_destruction_errors.length} non-fatal errors while destroying collection."
+          item_destruction_errors = "Encountered #{item_destruction_errors.length} warnings (often caused by missing files) while deleting the collection."
+          item_destruction_errors += "<br/>\n\tYou may want to contact the administrators and confirm that nothing bad happened." if item_destruction_errors.length > 10
         end
 
         @collection.items = []
