@@ -81,6 +81,9 @@
 
     %div.split-panel.right#merge-user
       %h3 Users to be merged into primary user
+      %h4
+        %em Selected users will be deleted, and all collections, items and access they have will be granted to the primary user
+
       -@duplicates.each do |dup|
         = f.check_box :to_merge, {multiple: true, checked: true}, dup.id, nil
         = f.label :to_merge, dup.identifiable_name
