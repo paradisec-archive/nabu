@@ -12,9 +12,6 @@ class Country < ActiveRecord::Base
   has_many :countries_languages
   has_many :languages, :through => :countries_languages, :dependent => :restrict
 
-  has_many :item_languages
-  has_many :items, :through => :item_languages, :dependent => :restrict
-
   has_many :collection_languages
   has_many :collections, :through => :collection_languages, :dependent => :restrict
 
