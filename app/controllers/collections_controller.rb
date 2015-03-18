@@ -87,12 +87,39 @@ class CollectionsController < ApplicationController
 
   def destroy
     begin
+      if params[:delete_items]
+        item_destruction_errors = @collection.items.collect do |item|
+          response = ItemDestructionService.new(item, true).destroy
+          response[:messages][:error]
+        end.uniq
+
+        # if there are only a couple, show them, otherwise report the total number
+        if item_destruction_errors.length <= 5
+          item_destruction_errors = item_destruction_errors.join("<br/>\n")
+        else
+          item_destruction_errors = "Encountered #{item_destruction_errors.length} warnings (often caused by missing files) while deleting the collection."
+          item_destruction_errors += "<br/>\n\tYou may want to contact the administrators and confirm that nothing bad happened." if item_destruction_errors.length > 10
+        end
+
+        @collection.items = []
+      end
+
       @collection.destroy
-      undo_link = view_context.link_to("undo", revert_version_path(@collection.versions.last), :method => :post, :class => 'undo')
-      flash[:notice] = "Collection removed successfully (#{undo_link})."
+
+      if params[:delete_items]
+        flash[:notice] = 'Collection and all its items removed permanently (no undo possible)'
+      else
+        undo_link = view_context.link_to("undo", revert_version_path(@collection.versions.last), :method => :post, :class => 'undo')
+        flash[:notice] = "Collection removed successfully (#{undo_link})."
+      end
+
+      if item_destruction_errors.present?
+        flash[:error] = "Some errors occurred while removing dependent items:<br/>\n#{item_destruction_errors}"
+      end
+
       redirect_to search_collections_path
     rescue ActiveRecord::DeleteRestrictionError
-      flash[:error] = "Collection has items and cannot be removed."
+      flash[:error] = 'Collection has items and cannot be removed.'
       redirect_to @collection
     end
   end

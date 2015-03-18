@@ -37,15 +37,9 @@ class EssencesController < ApplicationController
   end
 
   def destroy
-    output = %x{rm #{@essence.path} 2>&1}
-    result = $?
     item = @essence.item
-    @essence.destroy
-    if result.success?
-      flash[:notice] = "Essence removed successfully, also from archive (undo not possible)."
-    else
-      flash[:error] = "Essence removed, but file removing had error: #{output}"
-    end
+    message = EssenceDestructionService.destroy(@essence)
+    flash[message.keys.first] = message.values.first # there's only one pair
     redirect_to [item.collection, item]
   end
 end

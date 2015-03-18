@@ -282,5 +282,11 @@
 
   - if can? :update, @item
     .right
-      = link_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this item?'
-      = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'
+      -if @item.essences.any?
+        %p{style: 'border: 2px solid #880022; padding: 0.2rem; text-align: center;'}
+          %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
+        = link_to 'Delete item and contents', collection_item_path(@collection, @item, delete_essences: true), :method => :delete,
+          :class => 'button', :confirm => 'Do you really want to delete this item and all of its content files?'
+      -else
+        = link_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this item?'
+      = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button right', style: 'margin-left: 0.4rem;'
