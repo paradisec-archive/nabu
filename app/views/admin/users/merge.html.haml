@@ -1,0 +1,94 @@
+.panel_contents
+  = form_for @primary_user, url: do_merge_admin_user_path do |f|
+    - if @primary_user.errors.any?
+      #error_explanation
+        %h2== #{pluralize(@primary_user.errors.count, 'error')} prohibited this merged user from being saved:
+        %ul
+          - @primary_user.errors.full_messages.each do |msg|
+            %li= msg
+
+    .left
+      %h1 Merge user details
+
+    .clear{:style => "padding-top: 7px; clear: both;"}
+
+    %div.split-panel.left#primary-user
+      %h3 Primary user details
+      %h4
+        %em Select preferred details from available options
+      %h5
+      %fieldset
+        %table.form
+          %tr
+            %th= f.label :first_name, '* First name'
+            %td
+              = f.text_field :first_name, type: :hidden
+              %em= @primary_user.first_name
+
+          %tr
+            %th= f.label :last_name, '* Last name'
+            %td
+              = f.text_field :last_name, type: :hidden
+              %em= @primary_user.last_name
+
+          %tr
+            %th= f.label :email, '* Email'
+            %td= f.select :email, @merge_user.email
+
+          %tr
+            %th= f.label :address
+            %td= f.select :address, @merge_user.address
+
+          %tr
+            %th= f.label :address2, 'Address'
+            %td= f.select :address2, @merge_user.address2
+
+          %tr
+            %th= f.label :country
+            %td= f.select :country, @merge_user.country
+
+          %tr
+            %th= f.label :phone
+            %td= f.select :phone, @merge_user.phone
+
+          - if admin_user_signed_in?
+            %tr
+              %th
+                Access level:
+              %td
+                = f.select :admin, @merge_user.admin
+                = f.label :admin
+
+            %tr
+              %th
+                Contact Only:
+              %td
+                = f.select :contact_only, @merge_user.contact_only
+                = f.label :contact_only
+            -# FIXME: Work out what to do with these fields, and password fields as well
+            -#
+            -#%tr
+            -#  %th= f.label :rights_transferred_to_id
+            -#  %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'select2'
+            -#
+            -#%tr
+            -#  %th= f.label :rights_transfer_reason
+            -#  %td= f.text_field :rights_transfer_reason, :autocomplete => :off
+            -#
+            -#%tr
+            -#  %th= f.label 'NLA Persistent Identifier'
+            -#  %td= f.text_field :party_identifier, :autocomplete => :off
+
+    %div.split-panel.right#merge-user
+      %h3 Users to be merged into primary user
+      %h4
+        %em Selected users will be deleted, and all collections, items and access they have will be granted to the primary user
+
+      -@duplicates.each do |dup|
+        = f.check_box :to_merge, {multiple: true, checked: true}, dup.id, nil
+        = f.label :to_merge, dup.identifiable_name
+        = link_to '[Select as primary]', merge_admin_user_path(dup), style: 'margin-left: 1rem'
+
+    .right{style: 'clear: both;'}
+      = link_to 'Cancel', admin_user_path, :class => 'button'
+      = f.submit 'Complete Merge', 'data-confirm' => "This action will delete all other users with the same name and assign their items to this user.\n\nAre you sure you want to continue?"

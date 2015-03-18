@@ -51,6 +51,38 @@ ActiveAdmin.register User do
   filter :contact_only
   filter :admin
 
+  action_item do
+    if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).any?
+      link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
+    end
+  end
+
+  member_action :merge, method: :get do
+    @primary_user = resource || User.find(params[:id])
+    @duplicates = User.duplicates_of(@primary_user.first_name, @primary_user.last_name)
+    @merge_user = MergeUser.new(@duplicates)
+    # so we don't merge the primary one
+    @duplicates = @duplicates.reject {|d| d.id == @primary_user.id}
+  end
+
+  member_action :do_merge, method: :put do
+    if params[:user]
+      ids_to_merge = params[:user].delete(:to_merge) # extract the user ids to merge
+
+      @primary_user ||= resource || User.find(params[:id])
+      # get the updated parameters from the form merge
+      @primary_user.assign_attributes(params[:user], as: :admin)
+
+      if ids_to_merge and ids_to_merge.present? and UserMergerService.new(@primary_user, User.find(ids_to_merge)).call
+        redirect_to edit_admin_user_path, notice: "Successfully merged user! [#{@primary_user.name}]" and return
+      else
+        flash[:alert] = 'Must select 1 or more duplicate users to perform merge'
+      end
+
+      redirect_to merge_admin_user_path
+    end
+  end
+
   # index page
   index do
     id_column
@@ -105,6 +137,8 @@ ActiveAdmin.register User do
 
   # edit page
   form do |f|
+    link_to 'Merge User', controller: :users, action: :merge, style: 'float: right;'
+
     f.inputs "User Details" do
       f.input :first_name
       f.input :last_name
