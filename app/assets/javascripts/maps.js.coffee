@@ -1,7 +1,6 @@
 $(document).ready ->
   if (typeof google == 'object')
-    $('#set-map-from-language').click ->
-      language_ids = $('.language').val().split(/,/)
+    set_map_bounds_from_ajax = (path, ids) ->
       north_limit = null
       south_limit = null
       east_limit = null
@@ -11,10 +10,10 @@ $(document).ready ->
 
       map = $('.map').data('map')
 
-      for language_id in language_ids
+      for id in ids
         data = {}
         $.ajax(
-          url: '/languages/' + language_id,
+          url: path + id + "?location_only=true",
           dataType: 'json',
           async: false,
           success: (object) ->
@@ -50,6 +49,14 @@ $(document).ready ->
 
       $('.map').trigger('update_map')
       false
+
+    $('#set-map-from-country').click ->
+      country_ids = $('.country').val().split(/,/)
+      set_map_bounds_from_ajax('/countries/', country_ids)
+
+    $('#set-map-from-language').click ->
+      language_ids = $('.language').val().split(/,/)
+      set_map_bounds_from_ajax('/languages/', language_ids)
 
     $('.map').bind 'update_map', (event) ->
       north_limit = $('.north_limit').val() || $(this).data('north-limit') || 80

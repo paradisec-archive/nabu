@@ -10,6 +10,10 @@ class CountriesController < ApplicationController
   end
 
   def show
-    respond_with @country
+    if params[:location_only]
+      respond_with @country.latlon_boundary
+    else
+      respond_with @country
+    end
   end
 end

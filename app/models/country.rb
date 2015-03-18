@@ -15,4 +15,5 @@ class Country < ActiveRecord::Base
   has_many :collection_languages
   has_many :collections, :through => :collection_languages, :dependent => :restrict
 
+  has_one :latlon_boundary
 end
