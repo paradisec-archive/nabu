@@ -58,6 +58,10 @@ class User < ActiveRecord::Base
     "#{last_name} #{first_name}"
   end
 
+  def display_label
+    "#{name}#{!contact_only? ? ' <em>[user]</em>' : ''}"
+  end
+
   def admin?
     admin
   end

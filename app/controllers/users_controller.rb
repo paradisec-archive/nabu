@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render :json => @users.map {|u| {:id => u.id, :name => u.name}}
+        render :json => @users.map {|u| {:id => u.id, :name => u.display_label}}
       end
     end
   end
