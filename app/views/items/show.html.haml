@@ -1,3 +1,7 @@
+-if session[:search_from]
+  .left
+    =link_to 'Return To Results', last_search_items_path, :class => 'button'
+
 .right
   = link_to 'Previous item', [@collection, @item.prev_item], :class => 'button' if @item.prev_item
 

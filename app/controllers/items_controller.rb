@@ -1,7 +1,9 @@
 class ItemsController < ApplicationController
+  include HasReturnToLastSearch
+
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
-  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
-  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:search, :advanced_search, :bulk_update, :bulk_edit]
+  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
+  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
   def search
@@ -168,8 +170,8 @@ class ItemsController < ApplicationController
     send_file @item.path, :disposition => 'inline', :type => 'text/xml'
   end
 
-
   private
+
   def tidy_params
     if params[:item]
       params[:item][:item_agents_attributes] ||= {}

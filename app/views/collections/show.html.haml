@@ -1,3 +1,6 @@
+-if session[:search_from]
+  .left
+    =link_to 'Return To Results', last_search_collections_path, :class => 'button'
 
 .right
   - if can? :manage, @collection
