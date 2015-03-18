@@ -7,7 +7,7 @@ class Collection < ActiveRecord::Base
   belongs_to :university
   belongs_to :field_of_research
   belongs_to :access_condition
-  belongs_to :funding_body
+  has_and_belongs_to_many :funding_bodies
 
   has_many :items, :dependent => :restrict
   accepts_nested_attributes_for :items
@@ -44,7 +44,7 @@ class Collection < ActiveRecord::Base
   attr_accessible :identifier, :title, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
-                  :funding_body_id, :grant_identifier,
+                  :funding_body_ids, :grant_identifier,
                   :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
@@ -61,7 +61,6 @@ class Collection < ActiveRecord::Base
   delegate :sortname, :to => :collector,     :prefix => true, :allow_nil => true
   delegate :name, :to => :operator,          :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition,  :prefix => true, :allow_nil => true
-  delegate :name, :to => :funding_body,      :prefix => true, :allow_nil => true
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
   before_save :check_complete
@@ -76,12 +75,18 @@ class Collection < ActiveRecord::Base
     length = [
       :languages, :countries
     ]
+
     if present.all? {|method| self.send(method).present? } and length.all? {|method| self.send(method).size > 0} and items.any? {|item| item.originated_on.present?}
       self.complete = true
     end
   end
 
-  def full_grant_identifier
+  def funding_body_names
+    #FIXME: for csv output - need to escape
+    '"'+"#{funding_bodies.join(', ')}"+'"'
+  end
+
+  def full_grant_identifier(funding_body)
     if grant_identifier.blank?
       ""
     else
@@ -109,9 +114,6 @@ class Collection < ActiveRecord::Base
       field_of_research_name
     end
     text :grant_identifier
-    text :funding_body do
-      funding_body_name
-    end
     text :languages do
       languages.map(&:name)
     end
@@ -132,7 +134,7 @@ class Collection < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
     integer :field_of_research_id, :references => FieldOfResearch
-    integer :funding_body_id, :references => FundingBody
+    integer :funding_body_ids, :references => FundingBody, :multiple => true
     integer :admin_ids, :references => User, :multiple => true
     integer :access_condition_id, :references => AccessCondition
 
@@ -299,10 +301,10 @@ class Collection < ActiveRecord::Base
             end
           end
 
-          if funding_body
+          funding_bodies.each do |funding_body|
             xml.relatedObject do
               if grant_identifier
-                xml.key full_grant_identifier
+                xml.key full_grant_identifier(funding_body)
               else
                 xml.key funding_body.key_prefix
               end

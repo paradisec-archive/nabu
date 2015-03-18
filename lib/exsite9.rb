@@ -181,6 +181,8 @@ puts collection.inspect
         end
       end
 
+      #FIXME: add check for multiple funding bodies, and loop over them
+
       # fundingBody
       if project_info.xpath('fundingBody').first
         coll_body = project_info.xpath('fundingBody').first.content
