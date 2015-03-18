@@ -97,6 +97,18 @@ class ItemsController < ApplicationController
     end
   end
 
+  def inherit_details
+    @collection ||= @item.collection
+
+    if @item.inherit_details_from_collection(params[:override_existing])
+      flash[:notice] = 'Successfully inherited attributes from collection'
+    else
+      flash[:alert] = 'Failed to inherit attributes from collection'
+    end
+
+    redirect_to [@collection, @item]
+  end
+
   def update
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])

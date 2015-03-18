@@ -134,7 +134,40 @@ class Item < ActiveRecord::Base
 
     self.access_condition_id ||= collection.access_condition_id
     self.access_narrative ||= collection.access_narrative
+    self.private ||= collection.private
     self.admin_ids = collection.admin_ids
+  end
+
+  def inherit_details_from_collection(override = false)
+    return unless collection
+
+    inherited_attributes = {
+      subject_languages: collection.languages,
+      content_languages: collection.languages,
+      access_condition: collection.access_condition,
+      operator: collection.operator,
+      countries: collection.countries,
+      north_limit: collection.north_limit,
+      south_limit: collection.south_limit,
+      east_limit: collection.east_limit,
+      west_limit: collection.west_limit
+    }
+
+    unless override
+      # by default, only inherit attributes which don't already have a value
+      existing_attributes = Hash[inherited_attributes.keys.map do |key|
+                                   val = self.send(key)
+                                   [key.to_sym, val] unless val == nil or val.blank?
+                                 end]
+      # -> this merge causes the current attribute value to replace the inherited one before we update
+      inherited_attributes = inherited_attributes.merge(existing_attributes)
+    end
+
+    # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
+    inherited_attributes.each_pair do |key, val|
+      self.send("#{key}=", val)
+    end
+    self.save
   end
 
   def self.sortable_columns
