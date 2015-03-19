@@ -172,6 +172,13 @@
           - @item.collection.languages.each do |language|
             = language.name
             %br
+    - if can? :manage, @item
+      %div{style: 'border-top: 1px solid #BBBBBB; margin-top: 0.3rem; padding: 0.3rem; text-align: center;'}
+        = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
+          -inherit_message = 'This will populate the country, location, language, operator and access conditions from the collection.'
+          = submit_tag 'Inherit Details from Collection', class: 'button', title: inherit_message, 'data-confirm' => "#{inherit_message}\n\nDo you want to continue?"
+          = check_box_tag :override_existing
+          = label_tag :override_existing, 'Override Existing Values?'
 
   - if can? :manage, @item
     %fieldset
@@ -270,15 +277,6 @@
 
     = render :partial => 'comments/new', :locals => { :item => @item }
     = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
-
-
-  - if can? :manage, @item
-    .left{style: 'border: 1px solid grey; border-radius: 0.4rem; padding: 0.2rem;'}
-      = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
-        -inherit_message = 'This will populate the country, location, language, operator and access conditions from the collection'
-        = submit_tag 'Inherit from Collection', class: 'button', title: inherit_message, 'data-confirm' => "#{inherit_message}\n\nDo you want to continue?"
-        = check_box_tag :override_existing
-        = label_tag :override_existing, 'Override Existing Values?'
 
   - if can? :update, @item
     .right
