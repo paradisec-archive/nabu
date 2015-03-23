@@ -11,7 +11,7 @@ $(document).ready ->
       map = $('.map').data('map')
 
       for id in ids
-        data = {}
+        data = null
         $.ajax(
           url: path + id + "?location_only=true",
           dataType: 'json',
@@ -20,7 +20,7 @@ $(document).ready ->
             data = object
         )
 
-        if !data['north_limit']
+        if !data || !data['north_limit']
           continue
 
         north_limit = data['north_limit']
