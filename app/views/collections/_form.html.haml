@@ -1,3 +1,6 @@
+:coffee
+  window.$fbRowTemplate = "#{ render partial: 'collections/grants/funding_body_entry', locals: {fb_label: nil, fb_id: nil, fb_grants: nil } }";
+  window.$giRowTemplate = "#{ render partial: 'collections/grants/grant_identifier_entry', locals: {grant: nil, fb_id: nil } }";
 
 .clear
 
@@ -195,14 +198,11 @@
         %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
 
       %tr
-        %th= f.label :funding_body_ids, 'Funding bodies'
-        %td= f.collection_select :funding_body_ids, FundingBody.alpha, :id, :name_with_identifier, {:include_blank => true},
-          :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2', multiple: true
-
-      %tr
-        %th= f.label :grant_identifier
-        %td= f.text_field :grant_identifier
-        - if params[:action] == 'bulk_edit'
-          %td.append
-            %small Append
-            = f.check_box :bulk_edit_append_grant_identifier
+        %th Funding Bodies
+        %td
+          = select_tag 'funding_body_select', options_for_select(FundingBody.alpha.collect{|f| [f.name, f.id]}),
+            onchange: 'addFundingBody(event)', class: 'select2', include_blank: true, :data => {:placeholder => 'Choose a funding body...'}
+          #funding-bodies-to-delete
+          #funding-bodies
+            - @collection.grants.group_by(&:funding_body).each do |fb, grants|
+              = render partial: 'collections/grants/funding_body_entry', locals: {fb_label: fb.name, fb_id: fb.id, fb_grants: grants}

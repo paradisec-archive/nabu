@@ -27,4 +27,5 @@
 //= require add_university
 //= require copy_language
 //= require items_and_collections
+//= require dynamic_grant_identifiers
 

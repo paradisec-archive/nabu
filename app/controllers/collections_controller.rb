@@ -243,6 +243,18 @@ class CollectionsController < ApplicationController
   private
   def tidy_params
     if params[:collection]
+      # this is used to allow grants where there is a funding body but no grant id
+      if params[:collection][:grants_attributes]
+        # map the collection identifier to the underlying id
+        collection_id = Collection.where(identifier: params[:id]).pluck(:id).first
+        grants = params[:collection][:grants_attributes]
+        fbids = params[:funding_body_ids].reject {|x| grants.collect{|y| y[:funding_body_id]}.include?(x)}
+        # for each funding body that doesn't have grant ids, create an empty grant
+        params[:collection][:grants_attributes].concat fbids.collect{|x| {'funding_body_id' => x, 'grant_identifier' => nil}}
+        # apply the current collection to every item
+        params[:collection][:grants_attributes].each{ |g| g['collection_id'] = collection_id }
+      end
+
       if params[:collection][:collector_id] =~ /^NEWCONTACT:/
         params[:collection][:collector_id] = create_contact(params[:collection][:collector_id])
       end

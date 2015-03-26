@@ -1,0 +1,11 @@
+%div
+  %span= fb_label || '{{label}}'
+  %a.row-action.remove{onclick: '$(this).parent().remove(); return false;'}= "&times;".html_safe
+  %input{type: :hidden, name: 'funding_body_ids[]', value: fb_id || '{{id}}'}
+  %span{style: 'display: block; margin-top: 0.5rem;'}
+    %input{name: 'add_grant_id', placeholder: 'Enter a Grant Identifier'}
+    %a.row-action{onclick: 'addGrantId(event); return false;'} Add
+    -if fb_grants.present?
+      -fb_grants.each do |g|
+        -if g.grant_identifier.present?
+          =render partial: 'collections/grants/grant_identifier_entry', locals: {grant: g, fb_id: fb_id}

@@ -1,0 +1,7 @@
+%div.grant-id{id: grant.try(:grant_identifier) || '{{grant_id}}'}
+  %span= grant.try(:grant_identifier) || '{{grant_id}}'
+  -if grant.try(:id).present?
+    %input{type: :hidden, name: 'collection[grants_attributes][][id]', value: grant.id}
+  %input{type: :hidden, name: 'collection[grants_attributes][][funding_body_id]', value: fb_id || '{{fb_id}}'}
+  %input{type: :hidden, name: 'collection[grants_attributes][][grant_identifier]', value: grant.try(:grant_identifier) || '{{grant_id}}'}
+  %a.row-action.remove{onclick: 'deleteGrantId(event); return false;'}= "&times;".html_safe

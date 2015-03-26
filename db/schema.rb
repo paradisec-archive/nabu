@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150311051003) do
+ActiveRecord::Schema.define(:version => 20150326071034) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -83,7 +83,6 @@ ActiveRecord::Schema.define(:version => 20150311051003) do
     t.string   "tape_location"
     t.boolean  "deposit_form_received"
     t.string   "grant_identifier"
-    t.integer  "funding_body_id"
     t.float    "north_limit"
     t.float    "south_limit"
     t.float    "west_limit"
@@ -172,6 +171,12 @@ ActiveRecord::Schema.define(:version => 20150311051003) do
     t.string   "key_prefix"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "grants", :force => true do |t|
+    t.integer "collection_id"
+    t.string  "grant_identifier"
+    t.integer "funding_body_id"
   end
 
   create_table "item_admins", :force => true do |t|

@@ -7,7 +7,9 @@ class Collection < ActiveRecord::Base
   belongs_to :university
   belongs_to :field_of_research
   belongs_to :access_condition
-  has_and_belongs_to_many :funding_bodies
+
+  has_many :grants
+  accepts_nested_attributes_for :grants, allow_destroy: true
 
   has_many :items, :dependent => :restrict
   accepts_nested_attributes_for :items
@@ -36,7 +38,7 @@ class Collection < ActiveRecord::Base
     :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
     :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
     :bulk_edit_append_orthographic_notes, :bulk_edit_append_media, :bulk_edit_append_comments,
-    :bulk_edit_append_tape_location, :bulk_edit_append_grant_identifier,
+    :bulk_edit_append_tape_location,# :bulk_edit_append_grant_identifier,
     :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
   ]
   attr_reader(*bulk)
@@ -44,7 +46,7 @@ class Collection < ActiveRecord::Base
   attr_accessible :identifier, :title, :description, :region,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :operator_id, :university_id, :field_of_research_id,
-                  :funding_body_ids, :grant_identifier,
+                  :grants_attributes,
                   :language_ids, :country_ids, :admin_ids,
                   :access_condition_id,
                   :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
@@ -83,14 +85,14 @@ class Collection < ActiveRecord::Base
 
   def funding_body_names
     #FIXME: for csv output - need to escape
-    '"'+"#{funding_bodies.join(', ')}"+'"'
+    '"'+"#{grants.collect{|g| g.funding_body.name}.join(', ')}"+'"'
   end
 
-  def full_grant_identifier(funding_body)
-    if grant_identifier.blank?
+  def full_grant_identifier(grant)
+    if grant.grant_identifier.blank?
       ""
     else
-      "#{funding_body.key_prefix if funding_body}#{grant_identifier}"
+      "#{grant.funding_body.key_prefix if grant.funding_body}#{grant.grant_identifier}"
     end
   end
 
@@ -134,7 +136,7 @@ class Collection < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
     integer :field_of_research_id, :references => FieldOfResearch
-    integer :funding_body_ids, :references => FundingBody, :multiple => true
+    # integer :funding_body_ids, :references => FundingBody, :multiple => true
     integer :admin_ids, :references => User, :multiple => true
     integer :access_condition_id, :references => AccessCondition
 
@@ -301,15 +303,13 @@ class Collection < ActiveRecord::Base
             end
           end
 
-          funding_bodies.each do |funding_body|
-            xml.relatedObject do
-              if grant_identifier
-                xml.key full_grant_identifier(funding_body)
-              else
-                xml.key funding_body.key_prefix
-              end
-              xml.relation 'type' => 'isOutputOf'
+          grants.each do |grant|
+            if grant.grant_identifier.present?
+              xml.key full_grant_identifier(grant)
+            else
+              xml.key grant.funding_body.key_prefix
             end
+            xml.relation 'type' => 'isOutputOf'
           end
 
           languages.each do |language|

@@ -13,7 +13,7 @@ body.bp {
     margin: 0 0 0.5em;
   }
 
-  p.indent{
+  p.indent {
     margin: 0 0 0.5em 2.5em;
   }
 
@@ -48,7 +48,7 @@ body.bp {
   }
 
   #nav {
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     height: 36px;
     width: 100%;
     background: #617798;
@@ -176,7 +176,7 @@ body.bp {
   }
 
   table.table {
-    box-shadow: rgba(0,0,0, 0.1) 2px 2px 3px;
+    box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 3px;
     margin-bottom: 5px;
     word-break: break-word;
 
@@ -203,10 +203,16 @@ body.bp {
     }
 
     th.sortable {
-      &:after { content: " ▲▼"}
-      &.current{
-        &[data-direction="asc"]:after { content: " ▼"}
-        &[data-direction="desc"]:after { content: " ▲"}
+      &:after {
+        content: " ▲▼"
+      }
+      &.current {
+        &[data-direction="asc"]:after {
+          content: " ▼"
+        }
+        &[data-direction="desc"]:after {
+          content: " ▲"
+        }
       }
     }
 
@@ -253,7 +259,9 @@ body.bp {
     th {
       text-align: right;
       vertical-align: top;
-      label:after { content: ":" }
+      label:after {
+        content: ":"
+      }
       max-width: 200px;
       min-width: 100px;
     }
@@ -263,7 +271,7 @@ body.bp {
       height: 28px;
       padding: 4px 0;
       border: solid 1px #E5E5E5;
-      box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
       background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
       background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     }
@@ -294,7 +302,7 @@ body.bp {
     }
     border: solid 1px #E5E5E5;
     background: #FFFFFF;
-    box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
     background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     background: -ms-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
@@ -391,7 +399,7 @@ body.bp {
     font-style: italic;
   }
   .comment_body {
-    font-family: 'Lucida Console',monospace;
+    font-family: 'Lucida Console', monospace;
     input[type="submit"], button, .button {
       float: right;
     }
@@ -442,5 +450,46 @@ body.bp {
 
   .invisible {
     visibility: hidden;
+  }
+
+  #funding-bodies {
+    input {
+      width: 85%;
+      height: 1.2rem;
+      font-size: 14px;
+    }
+    a {
+      cursor: pointer;
+      &.row-action {
+        font-weight: bold;
+        position: absolute;
+        right: 0.2rem;
+        top: 0.1rem;
+      }
+      &.remove {
+        color: #cc0000;
+        &:hover {
+          color: #dd1100;
+        }
+        &:active {
+          color: #bb0033;
+        }
+      }
+    }
+    div, span {
+      position: relative;
+    }
+    > div {
+      border-bottom: 1px solid black;
+      margin: 0.2rem;
+      padding: 0.2rem;
+    }
+
+    .grant-id {
+      padding: 0.2rem 0;
+      span {
+        font-style: italic;
+      }
+    }
   }
 }

@@ -10,8 +10,8 @@ class FundingBody < ActiveRecord::Base
     "#{name} #{key_prefix}"
   end
 
-  has_and_belongs_to_many :collections,
-                          before_remove: ->{raise StandardError.new('Funding body used in collections and cannot be removed.') if collections.count > 0}
+  has_many :grants
+  has_many :collections, through: :grants, dependent: :restrict
 
   def destroy
     ok_to_destroy? ? super : self
