@@ -5,7 +5,7 @@ class EssencesController < ApplicationController
 
   def show
     unless can? :manage, @essence
-      if ['Open (subject to agreeing to PDSC access form)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
+      if ['Open (subject to agreeing to PDSC access conditions)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
         unless session["terms_#{@collection.id}"] == true
           redirect_to show_terms_collection_item_essence_path
         end
