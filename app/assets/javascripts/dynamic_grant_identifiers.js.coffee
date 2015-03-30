@@ -1,6 +1,7 @@
 @addFundingBody = (event)->
   fbid = event.target.value
   fbname = event.target.selectedOptions[0].label
+  return if fbid.length == 0
   return if $('#funding-bodies').find('input[name="funding_body_ids[]"][value="'+fbid+'"]').length > 0
   $fbRow = $fbRowTemplate.replace('{{label}}', fbname).replace(/{{id}}/g, fbid)
   $('#funding-bodies').append($fbRow)
@@ -12,6 +13,7 @@
   if /[a-zA-Z0-9_]+/.test(gid) and $parent.find('#'+gid).length == 0
     $giRow = $giRowTemplate.replace(/{{grant_id}}/gm, gid).replace(/{{fb_id}}/gm, fb_id)
     $parent.append($giRow);
+    $parent.find('input[name="add_grant_id"]').val('')
 
 @deleteGrantId = (event)->
   $parent = $(event.target).parent()

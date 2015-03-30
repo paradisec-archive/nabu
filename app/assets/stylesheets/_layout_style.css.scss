@@ -452,6 +452,37 @@ body.bp {
     visibility: hidden;
   }
 
+  .separated-message {
+    border-top: 1px solid #BBBBBB;
+    margin-top: 0.3rem;
+    padding: 0.3rem;
+    text-align: center;
+  }
+
+  .delete-warning {
+    border: 2px solid #88001a;
+    padding: 0.2rem;
+    text-align: center;
+  }
+
+  .grant {
+    display: block;
+    border-top: 1px solid #ccc;
+    .grant-name {
+      display: block;
+    }
+    .grant-ids {
+      font-style: italic;
+      .grant-id {
+        display: inline-block;
+        margin: 0.2rem;
+        a {
+          padding: 0;
+        }
+      }
+    }
+  }
+
   #funding-bodies {
     input {
       width: 85%;
@@ -478,6 +509,10 @@ body.bp {
     }
     div, span {
       position: relative;
+      &.grant-fields {
+        display: block;
+        margin-top: 0.5rem;
+      }
     }
     > div {
       border-bottom: 1px solid black;

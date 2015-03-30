@@ -173,7 +173,7 @@
             = language.name
             %br
     - if can? :manage, @item
-      %div{style: 'border-top: 1px solid #BBBBBB; margin-top: 0.3rem; padding: 0.3rem; text-align: center;'}
+      %div.separated-message
         = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
           -inherit_message = 'This will populate the country, location, language, operator and access conditions from the collection.'
           = submit_tag 'Inherit Details from Collection', class: 'button', title: inherit_message, 'data-confirm' => "#{inherit_message}\n\nDo you want to continue?"
@@ -281,7 +281,7 @@
   - if can? :update, @item
     .right
       -if @item.essences.any?
-        %p{style: 'border: 2px solid #880022; padding: 0.2rem; text-align: center;'}
+        %p.delete-warning
           %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
         = link_to 'Delete item and contents', collection_item_path(@collection, @item, delete_essences: true), :method => :delete,
           :class => 'button', :confirm => 'Do you really want to delete this item and all of its content files?'

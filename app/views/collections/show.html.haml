@@ -161,18 +161,19 @@
           %td
             %div
               -@collection.grants.group_by(&:funding_body).each do |fb, grants|
-                %span{style: 'display: block; border-top: 1px solid #ccc;'}= fb.name
-                %span{style: 'font-style: italic;'}
+                %span.grant
+                  %span.grant-name= fb.name
                   -if grants.any?(&:grant_identifier)
-                    %span Grant IDs:
-                  -grants.each do |grant|
-                    %span{style: 'display: inline-block; margin: 0.2rem;'}
-                      -if grant.grant_identifier.present?
-                        -grant_id = @collection.full_grant_identifier(grant).strip
-                        -if grant_id =~ /^http/
-                          %a{href: grant_id, style: 'padding: 0;'}= grant.grant_identifier
-                        -else
-                          %span= grant_id
+                    %span.grant-ids
+                      %span Grant IDs:
+                      -grants.each do |grant|
+                        %span.grant-id
+                          -if grant.grant_identifier.present?
+                            -grant_id = @collection.full_grant_identifier(grant).strip
+                            -if grant_id =~ /^http/
+                              %a{href: grant_id}= grant.grant_identifier
+                            -else
+                              %span= grant_id
         %tr
           %th #Items in collections
           %td= number_to_human @num_items
@@ -186,7 +187,7 @@
 
     .right
       -if @collection.items.any?
-        %p{style: 'border: 2px solid #880022; padding: 0.2rem; text-align: center;'}
+        %p.delete-warning
           %strong This collection contains items! If you choose to delete it they will be deleted too, as well as any content files they contain. This action can not be undone!
         = link_to 'Delete collection and contents', collection_path(@collection, delete_items: true), :method => :delete,
           :class => 'button', :confirm => 'Do you really want to delete this collection and all of its items?'
