@@ -494,7 +494,7 @@ body.bp {
       &.row-action {
         font-weight: bold;
         position: absolute;
-        right: 0.2rem;
+        right: 0.4rem;
         top: 0.1rem;
       }
       &.remove {
@@ -512,12 +512,20 @@ body.bp {
       &.grant-fields {
         display: block;
         margin-top: 0.5rem;
+        padding: 0 0.4rem;
       }
     }
     > div {
-      border-bottom: 1px solid black;
-      margin: 0.2rem;
-      padding: 0.2rem;
+      border: 1px solid black;
+      border-radius: 3px;
+      margin: 0.4rem 0.2rem;
+      padding: 0.2rem 0.4rem;
+      > span:first-child {
+        width: 100%;
+        display: inline-block;
+        margin-bottom: 0.2rem;
+        border-bottom: 1px solid #aaa;
+      }
     }
 
     .grant-id {
