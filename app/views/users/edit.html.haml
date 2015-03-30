@@ -95,7 +95,7 @@
             %br
             %i (we need your current password to confirm your changes)
 
-    -if admin_user_signed_in? and User.duplicates_of(@user.first_name, @user.last_name).any?
+    -if admin_user_signed_in? and User.duplicates_of(@user.first_name, @user.last_name).count > 1
       %fieldset
         %h3 Potential duplicate accounts
         %p

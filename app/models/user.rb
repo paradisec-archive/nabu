@@ -36,10 +36,11 @@ class User < ActiveRecord::Base
   scope :all_duplicates, select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1')
 
   # find identifying info for single user with duplicates
-  scope :duplicates_of, ->(first, last) {
-    User.joins('''inner join (select first_name, last_name from users group by first_name, last_name having count(*) > 1) d
+  scope :duplicates_of, ->(first, last, user_ids = nil) {
+    specific_user_ids = user_ids || [-1]
+    User.joins('''left outer join (select first_name, last_name from users group by first_name, last_name having count(*) > 1) d
             on users.first_name = d.first_name and users.last_name = d.last_name''')
-      .where(first_name: first, last_name: last)
+      .where('(users.first_name = ? and users.last_name = ?) or users.id in (?)', first, last, specific_user_ids)
   }
 
   scope :users, where(:contact_only => false)
@@ -73,7 +74,7 @@ class User < ActiveRecord::Base
   end
 
   def identifiable_name
-    "#{id} - #{first_name} #{last_name} - #{email}"
+    "#{id} - #{first_name} #{last_name} - #{email || '<no email>'}"
   end
 
   def admin?

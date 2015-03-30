@@ -19,6 +19,7 @@
 //= require markerclusterer
 //
 // Our Stuff
+//= require select2_setup
 //= require per_page
 //= require datepicker
 //= require maps

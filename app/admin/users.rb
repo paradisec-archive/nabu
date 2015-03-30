@@ -52,14 +52,14 @@ ActiveAdmin.register User do
   filter :admin
 
   action_item do
-    if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).any?
+    if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).count > 1
       link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
     end
   end
 
   member_action :merge, method: :get do
     @primary_user = resource || User.find(params[:id])
-    @duplicates = User.duplicates_of(@primary_user.first_name, @primary_user.last_name)
+    @duplicates = User.duplicates_of(@primary_user.first_name, @primary_user.last_name, params[:specific_user_ids].try(:split, ','))
     @merge_user = MergeUser.new(@duplicates)
     # so we don't merge the primary one
     @duplicates = @duplicates.reject {|d| d.id == @primary_user.id}
@@ -137,8 +137,6 @@ ActiveAdmin.register User do
 
   # edit page
   form do |f|
-    link_to 'Merge User', controller: :users, action: :merge, style: 'float: right;'
-
     f.inputs "User Details" do
       f.input :first_name
       f.input :last_name

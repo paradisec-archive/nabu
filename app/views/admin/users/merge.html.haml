@@ -1,4 +1,17 @@
 .panel_contents
+  %div.split-panel.right
+    = form_tag merge_admin_user_path, method: :get do |ff|
+      :coffee
+          $(document).ready ->
+            $(".select2").each ->
+              setup_select2(this)
+      %label Add specific users:
+      %input{type: :hidden, name: 'first_name', value: @primary_user.first_name}
+      %input{type: :hidden, name: 'last_name', value: @primary_user.last_name}
+      %input{name: 'specific_user_ids', value: params[:specific_user_ids], type: :hidden,
+        data: { placeholder: 'Choose one or more users...', url: users_path, multiple: 'true'}, class: 'select2'}
+      %input{type: :submit, id: 'add_user_submit_button', value: 'Add Users To Merge'}
+
   = form_for @primary_user, url: do_merge_admin_user_path do |f|
     - if @primary_user.errors.any?
       #error_explanation
@@ -65,19 +78,6 @@
               %td
                 = f.select :contact_only, @merge_user.contact_only
                 = f.label :contact_only
-            -# FIXME: Work out what to do with these fields, and password fields as well
-            -#
-            -#%tr
-            -#  %th= f.label :rights_transferred_to_id
-            -#  %td= f.collection_select :rights_transferred_to_id, User.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a rightholder...'}, :class => 'select2'
-            -#
-            -#%tr
-            -#  %th= f.label :rights_transfer_reason
-            -#  %td= f.text_field :rights_transfer_reason, :autocomplete => :off
-            -#
-            -#%tr
-            -#  %th= f.label 'NLA Persistent Identifier'
-            -#  %td= f.text_field :party_identifier, :autocomplete => :off
 
     %div.split-panel.right#merge-user
       %h3 Users to be merged into primary user
@@ -85,9 +85,10 @@
         %em Selected users will be deleted, and all collections, items and access they have will be granted to the primary user
 
       -@duplicates.each do |dup|
-        = f.check_box :to_merge, {multiple: true, checked: true}, dup.id, nil
-        = f.label :to_merge, dup.identifiable_name
-        = link_to '[Select as primary]', merge_admin_user_path(dup), style: 'margin-left: 1rem'
+        %div
+          = f.check_box :to_merge, {multiple: true, checked: true}, dup.id, nil
+          = f.label :to_merge, dup.identifiable_name
+          = link_to '[Select as primary]', merge_admin_user_path(dup), style: 'margin-left: 1rem'
 
     .right{style: 'clear: both;'}
       = link_to 'Cancel', admin_user_path, :class => 'button'
