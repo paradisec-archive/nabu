@@ -167,7 +167,11 @@ body.bp {
       font-size: 18px;
       text-shadow: grey 2px 2px 3px;
     }
+  }
 
+  .page-box.terms-and-conditions strong {
+    display: block;
+    margin-top: 1rem;
   }
 
   .collection_map {
