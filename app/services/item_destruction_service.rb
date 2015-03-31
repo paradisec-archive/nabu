@@ -17,8 +17,7 @@ class ItemDestructionService
       if @destroy_essences
         response[:messages][:notice] = 'Item and all its contents removed permanently (no undo possible)'
       else
-        undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
-        response[:messages][:notice] = "Item removed successfully (#{undo_link})."
+        response[:messages][:notice] = 'Item removed successfully'
       end
 
       # if there were any issues deleting the essence files, show them as well
@@ -45,8 +44,12 @@ class ItemDestructionService
     end
     @item.essences = [] # force item to have no essences
 
-    # only bother returning errors
-    messages.collect {|msg| msg[:error]}.uniq.join("<br/>\n")
+    if messages.length > 10
+      'More than 10 essence files reported issues.'
+    else
+      # only bother returning errors
+      messages.collect {|msg| msg[:error]}.uniq.join("<br/>\n")
+    end
   end
 
   def delete_directory

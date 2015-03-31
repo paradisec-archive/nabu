@@ -90,6 +90,10 @@ class ItemsController < ApplicationController
     flash[:error] = response[:messages][:error]
 
     if response[:success]
+      unless params[:delete_essences]
+        undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+        flash[:notice] = flash[:notice] + " (#{undo_link})"
+      end
       redirect_to @collection
     else
       redirect_to [@collection, @item]
