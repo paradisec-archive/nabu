@@ -21,16 +21,19 @@ module CapybaraExt
     #click_link placeholder
 
     js = %Q|
-      container = $('.select2-container:contains("#{placeholder}")');
-      if (!container) {
-        containter = $('.select2-input').filter( function(index) {
-          return this.value.match("#{placeholder}");
-        });
+      var label = $('label:contains("#{placeholder}")');
+      var input = null;
+      if (label && label.prop("for")) {
+        input = $('#' + label.prop("for"));
+      } else {
+        input = $('[data-placeholder*="#{placeholder}"]');
       }
-      $('input[type=text]', container).val('#{value[0,minlength]}').trigger('keyup');
-      window.setTimeout( function() {
-        $('li:contains("#{value}")', container).click();
-      }, 1000);
+
+      if (input) {
+        input.val('#{value}');
+      } else {
+        console.error("Failed to find label or input with placeholder");
+      }
     |
     page.execute_script(js)
   end

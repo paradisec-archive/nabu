@@ -11,11 +11,14 @@ FactoryGirl.define do
     south_limit "23.99"
     west_limit "121.122"
     east_limit "122.046"
-    subject_language
-    content_language
-    country
     discourse_type
     collection
     originated_on Time.now
+    private false
+    after(:build) do |item|
+      item.countries ||= build_list(:country, 1)
+      item.subject_languages = item.subject_languages.present? ? item.subject_languages : build_list(:language, 1)
+      item.content_languages = item.content_languages.present? ? item.content_languages : build_list(:language, 1)
+    end
   end
 end
