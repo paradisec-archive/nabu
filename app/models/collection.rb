@@ -304,12 +304,14 @@ class Collection < ActiveRecord::Base
           end
 
           grants.each do |grant|
-            if grant.grant_identifier.present?
-              xml.key full_grant_identifier(grant)
-            else
-              xml.key grant.funding_body.key_prefix
+            xml.relatedObject do
+              if grant.grant_identifier.present?
+                xml.key full_grant_identifier(grant)
+              else
+                xml.key grant.funding_body.key_prefix
+              end
+              xml.relation 'type' => 'isOutputOf'
             end
-            xml.relation 'type' => 'isOutputOf'
           end
 
           languages.each do |language|

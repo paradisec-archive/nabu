@@ -87,6 +87,7 @@ GEM
       compass (>= 0.12.2, < 0.14)
     country-select (1.1.1)
     daemons (1.1.9)
+    database_cleaner (1.2.0)
     devise (2.2.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -354,6 +355,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   compass-rails
   country-select
+  database_cleaner
   devise (= 2.2.3)
   email_spec
   factory_girl_rails
