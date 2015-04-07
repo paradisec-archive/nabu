@@ -13,7 +13,7 @@ FactoryGirl.define do
     east_limit "122.046"
     discourse_type
     collection
-    originated_on Time.now
+    originated_on Date.today
     private false
     after(:build) do |item|
       item.countries ||= build_list(:country, 1)

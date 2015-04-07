@@ -60,9 +60,9 @@ class ItemsController < ApplicationController
       format.html
       format.xml do
         if params[:xml_type]
-          render :template => "items/show.#{params[:xml_type]}.xml.haml"
+          render :template => "items/show.#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
         else
-          render :template => "items/show.xml.haml"
+          render :template => "items/show", formats: [:xml], handlers: [:haml]
         end
       end
     end
@@ -101,8 +101,6 @@ class ItemsController < ApplicationController
   end
 
   def inherit_details
-    @collection ||= @item.collection
-
     if @item.inherit_details_from_collection(params[:override_existing])
       flash[:notice] = 'Successfully inherited attributes from collection'
     else
@@ -286,7 +284,7 @@ class ItemsController < ApplicationController
   end
 
   def save_item_catalog_file(item)
-    if !File.directory?(Nabu::Application.config.archive_directory)
+    unless File.directory?(Nabu::Application.config.archive_directory)
       FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
     end
     # make sure the archive directory for the collection and item exist
@@ -297,7 +295,8 @@ class ItemsController < ApplicationController
     # save file
     @item = item
     data = render_to_string :template => 'items/show.xml.haml'
+    # data = render_to_string :template => 'items/show', formats: [:xml], handlers: [:haml]
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
-    file = File.open(file, 'w') {|f| f.write(data)}
+    File.open(file, 'w') {|f| f.write(data)}
   end
 end

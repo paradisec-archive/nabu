@@ -155,14 +155,13 @@ class Item < ActiveRecord::Base
 
     unless override
       # by default, only inherit attributes which don't already have a value
-      existing_attributes = Hash[inherited_attributes.keys.map do |key|
+      existing_attributes = Hash[*inherited_attributes.keys.map do |key|
                                    val = self.send(key)
-                                   [key.to_sym, val] unless val == nil or val.blank?
-                                 end]
+                                   [key.to_sym, val] unless val.blank?
+                                 end.reject{|x| x.nil?}.flatten(1)]
       # -> this merge causes the current attribute value to replace the inherited one before we update
       inherited_attributes = inherited_attributes.merge(existing_attributes)
     end
-
     # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
     inherited_attributes.each_pair do |key, val|
       self.send("#{key}=", val)
