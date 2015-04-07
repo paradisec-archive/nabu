@@ -194,3 +194,5 @@
       -else
         = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this collection?'
       = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button right'
+
+= render partial: 'terms/licence_footer', locals: {all_work: false}
