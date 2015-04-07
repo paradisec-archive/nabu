@@ -115,7 +115,6 @@ class Collection < ActiveRecord::Base
     text :field_of_research do
       field_of_research_name
     end
-    text :grant_identifier
     text :languages do
       languages.map(&:name)
     end
