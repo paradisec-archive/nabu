@@ -164,7 +164,7 @@ class Collection < ActiveRecord::Base
     time :updated_at
 
     # Things we want to check blankness of
-    blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location, :grant_identifier]
+    blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location]
     blank_fields.each do |f|
       boolean "#{f}_blank".to_sym do
         self.send(f).blank?
