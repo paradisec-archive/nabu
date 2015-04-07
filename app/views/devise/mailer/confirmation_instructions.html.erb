@@ -1,18 +1,24 @@
-<p>Welcome <%= @resource.name %>!</p>
+<p>Welcome, <%= @resource.name %>!</p>
+<br/>
 
 <p>You have just signed up for an account with the PARADISEC catalog.</p>
+<br/>
 
 <p>Before you can log into the system, we require you to confirm your account email through the link below:</p>
+<p style="padding-left: 1rem;"><%= link_to 'Confirm my account', confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %></p>
+<p>If you are unable to click on the link, copy and paste this into your browser instead:</p>
+<p style="padding-left: 1rem;"><%= confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %></p>
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %></p>
-
-<p>If you are unable to click on the link, copy and paste this into your browser, to confirm your account:</p>
-
-<p><%= confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %></p>
-
+<br/>
 <p>Once you have confirmed your account you can log in here:</p>
+<p style="padding-left: 1rem;"><%= link_to 'http://catalog.paradisec.org.au/', 'http://catalog.paradisec.org.au/' %></p>
 
-<p><%= link_to 'http://catalog.paradisec.org.au/', 'http://catalog.paradisec.org.au/' %></p>
-
+<br/>
+<p>The Conditions of Access are attached below for your reference. Please take the time to familiarise yourself with them.</p>
 <p>===</p>
 <p>PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures)</p>
+<br/>
+<hr/>
+<h3>Conditions of Access</h3>
+<%= render 'terms/conditions_of_access' %>
+<hr/>
