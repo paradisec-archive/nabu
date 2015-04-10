@@ -18,7 +18,6 @@ bundle exec guard
 ```
 
 ## Deployment
-
 We are using Capistrano for deployment.
 
 ``` bash

@@ -4,7 +4,6 @@
   = link_to 'Basic Search', search_items_path
 .clear
 
-
 - if params.length > 2
   %p== #{@search.total} search results
 
@@ -147,6 +146,25 @@
         %tr
           %th= label_tag :agent_id, 'Agents'
           %td= hidden_field_tag :agent_ids, params[:agent_ids], :data => {:placeholder => 'Choose an agent...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#agent_ids', :multiple => true}, :class => 'select2'
+
+    %fieldset
+      %legend Essence Details
+      %table.form
+        %tr
+          %th= label_tag :filename, 'Filename'
+          %td= text_field_tag :filename, params[:filename]
+        %tr
+          %th= label_tag :mimetype, 'Mime Type'
+          %td= text_field_tag :mimetype, params[:mimetype]
+        %tr
+          %th= label_tag :framesPerSecond, 'FPS'
+          %td= text_field_tag :framesPerSecond, params[:framesPerSecond]
+        %tr
+          %th= label_tag :samplerate, 'Sample Rate'
+          %td= text_field_tag :samplerate, params[:samplerate]
+        %tr
+          %th= label_tag :channels, 'Channels'
+          %td= text_field_tag :channels, params[:channels]
 
   .twoup-2
     %fieldset

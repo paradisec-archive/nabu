@@ -57,7 +57,7 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
-  attr_accessible :identifier, :title, :external, :url, :description, :region,
+  attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,
@@ -202,6 +202,21 @@ class Item < ActiveRecord::Base
     text :data_categories do
       data_categories.map(&:name)
     end
+    text :filename do
+      essences.map(&:filename)
+    end
+    text :mimetype do
+      essences.map(&:mimetype)
+    end
+    text :fps do
+      essences.map(&:fps)
+    end
+    text :samplerate do
+      essences.map(&:samplerate)
+    end
+    text :channels do
+      essences.map(&:channels)
+    end
 
     # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true
@@ -258,6 +273,12 @@ class Item < ActiveRecord::Base
     end
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
+    end
+    string :filename, multiple: true do
+      essences.map(&:filename)
+    end
+    string :mimetype, multiple: true do
+      essences.map(&:mimetype)
     end
 
     # Things we want to check blankness of
