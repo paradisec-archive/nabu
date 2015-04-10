@@ -37,7 +37,7 @@ class Ability
       can :update, Collection, :collection_admins => { :user_id => user.id }
       can :update, Collection, :operator_id => user.id
       can :update, Collection, :collector_id => user.id
-      can :manage, Collection, :collection_admins => { user_id: user.id }
+      can :manage, Collection, :collection_admins => { :user_id => user.id }
       cannot :search_csv, Collection
       cannot :advanced_search, Collection
       cannot :bulk_edit, Collection

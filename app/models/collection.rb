@@ -93,6 +93,10 @@ class Collection < ActiveRecord::Base
     %w{identifier title collector_sortname university_name created_at}
   end
 
+  def public?
+    return true;
+  end
+
   searchable do
     # Things we want to perform full text search on
     text :title
