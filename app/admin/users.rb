@@ -96,7 +96,9 @@ ActiveAdmin.register User do
     column :contact_only
     column :admin
     column :party_identifier
-    default_actions
+    actions do |user|
+      link_to 'Merge', merge_admin_user_path(user)
+    end
   end
 
   # show page
