@@ -2,7 +2,7 @@
 -# rails will pass values for the fields, jquery will instead manually replace the mustache placeholders
 %div
   %span= fb_label || '{{label}}'
-  %a.row-action.remove{onclick: '$(this).parent().remove(); return false;'}= "&times;".html_safe
+  %a.row-action.remove{onclick: 'removeChildGrantIds(event); return false;'}= "&times;".html_safe
   %input{type: :hidden, name: 'funding_body_ids[]', value: fb_id || '{{id}}'}
   %span.grant-fields
     %input{name: 'add_grant_id', placeholder: 'Enter a Grant Identifier'}

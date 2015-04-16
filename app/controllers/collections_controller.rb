@@ -248,8 +248,17 @@ class CollectionsController < ApplicationController
         # map the collection identifier to the underlying id
         collection_id = Collection.where(identifier: params[:id]).pluck(:id).first
         grants = params[:collection][:grants_attributes]
-        fbids = params[:funding_body_ids].reject {|x| grants.collect{|y| y[:funding_body_id]}.include?(x)}
+
+        if params["funding_body_ids"]
+          funding_body_ids = params["funding_body_ids"]
+        else
+          funding_body_ids = []
+        end
+
+        fbids = funding_body_ids.reject {|x| grants.collect{|y| y[:funding_body_id]}.include?(x)}
+
         # for each funding body that doesn't have grant ids, create an empty grant
+
         params[:collection][:grants_attributes].concat fbids.collect{|x| {'funding_body_id' => x, 'grant_identifier' => nil}}
         # apply the current collection to every item
         params[:collection][:grants_attributes].each{ |g| g['collection_id'] = collection_id }

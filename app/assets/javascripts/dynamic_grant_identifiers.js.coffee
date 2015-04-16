@@ -6,6 +6,23 @@
   $fbRow = $fbRowTemplate.replace('{{label}}', fbname).replace(/{{id}}/g, fbid)
   $('#funding-bodies').append($fbRow)
 
+@removeChildGrantIds = (event)->
+  $parent = $(event.target).parent()
+
+  $childGrantContainer = $parent.find('span.grant-fields')[0]
+
+  $childGrants = $($childGrantContainer).find('div.grant-id')
+
+  if $($childGrantContainer).find('input[name="collection[grants_attributes][][id]"]').length > 0
+    $($childGrantContainer).find('input[name="collection[grants_attributes][][id]"]').each ->
+      $gidInput = $(this).clone()
+      $gidInput.prop('type', 'hidden')
+      $gidDestroy = $gidInput.clone()
+      $gidDestroy.prop("name", $gidDestroy.attr("name").replace('id', '_destroy')).val('1')
+
+      $('#funding-bodies-to-delete').append($gidInput).append($gidDestroy)
+  $parent.remove();
+
 @addGrantId = (event)->
   $parent = $(event.target).parent()
   gid = $parent.find('input[name="add_grant_id"]').val()
