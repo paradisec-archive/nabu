@@ -150,7 +150,9 @@ class Item < ActiveRecord::Base
       north_limit: collection.north_limit,
       south_limit: collection.south_limit,
       east_limit: collection.east_limit,
-      west_limit: collection.west_limit
+      west_limit: collection.west_limit,
+      access_narrative: collection.access_narrative,
+      region: collection.region
     }
 
     unless override
@@ -163,6 +165,7 @@ class Item < ActiveRecord::Base
       inherited_attributes = inherited_attributes.merge(existing_attributes)
     end
     # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
+
     inherited_attributes.each_pair do |key, val|
       self.send("#{key}=", val)
     end

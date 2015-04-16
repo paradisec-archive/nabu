@@ -178,7 +178,7 @@
     - if can? :manage, @item
       %div.separated-message
         = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
-          -inherit_message = 'This will populate the country, location, language, operator and access conditions from the collection.'
+          -inherit_message = 'This will populate the country, location, language, operator, access conditions, access narrative, and region/village from the collection.'
           = submit_tag 'Inherit Details from Collection', class: 'button', title: inherit_message, 'data-confirm' => "#{inherit_message}\n\nDo you want to continue?"
           = check_box_tag :override_existing
           = label_tag :override_existing, 'Override Existing Values?'
