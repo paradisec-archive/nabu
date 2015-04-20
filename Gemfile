@@ -54,6 +54,9 @@ gem 'capistrano-unicorn'
 # Logging
 gem 'rollbar'
 
+# Scheduling
+gem 'whenever'
+
 # Misc
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'

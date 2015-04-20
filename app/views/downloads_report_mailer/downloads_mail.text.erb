@@ -1,0 +1,15 @@
+A new comment has been posted on catalog.paradisec.org.au:
+==========================================================
+
+Posted by: <%= @comment.owner.name %>
+Posted on: <%= @comment.created_at %>
+Commented on: http://catalog.paradisec.org.au<%= url_for(@resource) %>
+
+Comment is: <%= @comment.status %>
+<% if @comment.status == 'unapproved' %>
+Approve comment at: http://catalog.paradisec.org.au/admin/dashboard
+<% end %>
+
+Comment:
+
+<%= @comment.body %>
