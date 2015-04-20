@@ -88,6 +88,14 @@ class Item < ActiveRecord::Base
 
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
+  def has_default_map_boundaries?
+    if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
+      true
+    else
+      false
+    end
+  end
+
   def public?
     self.private == false && self.collection.private == false
   end

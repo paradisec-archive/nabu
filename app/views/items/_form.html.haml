@@ -145,6 +145,11 @@
       %tr
         %th
         %td
+          %strong.left
+            - if @item.has_default_map_boundaries?
+              %span.no-map-match-message No matching map data found
+            - else
+              %span.no-map-match-message
           %strong.right= link_to 'Set map from country', '#', :id => 'set-map-from-country'
           %strong.right= link_to 'Set map from language', '#', :id => 'set-map-from-language'
 

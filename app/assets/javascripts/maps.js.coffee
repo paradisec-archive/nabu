@@ -41,14 +41,24 @@ $(document).ready ->
         $('.east_limit').val(-40)
         $('.south_limit').val(-80)
         $('.west_limit').val(-20)
+
+        displayNoDataMessage()
       else
         $('.north_limit').val(ne.lat())
         $('.east_limit').val(ne.lng())
         $('.south_limit').val(sw.lat())
         $('.west_limit').val(sw.lng())
 
+        clearNoDataMessage()
+
       $('.map').trigger('update_map')
       false
+
+    displayNoDataMessage = ->
+      $('.no-map-match-message').text('No matching map data found')
+
+    clearNoDataMessage = ->
+      $('.no-map-match-message').text('')
 
     $('#set-map-from-country').click ->
       country_ids = $('.country').val().split(/,/)
