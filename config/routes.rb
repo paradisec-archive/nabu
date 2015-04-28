@@ -55,6 +55,9 @@ Nabu::Application.routes.draw do
       get 'advanced_search' => 'items#advanced_search'
       get 'bulk_update' => 'items#bulk_edit'
       put 'bulk_update' => 'items#bulk_update'
+      get 'new_report' => 'items#new_report'
+      post 'send_report' => 'items#send_report'
+      get 'report_sent' => 'items#report_sent'
     end
   end
 

@@ -54,9 +54,6 @@ gem 'capistrano-unicorn'
 # Logging
 gem 'rollbar'
 
-# Scheduling
-gem 'whenever'
-
 # Misc
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'
@@ -72,6 +69,11 @@ group :development, :test do
 
   gem 'spring'
   gem 'spring-commands-rspec'
+
+  gem 'pry'
+  gem 'pry-rails'
+
+  gem 'letter_opener'
 
   # Guard
   gem 'guard-bundler'

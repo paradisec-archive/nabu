@@ -545,4 +545,10 @@ body.bp {
     text-align: center;
     padding-top: 1.5rem;
   }
+
+  .report-sender-form {
+    input[type='submit'] {
+      margin-left: 40px;
+    }
+  }
 }

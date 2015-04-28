@@ -1,0 +1,15 @@
+
+%h1 Depositor Item Report Request
+
+.twoup-1
+
+  %fieldset.report-sender-form
+    .left
+      = form_tag(send_report_items_path, method: :post) do
+        = label_tag :date_from, 'Date From'
+        = text_field_tag :date_from, params[:date_from], :class => 'dateinput short', :value => nil
+        = label_tag :date_to, 'Date To'
+        = text_field_tag :date_to, params[:date_to], :class => 'dateinput short', :value => nil
+        = submit_tag 'Send Report'
+
+.twoup-2

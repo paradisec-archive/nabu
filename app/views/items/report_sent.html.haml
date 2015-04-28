@@ -1,0 +1,26 @@
+
+%h1 Depositor Item Report Request
+
+.twoup-1
+  - if flash[:send_result] > 0
+    %p
+      A report has been sent to
+      = current_user.email
+      containing
+      = flash[:send_result]
+      results.
+  - else
+    A report could not be sent as no results could be found within this time period. Please try a different date range.
+    %br
+    %br
+
+    %fieldset.report-sender-form
+      .left
+        = form_tag(send_report_items_path, method: :post) do
+          = label_tag :date_from, 'Date From'
+          = text_field_tag :date_from, params[:date_from], :class => 'dateinput short', :value => nil
+          = label_tag :date_to, 'Date To'
+          = text_field_tag :date_to, params[:date_to], :class => 'dateinput short', :value => nil
+          = submit_tag 'Send Report'
+
+.twoup-2

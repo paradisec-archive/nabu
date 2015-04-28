@@ -52,6 +52,9 @@ class Ability
       can :manage, Item, :collection  => { :operator_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
       can :advanced_search, Item
+      can :new_report, Item
+      can :send_report, Item
+      can :report_sent, Item
       cannot :search_csv, Item
       cannot :bulk_edit, Item
       cannot :bulk_update, Item
