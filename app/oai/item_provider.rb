@@ -40,7 +40,7 @@ class ItemProvider < OAI::Provider::Base
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
-  update_granularity OAI::Const::Granularity::LOW
+  update_granularity OAI::Const::Granularity::HIGH
   source_model OAI::Provider::ActiveRecordWrapper.new(::Item.public, :limit => 100, :timestamp_field => 'items.updated_at')
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
