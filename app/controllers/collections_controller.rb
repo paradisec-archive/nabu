@@ -11,6 +11,7 @@ class CollectionsController < ApplicationController
   def search
     if params[:clear]
       params.delete(:search)
+
       redirect_to search_collections_path
       return
     end
@@ -104,7 +105,8 @@ class CollectionsController < ApplicationController
         @collection.items = []
       end
 
-      @collection.destroy
+      # only remove the collection if there are no items left
+      @collection.destroy unless @collection.items.any?
 
       if params[:delete_items]
         flash[:notice] = 'Collection and all its items removed permanently (no undo possible)'
