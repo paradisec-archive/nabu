@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150420100429) do
+ActiveRecord::Schema.define(:version => 20150430040242) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -62,16 +62,16 @@ ActiveRecord::Schema.define(:version => 20150420100429) do
   add_index "collection_languages", ["collection_id", "language_id"], :name => "index_collection_languages_on_collection_id_and_language_id", :unique => true
 
   create_table "collections", :force => true do |t|
-    t.string   "identifier",                               :null => false
-    t.string   "title",                                    :null => false
-    t.text     "description",                              :null => false
-    t.integer  "collector_id",                             :null => false
+    t.string   "identifier",            :null => false
+    t.string   "title",                 :null => false
+    t.text     "description",           :null => false
+    t.integer  "collector_id",          :null => false
     t.integer  "operator_id"
     t.integer  "university_id"
     t.integer  "field_of_research_id"
     t.string   "region"
-    t.datetime "created_at",                               :null => false
-    t.datetime "updated_at",                               :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.integer  "access_condition_id"
     t.text     "access_narrative"
     t.string   "metadata_source"
@@ -86,7 +86,6 @@ ActiveRecord::Schema.define(:version => 20150420100429) do
     t.float    "south_limit"
     t.float    "west_limit"
     t.float    "east_limit"
-    t.boolean  "sends_report",          :default => false
   end
 
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
@@ -300,14 +299,15 @@ ActiveRecord::Schema.define(:version => 20150420100429) do
 
   add_index "latlon_boundaries", ["country_id"], :name => "index_latlon_boundaries_on_country_id"
 
-  create_table "scheduled_reports", :force => true do |t|
-    t.integer  "collection_id", :null => false
-    t.string   "scheduled_for", :null => false
-    t.string   "frequency"
-    t.string   "report_type",   :null => false
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+  create_table "sessions", :force => true do |t|
+    t.string   "session_id", :null => false
+    t.text     "data"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
+
+  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "universities", :force => true do |t|
     t.string   "name"

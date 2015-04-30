@@ -23,7 +23,7 @@ class Collection < ActiveRecord::Base
   has_many :collection_admins, :dependent => :destroy
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
-  has_many :scheduled_reports
+  # has_many :scheduled_reports
 
   # require presence of these three fields
   validates :identifier, :presence => true, :uniqueness => true,
@@ -68,34 +68,34 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
   before_save :check_complete
-  after_save :update_download_report_scheduling
+  # after_save :update_download_report_scheduling
 
-  def retreive_annual_downloads
+  # def retreive_annual_downloads
     # perform joins here to get the correct records
     # need:
     # 1. time/date of download
     # 2. country of downloader (user)
 
     # need to return columns from download table and from user table together in a pseudo-table
-  end
+  # end
 
-  def update_download_report_scheduling
-    if sends_report
-      unless scheduled_reports.where(report_type: 'downloads').any?
-        ScheduledReport.create(
-          collection_id: id,
-          scheduled_for: (Time.now + 1.year).to_datetime.strftime('%d %B'),
-          frequency: 'annual'
-        )
-      end
-    else
-      existing_reports = scheduled_reports.where(report_type: 'downloads')
+  # def update_download_report_scheduling
+  #   if sends_report
+  #     unless scheduled_reports.where(report_type: 'downloads').any?
+  #       ScheduledReport.create(
+  #         collection_id: id,
+  #         scheduled_for: (Time.now + 1.year).to_datetime.strftime('%d %B'),
+  #         frequency: 'annual'
+  #       )
+  #     end
+  #   else
+  #     existing_reports = scheduled_reports.where(report_type: 'downloads')
 
-      if existing_reports.any?
-        existing_reports.destroy_all
-      end
-    end
-  end
+  #     if existing_reports.any?
+  #       existing_reports.destroy_all
+  #     end
+  #   end
+  # end
 
   def check_complete
     present = [
