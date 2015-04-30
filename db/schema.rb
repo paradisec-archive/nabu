@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150428071256) do
+ActiveRecord::Schema.define(:version => 20150430040242) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -82,7 +82,6 @@ ActiveRecord::Schema.define(:version => 20150428071256) do
     t.boolean  "private"
     t.string   "tape_location"
     t.boolean  "deposit_form_received"
-    t.string   "grant_identifier"
     t.float    "north_limit"
     t.float    "south_limit"
     t.float    "west_limit"
@@ -94,6 +93,13 @@ ActiveRecord::Schema.define(:version => 20150428071256) do
   add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
   add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
+
+  create_table "collections_funding_bodies", :id => false, :force => true do |t|
+    t.integer "collection_id",   :null => false
+    t.integer "funding_body_id", :null => false
+  end
+
+  add_index "collections_funding_bodies", ["collection_id", "funding_body_id"], :name => "lookup_by_collection_and_funding_body_index"
 
   create_table "comments", :force => true do |t|
     t.integer  "owner_id",         :null => false
@@ -292,6 +298,16 @@ ActiveRecord::Schema.define(:version => 20150428071256) do
   end
 
   add_index "latlon_boundaries", ["country_id"], :name => "index_latlon_boundaries_on_country_id"
+
+  create_table "sessions", :force => true do |t|
+    t.string   "session_id", :null => false
+    t.text     "data"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "universities", :force => true do |t|
     t.string   "name"

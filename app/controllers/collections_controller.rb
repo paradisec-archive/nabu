@@ -231,6 +231,7 @@ class CollectionsController < ApplicationController
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
       flash[:notice] += sheet.notices.join("<br/>") unless sheet.notices.empty?
       flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}"
+
       redirect_to @collection
     else
       @collection = Collection.new unless @collection

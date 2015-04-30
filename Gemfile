@@ -85,6 +85,11 @@ group :development, :test do
   gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
 end
 
+group :development do
+  gem 'binding_of_caller'
+  gem 'better_errors'
+end
+
 group :test do
   gem 'capybara'
   gem 'poltergeist'
