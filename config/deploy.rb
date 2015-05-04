@@ -1,16 +1,19 @@
-role :web, 'catalog.paradisec.org.au'
-role :app, 'catalog.paradisec.org.au'
-role :db,  'catalog.paradisec.org.au', :primary => true # This is where Rails migrations will run
+role :web, '144.6.225.96'
+role :app, '144.6.225.96'
+role :db,  '144.6.225.96', :primary => true # This is where Rails migrations will run
 
 set :rails_env,   'production'
 set :unicorn_env, 'production'
 set :app_env,     'production'
 set :application, 'nabu'
+# This is pointing at my fork
 set :repository,  'git@github.com:nabu-catalog/nabu'
+set :branch, ENV['CAP_BRANCH'] || 'master'
 set :scm, :git
 
 set :deploy_to, "/srv/www/#{application}"
-set :user, 'deploy'
+# The staging user is 'ubuntu', but the prod user is 'deploy'
+set :user, 'ubuntu'
 set :use_sudo, false
 set :deploy_via, :remote_cache
 set :keep_releases, 5
@@ -60,7 +63,8 @@ namespace :sunspot do
     stop
     start
   end
-  after 'deploy:restart', 'sunspot:restart'
+# Restarting Solr seems to cause all sorts of issues on Staging, so commented out
+#  after 'deploy:restart', 'sunspot:restart'
 end
 
 namespace :monit do
