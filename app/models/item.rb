@@ -387,7 +387,7 @@ class Item < ActiveRecord::Base
       end
 
       essences.each do |essence|
-        xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}/essences/#{essence.id}", 'xsi:type' => 'dcterms:URI'
+        xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}/#{essence.filename}", 'xsi:type' => 'dcterms:URI'
       end
 
       if collector

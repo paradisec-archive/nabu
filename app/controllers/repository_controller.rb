@@ -11,6 +11,7 @@ class RepositoryController < ApplicationController
     end
     collection = Collection.find_by_identifier params[:collection_identifier]
     item = collection.items.find_by_identifier params[:item_identifier]
+
     redirect_to [collection, item]
   end
 
@@ -19,7 +20,6 @@ class RepositoryController < ApplicationController
     item = collection.items.find_by_identifier params[:item_identifier]
     essence = item.essences.find_by_filename params[:essence_filename]
 
-    redirect_to [collection, item, essence]
+    send_file essence.path, :disposition => 'inline', :type => essence.mimetype
   end
-
 end
