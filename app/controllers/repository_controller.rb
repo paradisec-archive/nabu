@@ -20,6 +20,8 @@ class RepositoryController < ApplicationController
     item = collection.items.find_by_identifier params[:item_identifier]
     essence = item.essences.find_by_filename params[:essence_filename]
 
+    authorize! :read, essence
+
     send_file essence.path, :disposition => 'inline', :type => essence.mimetype
   end
 end
