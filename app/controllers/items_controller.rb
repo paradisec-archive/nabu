@@ -2,9 +2,9 @@ class ItemsController < ApplicationController
   include HasReturnToLastSearch
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
-  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
-  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
-  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
+  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
+  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
+  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
 
   def search
     if params[:clear]
@@ -191,6 +191,20 @@ class ItemsController < ApplicationController
 
   def display
     send_file @item.path, :disposition => 'inline', :type => 'text/xml'
+  end
+
+  def new_report ; end
+  def report_sent ; end
+
+  def send_report
+    @date_from = params["date_from"]
+    @date_to = params["date_to"]
+
+    downloads_report_service = DownloadsReportService.new(@date_from, @date_to, current_user)
+
+    @send_result = downloads_report_service.send_report
+
+    redirect_to report_sent_items_path, flash: { send_result: @send_result }
   end
 
   private

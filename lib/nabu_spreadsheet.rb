@@ -161,11 +161,15 @@ module Nabu
         @errors << "Got no name for collector"
         return nil
       end
-      last_name, first_name = name.split(/, /, 2)
-      if first_name.blank?
-        first_name, last_name = name.split(/ /, 2)
+
+      first_name, last_name = name.split(',').map(&:strip)
+
+      if last_name.nil?
+        last_name = ''
       end
+
       user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
+
       if !user
         if !create
           @errors << "Please create user #{name} first<br/>"

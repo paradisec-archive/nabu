@@ -11,6 +11,7 @@ class CollectionsController < ApplicationController
   def search
     if params[:clear]
       params.delete(:search)
+
       redirect_to search_collections_path
       return
     end
@@ -104,7 +105,8 @@ class CollectionsController < ApplicationController
         @collection.items = []
       end
 
-      @collection.destroy
+      # only remove the collection if there are no items left
+      @collection.destroy unless @collection.items.any?
 
       if params[:delete_items]
         flash[:notice] = 'Collection and all its items removed permanently (no undo possible)'
@@ -231,6 +233,7 @@ class CollectionsController < ApplicationController
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
       flash[:notice] += sheet.notices.join("<br/>") unless sheet.notices.empty?
       flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}"
+
       redirect_to @collection
     else
       @collection = Collection.new unless @collection

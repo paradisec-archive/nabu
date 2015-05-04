@@ -54,9 +54,6 @@ gem 'capistrano-unicorn'
 # Logging
 gem 'rollbar'
 
-# Scheduling
-gem 'whenever'
-
 # Misc
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'
@@ -73,6 +70,11 @@ group :development, :test do
   gem 'spring'
   gem 'spring-commands-rspec'
 
+  gem 'pry'
+  gem 'pry-rails'
+
+  gem 'letter_opener'
+
   # Guard
   gem 'guard-bundler'
   gem 'guard-rails'
@@ -81,6 +83,11 @@ group :development, :test do
 
   gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
   gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
+end
+
+group :development do
+  gem 'binding_of_caller'
+  gem 'better_errors'
 end
 
 group :test do
