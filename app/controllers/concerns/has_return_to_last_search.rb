@@ -45,9 +45,11 @@ module HasReturnToLastSearch
         session[:search_params] = params.reject(&only_action_params)
       end
     elsif should_apply_session_params?
-      # transfer the flash over from the previous action (otherwise lost)
-      flash[:notice] = session[:flash][:notice]
-      flash[:error] = session[:flash][:error]
+      # transfer the flash over from the previous action (otherwise it is lost)
+      if session[:flash]
+        flash[:notice] = session[:flash][:notice]
+        flash[:error] = session[:flash][:error]
+      end
 
       # otherwise use the session (delete it as you go to avoid infinite loops)
       redirect_to session.delete(:search_from).merge(session.delete(:search_params))
