@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :make_action_mailer_use_request_host
   before_filter :set_timezone
+  before_filter :set_access_headers
 
   analytical :modules => [:google]
 
@@ -58,5 +59,12 @@ class ApplicationController < ActionController::Base
         :contact_only => true}, :as => :contact_only)
     end
     contact.id
+  end
+
+  def set_access_headers
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
+    headers['Access-Control-Request-Method'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   end
 end
