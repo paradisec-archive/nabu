@@ -38,9 +38,11 @@
       %depositFormReceived= h(@collection.deposit_form_received)
       %tapeLocation= h(@collection.tape_location)
       %fieldOfResearch= h(@collection.field_of_research.name_with_identifier)
-      -@collection.grants.each do |grant|
-        %fundingBody= h(grant.funding_body.name) if grant.funding_body
-        %grantIdentifier= h(@collection.full_grant_identifier(grant))
+      %grants
+        -@collection.grants.each do |grant|
+          %grant
+            %fundingBody= h(grant.funding_body.name) if grant.funding_body.present?
+            %grantIdentifier= h(@collection.full_grant_identifier(grant)) if grant.grant_identifier.present?
     %items{:numItems => @num_items, :readyForExport => @num_items_ready}
       - @collection.items.each do |item|
         %item{:numComments => item.comments.count, :numFiles => item.essences.count}
