@@ -308,19 +308,9 @@ class ItemsController < ApplicationController
   end
 
   def save_item_catalog_file(item)
-    unless File.directory?(Nabu::Application.config.archive_directory)
-      FileUtils.mkdir_p(Nabu::Application.config.archive_directory)
-    end
-    # make sure the archive directory for the collection and item exist
-    directory = Nabu::Application.config.archive_directory +
-                "#{item.collection.identifier}/#{item.identifier}/"
-
-    FileUtils.mkdir_p(directory)
-    # save file
-    @item = item
+    # render the template here because you can't access render in the service
     data = render_to_string :template => 'items/catalog_export.xml.haml'
-    # data = render_to_string :template => 'items/show', formats: [:xml], handlers: [:haml]
-    file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
-    File.open(file, 'w') {|f| f.write(data)}
+
+    ItemCatalogService.new(item).save_file(data)
   end
 end

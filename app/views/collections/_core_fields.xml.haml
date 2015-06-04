@@ -34,7 +34,7 @@
 %adminInfo
   %depositFormReceived= h(collection.deposit_form_received)
   %tapeLocation= h(collection.tape_location)
-  %fieldOfResearch= h(collection.field_of_research.name_with_identifier)
+  %fieldOfResearch= h(collection.field_of_research.present? ? collection.field_of_research.name_with_identifier : '')
   %grants
     -collection.grants.each do |grant|
       %grant
