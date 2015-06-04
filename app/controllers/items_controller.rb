@@ -318,7 +318,7 @@ class ItemsController < ApplicationController
     FileUtils.mkdir_p(directory)
     # save file
     @item = item
-    data = render_to_string :template => 'items/show.xml.haml'
+    data = render_to_string :template => 'items/catalog_export.xml.haml'
     # data = render_to_string :template => 'items/show', formats: [:xml], handlers: [:haml]
     file = directory + "#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
     File.open(file, 'w') {|f| f.write(data)}
