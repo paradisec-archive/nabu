@@ -331,6 +331,9 @@ namespace :archive do
       return
     end
 
+    # TODO: put TIFF identifying logic here, then pass off to service for conversion
+    # TODO: put image identifying logic here, then pass off to service for generating thumbnails (poss. same service)
+
     # find essence file in Nabu DB; if there is none, create a new one
     essence = Essence.where(:item_id => item, :filename => file).first
     if !essence
