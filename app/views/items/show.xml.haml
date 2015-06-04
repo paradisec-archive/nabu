@@ -75,3 +75,5 @@
           %author= comment.owner.name
           %description= comment.body
           %createdAt= comment.created_at
+    -if content_for?(:collection_details)
+      =yield(:collection_details)

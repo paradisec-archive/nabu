@@ -1,48 +1,7 @@
 -if can? :manage, @collection
   !!! XML
   %collection
-    %identifier= @collection.identifier
-    %readyForExport= @collection.complete
-    %private= @collection.private
-    %title= @collection.title
-    %description= @collection.description
-    %collector= @collection.collector_name
-    %operator= @collection.operator_name
-    %university= @collection.university_name
-    %countries
-      - @collection.countries.each do |country|
-        %country= country.name_with_code
-    %languages
-      - @collection.languages.each do |language|
-        %language= language.name_with_code
-    %region= @collection.region
-    %geographicLocation
-      %south_limit= @collection.south_limit
-      %north_limit= @collection.north_limit
-      %east_limit= @collection.east_limit
-      %west_limit= @collection.west_limit
-    %accessInfo
-      %adminAccess
-        - @collection.admins.each do |admin|
-          %userName= admin.name
-      %dataAccessConditions= h(@collection.access_condition_name)
-      %dataAccessNarrative= @collection.access_narrative
-    %depositInfo
-      %metadataSource= @collection.metadata_source
-      %orthographicNotes= @collection.orthographic_notes
-      %media= @collection.media
-      %recordCreated= @collection.created_at
-      %recordLastModified= @collection.updated_at
-      %adminComment= h(@collection.comments)
-    %adminInfo
-      %depositFormReceived= h(@collection.deposit_form_received)
-      %tapeLocation= h(@collection.tape_location)
-      %fieldOfResearch= h(@collection.field_of_research.name_with_identifier)
-      %grants
-        -@collection.grants.each do |grant|
-          %grant
-            %fundingBody= h(grant.funding_body.name) if grant.funding_body.present?
-            %grantIdentifier= h(@collection.full_grant_identifier(grant)) if grant.grant_identifier.present?
+    =render partial: 'collections/core_fields.xml', locals: {collection: @collection}
     %items{:numItems => @num_items, :readyForExport => @num_items_ready}
       - @collection.items.each do |item|
         %item{:numComments => item.comments.count, :numFiles => item.essences.count}
