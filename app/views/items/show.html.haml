@@ -183,6 +183,31 @@
           = check_box_tag :override_existing
           = label_tag :override_existing, 'Override Existing Values?'
 
+    %fieldset
+      %legend Access Information
+      %table.form.show
+        %tr
+          %th Edit access
+          %td
+            - @item.admins.each do |admin|
+              = admin.name
+              %br
+
+        %tr
+          %th View/Download access
+          %td
+            - @item.users.each do |user|
+              = user.name
+              %br
+
+        %tr
+          %th Data access conditions
+          %td= @item.access_condition_name
+
+        %tr
+          %th Data access narrative
+          %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
+
   - if can? :manage, @item
     %fieldset
       %legend Archive Information
@@ -242,28 +267,6 @@
         %tr
           %th Record modified
           %td= @item.updated_at
-
-        %tr
-          %th Edit access
-          %td
-            - @item.admins.each do |admin|
-              = admin.name
-              %br
-
-        %tr
-          %th View/Download access
-          %td
-            - @item.users.each do |user|
-              = user.name
-              %br
-
-        %tr
-          %th Data access conditions
-          %td= @item.access_condition_name
-
-        %tr
-          %th Data access narrative
-          %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
 
         %tr
           %th Comments
