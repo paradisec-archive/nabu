@@ -38,7 +38,7 @@
                 %span= item.identifier
                 -#set up the access condition icon/label - label is open/closed/other
                 -#tooltip is access condition name + optional access narrative
-                -access_condition = item.access_condition ? item.access_condition.name : ''
+                -access_condition = item.access_condition ? item.access_condition.name : 'Access conditions not set'
                 -access_condition = "#{access_condition}\n\n#{item.access_narrative}".strip
                 -access_class = if access_condition.start_with?('Open') then |
                     'open' |
