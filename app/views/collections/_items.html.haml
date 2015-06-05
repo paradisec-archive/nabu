@@ -16,7 +16,7 @@
     %thead
       %tr
         = sortable :identifier, 'Item'
-        = sortable :title
+        = sortable :title, nil
         - if can? :update, @collection
           %th Digitised
           %th Files
@@ -34,16 +34,28 @@
         - @items.each do |item|
           - if can? :read, item
             %tr
-              %td= item.identifier
+              %td.nowrap{style: 'padding-right: 10px;'}
+                %span= item.identifier
+                -#set up the access condition icon/label - label is open/closed/other, tooltip is access condition name
+                -access_condition = item.access_condition ? item.access_condition.name : ''
+                -access_class = if access_condition.start_with?('Open') then |
+                    'open' |
+                  elsif access_condition.start_with?('Closed') then |
+                    'closed' |
+                  else |
+                    'other' |
+                  end |
+
+                %span.access{title: access_condition, class: access_class}
               %td= item.title
               - if can? :update, @collection
-                %td
+                %td.nowrap{style: 'min-width: 75px;'}
                   - if item.digitised_on
                     = item.digitised_on.strftime('%d/%m/%Y')
                 %td= item.essences.count
-              %td
-                = link_to 'View', [item.collection, item]
-                = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
+              %td{style: 'min-width: 60px;'}
+                = link_to 'View', [item.collection, item], {class: 'minwhitespace'}
+                = link_to 'Edit', edit_collection_item_path(item.collection, item), {class: 'minwhitespace'} if can? :update, item
 
   = paginate @items, :param_name => :items_page
 
