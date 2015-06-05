@@ -29,6 +29,10 @@ body.bp {
     white-space: nowrap;
   }
 
+  td.nowrap {
+    white-space: nowrap;
+  }
+
   #container {
     overflow: visible;
   }
@@ -550,5 +554,44 @@ body.bp {
     input[type='submit'] {
       margin-left: 40px;
     }
+  }
+
+  // access condition status icons
+  span.access {
+    border: 2px solid black;
+    border-radius: 5px;
+    color: white;
+    display: inline-block;
+    font-size: small;
+    margin: 1px;
+    width: 37px;
+    &.open {
+      background-color: #50b855;
+      border-color: #1c800c;
+      &:before {
+        content: "open";
+        margin-left: 4px; //centre this a bit
+      }
+    }
+    &.closed {
+      background-color: #db5750;
+      border-color: #9d0000;
+      &:before {
+        content: "closed";
+      }
+    }
+    &.other {
+      background-color: #6e6e6e;
+      border-color: #000000;
+      &:before {
+        content: "other";
+        margin-left: 3px; //centre this a bit
+      }
+    }
+  }
+
+  .minwhitespace {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }
