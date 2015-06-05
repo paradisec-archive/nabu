@@ -1,16 +1,13 @@
-role :web, 'catalog.paradisec.org.au'
-role :app, 'catalog.paradisec.org.au'
-role :db,  'catalog.paradisec.org.au', :primary => true # This is where Rails migrations will run
-
-set :rails_env,   'production'
-set :unicorn_env, 'production'
-set :app_env,     'production'
 set :application, 'nabu'
 set :repository,  'git@github.com:nabu-catalog/nabu'
 set :scm, :git
 
 set :deploy_to, "/srv/www/#{application}"
-set :user, 'deploy'
+
+set :rails_env,   'production'
+set :app_env,     'production'
+# the unicorn env changes between staing and production, so set that in the individual configs (deploy/<env>.rb)
+
 set :use_sudo, false
 set :deploy_via, :remote_cache
 set :keep_releases, 5
@@ -20,6 +17,9 @@ set :ssh_options, { :forward_agent => true, }
 set :default_shell, '/bin/bash --login'
 
 set :shared_children, fetch(:shared_children) + ['tmp/sockets']
+
+set :stages, %w(staging production)
+set :default_stage, 'staging'
 
 namespace :deploy do
   task :shared_config_symlink, :except => { :no_release => true } do
@@ -60,7 +60,8 @@ namespace :sunspot do
     stop
     start
   end
-  after 'deploy:restart', 'sunspot:restart'
+# Restarting Solr seems to cause all sorts of issues on Staging, so commented out
+#  after 'deploy:restart', 'sunspot:restart'
 end
 
 namespace :monit do
@@ -84,4 +85,5 @@ end
 after :deploy, 'notify_rollbar'
 
 require 'bundler/capistrano'
+require 'capistrano/ext/multistage'
 require 'capistrano-unicorn'
