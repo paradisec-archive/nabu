@@ -14,6 +14,8 @@ module Nabu
     def mimetype
       return @mimetype if @mimetype
       @mimetype = FM.file @file, true
+
+      #explicitly override the FileMagick-discovered mime information for certain types
       case @mimetype
         when 'application/octet-stream'
           extension = @file.split('.').last
@@ -38,6 +40,7 @@ module Nabu
             @mimetype = 'text/xml'
           end
         else
+          # use the FileMagick response
       end
       @mimetype
     end

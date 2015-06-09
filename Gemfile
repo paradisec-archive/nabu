@@ -62,6 +62,9 @@ gem 'quiet_assets'
 gem 'spreadsheet'
 gem 'rake'
 
+# Image processing
+gem 'rmagick'
+
 group :development, :test do
   gem 'turn', '~> 0.8.3', :require => false
   gem 'rspec-rails', '~> 2.0'
