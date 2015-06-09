@@ -5,6 +5,8 @@ class ImageTransformerService
 
   attr_accessor :multipart
 
+  ADMIN_MASK = 'PDSC_ADMIN'
+
   def initialize(media, file)
     @media = media
     @file = file
@@ -63,7 +65,11 @@ class ImageTransformerService
       #otherwise create multiple files
       Array(data).map.with_index do |datum, i|
         file_path = "#{root_file_path}-page#{i+1}" if @multipart
-        new_suffix = "#{thumb_size ? "-#{thumb_size}x#{thumb_size}-thumb" : ''}.#{format}"
+        # In order to allow for multiple thumbnail sizes, add something along the lines of:
+        # -#{thumb_size}x#{thumb_size}
+        # to the new_suffix that will identify the dimensions of the thumb
+        # NOTE: this was removed to enable the PDSC viewer to easily construct the filename and not guess sizes
+        new_suffix = "#{thumb_size ? "-thumb-#{ADMIN_MASK}" : ''}.#{format}"
         file_path = "#{file_path || root_file_path}#{new_suffix}"
 
         puts "Writing #{thumb_size.nil? ? 'image' : 'thumb'} to #{file_path}"

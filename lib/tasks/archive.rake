@@ -378,31 +378,25 @@ namespace :archive do
   def generate_derived_files(full_file_path, item, extension, media)
     generated_essences = []
 
-    # image processing to generate thumbnails and perform conversions as required
     if media.mimetype.start_with?('image')
       transformer = ImageTransformerService.new(media, full_file_path)
 
-      # if the file is a tif, convert it to jpeg
-      # Note: tif may have multiple pages, so convert to multiple jpegs
+      # if the file is a tif, convert it to jpeg - Note: tif may have multiple pages, so convert to multiple jpegs
       if media.mimetype == 'image/tiff'
         converted = transformer.convert_to :jpeg
         out_filename = transformer.write(converted, extension, :jpeg)
 
         #if the input is multipart, also produce a pdf version of the whole thing
         if transformer.multipart
-          out_filename << transformer.write(converted, extension, :pdf)
+          multipart_file = transformer.write(converted, extension, :pdf)
+          generated_essences << Essence.new(item: item, filename: multipart_file, mimetype: 'application/pdf',
+                                            size: File.stat(full_file_path.sub(extension, 'pdf')).size)
         end
 
         #since we may have converted a tif to multiple jpgs, handle that here
         if out_filename.is_a?(Array)
           out_filename.each_with_index do |out, i|
-            # because the PDF generation doesn't also add stuff to the
-            size = if out == out_filename.last
-                    converted.sum(&:length)
-                  else
-                    converted[i].length
-                  end
-            generated_essences << Essence.new(item: item, filename: out, mimetype: 'image/jpeg', size: size)
+            generated_essences << Essence.new(item: item, filename: out, mimetype: 'image/jpeg', size: converted[i].length)
           end
         else
           generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: converted.length)
@@ -419,12 +413,9 @@ namespace :archive do
 
       thumbnails.each do |size, thumbnail|
         transformer.write(thumbnail, extension, :jpeg, size)
-        # probably don't want to generate essence files for these
-        # generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: thumbnail.length)
       end
     end
 
-    # this is a loop because the conversion can create multiple pages per tif (for example)
     generated_essences.each do |generated|
       if generated.valid?
         generated.save!
