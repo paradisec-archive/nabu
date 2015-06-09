@@ -88,13 +88,13 @@ namespace :archive do
         next unless File.file? "#{upload_directory}/#{file}"
 
         # skip files of size 0 bytes
-        if !File.size?("#{upload_directory}/#{file}")
+        unless File.size?("#{upload_directory}/#{file}")
           puts "WARNING: file #{file} skipped, since it is empty" if verbose
           next
         end
 
         # skip files that can't be read
-        if !File.readable?("#{upload_directory}/#{file}")
+        unless File.readable?("#{upload_directory}/#{file}")
           puts "ERROR: file #{file} skipped, since it's not readable" if verbose
           next
         end
@@ -106,7 +106,7 @@ namespace :archive do
         end
 
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        next if !collection || !item
+        next unless (collection && item)
 
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
         if item_id.length > 30
@@ -147,8 +147,9 @@ namespace :archive do
           puts "Inspecting file #{file}..."
           begin
             import_metadata(destination_path, file, item, extension)
-          rescue
-            puts "WARNING: file #{file} skipped - error importing metadata" if verbose
+          rescue => e
+            puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+            puts " >> #{e.backtrace}"
             next
           end
         end
@@ -302,20 +303,21 @@ namespace :archive do
   def parse_file_name(file, file_extension=nil)
     verbose = ENV['VERBOSE'] ? true : false
 
-    coll_id, item_id = file.split('-')
-    return unless item_id
-
     extension = file.split('.').last
     return if file_extension && file_extension != extension
     basename = File.basename(file, "." + extension)
 
+    #use basename to avoid having item_id contain the extension
+    coll_id, item_id = basename.split('-')
+    return unless item_id
+
     collection = Collection.find_by_identifier coll_id
-    if !collection
+    unless collection
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
     item = collection.items.find_by_identifier item_id
-    if !item
+    unless item
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -324,23 +326,26 @@ namespace :archive do
 
 
   def import_metadata(path, file, item, extension)
+    # since everything operates off of the full path, construct it here
+    full_file_path = path + "/" + file
+
     # extract media metadata from file
-    media = Nabu::Media.new path + "/" + file
-    if !media
-      puts "ERROR: was not able to parse #{path + "/" + file} of type #{extension} - skipping"
+    media = Nabu::Media.new full_file_path
+    unless media
+      puts "ERROR: was not able to parse #{full_file_path} of type #{extension} - skipping"
       return
     end
 
-    # TODO: put TIFF identifying logic here, then pass off to service for conversion
-    # TODO: put image identifying logic here, then pass off to service for generating thumbnails (poss. same service)
-
     # find essence file in Nabu DB; if there is none, create a new one
     essence = Essence.where(:item_id => item, :filename => file).first
-    if !essence
+    unless essence
       essence = Essence.new(:item => item, :filename => file)
     end
 
-    # update essence entry with metadata from file
+    generated_successfully = generate_derived_files(full_file_path, item, extension, media)
+    return unless generated_successfully
+
+      # update essence entry with metadata from file
     begin
       essence.mimetype   = media.mimetype
       essence.size       = media.size
@@ -355,9 +360,9 @@ namespace :archive do
       return
     end
 
-    if !essence.valid?
+    unless essence.valid?
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
-      essence.errors.each {|field, msg| puts "#{field}: #{msg}"}
+      essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
       return
     end
     if essence.new_record? || (essence.changed? && ENV['FORCE'] == 'true')
@@ -368,5 +373,68 @@ namespace :archive do
       puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
     end
+  end
+
+  def generate_derived_files(full_file_path, item, extension, media)
+    generated_essences = []
+
+    # image processing to generate thumbnails and perform conversions as required
+    if media.mimetype.start_with?('image')
+      transformer = ImageTransformerService.new(media, full_file_path)
+
+      # if the file is a tif, convert it to jpeg
+      # Note: tif may have multiple pages, so convert to multiple jpegs
+      if media.mimetype == 'image/tiff'
+        converted = transformer.convert_to :jpeg
+        out_filename = transformer.write(converted, extension, :jpeg)
+
+        #if the input is multipart, also produce a pdf version of the whole thing
+        if transformer.multipart
+          out_filename << transformer.write(converted, extension, :pdf)
+        end
+
+        #since we may have converted a tif to multiple jpgs, handle that here
+        if out_filename.is_a?(Array)
+          out_filename.each_with_index do |out, i|
+            # because the PDF generation doesn't also add stuff to the
+            size = if out == out_filename.last
+                    converted.sum(&:length)
+                  else
+                    converted[i].length
+                  end
+            generated_essences << Essence.new(item: item, filename: out, mimetype: 'image/jpeg', size: size)
+          end
+        else
+          generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: converted.length)
+        end
+      end
+
+      #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
+      # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
+      if ENV['thumbnail_sizes']
+        thumbnails = transformer.generate_thumbnails ENV['thumbnail_sizes'].split(',').map(&:strip)
+      else
+        thumbnails = transformer.generate_thumbnails
+      end
+
+      thumbnails.each do |size, thumbnail|
+        transformer.write(thumbnail, extension, :jpeg, size)
+        # probably don't want to generate essence files for these
+        # generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: thumbnail.length)
+      end
+    end
+
+    # this is a loop because the conversion can create multiple pages per tif (for example)
+    generated_essences.each do |generated|
+      if generated.valid?
+        generated.save!
+      else
+        puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
+        generated.errors.each {|field, msg| puts "#{field}: #{msg}"}
+        return false
+      end
+    end
+
+    return true
   end
 end
