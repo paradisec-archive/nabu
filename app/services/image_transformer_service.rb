@@ -7,12 +7,13 @@ class ImageTransformerService
 
   ADMIN_MASK = 'PDSC_ADMIN'
 
-  def initialize(media, file)
+  def initialize(media, file, force_generation = false)
     @media = media
     @file = file
     @type = media.mimetype == 'image/tiff' ? :tiff : :other
     @ilist = ImageList.new(@file)
     @multipart = @ilist.length > 1
+    @force_generation = force_generation
   end
 
   def convert_to(format, quality = 75)
@@ -64,7 +65,7 @@ class ImageTransformerService
     else
       #otherwise create multiple files
       Array(data).map.with_index do |datum, i|
-        file_path = "#{root_file_path}-page#{i+1}" if @multipart
+        file_path = "#{root_file_path}-page#{i+1}" if @multipart && thumb_size.nil? #don't add pages for thumbs
         # In order to allow for multiple thumbnail sizes, add something along the lines of:
         # -#{thumb_size}x#{thumb_size}
         # to the new_suffix that will identify the dimensions of the thumb
@@ -81,5 +82,17 @@ class ImageTransformerService
         File.basename file_path
       end
     end
+  end
+
+
+  # these helpers are used to determine which files have already been generated, so as to not override them
+  def path_to_file_as(format, thumb = false, pages = false)
+    extension = @file.split('.').last
+    @file.sub(".#{extension}", "#{pages ? '-page1' : ''}#{thumb ? "-thumb-#{ADMIN_MASK}" : ''}.#{format}")
+  end
+
+  def file_exists_as(format, thumb = false)
+    return @force_generation if @force_generation
+    File.file?(path_to_file_as(format, thumb)) || File.file?(path_to_file_as(format, thumb, true))
   end
 end

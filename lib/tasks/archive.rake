@@ -328,6 +328,7 @@ namespace :archive do
   def import_metadata(path, file, item, extension)
     # since everything operates off of the full path, construct it here
     full_file_path = path + "/" + file
+    force_update = (ENV['FORCE'] == 'true')
 
     # extract media metadata from file
     media = Nabu::Media.new full_file_path
@@ -365,54 +366,66 @@ namespace :archive do
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
       return
     end
-    if essence.new_record? || (essence.changed? && ENV['FORCE'] == 'true')
+    if essence.new_record? || (essence.changed? && force_update)
       essence.save!
       puts "SUCCESS: file #{file} metadata imported into Nabu"
     end
-    if essence.changed? && ENV['FORCE'] != 'true'
+    if essence.changed? && !force_update
       puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
     end
   end
 
+
+  # this method tries to avoid regenerating any files that already exist, however due to the way it picks up files
+  # it will unnecessarily generate thumbnails for the pages of multipage files (since after they're created, they just
+  # look like jpeg files with no thumbs attached)
+  # I don't see this being a problem, but it is slightly annoying/weird. However it's more trouble to fix than to leave
   def generate_derived_files(full_file_path, item, extension, media)
     generated_essences = []
 
     if media.mimetype.start_with?('image')
       transformer = ImageTransformerService.new(media, full_file_path)
 
-      # if the file is a tif, convert it to jpeg - Note: tif may have multiple pages, so convert to multiple jpegs
+      # if the file is a tif, convert it to jpeg
       if media.mimetype == 'image/tiff'
         converted = transformer.convert_to :jpeg
-        out_filename = transformer.write(converted, extension, :jpeg)
 
-        #if the input is multipart, also produce a pdf version of the whole thing
-        if transformer.multipart
-          multipart_file = transformer.write(converted, extension, :pdf)
-          generated_essences << Essence.new(item: item, filename: multipart_file, mimetype: 'application/pdf',
-                                            size: File.stat(full_file_path.sub(extension, 'pdf')).size)
+        unless transformer.file_exists_as :jpeg # don't convert if it already exists
+          out_filename = transformer.write(converted, extension, :jpeg)
+
+          #since we may have converted a multipage tif to multiple jpgs, handle that here
+          if out_filename.is_a?(Array)
+            out_filename.each_with_index do |out, i|
+              generated_essences << Essence.new(item: item, filename: out, mimetype: 'image/jpeg', size: converted[i].length)
+            end
+          else
+            generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: converted.length)
+          end
         end
 
-        #since we may have converted a tif to multiple jpgs, handle that here
-        if out_filename.is_a?(Array)
-          out_filename.each_with_index do |out, i|
-            generated_essences << Essence.new(item: item, filename: out, mimetype: 'image/jpeg', size: converted[i].length)
+        unless transformer.file_exists_as :pdf # don't generate a pdf if one exists
+          #if the input is multipart, also produce a pdf version of the whole thing
+          if transformer.multipart
+            multipart_file = transformer.write(converted, extension, :pdf)
+            generated_essences << Essence.new(item: item, filename: multipart_file, mimetype: 'application/pdf',
+                                              size: File.stat(full_file_path.sub(extension, 'pdf')).size)
           end
-        else
-          generated_essences << Essence.new(item: item, filename: out_filename, mimetype: 'image/jpeg', size: converted.length)
         end
       end
 
       #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
       # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      if ENV['thumbnail_sizes']
-        thumbnails = transformer.generate_thumbnails ENV['thumbnail_sizes'].split(',').map(&:strip)
-      else
-        thumbnails = transformer.generate_thumbnails
-      end
+      unless transformer.file_exists_as(:jpeg, true) # don't create thumbnails if they already exist
+        if ENV['thumbnail_sizes']
+          thumbnails = transformer.generate_thumbnails ENV['thumbnail_sizes'].split(',').map(&:strip)
+        else
+          thumbnails = transformer.generate_thumbnails
+        end
 
-      thumbnails.each do |size, thumbnail|
-        transformer.write(thumbnail, extension, :jpeg, size)
+        thumbnails.each do |size, thumbnail|
+          transformer.write(thumbnail, extension, :jpeg, size)
+        end
       end
     end
 
