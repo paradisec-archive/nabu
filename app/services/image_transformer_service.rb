@@ -27,7 +27,7 @@ class ImageTransformerService
     end
   end
 
-  def generate_thumbnails(sizes = [144], format = :jpeg)
+  def generate_thumbnails(sizes = [144], format = :jpg)
     outfiles = []
     sizes.each do |size|
       #while ilist can be multiple pages, don't care when generating thumbnails and just use first page

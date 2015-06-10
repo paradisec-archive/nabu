@@ -389,10 +389,10 @@ namespace :archive do
 
       # if the file is a tif, convert it to jpeg
       if media.mimetype == 'image/tiff'
-        converted = transformer.convert_to :jpeg
+        converted = transformer.convert_to :jpg
 
-        unless transformer.file_exists_as :jpeg # don't convert if it already exists
-          out_filename = transformer.write(converted, extension, :jpeg)
+        unless transformer.file_exists_as :jpg # don't convert if it already exists
+          out_filename = transformer.write(converted, extension, :jpg)
 
           #since we may have converted a multipage tif to multiple jpgs, handle that here
           if out_filename.is_a?(Array)
@@ -416,7 +416,7 @@ namespace :archive do
 
       #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
       # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      unless transformer.file_exists_as(:jpeg, true) # don't create thumbnails if they already exist
+      unless transformer.file_exists_as(:jpg, true) # don't create thumbnails if they already exist
         if ENV['thumbnail_sizes']
           thumbnails = transformer.generate_thumbnails ENV['thumbnail_sizes'].split(',').map(&:strip)
         else
@@ -424,7 +424,7 @@ namespace :archive do
         end
 
         thumbnails.each do |size, thumbnail|
-          transformer.write(thumbnail, extension, :jpeg, size)
+          transformer.write(thumbnail, extension, :jpg, size)
         end
       end
     end
