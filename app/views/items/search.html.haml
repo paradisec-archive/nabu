@@ -49,7 +49,7 @@
             %legend Top 100 Collectors
             .fix-scroll-height
               %table
-                - @search.facet(:collector_id).rows.sort {|a,b| a.instance.last_name <=> b.instance.last_name }.each do |row|
+                - @search.facet(:collector_id).rows.sort {|a,b| a.instance.sortname <=> b.instance.sortname }.each do |row|
                   - collector = row.instance
                   - params_with_facet = params.merge(:collector_id => collector.id)
                   %tr
