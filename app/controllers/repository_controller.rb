@@ -44,7 +44,7 @@ class RepositoryController < ApplicationController
   def send_admin_essence(collection, item, essence_filename)
     item_prefix = "#{collection.identifier}-#{item.identifier}-"
     essence_part = essence_filename.sub(item_prefix, '').sub(/^(.+?)-[^-]+?-PDSC_ADMIN\..+/, '\1')
-    essence = item.essences.where('filename LIKE :prefix', prefix: "#{item_prefix}#{essence_part}").first
+    essence = item.essences.where('filename LIKE :prefix', prefix: "#{item_prefix}#{essence_part}%").first
 
     # don't allow the user to randomly access data, must relate directly to an essence file
     return if essence.nil?
