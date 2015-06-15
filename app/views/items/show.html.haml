@@ -144,7 +144,10 @@
 .twoup-2
 
   %fieldset
-    %legend= "Content Files (#{@num_files})"
+    %legend{style: 'width: 100%;'}
+      %span= "Content Files (#{@num_files})"
+      %a{style: 'float: right;',
+         href: "#{Nabu::Application.config.viewer_url}/#/#{@collection.identifier}/#{@item.identifier}"} View all
     = render :partial => 'essences'
 
   %fieldset

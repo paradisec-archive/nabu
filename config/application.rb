@@ -89,6 +89,8 @@ module Nabu
     config.scan_directory = "#{Rails.root}/public/system/prepare_for_sealing/"
     config.write_imp = "#{Rails.root}/public/system/XMLImport/"
     config.write_id3 = "#{Rails.root}/public/system/ID3Import/"
+
+    config.viewer_url = '/viewer'
   end
 end
 
