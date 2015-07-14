@@ -159,6 +159,10 @@ class ItemsController < ApplicationController
 
     invalid_record = false
     @items.each do |item|
+      if item.nil? # I don't think this should be able to be nil
+        next
+      end
+
       appendable.each_pair do |k, v|
         if item.send(k).nil?
           params[:item][k.to_sym] = v unless v.blank?
@@ -308,8 +312,9 @@ class ItemsController < ApplicationController
   end
 
   def save_item_catalog_file(item)
+    return if item.nil?
     # render the template here because you can't access render in the service
-    data = render_to_string :template => 'items/catalog_export.xml.haml'
+    data = render_to_string :template => 'items/catalog_export.xml.haml', locals: {item: item}
 
     ItemCatalogService.new(item).save_file(data)
   end
