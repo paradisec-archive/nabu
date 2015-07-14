@@ -48,12 +48,18 @@ class ItemsController < ApplicationController
   def new
 
     #For creating duplicate items
-    if (params[:id])
+    if params[:id]
       existing = Item.find(params[:id])
       attributes = existing.attributes.select do |attr, value|
         Item.column_names.include?(attr.to_s)
       end
+
       @item.assign_attributes(attributes, :without_protection => true)
+
+      # loop through and clone the association contents as well, otherwise it gets emptied out
+      Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
+        existing.send(assoc).each { |a| @item.send(assoc) << a }
+        end
     end
 
   end
@@ -224,6 +230,11 @@ class ItemsController < ApplicationController
       end
       if params[:item][:collector_id] =~ /^NEWCONTACT:/
         params[:item][:collector_id] = create_contact(params[:item][:collector_id])
+      end
+
+      if params[:existing_id].present?
+        agent_attrs = params[:item].delete(:item_agents_attributes)
+        params[:item][:agent_ids] = agent_attrs.map {|x,y| y['_destroy'] == 0 ? y['id'] : nil}.reject {|x| x == nil}
       end
     end
   end

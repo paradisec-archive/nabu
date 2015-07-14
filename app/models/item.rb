@@ -62,7 +62,7 @@ class Item < ActiveRecord::Base
                   :collector_id, :university_id, :operator_id,
                   :country_ids, :data_category_ids,
                   :content_language_ids, :subject_language_ids,
-                  :admin_ids, :user_ids, :item_agents_attributes,
+                  :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
                   :access_condition_id,
                   :access_narrative, :private,
                   :admin_comment,
@@ -81,6 +81,10 @@ class Item < ActiveRecord::Base
   delegate :name, :to => :university, :prefix => true, :allow_nil => true
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
+
+  DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages
+                         admins users agents data_categories)
+
 
   paginates_per 10
 
