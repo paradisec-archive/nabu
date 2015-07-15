@@ -59,7 +59,7 @@ class ItemsController < ApplicationController
       # loop through and clone the association contents as well, otherwise it gets emptied out
       Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
         existing.send(assoc).each { |a| @item.send(assoc) << a }
-        end
+      end
     end
 
   end
@@ -85,6 +85,8 @@ class ItemsController < ApplicationController
   end
 
   def create
+    @item.assign_attributes(params[:item].except(:item_agents_attributes))
+
     if @item.save
       # update xml file of the item
       save_item_catalog_file(@item)
@@ -234,7 +236,20 @@ class ItemsController < ApplicationController
 
       if params[:existing_id].present?
         agent_attrs = params[:item].delete(:item_agents_attributes)
-        params[:item][:agent_ids] = agent_attrs.map {|x,y| y['_destroy'] == 0 ? y['id'] : nil}.reject {|x| x == nil}
+        new_agents = agent_attrs.select {|k,v| v[:id].nil? }
+        agent_ids = agent_attrs.reject {|k,v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|k,v| v['id'] }
+
+        params[:item][:item_agents_attributes] = {}
+        i = 0
+        ItemAgent.where(id: agent_ids).each do |x|
+          params[:item][:item_agents_attributes][i.to_s] = {user_id: x.user_id, agent_role_id: x.agent_role_id}
+          i += 1
+        end
+
+        new_agents.each do |k,v|
+          params[:item][:item_agents_attributes][i.to_s] = {user_id: v['user_id'].to_i, agent_role_id: v['agent_role_id'].to_i}
+          i += 1
+        end
       end
     end
   end
