@@ -389,37 +389,29 @@ namespace :archive do
 
       # if the file is a tif, convert it to jpeg
       if media.mimetype == 'image/tiff'
-        unless transformer.file_exists_as :jpg # don't convert if it already exists
-          puts 'Generate JPG'
-          converted = transformer.convert_to :jpg, extension
+        puts 'Generate JPG'
+        converted = transformer.convert_to :jpg, extension
 
-          converted.each do |out|
-            generated_essences << Essence.new(item: item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
-          end
+        converted.each do |out|
+          generated_essences << Essence.new(item: item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
         end
 
-        unless transformer.file_exists_as(:pdf) # don't generate a pdf if one exists
-          if transformer.multipart
-            puts 'Generate PDF collection for pages'
+        if transformer.multipart
+          puts 'Generate PDF collection for pages'
 
-            #if the input is multipart, also produce a pdf version of the whole thing
-            multipart_file = transformer.convert_to :pdf, extension
-            generated_essences << Essence.new(item: item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
-                                              size: File.size(multipart_file))
-          end
+          #if the input is multipart, also produce a pdf version of the whole thing
+          multipart_file = transformer.convert_to :pdf, extension
+          generated_essences << Essence.new(item: item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
+                                            size: File.size(multipart_file))
         end
       end
 
       #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
       # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      unless transformer.file_exists_as(:jpg, true) # don't create thumbnails if they already exist
-        puts 'Generate thumbnails for images'
-
-        if ENV['thumbnail_sizes']
-          transformer.generate_thumbnails extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
-        else
-          transformer.generate_thumbnails extension
-        end
+      if ENV['thumbnail_sizes']
+        transformer.generate_thumbnails extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
+      else
+        transformer.generate_thumbnails extension
       end
     end
 
