@@ -393,6 +393,7 @@ namespace :archive do
         converted = transformer.convert_to :jpg, extension
 
         converted.each do |out|
+          next if out.nil?
           generated_essences << Essence.new(item: item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
         end
 
