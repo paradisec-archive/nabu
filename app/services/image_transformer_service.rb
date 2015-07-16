@@ -16,32 +16,35 @@ class ImageTransformerService
     @force_generation = force_generation
   end
 
-  def convert_to(format, quality = 75)
-    # return the blob(s), then the calling class can do whatever it wants with it
+  def convert_to(format, extension, quality = 50)
+    file_path = @file.sub(".#{extension}", ".#{format}")
 
-    @ilist.to_a.map do |i|
-      i.to_blob {
-        self.format = format.to_s
-        self.quality = quality # 0 worst - 100 = best. Default to 75 == nearly as good as original
-      }
+    if [:pdf, :tif].include?(format)
+      @ilist.write(file_path) { self.quality = quality }
+      file_path
+    else
+      @ilist.to_a.map.with_index do |image, i|
+        page_file_path = file_path.sub(".#{format}", "#{multipart ? "-page#{i+1}" : ''}.#{format}")
+        image.write(page_file_path) { self.quality = quality }
+
+        page_file_path
+      end
     end
   end
 
-  def generate_thumbnails(sizes = [144], format = :jpg)
-    outfiles = []
-    sizes.each do |size|
-      #while ilist can be multiple pages, don't care when generating thumbnails and just use first page
-      outfile = @ilist.resize_to_fit(size, size)
-      outfiles << [size,
-                   outfile.to_blob {
-                     self.format = format.to_s
-                     self.quality = 75
-                   }]
-    end
+  def generate_thumbnails(extension, sizes = [144], format = :jpg)
+    @ilist.to_a.each_with_index do |image, i|
+      sizes.each do |size|
+        new_suffix = "#{multipart ? "-page#{i+1}" : ''}#{size ? "-thumb-#{ADMIN_MASK}" : ''}.#{format}"
+        file_path = "#{@file.sub(".#{extension}", new_suffix)}"
 
-    outfiles
+        outfile = image.resize_to_fit(size, size)
+        outfile.write(file_path) { self.quality = 50 }
+      end
+    end
   end
 
+=begin
   # separated write from convert to allow for in-memory usage of converted images
   def write(data, extension, format, thumb_size = nil)
     root_file_path = @file.sub(".#{extension}", '')
@@ -83,7 +86,7 @@ class ImageTransformerService
       end
     end
   end
-
+=end
 
   # these helpers are used to determine which files have already been generated, so as to not override them
   def path_to_file_as(format, thumb = false, pages = false)
