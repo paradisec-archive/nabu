@@ -1,5 +1,7 @@
 include ActionView::Helpers::SanitizeHelper
 class Item < ActiveRecord::Base
+  include IdentifiableByDoi
+
   delegate :url_helpers, :to => 'Rails.application.routes'
   has_paper_trail
   nilify_blanks

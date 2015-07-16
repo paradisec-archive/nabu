@@ -1,4 +1,6 @@
 class Collection < ActiveRecord::Base
+  include IdentifiableByDoi
+
   has_paper_trail
   nilify_blanks
 
