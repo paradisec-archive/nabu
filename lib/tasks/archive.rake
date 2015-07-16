@@ -389,11 +389,11 @@ namespace :archive do
 
       # if the file is a tif, convert it to jpeg
       if media.mimetype == 'image/tiff'
-        puts 'Generate JPG'
+        puts "Generate JPG#{transformer.multipart ? 's' : ''}"
         converted = transformer.convert_to :jpg, extension
 
         converted.each do |out|
-          next if out.nil?
+          next if out.nil? # if files already existed, there will be nils instead of filenames
           generated_essences << Essence.new(item: item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
         end
 
@@ -402,13 +402,16 @@ namespace :archive do
 
           #if the input is multipart, also produce a pdf version of the whole thing
           multipart_file = transformer.convert_to :pdf, extension
-          generated_essences << Essence.new(item: item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
-                                            size: File.size(multipart_file))
+          if multipart_file.present? # if the file didn't already exist
+            generated_essences << Essence.new(item: item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
+                                              size: File.size(multipart_file))
+          end
         end
       end
 
       #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
       # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
+      puts 'Generating thumbnails'
       if ENV['thumbnail_sizes']
         transformer.generate_thumbnails extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
       else

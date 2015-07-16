@@ -20,11 +20,11 @@ class ImageTransformerService
     file_path = @file.sub(".#{extension}", ".#{format}")
 
     if [:pdf, :tif].include?(format)
-        unless File.file? file_path
-          @ilist.write(file_path) { self.quality = quality }
+      unless File.file? file_path
+        @ilist.write(file_path) { self.quality = quality }
 
-          file_path
-        end
+        file_path
+      end
     else
       @ilist.to_a.map.with_index do |image, i|
         page_file_path = file_path.sub(".#{format}", "#{multipart ? "-page#{i+1}" : ''}.#{format}")
