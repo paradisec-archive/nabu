@@ -7,12 +7,13 @@ module IdentifiableByDoi
           xml.tag! 'creatorName', collector_name
         end
       end
-      xml.tag! 'url', full_path
+      #TODO: replace with NABU/Paradisec identifier key
+      xml.tag! 'identifier', '10.5072/00/bcndhj78437hjk', identifierType: 'DOI'
       xml.tag! 'titles' do
         xml.tag! 'title', title
       end
-      xml.tag! 'publisher', 'Paradisec'
-      xml.tag! 'publicationYear', '2015'
+      xml.tag! 'publisher', collector_name
+      xml.tag! 'publicationYear', created_at.year
     end
   end
 
