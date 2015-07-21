@@ -114,7 +114,7 @@ namespace :archive do
           next
         end
 
-        puts "---------------------------------------------------------------"
+        puts '---------------------------------------------------------------'
 
         # make sure the archive directory for the collection and item exists
         # and move the file there
@@ -185,7 +185,7 @@ namespace :archive do
         puts "---------------------------------------------------------------" if verbose
         puts "Inspecting file #{file}..."
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        if !collection || !item
+        unless collection && item
           puts "ERROR: skipping file #{file} - does not relate to an item #{coll_id}-#{item_id}"
           next
         end
@@ -230,10 +230,11 @@ namespace :archive do
       path, coll_id = File.split(path)
 
       puts "item #{coll_id}-#{item_id}"
-      collection = Collection.find_by_identifier coll_id
-      next if !collection
-      item = collection.items.find_by_identifier item_id
-      next if !item
+      # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+      collection = Collection.where('BINARY identifier = ?', coll_id).first
+      next unless collection
+      item = collection.items.where('BINARY identifier = ?', item_id).first
+      next unless item
 
       file = directory + "/#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
 
@@ -253,8 +254,9 @@ namespace :archive do
   desc 'Delete collection with all items'
   task :delete_collection, [:coll_id] => :environment do |t, args|
     coll_id = args[:coll_id]
-    collection = Collection.find_by_identifier coll_id
-    if !collection
+    # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+    collection = Collection.where('BINARY identifier = ?', coll_id).first
+    unless collection
       abort("ERROR: no such collection #{coll_id}")
     end
     items = collection.items.size
@@ -268,7 +270,8 @@ namespace :archive do
       item.destroy
     end
     # reload collection so it loses its now deleted item links
-    collection = Collection.find_by_identifier coll_id
+    # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+    collection = Collection.where('BINARY identifier = ?', coll_id).first
     puts "Deleting collection #{collection.identifier}"
     collection.destroy
     puts "...done"
@@ -311,12 +314,15 @@ namespace :archive do
     coll_id, item_id = basename.split('-')
     return unless item_id
 
-    collection = Collection.find_by_identifier coll_id
+    # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+    collection = Collection.where('BINARY identifier = ?', coll_id).first
     unless collection
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
-    item = collection.items.find_by_identifier item_id
+
+    # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
+    item = collection.items.where('BINARY identifier = ?', item_id).first
     unless item
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
@@ -377,10 +383,7 @@ namespace :archive do
   end
 
 
-  # this method tries to avoid regenerating any files that already exist, however due to the way it picks up files
-  # it will unnecessarily generate thumbnails for the pages of multipage files (since after they're created, they just
-  # look like jpeg files with no thumbs attached)
-  # I don't see this being a problem, but it is slightly annoying/weird. However it's more trouble to fix than to leave
+  # this method tries to avoid regenerating any files that already exist
   def generate_derived_files(full_file_path, item, extension, media)
     generated_essences = []
 
@@ -411,7 +414,7 @@ namespace :archive do
 
       #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
       # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      puts 'Generating thumbnails'
+      puts "Generate thumbnails#{transformer.multipart ? 's' : ''}"
       if ENV['thumbnail_sizes']
         transformer.generate_thumbnails extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
       else
