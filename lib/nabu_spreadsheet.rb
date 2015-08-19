@@ -20,11 +20,11 @@ module Nabu
       coll_id = sheet1.row(3)[1].to_s
       @collection = Collection.find_by_identifier coll_id
       collector = user_from_str(sheet1.row(6)[1], false)
-      if !collector
+      unless collector
         @errors << "ERROR collector does not exist"
         return
       end
-      if !@collection
+      unless @collection
         @collection = Collection.new
         @collection.identifier = coll_id
         @collection.collector = collector
@@ -47,7 +47,7 @@ module Nabu
         return
       end
 
-      # parse items in XSL file
+      # parse items in XLS file
       existing_items = ""
       sheet1.each 12 do |row|
         break if row[0].nil? # if first cell empty
@@ -58,7 +58,7 @@ module Nabu
         item_id.slice! "#{@collection.identifier}-"
 
         item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
-        if !item
+        unless item
           item = Item.new
           item.identifier = item_id
           item.collection = @collection
@@ -85,7 +85,7 @@ module Nabu
         item.description = row[2].to_s unless row[2].blank?
 
         # add content and subject language
-        if !row[3].blank?
+        if row[3].present?
           content_languages = row[3].split('|')
           content_languages.each do |language|
             content_language = Language.find_by_name(language)
@@ -96,7 +96,7 @@ module Nabu
             end
           end
         end
-        if !row[4].blank?
+        if row[4].present?
           subject_languages = row[4].split('|')
           subject_languages.each do |language|
             subject_language = Language.find_by_name(language)
@@ -109,23 +109,25 @@ module Nabu
         end
 
         # add countries
-        countries = row[5].split('|')
-        countries.each do |country|
-          code, _ = country.strip.split(' - ')
-          cntry = Country.find_by_code(code.strip)
-          if !cntry
-            # try country name
-            cntry = Country.find_by_name(code.strip)
-            if !cntry
-              @notices << "Item #{item.identifier} : Country not found - Item skipped"
-              next
+        if row[5].present?
+          countries = row[5].split('|')
+          countries.each do |country|
+            code, _ = country.strip.split(' - ')
+            cntry = Country.find_by_code(code.strip)
+            unless cntry
+              # try country name
+              cntry = Country.find_by_name(code.strip)
+              unless cntry
+                @notices << "Item #{item.identifier} : Country not found - Item skipped"
+                next
+              end
             end
+            item.countries << cntry unless item.countries.include? cntry
           end
-          item.countries << cntry unless item.countries.include? cntry
         end
 
         # add origination date
-        if !row[6].to_s.empty?
+        if row[6].present?
           date = row[6].to_s
           if date.length == 4 ## take a guess they forgot the month & day
             date = date + "-01-01"
@@ -157,7 +159,7 @@ module Nabu
     private
 
     def user_from_str(name, create)
-      if !name
+      unless name
         @errors << "Got no name for collector"
         return nil
       end
@@ -168,21 +170,22 @@ module Nabu
         last_name = ''
       end
 
-      user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
+      user = User.where(first_name: first_name, last_name: last_name).first
 
-      if !user
-        if !create
+      unless user
+        unless create
           @errors << "Please create user #{name} first<br/>"
           return nil
         end
         random_string = SecureRandom.base64(16)
-        user = User.new()
-        user.first_name = first_name
-        user.last_name = last_name
-        user.password = random_string
-        user.password_confirmation = random_string
-        user.contact_only = true
-        if not user.valid?
+        user = User.new(
+          first_name: first_name,
+          last_name: last_name,
+          password: random_string,
+          password_confirmation: random_string,
+          contact_only: true
+        )
+        unless user.valid?
           @errors << "Couldn't create user #{name}<br/>"
           return nil
         end
