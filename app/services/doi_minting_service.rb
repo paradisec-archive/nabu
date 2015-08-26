@@ -18,14 +18,17 @@ class DoiMintingService
   def mint_doi(doiable)
     doi_xml = doiable.to_doi_xml
     uri = URI(url_for(:mint))
-    uri.query = URI.encode_www_form( app_id: @app_id, url: doiable.full_path)
+    uri.query = URI.encode_www_form(app_id: @app_id, url: doiable.full_path)
 
     connection = Net::HTTP.new(uri.host, uri.port)
+    # REVIEW: Is this secure?
+    connection.use_ssl = true
 
-    request = Net::HTTP::Post.new(uri.path)
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.body = doi_xml
     response = connection.request(request)
 
-    if response.code >= 200 && response.code < 300
+    if response.code.to_i >= 200 && response.code.to_i < 300
       content = JSON.parse(response.body)
       if content['response']['responsecode'] == AndsResponse::MINTING_SUCCESS
         doiable.doi = content['response']['doi']
@@ -35,7 +38,7 @@ class DoiMintingService
         puts content['response']['verbosemessage']
       end
     else
-      puts "Failed to mint DOI - Server returned a bad response: #{response.status} / #{response.message}"
+      puts "Failed to mint DOI - Server returned a bad response: #{response.code} / #{response.message}"
     end
   end
 
