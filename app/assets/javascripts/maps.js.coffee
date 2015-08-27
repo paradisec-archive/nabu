@@ -42,7 +42,7 @@ $(document).ready ->
         $('.south_limit').val(-80)
         $('.west_limit').val(-20)
 
-        displayNoDataMessage()
+        displayNoDataMessage(path)
       else
         $('.north_limit').val(ne.lat())
         $('.east_limit').val(ne.lng())
@@ -54,8 +54,11 @@ $(document).ready ->
       $('.map').trigger('update_map')
       false
 
-    displayNoDataMessage = ->
-      $('.no-map-match-message').text('No matching map data found')
+    displayNoDataMessage = (path) ->
+      if path == '/countries/'
+        $('.no-map-match-message').text('No matching map data found from country')
+      else
+        $('.no-map-match-message').text('No matching map data found from language')
 
     clearNoDataMessage = ->
       $('.no-map-match-message').text('')
