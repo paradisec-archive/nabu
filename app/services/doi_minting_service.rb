@@ -21,7 +21,6 @@ class DoiMintingService
     uri.query = URI.encode_www_form(app_id: @app_id, url: doiable.full_path)
 
     connection = Net::HTTP.new(uri.host, uri.port)
-    # REVIEW: Is this secure?
     connection.use_ssl = true
 
     request = Net::HTTP::Post.new(uri.request_uri)
