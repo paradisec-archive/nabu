@@ -1,4 +1,6 @@
 class Essence < ActiveRecord::Base
+  include IdentifiableByDoi
+
   belongs_to :item
 
   validates :item, :associated => true
@@ -36,6 +38,19 @@ class Essence < ActiveRecord::Base
 
   def prev_essence
     Essence.where(:item_id => self.item).order(:id).where('id < ?', self.id).last
+  end
+
+  def title
+    filename
+  end
+
+  def full_path
+    # TODO: probably want to change this to be filename at some point, non-urgent though
+    "#{item.full_path}/essences/#{id}"
+  end
+
+  def collector_name
+    item.collection.collector_name
   end
 
 end
