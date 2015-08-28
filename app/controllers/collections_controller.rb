@@ -179,6 +179,7 @@ class CollectionsController < ApplicationController
     end
 
     if invalid_record
+      @collection = Collection.new
       do_search
       render :action => 'bulk_edit'
     else
