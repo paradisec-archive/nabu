@@ -80,8 +80,6 @@ class CollectionsController < ApplicationController
 
   def edit
     @num_items = @collection.items.count
-    @num_items_ready = @collection.items.where{ digitised_on != nil }.count
-    @num_essences = Essence.where(:item_id => @collection.items).count
 
     @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
@@ -131,6 +129,9 @@ class CollectionsController < ApplicationController
       flash[:notice] = 'Collection was successfully updated.'
       redirect_to @collection
     else
+      @num_items = @collection.items.count
+
+      @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
       render :action => "edit"
     end
   end
