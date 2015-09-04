@@ -31,6 +31,7 @@ class DoiMintingService
       content = JSON.parse(response.body)
       if content['response']['responsecode'] == AndsResponse::MINTING_SUCCESS
         doiable.doi = content['response']['doi']
+        doiable.save!
         puts "Successfully minted DOI for #{doiable.full_path} => #{doiable.doi}"
       else
         puts "Failed to mint DOI - DOI minting return a bad response: #{content['response']['responsecode']} / #{content['response']['message']}"
