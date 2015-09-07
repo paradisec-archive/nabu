@@ -20,6 +20,7 @@ class UsersController < ApplicationController
     @user = User.find params[:id]
     respond_to do |format|
       format.html do
+        @page_title = 'Nabu - User Details'
         authorize! :show, @user
         render 'users/edit'
       end
@@ -58,6 +59,7 @@ class UsersController < ApplicationController
       sign_in :user, @user, :bypass => true if current_user == @user
       redirect_to @user
     else
+      @page_title = 'Nabu - User Details'
       render :action => 'edit'
     end
   end
