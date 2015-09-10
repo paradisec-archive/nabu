@@ -9,7 +9,7 @@
       f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load",i,!1);}else{w.attachEvent("onload",i);}})(window,document);
 
     = raw analytical.head_prepend_javascript
-    %title Nabu
+    %title= @page_title || 'Nabu'
     = favicon_link_tag
     = stylesheet_link_tag :screen, :media => 'screen, projection'
     = stylesheet_link_tag :print,  :media => 'print'

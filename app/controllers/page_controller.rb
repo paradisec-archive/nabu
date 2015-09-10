@@ -1,10 +1,12 @@
 class PageController < ApplicationController
   def home
+    @page_title = "Nabu - Home"
     @coordinates = Collection.where(:private => false).map(&:center_coordinate).compact
     @content = render_to_string :partial => 'page/infowindow'
   end
 
   def dashboard
+    @page_title = "Nabu - Dashboard"
     authenticate_user!
     @name = current_user.name
 
@@ -36,6 +38,7 @@ class PageController < ApplicationController
   end
 
   def glossary
+    @page_title = "Nabu - Glossary"
     @universities = University.all
     @fundingBodies = FundingBody.all
   end
