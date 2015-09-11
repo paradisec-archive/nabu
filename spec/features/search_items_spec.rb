@@ -1,6 +1,107 @@
 require 'spec_helper'
 describe 'Item Search', search: true do
   describe 'Solr searching of items' do
+    let(:search) do
+      Item.solr_search do
+        fulltext search_term
+      end
+    end
+    before do
+      # Ensure that full_identifier can't be confused with identifier
+      item.stub(:full_identifier) { (item.collection.identifier + '-' + item.identifier).reverse }
+      fail if item.full_identifier.include?(item.identifier)
+      Sunspot.remove_all!(Item)
+      Sunspot.index!(item)
+    end
+
+    context 'searching by a keyword mentioned in language' do
+      let(:language) { 'South Efate, Bislama' }
+      let(:item) { create(:item, language: language) }
+      let(:search_term) { language }
+      it 'should have a match' do
+        expect(search.results.length).to eq 1
+      end
+    end
+
+    context 'searching by item identifier' do
+      let(:identifier) { 'SomeWords' }
+      let(:item) { create(:item, identifier: identifier) }
+
+      context 'search term is longer than 10 characters' do
+        let(:identifier) { 'ReallyLongWord' }
+        let(:item) { create(:item, identifier: identifier) }
+
+        context 'using a full keyword' do
+          let(:search_term) { identifier }
+          it 'should have a match' do
+            pending 'Fails because maxGramSize is 10'
+            expect(search.results.length).to eq 1
+          end
+        end
+
+        context 'using a partial keyword' do
+          let(:search_term) { identifier[0..-2] }
+          it 'should have a match' do
+            pending 'Fails because maxGramSize is 10'
+            expect(search.results.length).to eq 1
+          end
+        end
+      end
+
+      context 'using a full keyword' do
+        let(:search_term) { identifier }
+        it 'should have a match' do
+          expect(search.results.length).to eq 1
+        end
+      end
+
+      context 'using a partial keyword' do
+        let(:search_term) { identifier[0..-2] }
+        it 'should have a match' do
+          expect(search.results.length).to eq 1
+        end
+      end
+    end
+
+    context 'searching by full identifier' do
+      let(:identifier) { 'House' }
+      let(:item) { create(:item, identifier: identifier) }
+
+      context 'search term is longer than 10 characters' do
+        let(:identifier) { 'ReallyLongWord' }
+        let(:item) { create(:item, identifier: identifier) }
+
+        context 'using a full keyword' do
+          let(:search_term) { item.full_identifier }
+          it 'should have a match' do
+            pending 'Fails because maxGramSize is 10'
+            expect(search.results.length).to eq 1
+          end
+        end
+
+        context 'using a partial keyword' do
+          let(:search_term) { item.full_identifier[0..-2] }
+          it 'should have a match' do
+            pending 'Fails because maxGramSize is 10'
+            expect(search.results.length).to eq 1
+          end
+        end
+      end
+
+      context 'using a full keyword' do
+        let(:search_term) { item.full_identifier }
+        it 'should have a match' do
+          expect(search.results.length).to eq 1
+        end
+      end
+
+      context 'using a partial keyword' do
+        let(:search_term) { item.full_identifier[0..-2] }
+        it 'should have a match' do
+          expect(search.results.length).to eq 1
+        end
+      end
+    end
   end
 
   describe 'ItemsController use of Item Search' do
