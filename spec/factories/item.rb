@@ -14,6 +14,7 @@ FactoryGirl.define do
     discourse_type
     collection
     originated_on Date.today
+    created_at Date.parse('2015/01/01')
     private false
     after(:build) do |item|
       item.countries ||= build_list(:country, 1)

@@ -30,6 +30,7 @@ class ItemsController < ApplicationController
       paginate :page => params[:page], :per_page => params[:per_page]
     end
 
+    @page_title = 'Nabu - Item Search'
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -42,10 +43,12 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
+    @page_title = 'Nabu - Advanced Item Search'
     do_search
   end
 
   def new
+    @page_title = 'Nabu - Add New Item'
 
     #For creating duplicate items
     if params[:id]
@@ -65,6 +68,7 @@ class ItemsController < ApplicationController
   end
 
   def show
+    @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
@@ -94,11 +98,13 @@ class ItemsController < ApplicationController
       flash[:notice] = 'Item was successfully created.'
       redirect_to [@collection, @item]
     else
+      @page_title = 'Nabu - Add New Item'
       render :action => 'new'
     end
   end
 
   def edit
+    @page_title = 'Nabu - Edit Item'
   end
 
   def destroy
@@ -139,6 +145,7 @@ class ItemsController < ApplicationController
       flash[:notice] = 'Item was successfully updated.'
       redirect_to [@collection, @item]
     else
+      @page_title = 'Nabu - Edit Item'
       render :action => "edit"
     end
   end
@@ -146,6 +153,7 @@ class ItemsController < ApplicationController
   def bulk_edit
     @item = Item.new
     @item.collection = Collection.new
+    @page_title = 'Nabu - Items Bulk Update'
 
     do_search
   end
@@ -194,6 +202,7 @@ class ItemsController < ApplicationController
 
     if invalid_record
       do_search
+      @page_title = 'Nabu - Items Bulk Update'
       render :action => 'bulk_edit'
     else
       flash[:notice] = 'Items were successfully updated.'
@@ -205,8 +214,13 @@ class ItemsController < ApplicationController
     send_file @item.path, :disposition => 'inline', :type => 'text/xml'
   end
 
-  def new_report ; end
-  def report_sent ; end
+  def new_report
+    @page_title = 'Nabu - Depositor Item Report Request'
+  end
+
+  def report_sent
+    @page_title = 'Nabu - Depositor Item Report Request'
+  end
 
   def send_report
     @date_from = params["date_from"]

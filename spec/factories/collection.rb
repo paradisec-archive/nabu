@@ -12,6 +12,7 @@ FactoryGirl.define do
     field_of_research
     university
     collector
+    created_at Date.parse('2015/01/01')
     private false
   end
 end

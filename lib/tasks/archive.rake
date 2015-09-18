@@ -286,6 +286,11 @@ namespace :archive do
     end
   end
 
+  desc "Mint DOIs for objects that don't have one"
+  task :mint_dois => :environment do
+    batch_size = Integer(ENV['MINT_DOIS_BATCH_SIZE'])
+    BatchDoiMintingService.run(batch_size)
+  end
 
   # HELPERS
 

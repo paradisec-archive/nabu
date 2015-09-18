@@ -1,5 +1,7 @@
 include ActionView::Helpers::SanitizeHelper
 class Item < ActiveRecord::Base
+  include IdentifiableByDoi
+
   delegate :url_helpers, :to => 'Rails.application.routes'
   has_paper_trail
   nilify_blanks
@@ -191,8 +193,8 @@ class Item < ActiveRecord::Base
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :code_textp
-    text :full_identifier, :as => :code_textp
+    text :identifier, :as => :identifier_textp
+    text :full_identifier, :as => :full_identifier_textp
     text :collector_name
     text :university_name
     text :operator_name

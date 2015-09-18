@@ -9,6 +9,7 @@ class CollectionsController < ApplicationController
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
   def search
+    @page_title = 'Nabu - Collections'
     if params[:clear]
       params.delete(:search)
 
@@ -44,10 +45,12 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
+    @page_title = 'Nabu - Advanced Search Collections'
     do_search
   end
 
   def new
+    @page_title = 'Nabu - Add New Collection'
   end
 
   def show
@@ -62,6 +65,7 @@ class CollectionsController < ApplicationController
     else
       @items = @items.order(:identifier)
     end
+    @page_title = "Nabu - #{@collection.title}"
   end
 
   def create
@@ -74,14 +78,14 @@ class CollectionsController < ApplicationController
       flash[:notice] = 'Collection was successfully created.'
       redirect_to @collection
     else
+      @page_title = 'Nabu - Add New Collection'
       render :action => 'new'
     end
   end
 
   def edit
+    @page_title = "Nabu - Edit Collection"
     @num_items = @collection.items.count
-    @num_items_ready = @collection.items.where{ digitised_on != nil }.count
-    @num_essences = Essence.where(:item_id => @collection.items).count
 
     @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
@@ -131,11 +135,16 @@ class CollectionsController < ApplicationController
       flash[:notice] = 'Collection was successfully updated.'
       redirect_to @collection
     else
+      @num_items = @collection.items.count
+
+      @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
+      @page_title = "Nabu - Edit Collection"
       render :action => "edit"
     end
   end
 
   def bulk_edit
+    @page_title = 'Nabu - Collections Bulk Update'
     @collection = Collection.new
 
     do_search
@@ -178,6 +187,8 @@ class CollectionsController < ApplicationController
     end
 
     if invalid_record
+      @page_title = 'Nabu - Collections Bulk Update'
+      @collection = Collection.new
       do_search
       render :action => 'bulk_edit'
     else

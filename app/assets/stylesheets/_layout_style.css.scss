@@ -246,7 +246,7 @@ body.bp {
 
       &.missing {
         font-style: italic;
-        font-color: red;
+        color: red;
       }
 
       &.append {
@@ -261,6 +261,9 @@ body.bp {
         input {
           margin-right: 10px;
         }
+      }
+      span.no-map-match-message {
+        color: red;
       }
     }
 

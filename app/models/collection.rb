@@ -1,4 +1,6 @@
 class Collection < ActiveRecord::Base
+  include IdentifiableByDoi
+
   has_paper_trail
   nilify_blanks
 
@@ -67,6 +69,14 @@ class Collection < ActiveRecord::Base
 
   before_save :check_complete
 
+  def has_default_map_boundaries?
+    if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
+      true
+    else
+      false
+    end
+  end
+
   def check_complete
     present = [
       :identifier, :title, :description, :collector, :university,
@@ -103,7 +113,7 @@ class Collection < ActiveRecord::Base
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :code_textp
+    text :identifier, :as => :identifier_textp
     text :identifier2 do
       identifier
     end

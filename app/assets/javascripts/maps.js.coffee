@@ -37,12 +37,8 @@ $(document).ready ->
       sw = marker_bounds.getSouthWest()
 
       if marker_bounds.isEmpty()
-        $('.north_limit').val(80)
-        $('.east_limit').val(-40)
-        $('.south_limit').val(-80)
-        $('.west_limit').val(-20)
+        displayNoDataMessage(path)
 
-        displayNoDataMessage()
       else
         $('.north_limit').val(ne.lat())
         $('.east_limit').val(ne.lng())
@@ -50,12 +46,15 @@ $(document).ready ->
         $('.west_limit').val(sw.lng())
 
         clearNoDataMessage()
+        $('.map').trigger('update_map')
 
-      $('.map').trigger('update_map')
       false
 
-    displayNoDataMessage = ->
-      $('.no-map-match-message').text('No matching map data found')
+    displayNoDataMessage = (path) ->
+      if path == '/countries/'
+        $('.no-map-match-message').text('No matching map data found from country')
+      else
+        $('.no-map-match-message').text('No matching map data found from language')
 
     clearNoDataMessage = ->
       $('.no-map-match-message').text('')
