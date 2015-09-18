@@ -34,7 +34,6 @@ describe 'Item Search', search: true do
         context 'using a full keyword' do
           let(:search_term) { identifier }
           it 'should have a match' do
-            pending 'Fails because maxGramSize is 10'
             expect(search.results.length).to eq 1
           end
         end
@@ -42,7 +41,6 @@ describe 'Item Search', search: true do
         context 'using a partial keyword' do
           let(:search_term) { identifier[0..-2] }
           it 'should have a match' do
-            pending 'Fails because maxGramSize is 10'
             expect(search.results.length).to eq 1
           end
         end
@@ -74,7 +72,6 @@ describe 'Item Search', search: true do
         context 'using a full keyword' do
           let(:search_term) { item.full_identifier }
           it 'should have a match' do
-            pending 'Fails because maxGramSize is 10'
             expect(search.results.length).to eq 1
           end
         end
@@ -82,7 +79,6 @@ describe 'Item Search', search: true do
         context 'using a partial keyword' do
           let(:search_term) { item.full_identifier[0..-2] }
           it 'should have a match' do
-            pending 'Fails because maxGramSize is 10'
             expect(search.results.length).to eq 1
           end
         end
