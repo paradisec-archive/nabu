@@ -113,7 +113,7 @@ class Collection < ActiveRecord::Base
   searchable do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :code_textp
+    text :identifier, :as => :identifier_textp
     text :identifier2 do
       identifier
     end
