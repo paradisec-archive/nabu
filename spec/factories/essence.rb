@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :essence do
     item
+    created_at Date.parse('2015/01/01')
+
     factory :sound_essence do
       filename 'moo.wav'
       mimetype 'audio/mp3'
