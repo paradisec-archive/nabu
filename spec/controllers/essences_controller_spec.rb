@@ -10,7 +10,7 @@ describe EssencesController, type: :controller do
 
   let(:params) { {collection_id: collection.identifier, item_id: item.identifier, id: essence.id} }
 
-  before(:all) do
+  before(:each) do
     # allow test user to access everything
     item.item_users << ItemUser.new({item: item, user: user})
   end
