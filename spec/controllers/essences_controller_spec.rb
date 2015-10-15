@@ -72,7 +72,6 @@ describe EssencesController, type: :controller do
         let(:access_condition) { nil }
 
         it 'should redirect to show item page with error' do
-          pending 'Pending spec'
           get :show, params
           expect(session).to_not have_key("terms_#{collection.id}")
           expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
