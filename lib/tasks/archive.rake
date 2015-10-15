@@ -73,7 +73,8 @@ namespace :archive do
   desc 'Import files into the archive'
   task :import_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
-    force_update = (ENV['FORCE'] == 'true')
+    # Always update metadata, unlike the update_files task
+    force_update = true
 
     # find essence files in Nabu::Application.config.upload_directories
     dir_list = Nabu::Application.config.upload_directories
@@ -165,6 +166,7 @@ namespace :archive do
   desc 'Update essence metadata of existing files in the archive'
   task :update_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    # Default to not forcing an update of metadata
     force_update = (ENV['FORCE'] == 'true')
 
     # find essence files in Nabu::Application.config.archive_directory
