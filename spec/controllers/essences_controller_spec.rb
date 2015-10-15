@@ -5,7 +5,8 @@ describe EssencesController, type: :controller do
   let(:manager) {create(:user, admin: true)}
 
   let(:collection) {create(:collection)}
-  let(:item) {create(:item, collection: collection, access_condition: AccessCondition.new({name: 'Open (subject to agreeing to PDSC access conditions)'}))}
+  let(:access_condition) { AccessCondition.new({name: 'Open (subject to agreeing to PDSC access conditions)'}) }
+  let(:item) {create(:item, collection: collection, access_condition: access_condition)}
   let(:essence) {create(:sound_essence, item: item)}
 
   let(:params) { {collection_id: collection.identifier, item_id: item.identifier, id: essence.id} }
@@ -64,6 +65,18 @@ describe EssencesController, type: :controller do
           expect(response.status).to eq(200)
           expect(response).to render_template(:show)
           expect(flash[:error]).to be_nil
+        end
+      end
+
+      context 'when access_condition_id nil' do
+        let(:access_condition) { nil }
+
+        it 'should redirect to show item page with error' do
+          pending 'Pending spec'
+          get :show, params
+          expect(session).to_not have_key("terms_#{collection.id}")
+          expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
+          expect(flash[:error]).to eq 'Item does not have data access conditions set'
         end
       end
     end
