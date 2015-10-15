@@ -73,6 +73,7 @@ namespace :archive do
   desc 'Import files into the archive'
   task :import_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    force_update = (ENV['FORCE'] == 'true')
 
     # find essence files in Nabu::Application.config.upload_directories
     dir_list = Nabu::Application.config.upload_directories
@@ -146,7 +147,7 @@ namespace :archive do
           # extract media metadata from file
           puts "Inspecting file #{file}..."
           begin
-            import_metadata(destination_path, file, item, extension)
+            import_metadata(destination_path, file, item, extension, force_update)
           rescue => e
             puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
@@ -164,6 +165,7 @@ namespace :archive do
   desc 'Update essence metadata of existing files in the archive'
   task :update_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    force_update = (ENV['FORCE'] == 'true')
 
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
@@ -198,7 +200,7 @@ namespace :archive do
         end
 
         # extract media metadata from file
-        import_metadata(directory, file, item, extension)
+        import_metadata(directory, file, item, extension, force_update)
       end
     end
     puts "===" if verbose
@@ -336,10 +338,9 @@ namespace :archive do
   end
 
 
-  def import_metadata(path, file, item, extension)
+  def import_metadata(path, file, item, extension, force_update)
     # since everything operates off of the full path, construct it here
     full_file_path = path + "/" + file
-    force_update = (ENV['FORCE'] == 'true')
 
     # extract media metadata from file
     media = Nabu::Media.new full_file_path
