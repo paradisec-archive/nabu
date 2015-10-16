@@ -202,6 +202,12 @@ class CollectionsController < ApplicationController
   end
 
   def create_from_exsite9
+    unless params.key?(:collection)
+      @collection = Collection.new unless @collection
+      flash[:error] = 'No ExSite9 file submitted'
+      render 'new_from_metadata'
+      return
+    end
     # get XML data
     data = params[:collection][:metadata].read
     # parse XML file as ExSite9
@@ -223,6 +229,12 @@ class CollectionsController < ApplicationController
   end
 
   def create_from_spreadsheet
+    unless params.key?(:collection)
+      @collection = Collection.new unless @collection
+      flash[:error] = 'No Spreadsheet XLS file submitted'
+      render 'new_from_metadata'
+      return
+    end
     # get XSL data
     data = params[:collection][:metadata].read
     # parse XML file as Spreadsheet
