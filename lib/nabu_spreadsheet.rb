@@ -171,8 +171,8 @@ module Nabu
 
       first_name, last_name = name.split(',').map(&:strip)
 
-      if last_name.nil?
-        last_name = ''
+      if last_name == ''
+        last_name = nil
       end
 
       user = User.where(first_name: first_name, last_name: last_name).first
