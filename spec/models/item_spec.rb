@@ -48,7 +48,6 @@ describe Item do
 
   describe '#citation' do
     it 'uses DOI, not URI' do
-      pending 'pending spec'
       item.should_receive(:doi) { '' }
       item.citation
     end

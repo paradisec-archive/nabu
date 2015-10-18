@@ -379,7 +379,7 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " #{full_path}"
+    cite += " #{doi}"
     cite += " #{Date.today}."
     cite
   end
