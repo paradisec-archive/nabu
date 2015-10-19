@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: countries
+#
+#  id   :integer          not null, primary key
+#  code :string(255)
+#  name :string(255)
+#
+
 class Country < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :code, :presence => true, :uniqueness => true

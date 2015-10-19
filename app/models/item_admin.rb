@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: item_admins
+#
+#  id      :integer          not null, primary key
+#  item_id :integer          not null
+#  user_id :integer          not null
+#
+
 class ItemAdmin < ActiveRecord::Base
   belongs_to :user
   belongs_to :item

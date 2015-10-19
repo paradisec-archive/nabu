@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: funding_bodies
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)      not null
+#  key_prefix :string(255)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class FundingBody < ActiveRecord::Base
   attr_accessible :key_prefix, :name
 

@@ -1,3 +1,11 @@
+# == Schema Information
+#
+# Table name: discourse_types
+#
+#  id   :integer          not null, primary key
+#  name :string(255)      not null
+#
+
 class DiscourseType < ActiveRecord::Base
   validates :name, :presence => true
 
