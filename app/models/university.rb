@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: universities
+#
+#  id               :integer          not null, primary key
+#  name             :string(255)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  party_identifier :string(255)
+#
+
 class University < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
 

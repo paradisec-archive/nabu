@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: fields_of_research
+#
+#  id         :integer          not null, primary key
+#  identifier :string(255)
+#  name       :string(255)
+#
+
 class FieldOfResearch < ActiveRecord::Base
   validates :name, :identifier, :presence => true
   validates :name, :identifier, :uniqueness => true

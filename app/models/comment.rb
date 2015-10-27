@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: comments
+#
+#  id               :integer          not null, primary key
+#  owner_id         :integer          not null
+#  commentable_id   :integer          not null
+#  commentable_type :string(255)      not null
+#  body             :text             default(""), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  status           :string(255)
+#
+
 class Comment < ActiveRecord::Base
   has_paper_trail
 

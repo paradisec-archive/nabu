@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: collection_admins
+#
+#  id            :integer          not null, primary key
+#  collection_id :integer          not null
+#  user_id       :integer          not null
+#
+
 class CollectionAdmin < ActiveRecord::Base
   belongs_to :user
   belongs_to :collection

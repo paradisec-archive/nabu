@@ -1,3 +1,35 @@
+# == Schema Information
+#
+# Table name: collections
+#
+#  id                    :integer          not null, primary key
+#  identifier            :string(255)      not null
+#  title                 :string(255)      not null
+#  description           :text             default(""), not null
+#  collector_id          :integer          not null
+#  operator_id           :integer
+#  university_id         :integer
+#  field_of_research_id  :integer
+#  region                :string(255)
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  access_condition_id   :integer
+#  access_narrative      :text
+#  metadata_source       :string(255)
+#  orthographic_notes    :string(255)
+#  media                 :string(255)
+#  comments              :text
+#  complete              :boolean
+#  private               :boolean
+#  tape_location         :string(255)
+#  deposit_form_received :boolean
+#  north_limit           :float
+#  south_limit           :float
+#  west_limit            :float
+#  east_limit            :float
+#  doi                   :string(255)
+#
+
 class Collection < ActiveRecord::Base
   include IdentifiableByDoi
 

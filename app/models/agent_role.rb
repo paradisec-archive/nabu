@@ -1,3 +1,11 @@
+# == Schema Information
+#
+# Table name: agent_roles
+#
+#  id   :integer          not null, primary key
+#  name :string(255)      not null
+#
+
 class AgentRole < ActiveRecord::Base
   scope :alpha, order(:name)
   attr_accessible :name
