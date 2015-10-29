@@ -34,7 +34,6 @@ describe Nabu::NabuSpreadsheet do
 
       it 'is valid' do
         nabu_spreadsheet.parse(data, nil)
-        pending 'Pending functionality'
         expect(nabu_spreadsheet).to be_valid
       end
     end

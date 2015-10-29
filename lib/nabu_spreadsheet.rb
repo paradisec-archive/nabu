@@ -1,5 +1,3 @@
-require 'spreadsheet'
-
 module Nabu
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
@@ -14,12 +12,11 @@ module Nabu
       book = load_spreadsheet(data)
       return unless @errors.empty?
 
-      sheet1 = book.worksheet 0
-
+      book.sheet 0
       # parse collection in XSL file
-      coll_id = sheet1.row(3)[1].to_s
+      coll_id = book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
-      collector = user_from_str(sheet1.row(6)[1], false)
+      collector = user_from_str(book.row(7)[1], false)
       unless collector
         @errors << "ERROR collector does not exist"
         return
@@ -32,8 +29,8 @@ module Nabu
         @collection.title = 'PLEASE PROVIDE TITLE'
         @collection.description = 'PLEASE PROVIDE DESCRIPTION'
         # update collection details
-        @collection.title = sheet1.row(4)[1] unless sheet1.row(4)[1].blank?
-        @collection.description = sheet1.row(5)[1] unless sheet1.row(5)[1].blank?
+        @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
+        @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
       else
         if @collection.collector != collector
           @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
@@ -49,7 +46,8 @@ module Nabu
 
       # parse items in XLS file
       existing_items = ""
-      sheet1.each 12 do |row|
+      13.upto(book.last_row) do |row_number|
+        row = book.row(row_number)
         break if row[0].nil? # if first cell empty
 
         item_id = row[0].to_s
@@ -158,17 +156,24 @@ module Nabu
 
     private
 
+    # In theory, the program could determine which extension to try first by using Content-Type.
     def load_spreadsheet(data)
       # open Spreadsheet as "file"
       string_io = StringIO.new(data)
-      book = try_xls(string_io)
-      @errors << 'ERROR XLSX file provided - please supply an XLS file (the older Excel file format) instead' unless book
+      book = try_xls(string_io) || try_xlsx(string_io)
+      @errors << 'ERROR File is neither XLS nor XLSX' unless book
       book
     end
 
     def try_xls(string_io)
-      Spreadsheet.open string_io
+      Roo::Spreadsheet.open(string_io, extension: :xls)
     rescue Ole::Storage::FormatError
+      nil
+    end
+
+    def try_xlsx(string_io)
+      Roo::Spreadsheet.open(string_io, extension: :xlsx)
+    rescue Zip::Error
       nil
     end
 
