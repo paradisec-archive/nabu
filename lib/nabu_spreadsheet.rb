@@ -11,14 +11,9 @@ module Nabu
     end
 
     def parse(data, current_user)
-      # open Spreadsheet as "file"
-      s = StringIO.new data
-      begin
-        book = Spreadsheet.open s
-      rescue Ole::Storage::FormatError => _e
-        @errors << "ERROR XLSX file provided - please supply an XLS file (the older Excel file format) instead"
-        return
-      end
+      book = load_spreadsheet(data)
+      return unless @errors.empty?
+
       sheet1 = book.worksheet 0
 
       # parse collection in XSL file
@@ -162,6 +157,20 @@ module Nabu
     end
 
     private
+
+    def load_spreadsheet(data)
+      # open Spreadsheet as "file"
+      string_io = StringIO.new(data)
+      book = try_xls(string_io)
+      @errors << 'ERROR XLSX file provided - please supply an XLS file (the older Excel file format) instead' unless book
+      book
+    end
+
+    def try_xls(string_io)
+      Spreadsheet.open string_io
+    rescue Ole::Storage::FormatError
+      nil
+    end
 
     def user_from_str(name, create)
       unless name
