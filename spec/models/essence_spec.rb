@@ -24,7 +24,6 @@ describe Essence do
 
   describe '#citation' do
     it 'uses DOI' do
-      pending 'pending spec'
       essence.should_receive(:doi) { '' }
       essence.citation
     end

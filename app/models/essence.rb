@@ -59,6 +59,26 @@ class Essence < ActiveRecord::Base
     Essence.where(:item_id => self.item).order(:id).where('id < ?', self.id).last
   end
 
+  def citation
+    cite = ""
+    if item.collector
+      cite += "#{collector_name} (collector)"
+    end
+    item.item_agents.group_by(&:user).map do |user, ias|
+      cite += ", " unless cite == ""
+      cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
+    end
+    cite += ", #{item.originated_on.year}" if item.originated_on
+    cite += '; ' unless cite == ""
+    cite += type
+    cite += ", "
+    cite += filename
+    cite += ", "
+    cite += "#{Date.today}. "
+    cite += doi.to_s
+    cite
+  end
+
   def title
     filename
   end
