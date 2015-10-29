@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: grants
+#
+#  id               :integer          not null, primary key
+#  collection_id    :integer
+#  grant_identifier :string(255)
+#  funding_body_id  :integer
+#
+
 class Grant < ActiveRecord::Base
   belongs_to :collection
   belongs_to :funding_body

@@ -6,7 +6,10 @@ class EssencesController < ApplicationController
   def show
     @page_title = "Nabu - #{@essence.filename} (#{@essence.item.title})"
     unless can? :manage, @essence
-      if ['Open (subject to agreeing to PDSC access conditions)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
+      if @essence.item.access_condition.nil?
+        flash[:error] = 'Item does not have data access conditions set'
+        redirect_to [@collection, @item]
+      elsif ['Open (subject to agreeing to PDSC access conditions)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
         unless session["terms_#{@collection.id}"] == true
           redirect_to show_terms_collection_item_essence_path
         end

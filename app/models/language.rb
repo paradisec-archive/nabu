@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: languages
+#
+#  id          :integer          not null, primary key
+#  code        :string(255)
+#  name        :string(255)
+#  retired     :boolean
+#  north_limit :float
+#  south_limit :float
+#  west_limit  :float
+#  east_limit  :float
+#
+
 class Language < ActiveRecord::Base
   validates :name, :presence => true
   validates :code, :presence => true, :uniqueness => true

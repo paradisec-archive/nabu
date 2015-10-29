@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: item_agents
+#
+#  id            :integer          not null, primary key
+#  item_id       :integer          not null
+#  user_id       :integer          not null
+#  agent_role_id :integer          not null
+#
+
 class ItemAgent < ActiveRecord::Base
   belongs_to :user
   belongs_to :agent_role
