@@ -379,8 +379,8 @@ class Item < ActiveRecord::Base
             cite += ", "
         end
     end
-    cite += " #{doi}"
     cite += " #{Date.today}."
+    cite += " DOI: #{doi}" if doi
     cite
   end
 

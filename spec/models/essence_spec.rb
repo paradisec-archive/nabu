@@ -24,7 +24,7 @@ describe Essence do
 
   describe '#citation' do
     it 'uses DOI' do
-      essence.should_receive(:doi) { '' }
+      essence.should_receive(:doi) { '' }.twice
       essence.citation
     end
   end

@@ -48,7 +48,7 @@ describe Item do
 
   describe '#citation' do
     it 'uses DOI, not URI' do
-      item.should_receive(:doi) { '' }
+      item.should_receive(:doi) { '' }.twice
       item.citation
     end
   end

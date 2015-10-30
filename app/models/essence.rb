@@ -74,8 +74,8 @@ class Essence < ActiveRecord::Base
     cite += ", "
     cite += filename
     cite += ", "
-    cite += "#{Date.today}. "
-    cite += doi.to_s
+    cite += "#{Date.today}."
+    cite += " DOI: #{doi}" if doi
     cite
   end
 
