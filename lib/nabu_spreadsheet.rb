@@ -1,3 +1,5 @@
+require 'roo'
+
 module Nabu
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
@@ -159,8 +161,8 @@ module Nabu
     # In theory, the program could determine which extension to try first by using Content-Type.
     def load_spreadsheet(data)
       # open Spreadsheet as "file"
-      string_io = StringIO.new(data)
-      book = try_xls(string_io) || try_xlsx(string_io)
+      book = try_xls(StringIO.new(data)) ||
+        try_xlsx(StringIO.new(data))
       @errors << 'ERROR File is neither XLS nor XLSX' unless book
       book
     end
