@@ -17,7 +17,7 @@ class BatchDoiMintingService
   end
 
   def find_unminted_objects
-    Collection.where(doi: nil).limit(@batch_size)
+    (Collection.where(doi: nil).limit(@batch_size) + Item.where(doi: nil).limit(@batch_size) + Essence.where(doi: nil).limit(@batch_size)).first(@batch_size)
   end
 
   def run
