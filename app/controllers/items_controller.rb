@@ -74,6 +74,8 @@ class ItemsController < ApplicationController
 
     if params[:sort]
       @files = @files.order("#{params[:sort]} #{params[:direction]}")
+    else
+      @files = @files.order(:filename)
     end
 
     respond_to do |format|

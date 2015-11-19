@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: item_subject_languages
+#
+#  id          :integer          not null, primary key
+#  item_id     :integer          not null
+#  language_id :integer          not null
+#
+
 class ItemSubjectLanguage < ActiveRecord::Base
   belongs_to :language
   belongs_to :item

@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: essences
+#
+#  id         :integer          not null, primary key
+#  item_id    :integer
+#  filename   :string(255)
+#  mimetype   :string(255)
+#  bitrate    :integer
+#  samplerate :integer
+#  size       :integer
+#  duration   :float
+#  channels   :integer
+#  fps        :integer
+#  created_at :datetime
+#  updated_at :datetime
+#  doi        :string(255)
+#
+
 class Essence < ActiveRecord::Base
   include IdentifiableByDoi
 
@@ -38,6 +57,26 @@ class Essence < ActiveRecord::Base
 
   def prev_essence
     Essence.where(:item_id => self.item).order(:id).where('id < ?', self.id).last
+  end
+
+  def citation
+    cite = ""
+    if item.collector
+      cite += "#{collector_name} (collector)"
+    end
+    item.item_agents.group_by(&:user).map do |user, ias|
+      cite += ", " unless cite == ""
+      cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
+    end
+    cite += ", #{item.originated_on.year}" if item.originated_on
+    cite += '; ' unless cite == ""
+    cite += type
+    cite += ", "
+    cite += filename
+    cite += ", "
+    cite += "#{Date.today}."
+    cite += " DOI: #{doi}" if doi
+    cite
   end
 
   def title

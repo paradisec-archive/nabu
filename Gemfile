@@ -59,7 +59,9 @@ gem 'rollbar'
 gem 'progress_bar'
 gem 'paper_trail', '~> 2'
 gem 'quiet_assets'
-gem 'spreadsheet'
+gem 'roo', '~> 2.1.0'
+# Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
+gem 'roo-xls', :github => 'roo-rb/roo-xls', :ref => '0a5ef88'
 gem 'rake'
 
 # Image processing
@@ -93,8 +95,10 @@ group :development, :test do
 end
 
 group :development do
+  gem 'annotate'
   gem 'binding_of_caller'
   gem 'better_errors'
+  gem 'rubocop'
 end
 
 group :test do
