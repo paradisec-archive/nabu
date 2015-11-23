@@ -385,9 +385,9 @@ class Item < ActiveRecord::Base
   end
 
   def has_coordinates
-    (north_limit && north_limit != 0) &&
-    (south_limit && south_limit != 0) &&
-    (west_limit && west_limit != 0) &&
+    (north_limit && north_limit != 0) ||
+    (south_limit && south_limit != 0) ||
+    (west_limit && west_limit != 0) ||
     (east_limit && east_limit != 0)
   end
 
