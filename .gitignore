@@ -1,4 +1,6 @@
 .bundle
+.idea/
+.ruby-version
 db/*.sqlite3
 log/*
 solr/data
