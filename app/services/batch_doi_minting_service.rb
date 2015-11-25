@@ -16,6 +16,8 @@ class BatchDoiMintingService
     DoiMintingService.new('json')
   end
 
+  # The way this find works ensures that the minting occurs in a top-down manner allowing for
+  # Items and Essences to reference their parent records by DOI
   def find_unminted_objects
     (Collection.where(doi: nil).limit(@batch_size) + Item.where(doi: nil).limit(@batch_size) + Essence.where(doi: nil).limit(@batch_size)).first(@batch_size)
   end

@@ -12,7 +12,7 @@ FactoryGirl.define do
     west_limit "121.122"
     east_limit "122.046"
     discourse_type
-    collection
+    collection {build(:collection, :with_doi)}
     originated_on Date.today
     created_at Date.parse('2015/01/01')
     private false
@@ -20,6 +20,10 @@ FactoryGirl.define do
       item.countries ||= build_list(:country, 1)
       item.subject_languages = item.subject_languages.present? ? item.subject_languages : build_list(:language, 1)
       item.content_languages = item.content_languages.present? ? item.content_languages : build_list(:language, 1)
+    end
+
+    trait :with_doi do
+      sequence(:doi) {|n| "doi:TEST#{n}"}
     end
   end
 end

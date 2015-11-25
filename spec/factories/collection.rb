@@ -14,5 +14,9 @@ FactoryGirl.define do
     collector
     created_at Date.parse('2015/01/01')
     private false
+
+    trait :with_doi do
+      sequence(:doi) {|n| "doi:TEST#{n}"}
+    end
   end
 end
