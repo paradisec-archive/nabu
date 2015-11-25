@@ -56,7 +56,7 @@ gem 'capistrano-unicorn'
 gem 'rollbar'
 
 # Misc
-gem 'progress_bar'
+#gem 'progress_bar'
 gem 'paper_trail', '~> 2'
 gem 'quiet_assets'
 gem 'roo', '~> 2.1.0'

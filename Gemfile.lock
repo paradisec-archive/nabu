@@ -135,7 +135,6 @@ GEM
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
-    fattr (2.2.1)
     faye-websocket (0.4.7)
       eventmachine (>= 0.12.0)
     ffi (1.9.3)
@@ -224,8 +223,6 @@ GEM
       builder (>= 2.0.0)
       faraday
       faraday_middleware
-    options (2.3.0)
-      fattr
     orm_adapter (0.5.0)
     paper_trail (2.7.1)
       activerecord (~> 3.0)
@@ -243,9 +240,6 @@ GEM
     polyglot (0.3.3)
     powerpack (0.1.1)
     pr_geohash (1.0.0)
-    progress_bar (0.4.0)
-      highline (~> 1.6.1)
-      options (~> 2.3.0)
     pry (0.9.12.4)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -425,7 +419,6 @@ DEPENDENCIES
   oai
   paper_trail (~> 2)
   poltergeist
-  progress_bar
   pry
   pry-rails
   quiet_assets
@@ -454,3 +447,6 @@ DEPENDENCIES
   uglifier (>= 1.0.3)
   unicorn
   whenever
+
+BUNDLED WITH
+   1.10.6
