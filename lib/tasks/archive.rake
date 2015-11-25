@@ -357,10 +357,10 @@ namespace :archive do
       essence = Essence.new(:item => item, :filename => file)
     end
 
-    generated_successfully = generate_derived_files(full_file_path, item, extension, essence, media)
-    return unless generated_successfully
+    #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
+    generate_derived_files(full_file_path, item, extension, essence, media)
 
-      # update essence entry with metadata from file
+    # update essence entry with metadata from file
     begin
       essence.mimetype   = media.mimetype
       essence.size       = media.size
@@ -393,6 +393,6 @@ namespace :archive do
 
   # this method tries to avoid regenerating any files that already exist
   def generate_derived_files(full_file_path, item, essence, extension, media)
-    return ImageTransformerService.new(media, full_file_path, item, essence, extension).perform_conversions
+    ImageTransformerService.new(media, full_file_path, item, essence, extension).perform_conversions
   end
 end

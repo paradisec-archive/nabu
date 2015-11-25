@@ -5,101 +5,128 @@ class ImageTransformerService
 
   ADMIN_MASK = 'PDSC_ADMIN'
 
-  def initialize(media, file, item, essence, extension)
-    @media = media
+  def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
+    @mimetype = media.mimetype
     @file = file
-    @type = media.mimetype == 'image/tiff' ? :tiff : :other
-    @ilist = ImageList.new(@file)
-    @multipart = @ilist.length > 1
+    @image_list = ImageList.new(@file)
+    @multipart = (@image_list.length > 1)
     @item = item
     @extension = extension
     @essence = essence
+    @thumbnail_sizes = thumbnail_sizes
   end
 
   def perform_conversions
-    if @media.mimetype.start_with?('image')
-      generated_essences = []
+    return unless @mimetype.start_with?('image')
 
-      # if the file is a tif, convert it to jpeg
-      if @media.mimetype == 'image/tiff'
-        puts "Generate JPG#{@multipart ? 's' : ''}"
-        converted = convert_to :jpg, @extension
+    generated_essences = []
 
-        converted.each do |out|
-          next if out.nil? # if files already existed, there will be nils instead of filenames
-          generated_essences << Essence.new(item: @item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
-        end
+    # if the file is a tif, convert it to jpeg (with additional PDF if tif is multi-page)
+    if @mimetype == 'image/tiff'
+      convert_tif_to_jpg(generated_essences)
+    end
 
-        if @multipart
-          puts 'Generate PDF collection for pages'
+    generate_thumbnails @extension, @thumbnail_sizes
 
-          #if the input is multipart, also produce a pdf version of the whole thing
-          multipart_file = convert_to :pdf, @extension
-          if multipart_file.present? # if the file didn't already exist
-            generated_essences << Essence.new(item: @item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
-                                              size: File.size(multipart_file))
-          end
-        end
-      end
-
-      #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
-      # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      puts "Generate thumbnails#{@multipart ? 's' : ''}"
-      if ENV['thumbnail_sizes']
-        generate_thumbnails @extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
-      else
-        generate_thumbnails @extension
-      end
-
-      generated_essences.each do |generated|
-        if generated.valid?
-          generated.save!
-        else
-          puts "ERROR: invalid metadata for #{@file} of type #{@extension} - skipping"
-          generated.errors.each {|field, msg| puts "#{field}: #{msg}"}
-          return false
-        end
+    puts 'Store generated files as essences...'
+    all_essences_saved = true
+    generated_essences.each do |essence|
+      unless essence.save
+        puts "WARNING: Converted file [#{essence.filename}] failed to save due to the following errors:"
+        essence.errors.each {|field, error| puts "  [#{field}] #{error}"}
+        all_essences_saved = false
       end
     end
 
-    # if we've successfully generated the derived files, set the flag
-    @essence.derived_files_generated = true
-    @essence.save
-
-    true
+    # if we've successfully generated the derived files, set the flag - otherwise this file will be picked up again next run
+    if all_essences_saved
+      @essence.derived_files_generated = true
+      @essence.save
+    end
   end
 
+  # converts the file into the specified format and returns its new path (or nil if it already existed)
   def convert_to(format, extension, quality = 50)
-    file_path = @file.sub(".#{extension}", ".#{format}")
-
     if [:pdf, :tif].include?(format)
-      unless File.file? file_path
-        @ilist.write(file_path) { self.quality = quality }
+      # if converting between multi-page formats, simply use imagemagick
+      file_path = create_file_path(extension, format)
+      return if File.file? file_path #skip existing files
 
-        file_path
-      end
+      @image_list.write(file_path) { self.quality = quality }
+
+      file_path
     else
-      @ilist.to_a.map.with_index do |image, i|
-        page_file_path = file_path.sub(".#{format}", "#{@multipart ? "-page#{i+1}" : ''}.#{format}")
-        unless File.file? page_file_path
-          image.write(page_file_path) { self.quality = quality }
-          page_file_path
-        end
+      # if converting from multi-page format to single page - generate separate files for each page in the new format
+      @image_list.to_a.map.with_index do |image, i|
+        page_file_path = create_file_path(extension, format, i+1)
+        next if File.file? page_file_path #skip existing files
+
+        image.write(page_file_path) { self.quality = quality }
+        page_file_path
       end
     end
   end
 
-  def generate_thumbnails(extension, sizes = [144], format = :jpg)
-    @ilist.to_a.each_with_index do |image, i|
+  def generate_thumbnails(extension, sizes)
+    puts "Generate thumbnails#{@multipart ? 's' : ''}..."
+    # for each image, generate thumbnails of all sizes
+    @image_list.to_a.each_with_index do |image, i|
       sizes.each do |size|
-        new_suffix = "#{@multipart ? "-page#{i+1}" : ''}#{size ? "-thumb-#{ADMIN_MASK}" : ''}.#{format}"
-        file_path = "#{@file.sub(".#{extension}", new_suffix)}"
+        file_path = create_file_path(extension, :jpg, i+1, true)
 
-        unless File.file? file_path
-          outfile = image.resize_to_fit(size, size)
-          outfile.write(file_path) { self.quality = 50 }
-        end
+        next if File.file? file_path #skip existing files
+
+        outfile = image.resize_to_fit(size, size)
+        outfile.write(file_path) { self.quality = 50 }
       end
+    end
+  end
+
+  private
+
+  #build an appropriate new file path based on pages, thumbnails and format where provided
+  def create_file_path(extension, format, page_number = nil, is_thumbnail = false)
+    new_suffix = ".#{format}"
+
+    if is_thumbnail
+      new_suffix = "-thumb-#{ADMIN_MASK}#{new_suffix}"
+    end
+
+    if @multipart && page_number.present?
+      new_suffix = "-page#{page_number}#{new_suffix}"
+    end
+
+    @file.sub(".#{extension}", new_suffix)
+  end
+
+  def convert_tif_to_jpg(generated_essences)
+    puts "Generate JPG#{@multipart ? 's' : ''}"
+    jpg_pages = convert_to :jpg, @extension
+
+    jpg_pages.each do |page|
+      next if page.nil? # if files already existed, there will be nils instead of filenames
+      generated_essences << Essence.new(item: @item,
+                                        filename: File.basename(page),
+                                        mimetype: 'image/jpeg',
+                                        size: File.size(page),
+                                        derived_files_generated: true) #set 'generated already' flag so we don't get recursive
+    end
+
+    if @multipart
+      generate_pdf(generated_essences)
+    end
+  end
+
+  def generate_pdf(generated_essences)
+    puts 'Generate PDF collection for pages'
+
+    #if the input is multipart, also produce a pdf version of the whole thing
+    pdf_file = convert_to :pdf, @extension
+    if pdf_file.present? # if the PDF was newly generated, add it as an essence
+      generated_essences << Essence.new(item: @item,
+                                        filename: File.basename(pdf_file),
+                                        mimetype: 'application/pdf',
+                                        size: File.size(pdf_file))
     end
   end
 end
