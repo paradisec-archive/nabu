@@ -23,7 +23,7 @@ FactoryGirl.define do
     end
 
     trait :with_doi do
-      sequence(:doi) {|n| "doi:TEST#{n}"}
+      sequence(:doi) {|n| "doi:ITEM#{n}"}
     end
   end
 end

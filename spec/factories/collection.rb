@@ -16,7 +16,7 @@ FactoryGirl.define do
     private false
 
     trait :with_doi do
-      sequence(:doi) {|n| "doi:TEST#{n}"}
+      sequence(:doi) {|n| "doi:COLLECTION#{n}"}
     end
   end
 end
