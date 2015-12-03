@@ -8,10 +8,10 @@ class ItemsController < ApplicationController
 
   INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
                          :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories,
-                         :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name, :access_narrative]
+                         :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name,
+                         :access_narrative]
 
-  DEFAULT_CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", force_quotes: true, headers: INCLUDED_CSV_FIELDS}
-  DEFAULT_CSV_OPTIONS_NO_HEADERS = DEFAULT_CSV_OPTIONS.merge(write_headers: false)
+  CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map{|f| f.to_s.titleize}, write_headers: true}
 
   def search
     if params[:clear]
@@ -34,12 +34,13 @@ class ItemsController < ApplicationController
 
           # use enumerator to customise streaming the response
           self.response_body = Enumerator.new do |output|
-            #output the first page of results with headers
-            output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS)
-            # if the user requested all results, iterate over the remaining pages and output them without headers
+            # wrap the IO output so that CSV pushes writes directly into it
+            csv = CSV.new(output, CSV_OPTIONS)
+            @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.send(f)}}
+            # if the user requested all results, iterate over the remaining pages
             while params[:export_all] && @search.results.next_page
               @search = build_solr_search(params.merge(page: @search.results.next_page))
-              output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS_NO_HEADERS)
+              @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.send(f)}}
             end
           end
         end
