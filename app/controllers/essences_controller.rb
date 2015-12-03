@@ -1,7 +1,7 @@
 class EssencesController < ApplicationController
-  load_and_authorize_resource :collection, :find_by => :identifier
-  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection
-  load_and_authorize_resource :essence, :through => :item
+  load_and_authorize_resource :collection, :find_by => :identifier, except: [:list_mimetypes]
+  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, except: [:list_mimetypes]
+  load_and_authorize_resource :essence, :through => :item, except: [:list_mimetypes]
 
   def show
     @page_title = "Nabu - #{@essence.filename} (#{@essence.item.title})"
@@ -45,5 +45,9 @@ class EssencesController < ApplicationController
     message = EssenceDestructionService.destroy(@essence)
     flash[message.keys.first] = message.values.first # there's only one pair
     redirect_to [item.collection, item]
+  end
+
+  def list_mimetypes
+    render json: Essence.where('mimetype like ?', "%#{params[:q]}%").uniq.pluck(:mimetype).map{|m| {id: m, name: m}} # list distinct mimetypes from the db
   end
 end
