@@ -36,7 +36,7 @@ class ItemsController < ApplicationController
           self.response_body = Enumerator.new do |output|
             #output the first page of results with headers
             output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS)
-            # if the user requested all results, iterate of the pages and output them without headers
+            # if the user requested all results, iterate over the remaining pages and output them without headers
             while params[:export_all] && @search.results.next_page
               @search = build_solr_search(params.merge(page: @search.results.next_page))
               output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS_NO_HEADERS)
