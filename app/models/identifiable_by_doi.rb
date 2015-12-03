@@ -12,12 +12,16 @@ module IdentifiableByDoi
       xml.tag! 'titles' do
         xml.tag! 'title', title
       end
-      xml.tag! 'publisher', 'PARADISEC'
+      xml.tag! 'publisher', collector_name
       # Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
       xml.tag! 'publicationYear', (respond_to?(:originated_on) ? try(:originated_on) : created_at).year
 
-      if respond_to?(:university_name)
-        xml.tag! 'contributors' do
+      xml.tag! 'contributors' do
+        xml.tag! 'contributor', contributorType: 'HostingInstitution' do
+          xml.tag! 'contributorName', 'PARADISEC'
+        end
+
+        if respond_to?(:university_name)
           xml.tag! 'contributor', contributorType: 'DataCollector' do
             xml.tag! 'contributorName', university_name
           end
