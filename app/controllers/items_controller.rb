@@ -6,6 +6,13 @@ class ItemsController < ApplicationController
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
 
+  INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
+                         :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories,
+                         :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name, :access_narrative]
+
+  DEFAULT_CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", force_quotes: true, headers: INCLUDED_CSV_FIELDS}
+  DEFAULT_CSV_OPTIONS_NO_HEADERS = DEFAULT_CSV_OPTIONS.merge(write_headers: false)
+
   def search
     if params[:clear]
       params.delete(:search)
@@ -13,30 +20,28 @@ class ItemsController < ApplicationController
       return
     end
 
-    @search = Item.solr_search do
-      fulltext params[:search].gsub(/-/, ' ') if params[:search]
-
-      facet :content_language_ids, :country_ids
-      facet :collector_id, :limit => 100
-
-      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
-      with(:content_language_ids, params[:language_id]) if params[:language_id].present?
-      with(:country_ids, params[:country_id]) if params[:country_id].present?
-
-      with(:private, false) unless current_user && current_user.admin?
-      sort_column(Item).each do |c|
-        order_by c, sort_direction
-      end
-      paginate :page => params[:page], :per_page => params[:per_page]
-    end
+    @search = build_solr_search(params)
 
     @page_title = 'Nabu - Item Search'
     respond_to do |format|
       format.html
       if can? :search_csv, Item
         format.csv do
-          fields = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents, :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories, :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name, :access_narrative]
-          send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
+          filename = "nabu_items_#{Date.today.to_s}.csv"
+          self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
+          self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+          self.response.headers['Last-Modified'] = Time.now.ctime.to_s
+
+          # use enumerator to customise streaming the response
+          self.response_body = Enumerator.new do |output|
+            #output the first page of results with headers
+            output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS)
+            # if the user requested all results, iterate of the pages and output them without headers
+            while params[:export_all] && @search.results.next_page
+              @search = build_solr_search(params.merge(page: @search.results.next_page))
+              output << @search.results.to_csv({}, DEFAULT_CSV_OPTIONS_NO_HEADERS)
+            end
+          end
         end
       end
     end
@@ -360,4 +365,24 @@ class ItemsController < ApplicationController
 
     ItemCatalogService.new(item).save_file(data)
   end
+
+  def build_solr_search(params)
+    Item.solr_search do
+      fulltext params[:search].gsub(/-/, ' ') if params[:search]
+
+      facet :content_language_ids, :country_ids
+      facet :collector_id, :limit => 100
+
+      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
+      with(:content_language_ids, params[:language_id]) if params[:language_id].present?
+      with(:country_ids, params[:country_id]) if params[:country_id].present?
+
+      with(:private, false) unless current_user && current_user.admin?
+      sort_column(Item).each do |c|
+        order_by c, sort_direction
+      end
+      paginate :page => params[:page], :per_page => params[:per_page]
+    end
+  end
+
 end
