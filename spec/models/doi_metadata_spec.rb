@@ -19,6 +19,11 @@ describe IdentifiableByDoi do
         #but hopefully there aren't any
         expect(errors.count).to eq(0)
       end
+
+      it 'should include the originating university as a reference' do
+        doixml = collection.to_doi_xml
+        expect(doixml).to include(collection.university_name)
+      end
     end
   end
   context 'with item' do
@@ -41,6 +46,11 @@ describe IdentifiableByDoi do
       it 'should include the parent collection as a reference' do
         doixml = item.to_doi_xml
         expect(doixml).to include(item.collection.doi)
+      end
+
+      it 'should include the originating university as a reference' do
+        doixml = item.to_doi_xml
+        expect(doixml).to include(item.university_name)
       end
     end
   end
