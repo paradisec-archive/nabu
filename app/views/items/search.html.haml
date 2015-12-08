@@ -25,7 +25,7 @@
             %legend Content Languages
             .fix-scroll-height
               %table
-                - @search.facet(:content_language_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
+                - @search.facet(:content_language_ids).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
                   - language = row.instance
                   - params_with_facet = params.merge(:language_id => language.id)
                   %tr
@@ -37,7 +37,7 @@
             %legend Countries
             .fix-scroll-height
               %table
-                - @search.facet(:country_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
+                - @search.facet(:country_ids).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
                   - country = row.instance
                   - params_with_facet = params.merge(:country_id => country.id)
                   %tr
@@ -49,7 +49,7 @@
             %legend Top 100 Collectors
             .fix-scroll-height
               %table
-                - @search.facet(:collector_id).rows.sort {|a,b| a.instance.sortname <=> b.instance.sortname }.each do |row|
+                - @search.facet(:collector_id).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.sortname <=> b.instance.sortname }.each do |row|
                   - collector = row.instance
                   - params_with_facet = params.merge(:collector_id => collector.id)
                   %tr
@@ -64,4 +64,4 @@
   %p
     = link_to 'Export CSV (visible results)', search_items_path(:format => :csv, :params => params) if can? :search_csv, Item
   %p
-    = link_to 'Export CSV (all results)', search_items_path(:format => :csv, :params => params.merge(:per_page => @search.total, :page => 1)) if can? :search_csv, Item
+    = link_to 'Export CSV (all results)', search_items_path(:format => :csv, :params => params.merge(:per_page => 500, :page => 1, :export_all => true)) if can? :search_csv, Item
