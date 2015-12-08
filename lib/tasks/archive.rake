@@ -357,10 +357,10 @@ namespace :archive do
       essence = Essence.new(:item => item, :filename => file)
     end
 
-    generated_successfully = generate_derived_files(full_file_path, item, extension, media)
-    return unless generated_successfully
+    #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
+    generate_derived_files(full_file_path, item, extension, essence, media)
 
-      # update essence entry with metadata from file
+    # update essence entry with metadata from file
     begin
       essence.mimetype   = media.mimetype
       essence.size       = media.size
@@ -392,54 +392,7 @@ namespace :archive do
 
 
   # this method tries to avoid regenerating any files that already exist
-  def generate_derived_files(full_file_path, item, extension, media)
-    generated_essences = []
-
-    if media.mimetype.start_with?('image')
-      transformer = ImageTransformerService.new(media, full_file_path)
-
-      # if the file is a tif, convert it to jpeg
-      if media.mimetype == 'image/tiff'
-        puts "Generate JPG#{transformer.multipart ? 's' : ''}"
-        converted = transformer.convert_to :jpg, extension
-
-        converted.each do |out|
-          next if out.nil? # if files already existed, there will be nils instead of filenames
-          generated_essences << Essence.new(item: item, filename: File.basename(out), mimetype: 'image/jpeg', size: File.size(out))
-        end
-
-        if transformer.multipart
-          puts 'Generate PDF collection for pages'
-
-          #if the input is multipart, also produce a pdf version of the whole thing
-          multipart_file = transformer.convert_to :pdf, extension
-          if multipart_file.present? # if the file didn't already exist
-            generated_essences << Essence.new(item: item, filename: File.basename(multipart_file), mimetype: 'application/pdf',
-                                              size: File.size(multipart_file))
-          end
-        end
-      end
-
-      #by default, this just generates a single thumbnail, but you can specify a comma-sep list of sizes
-      # e.g. rake archive:import_files thumbnail_sizes='144,288,999'
-      puts "Generate thumbnails#{transformer.multipart ? 's' : ''}"
-      if ENV['thumbnail_sizes']
-        transformer.generate_thumbnails extension, ENV['thumbnail_sizes'].split(',').map(&:strip)
-      else
-        transformer.generate_thumbnails extension
-      end
-    end
-
-    generated_essences.each do |generated|
-      if generated.valid?
-        generated.save!
-      else
-        puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
-        generated.errors.each {|field, msg| puts "#{field}: #{msg}"}
-        return false
-      end
-    end
-
-    return true
+  def generate_derived_files(full_file_path, item, essence, extension, media)
+    ImageTransformerService.new(media, full_file_path, item, essence, extension).perform_conversions
   end
 end

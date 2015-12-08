@@ -1,14 +1,13 @@
 require 'filemagic'
 require 'json'
+require 'exceptions'
 
 module Nabu
   class Media
     FM = FileMagic.mime
     def initialize(file)
       @file = file
-      if ! File.exist? @file
-        raise NotFound
-      end
+      raise FileNotFound, "Unable to load media information for missing file: #{@file}" unless File.exist? @file
     end
 
     def mimetype
