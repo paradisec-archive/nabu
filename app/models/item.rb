@@ -135,6 +135,8 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
+  after_save :update_collection_countries_and_languages
+
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
   def has_default_map_boundaries?
@@ -522,5 +524,29 @@ class Item < ActiveRecord::Base
 
   def to_param
     identifier
+  end
+
+  # ensure the collection mentions all countries and languages present in the item
+  def update_collection_countries_and_languages
+    collection_updated = false
+
+    new_item_countries = countries - collection.countries
+    if new_item_countries.any?
+      collection.countries.concat new_item_countries
+      collection_updated = true
+    end
+
+    new_languages = Set.new
+    new_languages += content_languages
+    new_languages += subject_languages
+    new_languages -= collection.languages
+    if new_languages.any?
+      collection.languages.concat new_languages.to_a
+      collection_updated = true
+    end
+
+    if collection_updated
+      collection.save
+    end
   end
 end
