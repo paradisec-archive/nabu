@@ -68,7 +68,7 @@ class ImageTransformerService
   end
 
   def generate_thumbnails(extension, sizes)
-    puts "Generate thumbnails#{@multipart ? 's' : ''}..."
+    puts "Generate #{'thumbnail'.pluralize(@ilist.length)}"
     # for each image, generate thumbnails of all sizes
     @image_list.to_a.each_with_index do |image, i|
       sizes.each do |size|
@@ -100,7 +100,7 @@ class ImageTransformerService
   end
 
   def convert_tif_to_jpg(generated_essences)
-    puts "Generate JPG#{@multipart ? 's' : ''}"
+    puts "Generate #{'JPG'.pluralize(@ilist.length)}"
     jpg_pages = convert_to :jpg, @extension
 
     jpg_pages.each do |page|
