@@ -67,6 +67,8 @@ Nabu::Application.routes.draw do
 
   match '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
 
+  match '/essences/mimetypes' => 'essences#list_mimetypes', as: 'list_mimetypes'
+
   resources :comments, :shallow => true do
     match 'approve' => 'comments#approve', :on => :member, :via => :post
     match 'spam'    => 'comments#spam',    :on => :member, :via => :post
