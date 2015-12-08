@@ -14,7 +14,16 @@ module IdentifiableByDoi
       end
       xml.tag! 'publisher', 'PARADISEC'
       # Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
-      xml.tag! 'publicationYear', (respond_to?(:originated_on) ? try(:originated_on) : created_at).year
+      publicationYear = case
+			when is_a?(Item)
+			  originated_on
+			when is_a?(Essence)
+			  item.originated_on
+			else
+			  created_at
+			end.year
+
+      xml.tag! 'publicationYear', publicationYear
 
       xml.tag! 'contributors' do
         xml.tag! 'contributor', contributorType: 'DataCollector' do
