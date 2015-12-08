@@ -27,7 +27,7 @@ ActiveAdmin.register User do
     para button_tag 'Show 50', :class => 'per_page', :data => {:per => 50}
     count = User.count
     unless params[:scope].blank?
-      count = User.send(params[:scope].to_sym).count
+      count = User.public_send(params[:scope].to_sym).count
     end
     button_tag "Show all #{count}", :class => 'per_page', :data => {:per => count}
   end

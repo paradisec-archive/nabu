@@ -36,11 +36,11 @@ class ItemsController < ApplicationController
           self.response_body = Enumerator.new do |output|
             # wrap the IO output so that CSV pushes writes directly into it
             csv = CSV.new(output, CSV_OPTIONS)
-            @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.send(f)}}
+            @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
             # if the user requested all results, iterate over the remaining pages
             while params[:export_all] && @search.results.next_page
               @search = build_solr_search(params.merge(page: @search.results.next_page))
-              @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.send(f)}}
+              @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
             end
           end
         end
@@ -67,7 +67,7 @@ class ItemsController < ApplicationController
 
       # loop through and clone the association contents as well, otherwise it gets emptied out
       Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
-        existing.send(assoc).each { |a| @item.send(assoc) << a }
+        existing.public_send(assoc).each { |a| @item.public_send(assoc) << a }
       end
     end
 
@@ -188,10 +188,10 @@ class ItemsController < ApplicationController
       end
 
       appendable.each_pair do |k, v|
-        if item.send(k).nil?
+        if item.public_send(k).nil?
           params[:item][k.to_sym] = v unless v.blank?
         else
-          params[:item][k.to_sym] = item.send(k) + v unless v.blank?
+          params[:item][k.to_sym] = item.public_send(k) + v unless v.blank?
         end
       end
       unless item.update_attributes(params[:item])
