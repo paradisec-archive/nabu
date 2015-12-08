@@ -92,4 +92,8 @@ class Essence < ActiveRecord::Base
     item.collection.collector_name
   end
 
+  # for DOI relationship linking: nil <- Collection <- Item <- Essence
+  def parent
+    item
+  end
 end
