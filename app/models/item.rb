@@ -158,6 +158,11 @@ class Item < ActiveRecord::Base
     "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
   end
 
+  # for DOI relationship linking: nil <- Collection <- Item <- Essence
+  def parent
+    collection
+  end
+
   def path
     basepath = Nabu::Application.config.archive_directory + '/' + collection.identifier + '/' + identifier + '/'
     filename = "#{full_identifier}-CAT-PDSC_ADMIN.xml"
