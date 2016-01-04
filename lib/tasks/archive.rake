@@ -302,6 +302,12 @@ namespace :archive do
     BatchImageTransformerService.run(batch_size)
   end
 
+  desc "Update catalog details of items"
+  task :update_item_catalogs => :environment do
+    offline_template = OfflineTemplate.new
+    BatchItemCatalogService.run(offline_template)
+  end
+
   # HELPERS
 
   def directories(path)
