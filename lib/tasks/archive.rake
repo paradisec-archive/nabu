@@ -292,8 +292,14 @@ namespace :archive do
 
   desc "Mint DOIs for objects that don't have one"
   task :mint_dois => :environment do
-    batch_size = Integer(ENV['MINT_DOIS_BATCH_SIZE'])
+    batch_size = Integer(ENV['MINT_DOIS_BATCH_SIZE'] || 100)
     BatchDoiMintingService.run(batch_size)
+  end
+
+  desc "Perform image transformations for all image essences"
+  task :transform_images => :environment do
+    batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
+    BatchImageTransformerService.run(batch_size)
   end
 
   # HELPERS
