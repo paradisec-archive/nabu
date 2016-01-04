@@ -155,7 +155,7 @@
           %td= text_field_tag :filename, params[:filename]
         %tr
           %th= label_tag :mimetype, 'Mime Type'
-          %td= text_field_tag :mimetype, params[:mimetype]
+          %td= hidden_field_tag :mimetype, params[:mimetype], :data => {:placeholder => 'Choose a mimetype...', :url => list_mimetypes_path}, :class => 'select2'
         %tr
           %th= label_tag :framesPerSecond, 'FPS'
           %td= text_field_tag :framesPerSecond, params[:framesPerSecond]

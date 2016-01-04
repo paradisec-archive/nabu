@@ -135,6 +135,8 @@ class Item < ActiveRecord::Base
 
   after_initialize :prefill
 
+  after_save :update_collection_countries_and_languages
+
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
   def has_default_map_boundaries?
@@ -156,6 +158,11 @@ class Item < ActiveRecord::Base
   def full_path
     # FIX ME
     "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
+  end
+
+  # for DOI relationship linking: nil <- Collection <- Item <- Essence
+  def parent
+    collection
   end
 
   def path
@@ -215,7 +222,7 @@ class Item < ActiveRecord::Base
     unless override
       # by default, only inherit attributes which don't already have a value
       existing_attributes = Hash[*inherited_attributes.keys.map do |key|
-                                   val = self.send(key)
+                                   val = self.public_send(key)
                                    [key.to_sym, val] unless val.blank?
                                  end.reject{|x| x.nil?}.flatten(1)]
       # -> this merge causes the current attribute value to replace the inherited one before we update
@@ -224,7 +231,7 @@ class Item < ActiveRecord::Base
     # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
 
     inherited_attributes.each_pair do |key, val|
-      self.send("#{key}=", val)
+      self.public_send("#{key}=", val)
     end
     self.save
   end
@@ -345,7 +352,7 @@ class Item < ActiveRecord::Base
     blank_fields = [:title, :description, :originated_on, :originated_on_narrative, :url, :language, :dialect, :region, :original_media, :received_on, :digitised_on, :ingest_notes, :metadata_imported_on, :metadata_exported_on, :tracking, :access_narrative, :admin_comment]
     blank_fields.each do |f|
       boolean "#{f}_blank".to_sym do
-        self.send(f).blank?
+        self.public_send(f).blank?
       end
     end
   end
@@ -385,9 +392,9 @@ class Item < ActiveRecord::Base
   end
 
   def has_coordinates
-    (north_limit && north_limit != 0) &&
-    (south_limit && south_limit != 0) &&
-    (west_limit && west_limit != 0) &&
+    (north_limit && north_limit != 0) ||
+    (south_limit && south_limit != 0) ||
+    (west_limit && west_limit != 0) ||
     (east_limit && east_limit != 0)
   end
 
@@ -517,5 +524,29 @@ class Item < ActiveRecord::Base
 
   def to_param
     identifier
+  end
+
+  # ensure the collection mentions all countries and languages present in the item
+  def update_collection_countries_and_languages
+    collection_updated = false
+
+    new_item_countries = countries - collection.countries
+    if new_item_countries.any?
+      collection.countries.concat new_item_countries
+      collection_updated = true
+    end
+
+    new_languages = Set.new
+    new_languages += content_languages
+    new_languages += subject_languages
+    new_languages -= collection.languages
+    if new_languages.any?
+      collection.languages.concat new_languages.to_a
+      collection_updated = true
+    end
+
+    if collection_updated
+      collection.save
+    end
   end
 end

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :essence do
-    item
+    item { build(:item, :with_doi) }
     created_at Date.parse('2015/01/01')
 
     factory :sound_essence do

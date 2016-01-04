@@ -120,7 +120,7 @@ class Collection < ActiveRecord::Base
       :languages, :countries
     ]
 
-    if present.all? {|method| self.send(method).present? } and length.all? {|method| self.send(method).size > 0} and items.any? {|item| item.originated_on.present?}
+    if present.all? {|method| self.public_send(method).present? } and length.all? {|method| self.public_send(method).size > 0} and items.any? {|item| item.originated_on.present?}
       self.complete = true
     end
   end
@@ -209,7 +209,7 @@ class Collection < ActiveRecord::Base
     blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location]
     blank_fields.each do |f|
       boolean "#{f}_blank".to_sym do
-        self.send(f).blank?
+        self.public_send(f).blank?
       end
     end
   end
@@ -231,6 +231,11 @@ class Collection < ActiveRecord::Base
     "paradisec.org.au/collection/#{identifier}"
   end
 
+  # for DOI relationship linking: nil <- Collection <- Item <- Essence
+  def parent
+    nil
+  end
+
   def citation
     cite = ""
     if collector
@@ -246,9 +251,9 @@ class Collection < ActiveRecord::Base
   end
 
   def has_coordinates
-    (north_limit && north_limit != 0) &&
-    (south_limit && south_limit != 0) &&
-    (west_limit && west_limit != 0) &&
+    (north_limit && north_limit != 0) ||
+    (south_limit && south_limit != 0) ||
+    (west_limit && west_limit != 0) ||
     (east_limit && east_limit != 0)
   end
 
