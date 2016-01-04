@@ -222,7 +222,7 @@ class Item < ActiveRecord::Base
     unless override
       # by default, only inherit attributes which don't already have a value
       existing_attributes = Hash[*inherited_attributes.keys.map do |key|
-                                   val = self.send(key)
+                                   val = self.public_send(key)
                                    [key.to_sym, val] unless val.blank?
                                  end.reject{|x| x.nil?}.flatten(1)]
       # -> this merge causes the current attribute value to replace the inherited one before we update
@@ -231,7 +231,7 @@ class Item < ActiveRecord::Base
     # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
 
     inherited_attributes.each_pair do |key, val|
-      self.send("#{key}=", val)
+      self.public_send("#{key}=", val)
     end
     self.save
   end
@@ -352,7 +352,7 @@ class Item < ActiveRecord::Base
     blank_fields = [:title, :description, :originated_on, :originated_on_narrative, :url, :language, :dialect, :region, :original_media, :received_on, :digitised_on, :ingest_notes, :metadata_imported_on, :metadata_exported_on, :tracking, :access_narrative, :admin_comment]
     blank_fields.each do |f|
       boolean "#{f}_blank".to_sym do
-        self.send(f).blank?
+        self.public_send(f).blank?
       end
     end
   end
