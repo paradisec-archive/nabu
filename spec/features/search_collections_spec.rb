@@ -5,11 +5,12 @@ describe 'Collection Search', search: true do
   let!(:language) {create(:language)}
   let!(:collection1) {create(:collection, countries: [country1], languages: [language])}
   let!(:collection2) {create(:collection, countries: [country2], languages: [language])}
+  let!(:private_collection) {create(:collection, countries: [country1], languages: [language], private: true)}
   let!(:user) {create(:user)}
 
-  before(:all) do
+  before(:each) do
     Sunspot.remove_all(Collection)
-    Sunspot.index!(collection1, collection2)
+    Sunspot.index!(collection1, collection2, private_collection)
   end
 
   context 'when user is not signed in' do
@@ -98,6 +99,34 @@ describe 'Collection Search', search: true do
           expect(page).to have_content(country2.name)
 
           expect(URI.parse(current_url).request_uri).to end_with('search') # no query params
+        end
+      end
+    end
+
+    describe 'private collection' do
+      context 'normal user' do
+        # No need to change user
+
+        it 'cannot be viewed by the user' do
+          expect(page).to_not have_content(private_collection.identifier)
+        end
+      end
+
+      context 'user is an admin' do
+        let!(:user) { create(:admin_user) }
+
+        it 'can be viewed by the user' do
+          expect(page).to have_content(private_collection.identifier)
+        end
+      end
+
+      context 'user has edit rights' do
+        let!(:private_collection) {create(:collection, countries: [country1], languages: [language], private: true, admins: [user])}
+
+        it 'can be viewed by the user' do
+          pending do
+            expect(page).to have_content(private_collection.identifier)
+          end
         end
       end
     end
