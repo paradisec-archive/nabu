@@ -7,13 +7,15 @@ class ImageTransformerService
 
   def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
     @mimetype = media.mimetype
-    @file = file
-    @image_list = ImageList.new(@file)
-    @multipart = (@image_list.length > 1)
-    @item = item
-    @extension = extension
-    @essence = essence
-    @thumbnail_sizes = thumbnail_sizes
+``    if @mimetype.start_with?('image')
+      @file = file
+      @image_list = ImageList.new(@file)
+      @multipart = (@image_list.length > 1)
+      @item = item
+      @extension = extension
+      @essence = essence
+      @thumbnail_sizes = thumbnail_sizes
+    end
   end
 
   def perform_conversions
@@ -47,6 +49,8 @@ class ImageTransformerService
 
   # converts the file into the specified format and returns its new path (or nil if it already existed)
   def convert_to(format, extension, quality = 50)
+    return unless @mimetype.start_with?('image')
+
     if [:pdf, :tif].include?(format)
       # if converting between multi-page formats, simply use imagemagick
       file_path = create_file_path(extension, format)
@@ -68,6 +72,8 @@ class ImageTransformerService
   end
 
   def generate_thumbnails(extension, sizes)
+    return unless @mimetype.start_with?('image')
+
     puts "Generate #{'thumbnail'.pluralize(@ilist.length)}"
     # for each image, generate thumbnails of all sizes
     @image_list.to_a.each_with_index do |image, i|
