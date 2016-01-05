@@ -371,7 +371,12 @@ class CollectionsController < ApplicationController
         end
       end
 
-      with(:private, false) unless current_user && current_user.admin?
+      unless current_user && current_user.admin?
+        any_of do
+          with(:private, false)
+          with(:admin_ids, current_user.id) if current_user
+        end
+      end
       sort_column(Collection).each do |c|
         order_by c, sort_direction
       end
