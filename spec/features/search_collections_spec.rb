@@ -124,9 +124,7 @@ describe 'Collection Search', search: true do
         let!(:private_collection) {create(:collection, countries: [country1], languages: [language], private: true, admins: [user])}
 
         it 'can be viewed by the user' do
-          pending do
-            expect(page).to have_content(private_collection.identifier)
-          end
+          expect(page).to have_content(private_collection.identifier)
         end
       end
     end
