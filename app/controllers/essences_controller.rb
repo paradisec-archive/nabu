@@ -18,6 +18,11 @@ class EssencesController < ApplicationController
   end
 
   def download
+    unless File.exist?(@essence.path)
+      flash[:error] = 'File not found'
+      redirect_to [@collection, @item, @essence]
+      return
+    end
     Download.create! :user => current_user, :essence => @essence
     send_file @essence.path, :type => @essence.mimetype, :filename => @essence.filename
   end
