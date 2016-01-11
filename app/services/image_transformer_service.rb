@@ -7,7 +7,7 @@ class ImageTransformerService
 
   def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
     @mimetype = media.mimetype
-``    if @mimetype.start_with?('image')
+    if @mimetype.start_with?('image')
       @file = file
       @image_list = ImageList.new(@file)
       @multipart = (@image_list.length > 1)
