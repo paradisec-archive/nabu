@@ -364,7 +364,7 @@ namespace :archive do
     end
 
     #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
-    generate_derived_files(full_file_path, item, extension, essence, media)
+    generate_derived_files(full_file_path, item, essence, extension, media)
 
     # update essence entry with metadata from file
     begin
