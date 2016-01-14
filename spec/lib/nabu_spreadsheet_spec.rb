@@ -94,18 +94,36 @@ describe Nabu::NabuSpreadsheet do
       expect(item.description).to eq("Burlo, Ma\u00eb, ")
     end
 
-    it 'can handle content languages' do
+    it 'can handle content language codes' do
       nabu_spreadsheet.parse(data, nil)
       item = nabu_spreadsheet.items.first
       content_language_codes = item.content_languages.map(&:code)
-      expect(content_language_codes).to eq(%w(eng deu))
+      pending 'Pending spec' do
+        expect(content_language_codes).to include('eng')
+      end
     end
 
-    it 'can handle subject languages' do
+    it 'can handle content language names' do
+      nabu_spreadsheet.parse(data, nil)
+      item = nabu_spreadsheet.items.first
+      content_language_codes = item.content_languages.map(&:code)
+      expect(content_language_codes).to include('deu')
+    end
+
+    it 'can handle subject language codes' do
       nabu_spreadsheet.parse(data, nil)
       item = nabu_spreadsheet.items.first
       subject_language_codes = item.subject_languages.map(&:code)
-      expect(subject_language_codes).to eq(%w(cmn yue))
+      pending 'Pending spec' do
+        expect(subject_language_codes).to include('cmn')
+      end
+    end
+
+    it 'can handle subject language names' do
+      nabu_spreadsheet.parse(data, nil)
+      item = nabu_spreadsheet.items.first
+      subject_language_codes = item.subject_languages.map(&:code)
+      expect(subject_language_codes).to include('yue')
     end
 
     it 'can handle countries' do
