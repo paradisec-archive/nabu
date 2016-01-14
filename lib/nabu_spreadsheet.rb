@@ -88,7 +88,7 @@ module Nabu
         if row[3].present?
           content_languages = row[3].split('|')
           content_languages.each do |language|
-            content_language = Language.find_by_name(language)
+            content_language = Language.find_by_name(language) || Language.find_by_code(language)
             if content_language
               item.content_languages << content_language unless item.content_languages.include? content_language
             else
@@ -99,7 +99,7 @@ module Nabu
         if row[4].present?
           subject_languages = row[4].split('|')
           subject_languages.each do |language|
-            subject_language = Language.find_by_name(language)
+            subject_language = Language.find_by_name(language) || Language.find_by_code(language)
             if subject_language
               item.subject_languages << subject_language unless item.subject_languages.include? subject_language
             else
