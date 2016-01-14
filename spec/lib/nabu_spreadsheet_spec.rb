@@ -98,9 +98,7 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse(data, nil)
       item = nabu_spreadsheet.items.first
       content_language_codes = item.content_languages.map(&:code)
-      pending 'Pending spec' do
-        expect(content_language_codes).to include('eng')
-      end
+      expect(content_language_codes).to include('eng')
     end
 
     it 'can handle content language names' do
@@ -114,9 +112,7 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse(data, nil)
       item = nabu_spreadsheet.items.first
       subject_language_codes = item.subject_languages.map(&:code)
-      pending 'Pending spec' do
-        expect(subject_language_codes).to include('cmn')
-      end
+      expect(subject_language_codes).to include('cmn')
     end
 
     it 'can handle subject language names' do
