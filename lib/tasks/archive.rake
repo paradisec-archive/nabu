@@ -308,6 +308,12 @@ namespace :archive do
     BatchItemCatalogService.run(offline_template)
   end
 
+  desc "Transcode essence files into required formats"
+  task :transcode_essence_files => :environment do
+    batch_size = Integer(ENV['TRANSCODE_ESSENCE_FILES_BATCH_SIZE'] || 100)
+    BatchTranscodeEssenceFileService.run(batch_size)
+  end
+
   # HELPERS
 
   def directories(path)
