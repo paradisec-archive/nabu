@@ -8,7 +8,7 @@
     = sortable :collector_sortname, 'Collector'
     = sortable :language, 'Language as given'
     %th Countries
-    = sortable :modification_date
+    = sortable :updated_at, 'Modification Date'
     %th Actions
 
     - @search.each_hit_with_result do |hit, item|
