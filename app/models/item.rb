@@ -41,6 +41,7 @@
 #  doi                     :string(255)
 #
 
+# FIXME: This includes this module within Object. That's bad.
 include ActionView::Helpers::SanitizeHelper
 class Item < ActiveRecord::Base
   include IdentifiableByDoi

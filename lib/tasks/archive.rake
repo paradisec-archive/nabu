@@ -302,6 +302,18 @@ namespace :archive do
     BatchImageTransformerService.run(batch_size)
   end
 
+  desc "Update catalog details of items"
+  task :update_item_catalogs => :environment do
+    offline_template = OfflineTemplate.new
+    BatchItemCatalogService.run(offline_template)
+  end
+
+  desc "Transcode essence files into required formats"
+  task :transcode_essence_files => :environment do
+    batch_size = Integer(ENV['TRANSCODE_ESSENCE_FILES_BATCH_SIZE'] || 100)
+    BatchTranscodeEssenceFileService.run(batch_size)
+  end
+
   # HELPERS
 
   def directories(path)
@@ -364,7 +376,7 @@ namespace :archive do
     end
 
     #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
-    generate_derived_files(full_file_path, item, extension, essence, media)
+    generate_derived_files(full_file_path, item, essence, extension, media)
 
     # update essence entry with metadata from file
     begin
