@@ -4,6 +4,12 @@ ActiveAdmin.register FundingBody do
 
   before_destroy :check_dependent
 
+  # Don't filter by grants or collections
+  filter :name
+  filter :key_prefix
+  filter :created_at
+  filter :updated_at
+
   controller do
     def check_dependent(object)
       if object.collections.count > 0
