@@ -24,6 +24,10 @@ class Language < ActiveRecord::Base
     "#{name} - #{code}"
   end
 
+  def language_archive_link
+    "http://www.language-archives.org/language/#{code}"
+  end
+
   has_many :countries_languages
   has_many :countries, :through => :countries_languages, :dependent => :destroy
   accepts_nested_attributes_for :countries_languages, :allow_destroy => true

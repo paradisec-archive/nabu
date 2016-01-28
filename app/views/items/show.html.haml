@@ -83,6 +83,7 @@
         %td
           - @item.subject_languages.each do |language|
             = language.name_with_code
+            = link_to 'See other information in this language', language.language_archive_link, class: 'button'
             %br
 
       %tr
@@ -90,6 +91,7 @@
         %td
           - @item.content_languages.each do |language|
             = language.name_with_code
+            = link_to 'See other information in this language', language.language_archive_link, class: 'button'
             %br
 
       %tr
@@ -177,6 +179,7 @@
         %td
           - @item.collection.languages.each do |language|
             = language.name_with_code
+            = link_to 'See other information in this language', language.language_archive_link, class: 'button'
             %br
     - if can? :manage, @item
       %div.separated-message
