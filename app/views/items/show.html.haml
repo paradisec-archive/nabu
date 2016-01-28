@@ -176,7 +176,7 @@
         %th Languages
         %td
           - @item.collection.languages.each do |language|
-            = language.name
+            = language.name_with_code
             %br
     - if can? :manage, @item
       %div.separated-message
