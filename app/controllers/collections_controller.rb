@@ -51,7 +51,7 @@ class CollectionsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Search Collections'
-    do_search
+    @search = build_advanced_search(params)
   end
 
   def new
@@ -152,7 +152,7 @@ class CollectionsController < ApplicationController
     @page_title = 'Nabu - Collections Bulk Update'
     @collection = Collection.new
 
-    do_search
+    @search = build_advanced_search(params)
   end
 
 
@@ -194,7 +194,7 @@ class CollectionsController < ApplicationController
     if invalid_record
       @page_title = 'Nabu - Collections Bulk Update'
       @collection = Collection.new
-      do_search
+      @search = build_advanced_search(params)
       render :action => 'bulk_edit'
     else
       flash[:notice] = 'Collections were successfully updated.'
@@ -306,10 +306,8 @@ class CollectionsController < ApplicationController
     end
   end
 
-  def do_search
-    @fields = Sunspot::Setup.for(Collection).fields
-    @text_fields = Sunspot::Setup.for(Collection).all_text_fields
-    @search = Collection.solr_search do
+  def build_advanced_search(params)
+    Collection.solr_search do
       # Full text search
       Sunspot::Setup.for(Collection).all_text_fields.each do |field|
         next if params[field.name].blank?
