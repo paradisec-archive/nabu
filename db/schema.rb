@@ -82,7 +82,6 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
     t.boolean  "private"
     t.string   "tape_location"
     t.boolean  "deposit_form_received"
-    t.string   "grant_identifier"
     t.float    "north_limit"
     t.float    "south_limit"
     t.float    "west_limit"
