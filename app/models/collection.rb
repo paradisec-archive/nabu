@@ -282,6 +282,10 @@ class Collection < ActiveRecord::Base
     languages.map(&:name).join(';')
   end
 
+  def csv_full_grant_identifiers
+    grants.map(&method(:full_grant_identifier)).join(';')
+  end
+
   def oai_language
     languages.map(&:name).join(', ')
   end
