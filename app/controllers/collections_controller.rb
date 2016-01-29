@@ -52,6 +52,15 @@ class CollectionsController < ApplicationController
   def advanced_search
     @page_title = 'Nabu - Advanced Search Collections'
     @search = build_advanced_search(params)
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Collection
+        format.csv do
+          fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
+          send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
+        end
+      end
+    end
   end
 
   def new
