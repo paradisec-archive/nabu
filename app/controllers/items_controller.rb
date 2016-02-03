@@ -28,22 +28,7 @@ class ItemsController < ApplicationController
       format.html
       if can? :search_csv, Item
         format.csv do
-          filename = "nabu_items_#{Date.today.to_s}.csv"
-          self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
-          self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
-          self.response.headers['Last-Modified'] = Time.now.ctime.to_s
-
-          # use enumerator to customise streaming the response
-          self.response_body = Enumerator.new do |output|
-            # wrap the IO output so that CSV pushes writes directly into it
-            csv = CSV.new(output, CSV_OPTIONS)
-            @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-            # if the user requested all results, iterate over the remaining pages
-            while params[:export_all] && @search.results.next_page
-              @search = build_solr_search(params.merge(page: @search.results.next_page))
-              @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-            end
-          end
+          stream_csv(:basic)
         end
       end
     end
@@ -52,27 +37,11 @@ class ItemsController < ApplicationController
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
     @search = build_advanced_search(params)
-    # The following is identical to #search, except for the call to build_advanced_search
     respond_to do |format|
       format.html
       if can? :search_csv, Item
         format.csv do
-          filename = "nabu_items_#{Date.today.to_s}.csv"
-          self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
-          self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
-          self.response.headers['Last-Modified'] = Time.now.ctime.to_s
-
-          # use enumerator to customise streaming the response
-          self.response_body = Enumerator.new do |output|
-            # wrap the IO output so that CSV pushes writes directly into it
-            csv = CSV.new(output, CSV_OPTIONS)
-            @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-            # if the user requested all results, iterate over the remaining pages
-            while params[:export_all] && @search.results.next_page
-              @search = build_advanced_search(params.merge(page: @search.results.next_page))
-              @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-            end
-          end
+          stream_csv(:advanced)
         end
       end
     end
@@ -409,4 +378,26 @@ class ItemsController < ApplicationController
     end
   end
 
+  def stream_csv(search_type)
+    filename = "nabu_items_#{Date.today.to_s}.csv"
+    self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
+    self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+    self.response.headers['Last-Modified'] = Time.now.ctime.to_s
+
+    # use enumerator to customise streaming the response
+    self.response_body = Enumerator.new do |output|
+      # wrap the IO output so that CSV pushes writes directly into it
+      csv = CSV.new(output, CSV_OPTIONS)
+      @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+      # if the user requested all results, iterate over the remaining pages
+      while params[:export_all] && @search.results.next_page
+        @search = if search_type == :basic
+                    build_solr_search(params.merge(page: @search.results.next_page))
+                  else
+                    build_advanced_search(params.merge(page: @search.results.next_page))
+                  end
+        @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+      end
+    end
+  end
 end
