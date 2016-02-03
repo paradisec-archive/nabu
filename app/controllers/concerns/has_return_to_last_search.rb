@@ -20,7 +20,7 @@ module HasReturnToLastSearch
 
   # utility method to keep the multiple uses of this proc consistent w/ no typos
   def only_action_params
-    Proc.new {|k,v| %w(controller action).include?(k)}
+    Proc.new { |k, _v| %w(controller action).include?(k) }
   end
 
   def should_apply_session_params?

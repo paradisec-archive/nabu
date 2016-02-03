@@ -554,7 +554,6 @@ Style/SpaceAfterColon:
 Style/SpaceAfterComma:
   Exclude:
     - 'Capfile'
-    - 'app/controllers/concerns/has_return_to_last_search.rb'
     - 'app/controllers/items_controller.rb'
     - 'app/controllers/oai_controller.rb'
     - 'app/models/collection.rb'
