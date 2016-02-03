@@ -143,6 +143,11 @@ class ItemsController < ApplicationController
   end
 
   def update
+    if params[:item] && params[:item][:user_ids] && params[:item][:user_ids] == "[]"
+      flash[:alert] = "Error in submitted value for View/Download access users"
+      redirect_to [@collection, @item]
+      return
+    end
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
