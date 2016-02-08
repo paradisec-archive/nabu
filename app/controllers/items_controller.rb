@@ -143,7 +143,7 @@ class ItemsController < ApplicationController
   end
 
   def update
-    if params[:item] && params[:item][:user_ids] && params[:item][:user_ids] == "[]"
+    if params[:item] && params[:item][:user_ids].is_a?(String) && !params[:item][:user_ids].empty?
       flash[:alert] = "Error in submitted value for View/Download access users"
       redirect_to [@collection, @item]
       return
