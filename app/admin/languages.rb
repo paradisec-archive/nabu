@@ -4,12 +4,11 @@ ActiveAdmin.register Language do
   actions :all, :except => [:destroy]
 
   filter :countries
-  filter :items_for_content
-  filter :items_for_subject
-  filter :collections
   filter :code
   filter :name
   filter :retired
+  # Don't filter by items_for_content, items_for_subject, or collections.
+  # Doesn't make sense.
   # Don't filter by north_limit, east_limit, south_limit or west_limit .
   # No strong business case for doing so.
 

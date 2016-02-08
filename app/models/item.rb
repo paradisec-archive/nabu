@@ -423,6 +423,26 @@ class Item < ActiveRecord::Base
     result
   end
 
+  def csv_filenames
+    essences.map(&:filename).join(';')
+  end
+
+  def csv_mimetypes
+    essences.map(&:mimetype).join(';')
+  end
+
+  def csv_fps_values
+    essences.map(&:fps).join(';')
+  end
+
+  def csv_samplerates
+    essences.map(&:samplerate).join(';')
+  end
+
+  def csv_channel_counts
+    essences.map(&:channels).join(';')
+  end
+
   # OAI-MPH mappings for OLAC
   # If we need to later on we can generate the XML directly
   # TODO

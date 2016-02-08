@@ -42,7 +42,7 @@ class CollectionsController < ApplicationController
       format.html
       if can? :search_csv, Collection
         format.csv do
-          fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :grant_identifier, :funding_body_names, :access_condition_name, :access_narrative]
+          fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
           send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
         end
       end
@@ -51,7 +51,16 @@ class CollectionsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Search Collections'
-    do_search
+    @search = build_advanced_search(params)
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Collection
+        format.csv do
+          fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
+          send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
+        end
+      end
+    end
   end
 
   def new
@@ -152,7 +161,7 @@ class CollectionsController < ApplicationController
     @page_title = 'Nabu - Collections Bulk Update'
     @collection = Collection.new
 
-    do_search
+    @search = build_advanced_search(params)
   end
 
 
@@ -194,7 +203,7 @@ class CollectionsController < ApplicationController
     if invalid_record
       @page_title = 'Nabu - Collections Bulk Update'
       @collection = Collection.new
-      do_search
+      @search = build_advanced_search(params)
       render :action => 'bulk_edit'
     else
       flash[:notice] = 'Collections were successfully updated.'
@@ -306,10 +315,8 @@ class CollectionsController < ApplicationController
     end
   end
 
-  def do_search
-    @fields = Sunspot::Setup.for(Collection).fields
-    @text_fields = Sunspot::Setup.for(Collection).all_text_fields
-    @search = Collection.solr_search do
+  def build_advanced_search(params)
+    Collection.solr_search do
       # Full text search
       Sunspot::Setup.for(Collection).all_text_fields.each do |field|
         next if params[field.name].blank?

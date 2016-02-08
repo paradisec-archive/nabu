@@ -67,7 +67,10 @@
         %th Languages
         %td
           - @collection.languages.each do |language|
-            #{language.name_with_code}
+            .left
+              #{language.name_with_code}
+            .right
+              = link_to 'See other information in this language', language.language_archive_link, class: 'button'
             %br
 
       %tr

@@ -20,7 +20,12 @@ module HasReturnToLastSearch
 
   # utility method to keep the multiple uses of this proc consistent w/ no typos
   def only_action_params
-    Proc.new {|k,v| %w(controller action).include?(k)}
+    Proc.new { |k, _v| %w(controller action).include?(k) }
+  end
+
+  # People only want to download CSVs once. Don't keep it in the session.
+  def one_off_params
+    Proc.new { |k, _v| %w(format).include?(k) }
   end
 
   def should_apply_session_params?
@@ -42,7 +47,7 @@ module HasReturnToLastSearch
         session.delete(:search_params)
       else
         session[:search_from] = params.select(&only_action_params)
-        session[:search_params] = params.reject(&only_action_params)
+        session[:search_params] = params.reject(&only_action_params).reject(&one_off_params)
       end
     elsif should_apply_session_params?
       # transfer the flash over from the previous action (otherwise it is lost)
