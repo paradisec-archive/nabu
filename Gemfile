@@ -54,6 +54,7 @@ gem 'capistrano-unicorn'
 
 # Logging
 gem 'rollbar'
+gem 'newrelic_rpm'
 
 # Misc
 gem 'progress_bar'
