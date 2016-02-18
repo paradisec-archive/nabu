@@ -214,6 +214,7 @@ GEM
     net-ssh (2.6.5)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+    newrelic_rpm (3.15.0.314)
     nilify_blanks (1.0.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -419,6 +420,7 @@ DEPENDENCIES
   libv8
   meta_search (>= 1.1.0.pre)
   mysql2
+  newrelic_rpm
   nilify_blanks
   oai
   paper_trail (~> 2)
