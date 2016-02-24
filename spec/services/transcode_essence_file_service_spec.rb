@@ -55,6 +55,10 @@ describe TranscodeEssenceFileService do
     )
   end
 
+  before do
+    pending 'Slow test'
+  end
+
   context 'file referred to by essence object does not exist' do
     let(:collection_identifier) { 'moot' }
     let(:item_identifier) { 'moot' }
