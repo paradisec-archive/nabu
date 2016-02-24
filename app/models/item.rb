@@ -388,7 +388,11 @@ class Item < ActiveRecord::Base
         end
     end
     cite += " #{Date.today}."
-    cite += " DOI: #{doi}" if doi
+    if doi
+      cite += " DOI: #{doi}"
+    else
+      cite += " #{full_path}"
+    end
     cite
   end
 
