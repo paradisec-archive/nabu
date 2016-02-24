@@ -13,7 +13,11 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_url, :alert => exception.message
+    if current_user
+      redirect_to root_url, :alert => exception.message
+    else
+      redirect_to new_user_session_path, :alert => exception.message
+    end
   end
 
   def set_timezone
