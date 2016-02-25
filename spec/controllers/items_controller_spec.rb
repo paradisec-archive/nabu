@@ -132,8 +132,8 @@ describe ItemsController, type: :controller do
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
-        expect(result_item.subject_languages).to eq(item.subject_languages)
-        expect(result_item.subject_languages).to_not eq(collection.languages)
+        expect(result_item.subject_languages.sort).to eq(item.subject_languages.sort)
+        expect(result_item.subject_languages.sort).to_not eq(collection.languages.sort)
       end
 
       it 'should override values if flag is set to true' do
@@ -141,8 +141,8 @@ describe ItemsController, type: :controller do
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
-        expect(result_item.subject_languages).to_not eq(item.subject_languages)
-        expect(result_item.subject_languages).to eq(collection.languages)
+        expect(result_item.subject_languages.sort).to_not eq(item.subject_languages.sort)
+        expect(result_item.subject_languages.sort).to eq(collection.languages.sort)
       end
 
       context 'when an error occurs' do
