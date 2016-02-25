@@ -181,8 +181,8 @@ class Item < ActiveRecord::Base
   end
 
   def prefill
-    return unless collection
     return unless new_record?
+    return unless collection
 
     self.university_id ||= collection.university_id
     self.collector_id ||= collection.collector_id
