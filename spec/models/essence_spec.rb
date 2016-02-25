@@ -20,12 +20,26 @@
 require 'spec_helper'
 
 describe Essence do
-  let(:essence) { create(:sound_essence) }
+  let(:essence) { create(:sound_essence, doi: doi) }
 
   describe '#citation' do
-    it 'uses DOI' do
-      essence.should_receive(:doi) { '' }.twice
-      essence.citation
+    context 'DOI exists' do
+      let(:doi) { 'something' }
+
+      it 'uses DOI, not URI' do
+        essence.should_receive(:doi) { doi }.twice
+        essence.citation
+      end
+    end
+
+    context 'DOI nil' do
+      let(:doi) { nil }
+
+      it 'uses URI' do
+        essence.should_receive(:doi) { doi }.once
+        essence.should_receive(:full_path) { '' }
+        essence.citation
+      end
     end
   end
 end
