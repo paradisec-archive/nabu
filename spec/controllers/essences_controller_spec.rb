@@ -108,6 +108,7 @@ describe EssencesController, type: :controller do
     context 'when downloading a file' do
       it 'should make a record' do
         controller.stub!(:render)
+        File.stub(:exist?) { true }
         controller.should_receive(:send_file)
 
         expect{ get :download, params }.to change{ Download.count }.by(1)
