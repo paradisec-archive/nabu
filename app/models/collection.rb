@@ -257,7 +257,7 @@ class Collection < ActiveRecord::Base
     (east_limit && east_limit != 0)
   end
 
-  def center_coordinate
+  def center_coordinate(item_counts)
     if has_coordinates
       if east_limit < west_limit
         long = 180 + (west_limit + east_limit) / 2
@@ -269,7 +269,7 @@ class Collection < ActiveRecord::Base
         :lng => long,
         :title => title,
         :id => identifier,
-        :items => items.count,
+        :items => item_counts[id],
       }
     end
   end
