@@ -257,7 +257,7 @@ class Collection < ActiveRecord::Base
     (east_limit && east_limit != 0)
   end
 
-  def center_coordinate
+  def center_coordinate(item_counts)
     if has_coordinates
       if east_limit < west_limit
         long = 180 + (west_limit + east_limit) / 2
@@ -269,7 +269,7 @@ class Collection < ActiveRecord::Base
         :lng => long,
         :title => title,
         :id => identifier,
-        :items => items.count,
+        :items => item_counts[id],
       }
     end
   end
@@ -320,7 +320,7 @@ class Collection < ActiveRecord::Base
                 xml.value full_path
               end
               xml.physical 'type' => 'postalAddress' do
-                xml.addressPart 'PARADISEC Sydney, Department of Linguistics, second floor Transient Building F12, Fisher Road, The University of Sydney, Camperdown Campus, NSW 2006, AUSTRALIA, Phone: +61 2 9351 2002', 'type' => 'text'
+                xml.addressPart 'PARADISEC Sydney Unit: Sydney Conservatorium of Music, Rm 3019, Building C41, The University of Sydney, NSW, 2006, Phone +61 2 9351 1279. PARADISEC Melbourne Unit: School of Languages and Linguistics, University of Melbourne, +61 2 8344 8952 | PARADISEC Canberra Unit: College of Asia and the Pacific, The Australian National University, +61 2 6125 6115', 'type' => 'text'
               end
             end
           end
@@ -422,9 +422,6 @@ class Collection < ActiveRecord::Base
             xml.address do
               xml.electronic 'type' => 'url' do
                 xml.value collector.full_path
-              end
-              xml.physical 'type' => 'postalAddress' do
-                xml.addressPart collector.name + ' c/o PARADISEC, Department of Linguistics, The University of Sydney', 'type' => 'text'
               end
             end
           end

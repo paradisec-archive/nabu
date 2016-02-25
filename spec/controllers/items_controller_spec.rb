@@ -24,9 +24,9 @@ describe ItemsController, type: :controller do
   context 'when not logged in' do
     context 'when viewing' do
       context 'a private item' do
-        it 'should redirect to the home page with error' do
+        it 'should redirect to the sign in page with error' do
           get :show, params.merge(id: private_item.identifier)
-          expect(response).to redirect_to(root_path)
+          expect(response).to redirect_to(new_user_session_path)
           expect(flash[:alert]).to_not be_nil
         end
       end
@@ -132,8 +132,8 @@ describe ItemsController, type: :controller do
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
-        expect(result_item.subject_languages).to eq(item.subject_languages)
-        expect(result_item.subject_languages).to_not eq(collection.languages)
+        expect(result_item.subject_languages.sort).to eq(item.subject_languages.sort)
+        expect(result_item.subject_languages.sort).to_not eq(collection.languages.sort)
       end
 
       it 'should override values if flag is set to true' do
@@ -141,8 +141,8 @@ describe ItemsController, type: :controller do
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
-        expect(result_item.subject_languages).to_not eq(item.subject_languages)
-        expect(result_item.subject_languages).to eq(collection.languages)
+        expect(result_item.subject_languages.sort).to_not eq(item.subject_languages.sort)
+        expect(result_item.subject_languages.sort).to eq(collection.languages.sort)
       end
 
       context 'when an error occurs' do

@@ -1,7 +1,8 @@
 class PageController < ApplicationController
   def home
     @page_title = "Nabu - Home"
-    @coordinates = Collection.where(:private => false).map(&:center_coordinate).compact
+    item_counts = Item.count(:group => :collection_id)
+    @coordinates = Collection.where(:private => false).map{|c| c.center_coordinate(item_counts)}.compact
     @content = render_to_string :partial => 'page/infowindow'
   end
 
@@ -29,7 +30,8 @@ class PageController < ApplicationController
     @comments_left = Item.where(:collector_id => current_user).map(&:comments).flatten
     @num_comments_left = @comments_left.count
 
-    @coordinates = @collections.map(&:center_coordinate).compact
+    item_counts = Item.count(:group => :collection_id)
+    @coordinates = @collections.map{|c| c.center_coordinate(item_counts)}.compact
     @north_limit = @coordinates.map{|c| c[:lat]}.max
     @south_limit = @coordinates.map{|c| c[:lat]}.min
     @east_limit  = @coordinates.map{|c| c[:lng]}.max
