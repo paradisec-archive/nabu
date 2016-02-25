@@ -365,7 +365,6 @@ Style/IndentationConsistency:
 # Configuration parameters: Width.
 Style/IndentationWidth:
   Exclude:
-    - 'app/controllers/application_controller.rb'
     - 'app/helpers/application_helper.rb'
     - 'app/models/collection.rb'
     - 'app/models/item.rb'

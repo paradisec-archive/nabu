@@ -18,9 +18,9 @@ describe EssencesController, type: :controller do
 
   context 'when not logged in' do
     context 'when viewing an essence' do
-      it 'should redirect to the home page with error' do
+      it 'should redirect to the sign in page with error' do
         get :show, params
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to_not be_nil
       end
     end
