@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
     if current_user
       redirect_to root_url, :alert => exception.message
     else
+      session["user_return_to"] = request.fullpath
       redirect_to new_user_session_path, :alert => exception.message
     end
   end
@@ -37,7 +38,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-   dashboard_path
+    stored_location_for(resource) || dashboard_path
   end
 
   # used by collections_controller and items_controller for creating Collectors and Agents
