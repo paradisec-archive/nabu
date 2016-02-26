@@ -31,7 +31,8 @@ gem 'meta_search', '>= 1.1.0.pre'
 
 # Authentications
 gem 'devise', '2.2.3'
-gem 'cancan'
+# 1.13.x requires Ruby 2.0
+gem 'cancancan', '~> 1.12.0'
 
 # Database improvements
 gem 'squeel'
