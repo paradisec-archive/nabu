@@ -1,7 +1,7 @@
 require 'rollbar/rails'
 Rollbar.configure do |config|
   rollbar_file = "#{Rails.root}/config/shared/rollbar.txt"
-  if File.exists? rollbar_file
+  if File.exist? rollbar_file
     config.access_token = File.read(rollbar_file).strip
   else
     ENV['ROLLBAR_ACCESS_TOKEN']
@@ -33,6 +33,17 @@ Rollbar.configure do |config|
   # Valid levels: 'critical', 'error', 'warning', 'info', 'debug', 'ignore'
   # 'ignore' will cause the exception to not be reported at all.
   # config.exception_level_filters.merge!('MyCriticalException' => 'critical')
+
+  config.exception_level_filters.merge!('ActionController::RoutingError' => lambda { |e|
+    e.message =~ %r(No route matches \[[A-Z]+\] "/(.+)")
+    path = $1
+    case
+    when path =~ /php$/i
+      'ignore'
+    else
+      'warning'
+    end
+  })
 
   # Enable asynchronous reporting (uses girl_friday or Threading if girl_friday
   # is not installed)
