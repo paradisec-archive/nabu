@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151125060951) do
+ActiveRecord::Schema.define(:version => 20160308215913) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -89,11 +89,19 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
     t.string   "doi"
   end
 
+  add_index "collections", ["access_condition_id"], :name => "index_collections_on_access_condition_id"
   add_index "collections", ["collector_id"], :name => "index_collections_on_collector_id"
   add_index "collections", ["field_of_research_id"], :name => "index_collections_on_field_of_research_id"
   add_index "collections", ["identifier"], :name => "index_collections_on_identifier", :unique => true
   add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
+
+  create_table "collections_funding_bodies", :id => false, :force => true do |t|
+    t.integer "collection_id",   :null => false
+    t.integer "funding_body_id", :null => false
+  end
+
+  add_index "collections_funding_bodies", ["collection_id", "funding_body_id"], :name => "lookup_by_collection_and_funding_body_index"
 
   create_table "comments", :force => true do |t|
     t.integer  "owner_id",         :null => false
@@ -104,6 +112,9 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
     t.datetime "updated_at",       :null => false
     t.string   "status"
   end
+
+  add_index "comments", ["commentable_id", "commentable_type"], :name => "index_comments_on_commentable_id_and_commentable_type"
+  add_index "comments", ["owner_id"], :name => "index_comments_on_owner_id"
 
   create_table "countries", :force => true do |t|
     t.string "code"
@@ -125,6 +136,22 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
   end
 
   add_index "data_categories", ["name"], :name => "index_data_categories_on_name", :unique => true
+
+  create_table "delayed_jobs", :force => true do |t|
+    t.integer  "priority",   :default => 0, :null => false
+    t.integer  "attempts",   :default => 0, :null => false
+    t.text     "handler",                   :null => false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "discourse_types", :force => true do |t|
     t.string "name", :null => false
@@ -180,6 +207,10 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
     t.string  "grant_identifier"
     t.integer "funding_body_id"
   end
+
+  add_index "grants", ["collection_id", "funding_body_id"], :name => "index_grants_on_collection_id_and_funding_body_id"
+  add_index "grants", ["collection_id"], :name => "index_grants_on_collection_id"
+  add_index "grants", ["funding_body_id"], :name => "index_grants_on_funding_body_id"
 
   create_table "item_admins", :force => true do |t|
     t.integer "item_id", :null => false
@@ -270,8 +301,13 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
     t.string   "doi"
   end
 
+  add_index "items", ["access_condition_id"], :name => "index_items_on_access_condition_id"
   add_index "items", ["collection_id"], :name => "index_items_on_collection_id"
+  add_index "items", ["collector_id"], :name => "index_items_on_collector_id"
+  add_index "items", ["discourse_type_id"], :name => "index_items_on_discourse_type_id"
   add_index "items", ["identifier", "collection_id"], :name => "index_items_on_identifier_and_collection_id", :unique => true
+  add_index "items", ["operator_id"], :name => "index_items_on_operator_id"
+  add_index "items", ["university_id"], :name => "index_items_on_university_id"
 
   create_table "languages", :force => true do |t|
     t.string  "code"
@@ -350,6 +386,7 @@ ActiveRecord::Schema.define(:version => 20151125060951) do
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+  add_index "users", ["rights_transferred_to_id"], :name => "index_users_on_rights_transferred_to_id"
   add_index "users", ["unlock_token"], :name => "index_users_on_unlock_token", :unique => true
 
   create_table "versions", :force => true do |t|
