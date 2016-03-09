@@ -56,6 +56,7 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       format.html
       if can? :search_csv, Collection
+        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
         format.csv do
           fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
           send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
@@ -317,7 +318,7 @@ class CollectionsController < ApplicationController
   end
 
   def build_advanced_search(params)
-    Collection.solr_search do
+    Collection.solr_search(include: [:collector, :countries, :languages, :university]) do
       # Full text search
       Sunspot::Setup.for(Collection).all_text_fields.each do |field|
         next if params[field.name].blank?
