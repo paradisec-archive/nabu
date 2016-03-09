@@ -276,7 +276,7 @@ class ItemsController < ApplicationController
   end
 
   def build_advanced_search(params)
-    Item.solr_search do
+    Item.solr_search(include: [:collection, :collector, :countries]) do
       # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|
         next if params[field.name].blank?
@@ -365,7 +365,7 @@ class ItemsController < ApplicationController
   end
 
   def build_solr_search(params)
-    Item.solr_search do
+    Item.solr_search(include: [:collection, :collector, :countries]) do
       fulltext params[:search].gsub(/-/, ' ') if params[:search]
 
       facet :content_language_ids, :country_ids
