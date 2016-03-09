@@ -19,9 +19,6 @@ class Ability
       # Anyone can create a university
       can :create, University
 
-      # Anyone can view non-private collections
-      can :read, Collection, :private => false
-
       # Only admins can create a collection
       cannot :create, Collection
 
@@ -41,6 +38,9 @@ class Ability
       cannot :search_csv, Collection
       cannot :bulk_edit, Collection
       cannot :bulk_update, Collection
+
+      # Anyone can view non-private collections
+      can :read, Collection, :private => false
 
       can :read,   Item, :public? => true
       can :read,   Item, :item_users => { :user_id => user.id }
