@@ -41,7 +41,8 @@ class ItemProvider < OAI::Provider::Base
   admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
   update_granularity OAI::Const::Granularity::HIGH
-  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.public, :limit => 100, :timestamp_field => 'items.updated_at')
+  # FIXME: Doesn't include collection.
+  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.public.includes(:essences, :subject_languages, :content_languages, :countries, :access_condition, :collector, item_agents: [:user, :agent_role]), :limit => 100, :timestamp_field => 'items.updated_at')
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => Time.now().strftime('%Y-%m-%d'), 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
