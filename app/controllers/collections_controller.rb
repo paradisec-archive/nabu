@@ -17,7 +17,7 @@ class CollectionsController < ApplicationController
       return
     end
 
-    @search = Collection.solr_search do
+    @search = Collection.solr_search(include: [:collector, :countries, :languages, :university]) do
       fulltext params[:search]
       facet :language_ids, :country_ids
       facet :collector_id, :limit => 100
@@ -41,6 +41,7 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       format.html
       if can? :search_csv, Collection
+        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
         format.csv do
           fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
           send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
@@ -55,6 +56,7 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       format.html
       if can? :search_csv, Collection
+        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
         format.csv do
           fields = [:identifier, :title, :description, :collector_name, :operator_name, :university_name, :csv_languages, :csv_countries, :region, :north_limit, :south_limit, :west_limit, :east_limit, :field_of_research_name, :csv_full_grant_identifiers, :funding_body_names, :access_condition_name, :access_narrative]
           send_data @search.results.to_csv({:headers => fields, :only => fields}, :col_sep => ','), :type => "text/csv; charset=utf-8; header=present"
@@ -72,7 +74,7 @@ class CollectionsController < ApplicationController
     @num_items_ready = @collection.items.where{ digitised_on != nil }.count
     @num_essences = Essence.where(:item_id => @collection.items).count
 
-    @items = @collection.items.page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.includes(:access_condition, :collection).page(params[:items_page]).per(params[:items_per_page])
 
     if params[:sort]
       @items = @items.order("#{params[:sort]} #{params[:direction]}")
@@ -101,7 +103,7 @@ class CollectionsController < ApplicationController
     @page_title = "Nabu - Edit Collection"
     @num_items = @collection.items.count
 
-    @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.includes(:access_condition, :collection).order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
 
   def destroy
@@ -316,7 +318,7 @@ class CollectionsController < ApplicationController
   end
 
   def build_advanced_search(params)
-    Collection.solr_search do
+    Collection.solr_search(include: [:collector, :countries, :languages, :university]) do
       # Full text search
       Sunspot::Setup.for(Collection).all_text_fields.each do |field|
         next if params[field.name].blank?

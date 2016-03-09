@@ -504,7 +504,7 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
       end
 
-      item_data_categories.each do |cat|
+      item_data_categories.includes(:data_category).each do |cat|
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'historical_linguistics'
