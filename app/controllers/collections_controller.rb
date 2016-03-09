@@ -74,7 +74,7 @@ class CollectionsController < ApplicationController
     @num_items_ready = @collection.items.where{ digitised_on != nil }.count
     @num_essences = Essence.where(:item_id => @collection.items).count
 
-    @items = @collection.items.page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.includes(:access_condition, :collection).page(params[:items_page]).per(params[:items_per_page])
 
     if params[:sort]
       @items = @items.order("#{params[:sort]} #{params[:direction]}")
@@ -103,7 +103,7 @@ class CollectionsController < ApplicationController
     @page_title = "Nabu - Edit Collection"
     @num_items = @collection.items.count
 
-    @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.includes(:access_condition, :collection).order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
 
   def destroy
