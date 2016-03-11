@@ -11,6 +11,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
+        @users = @users.limit(100)
         render :json => @users.map {|u| {:id => u.id, :name => u.display_label}}
       end
     end
