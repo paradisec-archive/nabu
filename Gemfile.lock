@@ -430,7 +430,7 @@ DEPENDENCIES
   pry-rails
   quiet_assets
   rails (= 3.2.16)
-  rake
+  rake (< 11.0)
   rb-fsevent
   rb-inotify
   rmagick
