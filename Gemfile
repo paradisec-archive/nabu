@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.16'
+gem 'rails', '~> 3.2.22.2'
 
 # Databases
 gem 'mysql2'
