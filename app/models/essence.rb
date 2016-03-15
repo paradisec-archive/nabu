@@ -93,7 +93,7 @@ class Essence < ActiveRecord::Base
   end
 
   def collector_name
-    item.collection.collector_name
+    item.collector_name
   end
 
   # for DOI relationship linking: nil <- Collection <- Item <- Essence
