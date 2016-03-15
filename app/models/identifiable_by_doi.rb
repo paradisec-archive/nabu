@@ -7,8 +7,7 @@ module IdentifiableByDoi
           xml.tag! 'creatorName', collector_name
         end
       end
-      #TODO: replace with NABU/Paradisec identifier key
-      xml.tag! 'identifier', '10.5072/00/bcndhj78437hjk', identifierType: 'DOI'
+      xml.tag! 'identifier', '10.4225/72/bcndhj78437hjk', identifierType: 'DOI'
       xml.tag! 'titles' do
         xml.tag! 'title', title
       end
