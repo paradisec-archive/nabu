@@ -192,8 +192,14 @@ class Collection < ActiveRecord::Base
     string :languages, :multiple => true do
       languages.map(&:name)
     end
+    string :language_codes, :multiple => true do
+      languages.map(&:code)
+    end
     string :countries, :multiple => true do
       countries.map(&:name)
+    end
+    string :country_codes, :multiple => true do
+      countries.map(&:code)
     end
     float :north_limit
     float :south_limit
