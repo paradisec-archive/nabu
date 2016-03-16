@@ -22,8 +22,8 @@ class CollectionsController < ApplicationController
       facet :language_ids, :country_ids
       facet :collector_id, :limit => 100
 
-      with(:language_ids, params[:language_id]) if params[:language_id].present?
-      with(:country_ids, params[:country_id]) if params[:country_id].present?
+      with(:language_codes, params[:language_code]) if params[:language_code].present?
+      with(:country_codes, params[:country_code]) if params[:country_code].present?
       with(:collector_id, params[:collector_id]) if params[:collector_id].present?
 
       unless current_user && current_user.admin?
