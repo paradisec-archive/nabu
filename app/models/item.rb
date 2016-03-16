@@ -241,7 +241,7 @@ class Item < ActiveRecord::Base
     %w{full_identifier title collector_sortname updated_at language}
   end
 
-  searchable do
+  searchable(include: [:content_languages, :subject_languages, :countries, :data_categories, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]) do
     # Things we want to perform full text search on
     text :title
     text :identifier, :as => :identifier_textp
