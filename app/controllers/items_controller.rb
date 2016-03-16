@@ -372,8 +372,8 @@ class ItemsController < ApplicationController
       facet :collector_id, :limit => 100
 
       with(:collector_id, params[:collector_id]) if params[:collector_id].present?
-      with(:content_language_ids, params[:language_id]) if params[:language_id].present?
-      with(:country_ids, params[:country_id]) if params[:country_id].present?
+      with(:content_language_codes, params[:language_code]) if params[:language_code].present?
+      with(:country_codes, params[:country_code]) if params[:country_code].present?
 
       with(:private, false) unless current_user && current_user.admin?
       sort_column(Item).each do |c|
