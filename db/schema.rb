@@ -96,13 +96,6 @@ ActiveRecord::Schema.define(:version => 20160308215913) do
   add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
-  create_table "collections_funding_bodies", :id => false, :force => true do |t|
-    t.integer "collection_id",   :null => false
-    t.integer "funding_body_id", :null => false
-  end
-
-  add_index "collections_funding_bodies", ["collection_id", "funding_body_id"], :name => "lookup_by_collection_and_funding_body_index"
-
   create_table "comments", :force => true do |t|
     t.integer  "owner_id",         :null => false
     t.integer  "commentable_id",   :null => false
@@ -136,22 +129,6 @@ ActiveRecord::Schema.define(:version => 20160308215913) do
   end
 
   add_index "data_categories", ["name"], :name => "index_data_categories_on_name", :unique => true
-
-  create_table "delayed_jobs", :force => true do |t|
-    t.integer  "priority",   :default => 0, :null => false
-    t.integer  "attempts",   :default => 0, :null => false
-    t.text     "handler",                   :null => false
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by"
-    t.string   "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "discourse_types", :force => true do |t|
     t.string "name", :null => false

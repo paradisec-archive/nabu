@@ -142,7 +142,7 @@ class Collection < ActiveRecord::Base
     %w{identifier title collector_sortname university_name created_at}
   end
 
-  searchable do
+  searchable(include: [:university, :collector, :operator, :field_of_research, :languages, :countries, :admins]) do
     # Things we want to perform full text search on
     text :title
     text :identifier, :as => :identifier_textp
@@ -192,8 +192,14 @@ class Collection < ActiveRecord::Base
     string :languages, :multiple => true do
       languages.map(&:name)
     end
+    string :language_codes, :multiple => true do
+      languages.map(&:code)
+    end
     string :countries, :multiple => true do
       countries.map(&:name)
+    end
+    string :country_codes, :multiple => true do
+      countries.map(&:code)
     end
     float :north_limit
     float :south_limit
