@@ -24,6 +24,7 @@ class DoiMintingService
     connection.use_ssl = true
 
     request = Net::HTTP::Post.new(uri.request_uri)
+    request["Content-Type"] = "application/xml"
     request.body = doi_xml
     response = connection.request(request)
 
