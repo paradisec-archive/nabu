@@ -19,6 +19,7 @@ class BatchImageTransformerService
 
   def run
     @image_files.each do |image_file|
+      next unless File.file?(image_file.path)
       media = Nabu::Media.new image_file.path
       item = image_file.item
       file = image_file.path
