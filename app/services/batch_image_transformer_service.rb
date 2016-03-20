@@ -14,11 +14,12 @@ class BatchImageTransformerService
   end
 
   def find_image_files
-    Essence.where(derived_files_generated: false).where('mimetype like ?', 'image/%').limit(@batch_size)
+    Essence.includes(item: [:collection]).where(derived_files_generated: false).where('mimetype like ?', 'image/%').limit(@batch_size)
   end
 
   def run
     @image_files.each do |image_file|
+      next unless File.file?(image_file.path)
       media = Nabu::Media.new image_file.path
       item = image_file.item
       file = image_file.path
