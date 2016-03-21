@@ -50,6 +50,11 @@
           %li= current_link_to 'Items', search_items_path, 'items'
           %li= current_link_to 'Contact', contact_path, 'page#contact'
 
+      - admin_messages_class = "admin-messages-empty" if admin_messages.empty?
+      #admin-messages{:class => admin_messages_class}
+        - admin_messages.each do |admin_message|
+          %div= admin_message.message
+
       #flash
         - flash.each do |name, msg|
           - if msg.is_a?(String)
