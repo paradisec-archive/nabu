@@ -302,12 +302,6 @@ namespace :archive do
     BatchDoiMintingService.run(batch_size)
   end
 
-  desc "Perform image transformations for all image essences"
-  task :transform_images => :environment do
-    batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
-    BatchImageTransformerService.run(batch_size)
-  end
-
   desc "Update catalog details of items"
   task :update_item_catalogs => :environment do
     offline_template = OfflineTemplate.new
