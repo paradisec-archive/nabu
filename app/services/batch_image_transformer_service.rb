@@ -14,7 +14,7 @@ class BatchImageTransformerService
   end
 
   def find_image_files
-    Essence.includes(item: [:collection]).where(derived_files_generated: false).where('mimetype like ?', 'image/%').limit(@batch_size)
+    Essence.where(derived_files_generated: false).where('mimetype like ?', 'image/%').limit(@batch_size)
   end
 
   def run
