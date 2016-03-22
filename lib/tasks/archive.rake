@@ -202,7 +202,13 @@ namespace :archive do
         end
 
         # extract media metadata from file
-        import_metadata(directory, file, item, extension, force_update)
+        begin
+          import_metadata(directory, file, item, extension, force_update)
+        rescue => e
+          puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+          puts " >> #{e.backtrace}"
+          next
+        end
       end
     end
     puts "===" if verbose
