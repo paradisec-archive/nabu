@@ -39,10 +39,13 @@
       %tr
         %th Collector
         %td
-          - if (can? :manage, @collection) && @collection.collector
-            = link_to @collection.collector_name, admin_user_path(@collection.collector.id)
-          - else
-            = @collection.collector_name
+          .left
+            - if (can? :manage, @collection) && @collection.collector
+              = link_to @collection.collector_name, admin_user_path(@collection.collector.id)
+            - else
+              = @collection.collector_name
+          .right
+            = link_to 'Find similar', URI::HTTP.build(host: 'www.google.com', path: '/search', query: URI.encode_www_form("q" => @collection.collector_name)).to_s
 
       %tr
         %th Operator
