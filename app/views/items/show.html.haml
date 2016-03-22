@@ -62,10 +62,13 @@
       %tr
         %th Collector
         %td
-          - if (can? :manage, @item) && @item.collector
-            = link_to @item.collector_name, admin_user_path(@item.collector.id)
-          - else
-            = @item.collector_name
+          .left
+            - if (can? :manage, @item) && @item.collector
+              = link_to @item.collector_name, admin_user_path(@item.collector.id)
+            - else
+              = @item.collector_name
+          .right
+            = link_to 'Find similar', URI::HTTP.build(host: 'www.google.com', path: '/search', query: URI.encode_www_form("q" => "#{@item.collector_name} #{@item.language}")).to_s
 
       %tr
         %th Countries
