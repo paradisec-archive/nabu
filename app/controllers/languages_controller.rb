@@ -4,7 +4,7 @@ class LanguagesController < ApplicationController
   respond_to :json
 
   def index
-    @languages = @languages.order('languages.name').where('languages.name like ?', "%#{params[:q]}%").limit(10)
+    @languages = @languages.order('languages.name').where('languages.name like ? OR languages.code like ?', "%#{params[:q]}%", "%#{params[:q]}%").limit(10)
     # TODO Does ths code path even get hit anymore with the split that happens in select2?
     if params[:country_ids]
       country_ids = params[:country_ids].split(/,/)
