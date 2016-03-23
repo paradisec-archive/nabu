@@ -11,6 +11,7 @@
     %TENC= "Operator: #{@item.operator_name}"
     - if @item.access_condition
       %TCOP= @item.access_condition.name
-    %TLAN= @item.language
+    - unless @item.subject_languages.empty?
+      %TLAN= "\"#{@item.subject_languages.first.name}\" #{@item.subject_languages.first.code}"
     - unless @item.countries.empty?
       %COMM= "#{@item.countries.first.name} #{@item.countries.first.code} #{@item.description}"
