@@ -138,6 +138,18 @@ body.bp {
     display: table;
   }
 
+  #admin-messages {
+    display: inline-block;
+    border: 2px solid #fbc2c4;
+    box-sizing: border-box;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+  }
+
+  #admin-messages.admin-messages-empty {
+    display: none;
+  }
+
   #error_explanation {
     width: 450px;
     border: 3px solid red;

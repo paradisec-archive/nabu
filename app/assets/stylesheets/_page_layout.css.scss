@@ -4,7 +4,7 @@ body.bp {
   #container {
     @include container;
   }
-  #header, #nav, #footer, #flash {
+  #header, #nav, #footer, #flash, #admin-messages {
     @include column($blueprint-grid-columns);
   }
   #content {
