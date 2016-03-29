@@ -302,12 +302,6 @@ namespace :archive do
     BatchDoiMintingService.run(batch_size)
   end
 
-  desc "Perform image transformations for all image essences"
-  task :transform_images => :environment do
-    batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
-    BatchImageTransformerService.run(batch_size)
-  end
-
   desc "Update catalog details of items"
   task :update_item_catalogs => :environment do
     offline_template = OfflineTemplate.new
@@ -382,7 +376,7 @@ namespace :archive do
     end
 
     #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
-    generate_derived_files(full_file_path, item, essence, extension, media)
+    generate_derived_files(full_file_path, item, extension, media)
 
     # update essence entry with metadata from file
     begin
@@ -416,7 +410,7 @@ namespace :archive do
 
 
   # this method tries to avoid regenerating any files that already exist
-  def generate_derived_files(full_file_path, item, essence, extension, media)
-    ImageTransformerService.new(media, full_file_path, item, essence, extension).perform_conversions
+  def generate_derived_files(full_file_path, item, extension, media)
+    ImageTransformerService.new(media, full_file_path, item, extension).perform_conversions
   end
 end
