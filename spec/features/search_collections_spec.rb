@@ -43,7 +43,7 @@ describe 'Collection Search', search: true do
       context 'when selecting from the filter lists' do
         it 'should filter other lists as well' do
           uri = URI.parse(current_url).request_uri.to_s
-          uri += "#{uri.include?('?') ? '&' : '?'}country_id=#{country1.id}"
+          uri += "#{uri.include?('?') ? '&' : '?'}country_code=#{country1.code.gsub(' ', '+')}"
 
           expect(page).to have_content(country2.name)
 
