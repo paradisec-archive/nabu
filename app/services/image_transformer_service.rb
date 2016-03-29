@@ -5,7 +5,7 @@ class ImageTransformerService
 
   ADMIN_MASK = 'PDSC_ADMIN'
 
-  def initialize(media, file, item, extension, thumbnail_sizes = [144])
+  def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
     @mimetype = media.mimetype
     if @mimetype.start_with?('image')
       @file = file
@@ -13,6 +13,7 @@ class ImageTransformerService
       @multipart = (@image_list.length > 1)
       @item = item
       @extension = extension
+      @essence = essence
       @thumbnail_sizes = thumbnail_sizes
     end
   end
@@ -30,11 +31,19 @@ class ImageTransformerService
     generate_thumbnails @extension, @thumbnail_sizes
 
     puts 'Store generated files as essences...'
+    all_essences_saved = true
     generated_essences.each do |essence|
       unless essence.save
         puts "WARNING: Converted file [#{essence.filename}] failed to save due to the following errors:"
         essence.errors.each {|field, error| puts "  [#{field}] #{error}"}
+        all_essences_saved = false
       end
+    end
+
+    # if we've successfully generated the derived files, set the flag - otherwise this file will be picked up again next run
+    if all_essences_saved
+      @essence.derived_files_generated = true
+      @essence.save
     end
   end
 
@@ -105,7 +114,8 @@ class ImageTransformerService
       generated_essences << Essence.new(item: @item,
                                         filename: File.basename(page),
                                         mimetype: 'image/jpeg',
-                                        size: File.size(page))
+                                        size: File.size(page),
+                                        derived_files_generated: true) #set 'generated already' flag so we don't get recursive
     end
 
     if @multipart

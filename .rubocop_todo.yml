@@ -11,7 +11,7 @@ Metrics/AbcSize:
 
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 446
+  Max: 421
 
 Metrics/CyclomaticComplexity:
   Max: 62
@@ -24,6 +24,10 @@ Metrics/LineLength:
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 217
+
+# Configuration parameters: CountKeywordArgs.
+Metrics/ParameterLists:
+  Max: 6
 
 Metrics/PerceivedComplexity:
   Max: 68
@@ -43,11 +47,6 @@ Performance/Detect:
 Performance/RedundantMatch:
   Exclude:
     - 'app/models/item.rb'
-
-# Cop supports --auto-correct.
-Performance/RedundantMerge:
-  Exclude:
-    - 'config/initializers/rollbar.rb'
 
 # Cop supports --auto-correct.
 Performance/StringReplacement:
@@ -100,7 +99,6 @@ Style/BarePercentLiterals:
 # IgnoredMethods: lambda, proc, it
 Style/BlockDelimiters:
   Exclude:
-    - 'config/initializers/rollbar.rb'
     - 'spec/controllers/items_controller_spec.rb'
 
 # Cop supports --auto-correct.
@@ -193,7 +191,6 @@ Style/ConditionalAssignment:
     - 'app/controllers/versions_controller.rb'
     - 'app/models/collection.rb'
     - 'app/models/comment.rb'
-    - 'app/models/essence.rb'
     - 'app/models/item.rb'
     - 'app/services/item_destruction_service.rb'
     - 'lib/exsite9.rb'
@@ -259,6 +256,7 @@ Style/EmptyLinesAroundBlockBody:
 # SupportedStyles: empty_lines, no_empty_lines
 Style/EmptyLinesAroundClassBody:
   Exclude:
+    - 'app/controllers/items_controller.rb'
     - 'app/controllers/repository_controller.rb'
     - 'app/models/collection.rb'
     - 'app/models/comment.rb'
@@ -437,6 +435,7 @@ Style/NegatedIf:
 Style/Next:
   Exclude:
     - 'app/controllers/collections_controller.rb'
+    - 'app/services/image_transformer_service.rb'
     - 'db/migrate/20150311065243_change_funding_body_to_multiple.rb'
     - 'lib/exsite9.rb'
 
@@ -476,7 +475,6 @@ Style/PercentLiteralDelimiters:
     - 'app/oai/collection_provider.rb'
     - 'app/oai/item_provider.rb'
     - 'config/environments/production.rb'
-    - 'config/initializers/rollbar.rb'
     - 'lib/media.rb'
 
 # Cop supports --auto-correct.
@@ -484,7 +482,6 @@ Style/PerlBackrefs:
   Exclude:
     - 'app/controllers/collections_controller.rb'
     - 'app/controllers/items_controller.rb'
-    - 'config/initializers/rollbar.rb'
 
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist.
 # NamePrefix: is_, has_, have_

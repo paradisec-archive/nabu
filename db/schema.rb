@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160321230804) do
+ActiveRecord::Schema.define(:version => 20160321010809) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -160,13 +160,14 @@ ActiveRecord::Schema.define(:version => 20160321230804) do
     t.string   "mimetype"
     t.integer  "bitrate"
     t.integer  "samplerate"
-    t.integer  "size",       :limit => 8
+    t.integer  "size",                    :limit => 8
     t.float    "duration"
     t.integer  "channels"
     t.integer  "fps"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "doi"
+    t.boolean  "derived_files_generated",              :default => false
   end
 
   add_index "essences", ["item_id"], :name => "index_essences_on_item_id"
