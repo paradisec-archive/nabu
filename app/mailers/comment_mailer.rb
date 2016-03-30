@@ -11,6 +11,6 @@ class CommentMailer < ActionMailer::Base
       raise "Don't know URL for resource #{@comment.commentable.class}"
     end
 
-    mail(subject: "[nabu] New comment posted by #{@comment.owner.name}")
+    mail(subject: "[nabu] New comment posted by #{@comment.owner_name}")
   end
 end

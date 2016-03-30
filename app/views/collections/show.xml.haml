@@ -72,6 +72,6 @@
           %userComments{:numComments => item.comments.count}
             - item.comments.each do |comment|
               %comment
-                %author= h(comment.owner.name)
+                %author= h(comment.owner_name)
                 %description= h(comment.body)
                 %createdAt= comment.created_at
