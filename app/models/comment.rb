@@ -33,6 +33,7 @@ class Comment < ActiveRecord::Base
   before_create :moderation
   after_save :send_email
 
+  delegate :name, :to => :owner, :prefix => true, :allow_nil => true
 
   private
   include ActionView::Helpers::SanitizeHelper
