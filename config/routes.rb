@@ -33,7 +33,7 @@ Nabu::Application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
-    resources :items do
+    resources :items, :except => [:index] do
       member do
         get :display
         put :inherit_details
