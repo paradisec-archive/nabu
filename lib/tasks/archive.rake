@@ -305,7 +305,8 @@ namespace :archive do
   desc "Perform image transformations for all image essences"
   task :transform_images => :environment do
     batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
-    BatchImageTransformerService.run(batch_size)
+    verbose = true
+    BatchImageTransformerService.run(batch_size, verbose)
   end
 
   desc "Update catalog details of items"
