@@ -7,19 +7,18 @@ class ImageTransformerService
 
   def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
     @mimetype = media.mimetype
-    if @mimetype.start_with?('image')
-      @file = file
-      @image_list = ImageList.new(@file)
-      @multipart = (@image_list.length > 1)
-      @item = item
-      @extension = extension
-      @essence = essence
-      @thumbnail_sizes = thumbnail_sizes
-    end
+    @file = file
+    @item = item
+    @extension = extension
+    @essence = essence
+    @thumbnail_sizes = thumbnail_sizes
+    # Defer evaluating @image_list and @multipart until `perform_conversions`, the only public method available, is called
   end
 
   def perform_conversions
     return unless @mimetype.start_with?('image')
+    @image_list = ImageList.new(@file)
+    @multipart = (@image_list.length > 1)
 
     generated_essences = []
 
@@ -45,7 +44,10 @@ class ImageTransformerService
       @essence.derived_files_generated = true
       @essence.save
     end
+    @image_list.each(&:destroy!)
   end
+
+  private
 
   # converts the file into the specified format and returns its new path (or nil if it already existed)
   def convert_to(format, extension, quality = 50)
@@ -84,11 +86,10 @@ class ImageTransformerService
 
         outfile = image.resize_to_fit(size, size)
         outfile.write(file_path) { self.quality = 50 }
+        outfile.destroy!
       end
     end
   end
-
-  private
 
   #build an appropriate new file path based on pages, thumbnails and format where provided
   def create_file_path(extension, format, page_number = nil, is_thumbnail = false)
@@ -102,7 +103,7 @@ class ImageTransformerService
       new_suffix = "-page#{page_number}#{new_suffix}"
     end
 
-    @file.sub(".#{extension}", new_suffix)
+    @file.sub(extension, new_suffix)
   end
 
   def convert_tif_to_jpg(generated_essences)
