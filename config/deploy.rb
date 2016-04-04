@@ -22,7 +22,7 @@ set :stages, %w(staging production)
 set :default_stage, 'staging'
 
 require "capistrano-rbenv"
-set :rbenv_ruby_version, "1.9.3-p484"
+set :rbenv_ruby_version, "2.1.9"
 
 namespace :deploy do
   task :shared_config_symlink, :except => { :no_release => true } do
