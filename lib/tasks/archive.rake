@@ -418,6 +418,6 @@ namespace :archive do
 
   # this method tries to avoid regenerating any files that already exist
   def generate_derived_files(full_file_path, item, essence, extension, media)
-    ImageTransformerService.new(media, full_file_path, item, essence, extension).perform_conversions
+    ImageTransformerService.new(media, full_file_path, item, essence, ".#{extension}").perform_conversions
   end
 end

@@ -23,7 +23,7 @@ class BatchImageTransformerService
       next unless File.file?(image_file.path)
       item = image_file.item
       file = image_file.path
-      extension = 'jpg'
+      extension = File.extname(file)
       begin
         media = Nabu::Media.new image_file.path
         image_transformer = ImageTransformerService.new(media, file, item, image_file, extension)

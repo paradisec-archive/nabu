@@ -103,7 +103,7 @@ class ImageTransformerService
       new_suffix = "-page#{page_number}#{new_suffix}"
     end
 
-    @file.sub(".#{extension}", new_suffix)
+    @file.sub(extension, new_suffix)
   end
 
   def convert_tif_to_jpg(generated_essences)
