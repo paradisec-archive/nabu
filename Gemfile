@@ -50,7 +50,6 @@ gem 'ruby-filemagic'
 
 # Deployment
 gem 'capistrano'
-gem 'capistrano-ext'
 gem 'capistrano-unicorn'
 
 # Logging
