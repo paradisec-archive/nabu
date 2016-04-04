@@ -51,6 +51,7 @@ gem 'ruby-filemagic'
 # Deployment
 gem 'capistrano'
 gem 'capistrano-unicorn'
+gem 'capistrano-rbenv'
 
 # Logging
 gem 'rollbar'
