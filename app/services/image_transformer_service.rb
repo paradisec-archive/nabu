@@ -44,6 +44,7 @@ class ImageTransformerService
       @essence.derived_files_generated = true
       @essence.save
     end
+    @image_list.each(&:destroy!)
   end
 
   private
@@ -85,6 +86,7 @@ class ImageTransformerService
 
         outfile = image.resize_to_fit(size, size)
         outfile.write(file_path) { self.quality = 50 }
+        outfile.destroy!
       end
     end
   end
