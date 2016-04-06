@@ -21,6 +21,9 @@ set :shared_children, fetch(:shared_children) + ['tmp/sockets']
 set :stages, %w(staging production)
 set :default_stage, 'staging'
 
+require "capistrano-rbenv"
+set :rbenv_ruby_version, "2.1.9"
+
 namespace :deploy do
   task :shared_config_symlink, :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/config #{release_path}/config/shared"
