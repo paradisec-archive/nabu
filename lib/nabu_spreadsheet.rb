@@ -161,11 +161,9 @@ module Nabu
     # In theory, the program could determine which extension to try first by using Content-Type.
     def load_spreadsheet(data)
       # open Spreadsheet as "file"
-      string_io = StringIO.new(data)
-      # TODO: Under Ruby 1.9.3, the roo gem can't handle an XLSX spreadsheet supplied in a StringIO object.
-      # Utilize try_xlsx if Ruby is upgraded or roo is fixed.
-      book = try_xls(string_io) # || try_xlsx(string_io)
-      @errors << 'ERROR XLSX file provided - please supply an XLS file (the older Excel file format) instead' unless book
+      book = try_xls(StringIO.new(data)) ||
+        try_xlsx(StringIO.new(data))
+      @errors << 'ERROR File is neither XLS nor XLSX' unless book
       book
     end
 
