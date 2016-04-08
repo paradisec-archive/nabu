@@ -168,6 +168,7 @@ namespace :archive do
     verbose = ENV['VERBOSE'] ? true : false
     # Default to not forcing an update of metadata
     force_update = (ENV['FORCE'] == 'true')
+    ignore_update_file_prefixes = (ENV['IGNORE_UPDATE_FILE_PREFIX'] || '').split(':')
 
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
@@ -198,6 +199,11 @@ namespace :archive do
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          next
+        end
+
+        if ignore_update_file_prefixes.any? {|prefix| basename.start_with?(prefix) }
+          puts "WARNING: file #{file} skipped - suspected of being crash-prone"
           next
         end
 
