@@ -142,6 +142,7 @@ class ItemsController < ApplicationController
       redirect_to [@collection, @item]
       return
     end
+    Rails.logger.info "Start of ItemsController#update for #{@collection.identifier}-#{@item.identifier}"
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
@@ -155,6 +156,7 @@ class ItemsController < ApplicationController
       @page_title = 'Nabu - Edit Item'
       render :action => "edit"
     end
+    Rails.logger.info "End of ItemsController#update for #{@collection.identifier}-#{@item.identifier}"
   end
 
   def bulk_edit
