@@ -9,6 +9,8 @@
 #
 
 class ItemAgent < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :user
   belongs_to :agent_role
   belongs_to :item

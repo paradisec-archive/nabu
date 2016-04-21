@@ -10,6 +10,8 @@
 #
 
 class University < ActiveRecord::Base
+  has_paper_trail
+
   validates :name, :presence => true, :uniqueness => true
 
   attr_accessible :name, :party_identifier

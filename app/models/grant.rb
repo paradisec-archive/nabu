@@ -9,6 +9,8 @@
 #
 
 class Grant < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :collection
   belongs_to :funding_body
 

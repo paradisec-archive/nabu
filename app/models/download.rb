@@ -10,6 +10,8 @@
 #
 
 class Download < ActiveRecord::Base
+  # As Download records aren't modified, no need for paper_trail
+
   belongs_to :user
   belongs_to :essence
 
