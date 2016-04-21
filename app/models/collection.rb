@@ -249,11 +249,26 @@ class Collection < ActiveRecord::Base
     end
     cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
     cite += '; ' unless cite == ""
-    cite += "<i>#{sanitize(title)}</i>, "
+    cite += "<i>#{sanitize(title)}</i> (#{identifier}), "
     cite += "Digital collection managed by PARADISEC. "
-    cite += " #{full_path}"
-    cite += " #{Date.today}."
+    cite += "[#{access_class.capitalize} Access] "
+    if doi
+      cite += "DOI: #{doi}"
+    else
+      cite += "#{full_path}"
+    end
     cite
+  end
+
+  def access_class
+    case
+    when access_condition_name && access_condition_name.start_with?('Open')
+      'open'
+    when access_condition_name && access_condition_name.start_with?('Closed')
+      'closed'
+    else
+      'other'
+    end
   end
 
   def has_coordinates
