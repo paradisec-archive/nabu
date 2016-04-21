@@ -357,8 +357,11 @@ namespace :archive do
     basename = File.basename(file, "." + extension)
 
     #use basename to avoid having item_id contain the extension
-    coll_id, item_id = basename.split('-')
-    return unless item_id
+    coll_id, item_id, *remainder = basename.split('-')
+    unless item_id
+      puts "ERROR: could not parse collection id and item id for file #{file} - skipping" if verbose
+      return [basename, extension, coll_id, item_id, nil, nil]
+    end
 
     # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
     collection = Collection.where('BINARY identifier = ?', coll_id).first
@@ -373,6 +376,13 @@ namespace :archive do
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
+
+    # don't allow too few or too many dashes
+    unless (remainder.count == 1 && remainder.none?(&:empty?)) || %w(CAT df PDSC_ADMIN).include?(remainder.last)
+      puts "ERROR: invalid filename for file #{file} - skipping" if verbose
+      return [basename, extension, coll_id, item_id, nil, nil]
+    end
+
     [basename, extension, coll_id, item_id, collection, item]
   end
 
