@@ -1,4 +1,4 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 1.9
+  TargetRubyVersion: 2.1
