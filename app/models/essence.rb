@@ -20,6 +20,8 @@
 class Essence < ActiveRecord::Base
   include IdentifiableByDoi
 
+  has_paper_trail
+
   belongs_to :item
 
   validates :item, :associated => true

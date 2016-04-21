@@ -8,6 +8,8 @@
 #
 
 class CountriesLanguage < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :country
   belongs_to :language
 

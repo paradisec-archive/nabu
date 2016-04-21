@@ -8,6 +8,8 @@
 #
 
 class FieldOfResearch < ActiveRecord::Base
+  has_paper_trail
+
   validates :name, :identifier, :presence => true
   validates :name, :identifier, :uniqueness => true
   validates :identifier, :numericality => {:only_integer => true}

@@ -8,6 +8,8 @@
 #
 
 class ItemContentLanguage < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :language
   belongs_to :item
 

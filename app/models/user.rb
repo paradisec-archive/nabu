@@ -37,6 +37,8 @@
 #
 
 class User < ActiveRecord::Base
+  # Users may not want paper_trail storing a history of their account information, so don't have has_paper_trail
+
   nilify_blanks
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,

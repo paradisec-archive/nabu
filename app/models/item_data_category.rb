@@ -8,6 +8,8 @@
 #
 
 class ItemDataCategory < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :data_category
   belongs_to :item
 
