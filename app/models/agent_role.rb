@@ -7,6 +7,8 @@
 #
 
 class AgentRole < ActiveRecord::Base
+  has_paper_trail
+
   scope :alpha, order(:name)
   attr_accessible :name
 

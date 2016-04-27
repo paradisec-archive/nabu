@@ -7,6 +7,8 @@
 #
 
 class DataCategory < ActiveRecord::Base
+  has_paper_trail
+
   validates :name, :presence => true, :uniqueness => true
 
   attr_accessible :name

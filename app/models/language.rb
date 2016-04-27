@@ -13,6 +13,8 @@
 #
 
 class Language < ActiveRecord::Base
+  has_paper_trail
+
   validates :name, :presence => true
   validates :code, :presence => true, :uniqueness => true
 
