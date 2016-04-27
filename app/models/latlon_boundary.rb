@@ -12,6 +12,8 @@
 #
 
 class LatlonBoundary < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :country
 
   attr_accessible :north_limit, :south_limit, :west_limit, :east_limit, :country, :country_id, :wrapped

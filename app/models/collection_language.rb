@@ -8,6 +8,8 @@
 #
 
 class CollectionLanguage < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :language
   belongs_to :collection
 

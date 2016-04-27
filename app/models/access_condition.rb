@@ -9,6 +9,8 @@
 #
 
 class AccessCondition < ActiveRecord::Base
+  has_paper_trail
+
   scope :alpha, order(:name)
 
   attr_accessible :name
