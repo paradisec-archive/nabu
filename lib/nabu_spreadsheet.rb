@@ -8,7 +8,7 @@ module Nabu
       @items = []
     end
 
-    def parse(data, current_user)
+    def parse(data)
       book = load_spreadsheet(data)
       return unless @errors.empty?
 
