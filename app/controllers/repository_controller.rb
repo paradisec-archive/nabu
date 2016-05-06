@@ -51,10 +51,6 @@ class RepositoryController < ApplicationController
 
     authorize! :read, essence
 
-    # If capitalised letters have been given in the extension, make them lower case.
-    # The viewer program currently sends them in upper case if the original file is upper case.
-    essence_filename = essence_filename.sub(/-PDSC_ADMIN\.([a-zA-Z]+)$/) { |_s| '-PDSC_ADMIN.' + Regexp.last_match(1).downcase}
-
     admin_file_path = "#{Nabu::Application.config.archive_directory}/#{collection.identifier}/#{item.identifier}/#{essence_filename}"
     if File.file? admin_file_path
       stats = Nabu::Media.new(admin_file_path)
