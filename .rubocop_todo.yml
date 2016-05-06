@@ -33,25 +33,9 @@ Metrics/PerceivedComplexity:
   Max: 68
 
 # Cop supports --auto-correct.
-Performance/Count:
-  Exclude:
-    - 'lib/exsite9.rb'
-    - 'lib/media.rb'
-
-# Cop supports --auto-correct.
-Performance/Detect:
-  Exclude:
-    - 'lib/media.rb'
-
-# Cop supports --auto-correct.
 Performance/RedundantMatch:
   Exclude:
     - 'app/models/item.rb'
-
-# Cop supports --auto-correct.
-Performance/RedundantMerge:
-  Exclude:
-    - 'config/initializers/rollbar.rb'
 
 # Cop supports --auto-correct.
 Performance/StringReplacement:
@@ -382,6 +366,12 @@ Style/MultilineBlockLayout:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
 # SupportedStyles: aligned, indented
+Style/MultilineMethodCallIndentation:
+  Enabled: false
+
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
+# SupportedStyles: aligned, indented
 Style/MultilineOperationIndentation:
   Enabled: false
 
@@ -655,6 +645,7 @@ Style/TrailingWhitespace:
     - 'db/migrate/20120621072614_deceased_users.rb'
     - 'lib/tasks/cucumber.rake'
 
+# Cop supports --auto-correct.
 Style/UnlessElse:
   Exclude:
     - 'lib/nabu_spreadsheet.rb'
@@ -682,3 +673,11 @@ Style/VariableName:
 Style/WordArray:
   EnforcedStyle: percent
   MinSize: 4
+
+# Cop supports --auto-correct.
+Style/ZeroLengthPredicate:
+  Exclude:
+    - 'app/models/collection.rb'
+    - 'lib/exsite9.rb'
+    - 'lib/media.rb'
+    - 'lib/tasks/archive.rake'
