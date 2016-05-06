@@ -511,17 +511,6 @@ Style/SelfAssignment:
     - 'lib/nabu_spreadsheet.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: only_raise, only_fail, semantic
-Style/SignalException:
-  Exclude:
-    - 'app/controllers/repository_controller.rb'
-    - 'app/mailers/comment_mailer.rb'
-    - 'lib/media.rb'
-    - 'lib/monkeypatch.rb'
-    - 'spec/support/select2.rb'
-
-# Cop supports --auto-correct.
 Style/SpaceAfterColon:
   Exclude:
     - 'db/seeds.rb'

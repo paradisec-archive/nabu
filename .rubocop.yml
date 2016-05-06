@@ -10,3 +10,7 @@ Style/ConditionalAssignment:
 # Auto-gen-config has a bug with this cop
 Style/GuardClause:
   Enabled: false
+
+# RuboCop changed its mind on preferred style
+Style/SignalException:
+  Enabled: false
