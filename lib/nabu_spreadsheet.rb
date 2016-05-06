@@ -45,15 +45,11 @@ module Nabu
       end
 
       # parse items in XLS file
-      existing_items = ""
       13.upto(book.last_row) do |row_number|
         row = book.row(row_number)
         break if row[0].nil? # if first cell empty
         parse_row(row, collector)
       end
-
-      @notices << "Existing items: #{existing_items.chomp(', ')}"
-
     end #parse
 
     def valid?
