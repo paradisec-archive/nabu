@@ -49,102 +49,7 @@ module Nabu
       13.upto(book.last_row) do |row_number|
         row = book.row(row_number)
         break if row[0].nil? # if first cell empty
-
-        item_id = row[0].to_s
-
-        # if collection_id is part of item_id string, remove it
-        item_id.slice! "#{@collection.identifier}-"
-
-        item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
-        unless item
-          item = Item.new
-          item.identifier = item_id
-          item.collection = @collection
-          item.private = true
-          item.collector = collector
-
-          # inherit from collection
-          item.university_id = @collection.university_id
-          item.operator_id = @collection.operator_id
-          item.region = @collection.region
-          item.north_limit = @collection.north_limit
-          item.south_limit = @collection.south_limit
-          item.west_limit = @collection.west_limit
-          item.east_limit = @collection.east_limit
-          item.access_condition_id = @collection.access_condition_id
-          item.access_narrative = @collection.access_narrative
-          item.admin_ids = @collection.admin_ids
-          item.title = 'PLEASE PROVIDE TITLE'
-          item.description = 'PLEASE PROVIDE DESCRIPTION'
-        end
-
-        # update title and description
-        item.title = row[1].to_s unless row[1].blank?
-        item.description = row[2].to_s unless row[2].blank?
-
-        # add content and subject language
-        if row[3].present?
-          content_languages = row[3].split('|')
-          content_languages.each do |language|
-            content_language = Language.find_by_name(language) || Language.find_by_code(language)
-            if content_language
-              item.content_languages << content_language unless item.content_languages.include? content_language
-            else
-              @notices << "Item #{item.identifier} : Content language '#{language}' not found"
-            end
-          end
-        end
-        if row[4].present?
-          subject_languages = row[4].split('|')
-          subject_languages.each do |language|
-            subject_language = Language.find_by_name(language) || Language.find_by_code(language)
-            if subject_language
-              item.subject_languages << subject_language unless item.subject_languages.include? subject_language
-            else
-              @notices << "Item #{item.identifier} : Subject language '#{language}' not found"
-            end
-          end
-        end
-
-        # add countries
-        if row[5].present?
-          countries = row[5].split('|')
-          countries.each do |country|
-            code, _ = country.strip.split(' - ')
-            cntry = Country.find_by_code(code.strip)
-            unless cntry
-              # try country name
-              cntry = Country.find_by_name(code.strip)
-              unless cntry
-                # FIXME: This only skips the country, rather than the item. Change it to skipping the item.
-                @notices << "Item #{item.identifier} : Country not found - Item skipped"
-                next
-              end
-            end
-            item.countries << cntry unless item.countries.include? cntry
-          end
-        end
-
-        # add origination date
-        if row[6].present?
-          date = row[6].to_s
-          if date.length == 4 ## take a guess they forgot the month & day
-            date = date + "-01-01"
-          end
-          begin
-            date_conv = date.to_date
-          rescue
-            @notices << "Item #{item.identifier} : Date invalid - Item skipped"
-            next
-          end
-          item.originated_on = date_conv unless date_conv.blank?
-        end
-
-        if item.valid?
-          @items << item
-        else
-          @notices << "WARNING: item #{item.identifier} invalid - skipped"
-        end
+        parse_row(row, collector)
       end
 
       @notices << "Existing items: #{existing_items.chomp(', ')}"
@@ -215,6 +120,103 @@ module Nabu
       user
     end
 
+    def parse_row(row, collector)
+      item_id = row[0].to_s
+
+      # if collection_id is part of item_id string, remove it
+      item_id.slice! "#{@collection.identifier}-"
+
+      item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
+      unless item
+        item = Item.new
+        item.identifier = item_id
+        item.collection = @collection
+        item.private = true
+        item.collector = collector
+
+        # inherit from collection
+        item.university_id = @collection.university_id
+        item.operator_id = @collection.operator_id
+        item.region = @collection.region
+        item.north_limit = @collection.north_limit
+        item.south_limit = @collection.south_limit
+        item.west_limit = @collection.west_limit
+        item.east_limit = @collection.east_limit
+        item.access_condition_id = @collection.access_condition_id
+        item.access_narrative = @collection.access_narrative
+        item.admin_ids = @collection.admin_ids
+        item.title = 'PLEASE PROVIDE TITLE'
+        item.description = 'PLEASE PROVIDE DESCRIPTION'
+      end
+
+      # update title and description
+      item.title = row[1].to_s unless row[1].blank?
+      item.description = row[2].to_s unless row[2].blank?
+
+      # add content and subject language
+      if row[3].present?
+        content_languages = row[3].split('|')
+        content_languages.each do |language|
+          content_language = Language.find_by_name(language) || Language.find_by_code(language)
+          if content_language
+            item.content_languages << content_language unless item.content_languages.include? content_language
+          else
+            @notices << "Item #{item.identifier} : Content language '#{language}' not found"
+          end
+        end
+      end
+      if row[4].present?
+        subject_languages = row[4].split('|')
+        subject_languages.each do |language|
+          subject_language = Language.find_by_name(language) || Language.find_by_code(language)
+          if subject_language
+            item.subject_languages << subject_language unless item.subject_languages.include? subject_language
+          else
+            @notices << "Item #{item.identifier} : Subject language '#{language}' not found"
+          end
+        end
+      end
+
+      # add countries
+      if row[5].present?
+        countries = row[5].split('|')
+        countries.each do |country|
+          code, _ = country.strip.split(' - ')
+          cntry = Country.find_by_code(code.strip)
+          unless cntry
+            # try country name
+            cntry = Country.find_by_name(code.strip)
+            unless cntry
+              # FIXME: This only skips the country, rather than the item. Change it to skipping the item.
+              @notices << "Item #{item.identifier} : Country not found - Item skipped"
+              next
+            end
+          end
+          item.countries << cntry unless item.countries.include? cntry
+        end
+      end
+
+      # add origination date
+      if row[6].present?
+        date = row[6].to_s
+        if date.length == 4 ## take a guess they forgot the month & day
+          date = date + "-01-01"
+        end
+        begin
+          date_conv = date.to_date
+        rescue
+          @notices << "Item #{item.identifier} : Date invalid - Item skipped"
+          return
+        end
+        item.originated_on = date_conv unless date_conv.blank?
+      end
+
+      if item.valid?
+        @items << item
+      else
+        @notices << "WARNING: item #{item.identifier} invalid - skipped"
+      end
+    end
   end
 
 end
