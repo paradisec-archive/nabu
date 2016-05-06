@@ -2,3 +2,11 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 2.1
+
+# Auto-gen-config has a bug with this cop
+Style/ConditionalAssignment:
+  Enabled: false
+
+# Auto-gen-config has a bug with this cop
+Style/GuardClause:
+  Enabled: false

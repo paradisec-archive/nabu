@@ -188,21 +188,6 @@ Style/CommentIndentation:
     - 'lib/media.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: SingleLineConditionsOnly.
-Style/ConditionalAssignment:
-  Exclude:
-    - 'app/controllers/collections_controller.rb'
-    - 'app/controllers/items_controller.rb'
-    - 'app/controllers/page_controller.rb'
-    - 'app/controllers/versions_controller.rb'
-    - 'app/models/collection.rb'
-    - 'app/models/comment.rb'
-    - 'app/models/essence.rb'
-    - 'app/models/item.rb'
-    - 'app/services/item_destruction_service.rb'
-    - 'lib/exsite9.rb'
-
-# Cop supports --auto-correct.
 Style/DeprecatedHashMethods:
   Exclude:
     - 'spec/support/select2.rb'
@@ -316,22 +301,6 @@ Style/FormatString:
   Exclude:
     - 'app/helpers/application_helper.rb'
     - 'spec/factories/item.rb'
-
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'app/admin/agent_roles.rb'
-    - 'app/admin/funding_bodies.rb'
-    - 'app/admin/universities.rb'
-    - 'app/admin/users.rb'
-    - 'app/controllers/collections_controller.rb'
-    - 'app/controllers/essences_controller.rb'
-    - 'app/controllers/items_controller.rb'
-    - 'app/controllers/repository_controller.rb'
-    - 'app/models/collection.rb'
-    - 'app/models/item.rb'
-    - 'app/services/image_transformer_service.rb'
-    - 'lib/tasks/archive.rake'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, UseHashRocketsWithSymbolValues.
