@@ -16,11 +16,6 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Max: 62
 
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes.
-# URISchemes: http, https
-Metrics/LineLength:
-  Max: 512
-
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 217
@@ -190,76 +185,6 @@ Style/EmptyElse:
     - 'lib/media.rb'
 
 # Cop supports --auto-correct.
-Style/EmptyLines:
-  Exclude:
-    - 'Guardfile'
-    - 'app/admin/catalog_report.rb'
-    - 'app/controllers/collections_controller.rb'
-    - 'app/controllers/items_controller.rb'
-    - 'app/models/ability.rb'
-    - 'app/models/item.rb'
-    - 'app/oai/collection_provider.rb'
-    - 'config/initializers/active_admin.rb'
-    - 'lib/tasks/archive.rake'
-    - 'lib/tasks/cucumber.rake'
-
-# Cop supports --auto-correct.
-Style/EmptyLinesAroundAccessModifier:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/collections_controller.rb'
-    - 'app/models/comment.rb'
-    - 'lib/monkeypatch.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'app/admin/activity_log.rb'
-    - 'app/admin/catalog_report.rb'
-    - 'app/admin/dashboard.rb'
-    - 'config/environments/production.rb'
-    - 'config/initializers/active_admin.rb'
-    - 'config/routes.rb'
-    - 'db/schema.rb'
-    - 'lib/exsite9.rb'
-    - 'lib/tasks/archive.rake'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'app/controllers/repository_controller.rb'
-    - 'app/models/collection.rb'
-    - 'app/models/comment.rb'
-    - 'app/oai/collection_provider.rb'
-    - 'app/oai/item_provider.rb'
-    - 'app/services/item_destruction_service.rb'
-    - 'db/migrate/20110802002037_devise_create_users.rb'
-    - 'db/migrate/20120812142330_add_grants_to_collections.rb'
-    - 'lib/monkeypatch.rb'
-    - 'lib/nabu_spreadsheet.rb'
-
-# Cop supports --auto-correct.
-Style/EmptyLinesAroundMethodBody:
-  Exclude:
-    - 'app/controllers/items_controller.rb'
-    - 'db/migrate/20120812142330_add_grants_to_collections.rb'
-    - 'db/migrate/20120813112341_add_party_identifiers.rb'
-    - 'db/migrate/20120923013322_create_data_categories.rb'
-    - 'lib/nabu_spreadsheet.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty_lines, no_empty_lines
-Style/EmptyLinesAroundModuleBody:
-  Exclude:
-    - 'lib/nabu_spreadsheet.rb'
-    - 'spec/support/select2.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
 Style/ExtraSpacing:
   Exclude:
@@ -285,12 +210,6 @@ Style/FormatString:
   Exclude:
     - 'app/helpers/application_helper.rb'
     - 'spec/factories/item.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, UseHashRocketsWithSymbolValues.
-# SupportedStyles: ruby19, ruby19_no_mixed_keys, hash_rockets
-Style/HashSyntax:
-  Enabled: false
 
 # Cop supports --auto-correct.
 # Configuration parameters: MaxLineLength.
@@ -550,12 +469,6 @@ Style/SpaceAroundOperators:
     - 'spec/factories/essence.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: space, no_space
-Style/SpaceBeforeBlockBraces:
-  Enabled: false
-
-# Cop supports --auto-correct.
 Style/SpaceBeforeComma:
   Exclude:
     - 'app/models/item.rb'
@@ -566,21 +479,9 @@ Style/SpaceBeforeComment:
     - 'app/models/collection.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-Style/SpaceInsideBlockBraces:
-  Enabled: false
-
-# Cop supports --auto-correct.
 Style/SpaceInsideBrackets:
   Exclude:
     - 'config/initializers/devise.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-# SupportedStyles: space, no_space
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false
 
 # Cop supports --auto-correct.
 Style/SpaceInsideParens:
@@ -597,12 +498,6 @@ Style/SpecialGlobalVars:
   Enabled: false
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Enabled: false
-
-# Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.
 # IgnoredMethods: respond_to
 Style/SymbolProc:
@@ -615,12 +510,6 @@ Style/SymbolProc:
 Style/Tab:
   Exclude:
     - 'app/models/identifiable_by_doi.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: final_newline, final_blank_line
-Style/TrailingBlankLines:
-  Enabled: false
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyleForMultiline, SupportedStyles.
