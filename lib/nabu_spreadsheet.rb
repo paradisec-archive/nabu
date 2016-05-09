@@ -16,7 +16,7 @@ module Nabu
       # parse collection in XSL file
       coll_id = book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
-      collector = user_from_str(book.row(7)[1], false)
+      collector = user_from_str(book.row(7)[1])
       unless collector
         @errors << "ERROR collector does not exist"
         return
@@ -79,7 +79,7 @@ module Nabu
       nil
     end
 
-    def user_from_str(name, create)
+    def user_from_str(name)
       unless name
         @errors << "Got no name for collector"
         return nil
@@ -94,23 +94,8 @@ module Nabu
       user = User.where(first_name: first_name, last_name: last_name).first
 
       unless user
-        unless create
-          @errors << "Please create user #{name} first<br/>"
-          return nil
-        end
-        random_string = SecureRandom.base64(16)
-        user = User.new(
-          first_name: first_name,
-          last_name: last_name,
-          password: random_string,
-          password_confirmation: random_string,
-          contact_only: true
-        )
-        unless user.valid?
-          @errors << "Couldn't create user #{name}<br/>"
-          return nil
-        end
-        @notices << "Note: Contact #{name} created<br/>"
+        @errors << "Please create user #{name} first<br/>"
+        return nil
       end
       user.save if user.valid?
       user
