@@ -13,7 +13,6 @@ module Nabu
       return unless @errors.empty?
 
       book.sheet 0
-      # parse collection in XSL file
       coll_id = book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
       collector = user_from_str(book.row(7)[1])
@@ -21,22 +20,9 @@ module Nabu
         @errors << "ERROR collector does not exist"
         return
       end
-      unless @collection
-        @collection = Collection.new
-        @collection.identifier = coll_id
-        @collection.collector = collector
-        @collection.private = true
-        @collection.title = 'PLEASE PROVIDE TITLE'
-        @collection.description = 'PLEASE PROVIDE DESCRIPTION'
-        # update collection details
-        @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
-        @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
-      else
-        if @collection.collector != collector
-          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
-          return
-        end
-      end
+      parse_collection_info(book, collector, coll_id)
+      return unless @errors.empty?
+
       if @collection.save
         @notices << "Saved collection #{coll_id}, #{collection.title}"
       else
@@ -99,6 +85,25 @@ module Nabu
       end
       user.save if user.valid?
       user
+    end
+
+    def parse_collection_info(book, collector, coll_id)
+      if @collection
+        if @collection.collector != collector
+          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
+        end
+        return
+      end
+
+      @collection = Collection.new
+      @collection.identifier = coll_id
+      @collection.collector = collector
+      @collection.private = true
+      @collection.title = 'PLEASE PROVIDE TITLE'
+      @collection.description = 'PLEASE PROVIDE DESCRIPTION'
+      # update collection details
+      @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
+      @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
     end
 
     def parse_row(row, collector)
