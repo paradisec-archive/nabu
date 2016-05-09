@@ -82,6 +82,7 @@ group :development, :test do
   gem 'spring-commands-rspec'
 
   gem 'pry'
+  gem 'pry-byebug'
   gem 'pry-rails'
 
   gem 'letter_opener'
