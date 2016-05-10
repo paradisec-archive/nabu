@@ -9,6 +9,7 @@ describe Nabu::NabuSpreadsheet do
     Essence.destroy_all
     Item.destroy_all
     Collection.destroy_all
+    AgentRole.destroy_all
     Country.create!(code: 'AD', name: 'Andorra') unless Country.find_by_code('AD')
     Country.create!(code: 'AF', name: 'Afghanistan') unless Country.find_by_code('AF')
     Language.create!(code: 'eng', name: 'English') unless Language.find_by_code('eng')
@@ -16,6 +17,10 @@ describe Nabu::NabuSpreadsheet do
     Language.create!(code: 'cmn', name: 'Mandarin') unless Language.find_by_code('cmn')
     Language.create!(code: 'yue', name: 'Cantonese') unless Language.find_by_code('yue')
     create(:user, first_name: 'VKS', last_name: nil)
+    create(:user, first_name: 'John', last_name: 'Smith')
+    create(:user, first_name: 'Andrew', last_name: 'Grimm')
+    create(:agent_role, name: 'speaker')
+    create(:agent_role, name: 'recorder')
   end
 
   describe '#load_spreadsheet' do
@@ -134,6 +139,15 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse(data)
       item = nabu_spreadsheet.items.first
       expect(item.originated_on).to eq(Date.new(2015, 10, 26))
+    end
+
+    it "can handle first agent's role" do
+      pending 'Pending test' do
+        nabu_spreadsheet.parse(data)
+        item = nabu_spreadsheet.items.first
+        item_agent = item.item_agents.first
+        expect(item_agent.agent_role.name).to eq("speaker")
+      end
     end
   end
 end
