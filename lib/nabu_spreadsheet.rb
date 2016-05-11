@@ -197,12 +197,53 @@ module Nabu
         item.originated_on = date_conv unless date_conv.blank?
       end
 
+      # Add first agent
+      if row[7].present?
+        first_agent_cells = row[7..9]
+        item_agent = parse_agent(first_agent_cells)
+        return unless item_agent
+        if item.item_agents.any? { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }
+          # item itself is valid, just don't add the duplicate item_agent to it
+          @notices << "Item #{item.identifier} : Duplicate role #{item_agent.agent_role.name}, user #{item_agent.user.name} ignored"
+        else
+          item.item_agents << item_agent
+        end
+      end
+
       if item.valid?
         @items << item
       else
         @notices << "WARNING: item #{item.identifier} invalid - skipped"
       end
     end
-  end
 
+    def parse_agent(cells)
+      original_role_name = cells[0]
+      first_name = cells[1]
+      last_name = cells[2]
+      last_name = nil if last_name.blank?
+
+      item_agent = ItemAgent.new
+
+      user = User.where(first_name: first_name, last_name: last_name).first
+
+      unless user
+        @errors << "Please create role user #{[first_name, last_name].join(" ")} first<br/>"
+        return nil
+      end
+
+      role_name = original_role_name.strip.tr(' ', '_').downcase
+      agent_role = AgentRole.where(name: role_name).first
+
+      unless agent_role
+        @errors << "Role not valid: #{original_role_name}"
+        return nil
+      end
+
+      item_agent.user = user
+      item_agent.agent_role = agent_role
+
+      item_agent
+    end
+  end
 end

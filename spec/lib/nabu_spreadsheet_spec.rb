@@ -142,12 +142,10 @@ describe Nabu::NabuSpreadsheet do
     end
 
     it "can handle first agent's role" do
-      pending 'Pending test' do
-        nabu_spreadsheet.parse(data)
-        item = nabu_spreadsheet.items.first
-        item_agent = item.item_agents.first
-        expect(item_agent.agent_role.name).to eq("speaker")
-      end
+      nabu_spreadsheet.parse(data)
+      item = nabu_spreadsheet.items.first
+      item_agent = item.item_agents.first
+      expect(item_agent.agent_role.name).to eq("speaker")
     end
   end
 end
