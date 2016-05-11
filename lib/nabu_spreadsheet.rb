@@ -66,6 +66,23 @@ module Nabu
     end
 
     def parse_user(book)
+      if book.row(7)[0].include?('e.g. Linda Barwick')
+        first_name, last_name = pre_may_2016_parse_user_names(book)
+      else
+        fail NotImplementedError, "Not yet implemented"
+      end
+
+      user = User.where(first_name: first_name, last_name: last_name).first
+
+      unless user
+        @errors << "Please create user #{[first_name, last_name].join(" ")} first<br/>"
+        return nil
+      end
+      user.save if user.valid?
+      user
+    end
+
+    def pre_may_2016_parse_user_names(book)
       name = book.row(7)[1]
       unless name
         @errors << "Got no name for collector"
@@ -77,15 +94,7 @@ module Nabu
       if last_name == ''
         last_name = nil
       end
-
-      user = User.where(first_name: first_name, last_name: last_name).first
-
-      unless user
-        @errors << "Please create user #{name} first<br/>"
-        return nil
-      end
-      user.save if user.valid?
-      user
+      [first_name, last_name]
     end
 
     def parse_collection_info(book, collector, coll_id)
