@@ -24,6 +24,11 @@ describe Nabu::NabuSpreadsheet do
         nabu_spreadsheet.parse(data)
         expect(nabu_spreadsheet).to be_valid
       end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse(data)
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
     end
 
     context 'xlsx file provided' do
