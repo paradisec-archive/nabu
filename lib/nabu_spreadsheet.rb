@@ -197,11 +197,12 @@ module Nabu
         item.originated_on = date_conv unless date_conv.blank?
       end
 
-      # Add first agent
-      if row[7].present?
-        first_agent_cells = row[7..9]
-        item_agent = parse_agent(first_agent_cells)
-        return unless item_agent
+      # Add agents
+      [7..9, 10..12, 13..15, 16..18, 19..21, 22..24].each do |agent_cell_range|
+        break unless row[agent_cell_range.begin].present?
+        agent_cells = row[agent_cell_range]
+        item_agent = parse_agent(agent_cells)
+        return nil unless item_agent
         if item.item_agents.any? { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }
           # item itself is valid, just don't add the duplicate item_agent to it
           @notices << "Item #{item.identifier} : Duplicate role #{item_agent.agent_role.name}, user #{item_agent.user.name} ignored"
