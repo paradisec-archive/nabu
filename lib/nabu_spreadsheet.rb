@@ -31,7 +31,12 @@ module Nabu
       end
 
       # parse items in XLS file
-      13.upto(book.last_row) do |row_number|
+      item_start_row = if book.row(12)[0].include?('Item Identifier')
+                         13
+                       else
+                         14
+                       end
+      item_start_row.upto(book.last_row) do |row_number|
         row = book.row(row_number)
         break if row[0].nil? # if first cell empty
         parse_row(row, collector)
