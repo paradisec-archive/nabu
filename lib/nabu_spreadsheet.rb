@@ -15,7 +15,7 @@ module Nabu
       book.sheet 0
       coll_id = book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
-      collector = user_from_str(book.row(7)[1])
+      collector = parse_user(book)
       unless collector
         @errors << "ERROR collector does not exist"
         return
@@ -65,7 +65,8 @@ module Nabu
       nil
     end
 
-    def user_from_str(name)
+    def parse_user(book)
+      name = book.row(7)[1]
       unless name
         @errors << "Got no name for collector"
         return nil
