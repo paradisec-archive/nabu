@@ -3,13 +3,9 @@ require 'spec_helper'
 describe Nabu::NabuSpreadsheet do
   let(:nabu_spreadsheet) { Nabu::NabuSpreadsheet.new }
   let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xls') }
-  # Because :collector_id is validated, rather than :collector, create has to be used.
-  let(:user) { create(:user) }
 
   before do
     User.destroy_all
-    # Ensure that NabuSpreadsheet doesn't complain that the collector does not exist.
-    nabu_spreadsheet.stub(:user_from_str) { user }
     Essence.destroy_all
     Item.destroy_all
     Collection.destroy_all
@@ -19,6 +15,7 @@ describe Nabu::NabuSpreadsheet do
     Language.create!(code: 'deu', name: 'German') unless Language.find_by_code('deu')
     Language.create!(code: 'cmn', name: 'Mandarin') unless Language.find_by_code('cmn')
     Language.create!(code: 'yue', name: 'Cantonese') unless Language.find_by_code('yue')
+    create(:user, first_name: 'VKS', last_name: nil)
   end
 
   describe '#load_spreadsheet' do
