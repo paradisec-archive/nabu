@@ -535,11 +535,6 @@ Style/TrailingWhitespace:
     - 'lib/tasks/cucumber.rake'
 
 # Cop supports --auto-correct.
-Style/UnlessElse:
-  Exclude:
-    - 'lib/nabu_spreadsheet.rb'
-
-# Cop supports --auto-correct.
 Style/UnneededInterpolation:
   Exclude:
     - 'app/models/collection.rb'

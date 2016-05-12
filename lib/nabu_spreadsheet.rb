@@ -8,35 +8,21 @@ module Nabu
       @items = []
     end
 
-    def parse(data, current_user)
+    def parse(data)
       book = load_spreadsheet(data)
       return unless @errors.empty?
 
       book.sheet 0
-      # parse collection in XSL file
       coll_id = book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
-      collector = user_from_str(book.row(7)[1], false)
+      collector = parse_user(book)
       unless collector
         @errors << "ERROR collector does not exist"
         return
       end
-      unless @collection
-        @collection = Collection.new
-        @collection.identifier = coll_id
-        @collection.collector = collector
-        @collection.private = true
-        @collection.title = 'PLEASE PROVIDE TITLE'
-        @collection.description = 'PLEASE PROVIDE DESCRIPTION'
-        # update collection details
-        @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
-        @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
-      else
-        if @collection.collector != collector
-          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
-          return
-        end
-      end
+      parse_collection_info(book, collector, coll_id)
+      return unless @errors.empty?
+
       if @collection.save
         @notices << "Saved collection #{coll_id}, #{collection.title}"
       else
@@ -45,15 +31,11 @@ module Nabu
       end
 
       # parse items in XLS file
-      existing_items = ""
       13.upto(book.last_row) do |row_number|
         row = book.row(row_number)
         break if row[0].nil? # if first cell empty
         parse_row(row, collector)
       end
-
-      @notices << "Existing items: #{existing_items.chomp(', ')}"
-
     end #parse
 
     def valid?
@@ -83,7 +65,8 @@ module Nabu
       nil
     end
 
-    def user_from_str(name, create)
+    def parse_user(book)
+      name = book.row(7)[1]
       unless name
         @errors << "Got no name for collector"
         return nil
@@ -98,26 +81,30 @@ module Nabu
       user = User.where(first_name: first_name, last_name: last_name).first
 
       unless user
-        unless create
-          @errors << "Please create user #{name} first<br/>"
-          return nil
-        end
-        random_string = SecureRandom.base64(16)
-        user = User.new(
-          first_name: first_name,
-          last_name: last_name,
-          password: random_string,
-          password_confirmation: random_string,
-          contact_only: true
-        )
-        unless user.valid?
-          @errors << "Couldn't create user #{name}<br/>"
-          return nil
-        end
-        @notices << "Note: Contact #{name} created<br/>"
+        @errors << "Please create user #{name} first<br/>"
+        return nil
       end
       user.save if user.valid?
       user
+    end
+
+    def parse_collection_info(book, collector, coll_id)
+      if @collection
+        if @collection.collector != collector
+          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
+        end
+        return
+      end
+
+      @collection = Collection.new
+      @collection.identifier = coll_id
+      @collection.collector = collector
+      @collection.private = true
+      @collection.title = 'PLEASE PROVIDE TITLE'
+      @collection.description = 'PLEASE PROVIDE DESCRIPTION'
+      # update collection details
+      @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
+      @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
     end
 
     def parse_row(row, collector)
