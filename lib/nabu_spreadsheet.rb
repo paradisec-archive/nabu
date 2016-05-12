@@ -116,6 +116,7 @@ module Nabu
               # try country name
               cntry = Country.find_by_name(code.strip)
               unless cntry
+                # FIXME: This only skips the country, rather than the item. Change it to skipping the item.
                 @notices << "Item #{item.identifier} : Country not found - Item skipped"
                 next
               end
