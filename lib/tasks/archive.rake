@@ -29,6 +29,12 @@ class ItemOfflineTemplate < OfflineTemplate
   attr_accessor :item
 end
 
+# Coding style for log messages:
+# # Only use SUCCESS if an entire action has been completed successfully, not part of the action
+# # Use INFO for progress through part of an action
+# # WARNING and ERROR have their usual meaning
+# # No need for a keyword for announcing a particular action is about to start,
+# # or has just finished
 namespace :archive do
 
   desc 'Provide essence files in scan_directory with metadata for sealing'
@@ -135,7 +141,7 @@ namespace :archive do
           next
         end
 
-        puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
+        puts "INFO: file #{file} copied into archive at #{destination_path}"
 
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
@@ -325,6 +331,12 @@ namespace :archive do
   task :transcode_essence_files => :environment do
     batch_size = Integer(ENV['TRANSCODE_ESSENCE_FILES_BATCH_SIZE'] || 100)
     BatchTranscodeEssenceFileService.run(batch_size)
+  end
+
+  desc "Update filenames of individual pages generated from tif files"
+  task :update_individual_page_files => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
+    BatchUpdateIndividualPageFileService.run(dry_run)
   end
 
   # HELPERS

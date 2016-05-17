@@ -1,4 +1,19 @@
-inherit_from: .rubocop_todo.yml
+inherit_from:
+  # Rubocop offenses too minor to be worth worrying about
+  - .rubocop_resolved.yml
+  - .rubocop_todo.yml
+  # Only inherit from the following when running
+  # bundle exec rubocop --auto-gen-config --no-offense-counts
+  # Otherwise, leave commented out, so lint errors always appear
+  # - .rubocop_lint_cops.yml
 
 AllCops:
   TargetRubyVersion: 2.1
+
+# Auto-gen-config has a bug with this cop
+Style/ConditionalAssignment:
+  Enabled: false
+
+# Auto-gen-config has a bug with this cop
+Style/GuardClause:
+  Enabled: false

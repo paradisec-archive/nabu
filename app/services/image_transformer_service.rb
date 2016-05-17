@@ -100,7 +100,7 @@ class ImageTransformerService
     end
 
     if @multipart && page_number.present?
-      new_suffix = "-page#{page_number}#{new_suffix}"
+      new_suffix = "page#{page_number}#{new_suffix}"
     end
 
     @file.sub(extension, new_suffix)
