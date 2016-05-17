@@ -333,6 +333,12 @@ namespace :archive do
     BatchTranscodeEssenceFileService.run(batch_size)
   end
 
+  desc "Update filenames of individual pages generated from tif files"
+  task :update_individual_page_files => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
+    BatchUpdateIndividualPageFileService.run(dry_run)
+  end
+
   # HELPERS
 
   def directories(path)
