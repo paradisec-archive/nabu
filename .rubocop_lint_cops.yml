@@ -47,7 +47,7 @@ Lint/StringConversionInInterpolation:
     - 'app/controllers/items_controller.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks.
+# Configuration parameters: AllowUnusedKeywordArguments.
 Lint/UnusedBlockArgument:
   Exclude:
     - 'app/admin/latlon_boundary.rb'
@@ -60,6 +60,7 @@ Lint/UnusedBlockArgument:
     - 'config/unicorn/uat.rb'
     - 'lib/tasks/archive.rake'
     - 'spec/controllers/essences_controller_spec.rb'
+    - 'config/initializers/kaminari_config.rb'
 
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
