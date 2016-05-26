@@ -142,7 +142,7 @@ ActiveAdmin.setup do |config|
   config.register_javascript 'per_page.js'
   config.register_javascript 'jquery-query.js'
   config.register_javascript 'maps.js'
-  config.register_javascript 'http://maps.googleapis.com/maps/api/js?sensor=false'
+  config.register_javascript 'http://maps.googleapis.com/maps/api/js'
 
   # == CSV options
   #
