@@ -98,14 +98,6 @@ namespace :archive do
         # Action: Leave as-is.
         next unless File.file? "#{upload_directory}/#{file}"
 
-        # Nabu Import Messages 8.
-        # Action: Move to rejected folder.
-        # skip files of size 0 bytes
-        unless File.size?("#{upload_directory}/#{file}")
-          puts "WARNING: file #{file} skipped, since it is empty" if verbose
-          next
-        end
-
         # Nabu Import Messages 9.
         # Action: Leave as-is.
         # skip files that can't be read
@@ -118,6 +110,14 @@ namespace :archive do
         # Skip files that are currently uploading
         last_updated = File.stat("#{upload_directory}/#{file}").mtime
         if (Time.now - last_updated) < 60*10
+          next
+        end
+
+        # Nabu Import Messages 8.
+        # Action: Move to rejected folder.
+        # skip files of size 0 bytes
+        unless File.size?("#{upload_directory}/#{file}")
+          puts "WARNING: file #{file} skipped, since it is empty" if verbose
           next
         end
 
