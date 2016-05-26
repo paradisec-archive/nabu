@@ -450,21 +450,21 @@ namespace :archive do
       return
     end
 
-    unless essence.valid?
+    case
+    when !essence.valid?
       # Nabu Import messages 5.
       # Action: Move to rejected folder.
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
-      return
-    end
-    if essence.new_record? || (essence.changed? && force_update)
+    when essence.new_record? || (essence.changed? && force_update)
       essence.save!
       # Nabu Import Messages 2.
       puts "SUCCESS: file #{file} metadata imported into Nabu"
-    end
-    if essence.changed? && !force_update
+    when essence.changed?
       puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
+    else
+      # essence already exists, and is unchanged - don't do anything or log anything.
     end
   end
 
