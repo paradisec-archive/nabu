@@ -60,6 +60,8 @@ namespace :archive do
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
       if !item.metadata_exportable
+        # Nabu Import Messages 7.
+        # Action: Move to rejected folder.
         puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping" if verbose
         next
       end
@@ -93,29 +95,38 @@ namespace :archive do
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
+        # Action: Leave as-is.
         next unless File.file? "#{upload_directory}/#{file}"
 
+        # Nabu Import Messages 8.
+        # Action: Move to rejected folder.
         # skip files of size 0 bytes
         unless File.size?("#{upload_directory}/#{file}")
           puts "WARNING: file #{file} skipped, since it is empty" if verbose
           next
         end
 
+        # Nabu Import Messages 9.
+        # Action: Leave as-is.
         # skip files that can't be read
         unless File.readable?("#{upload_directory}/#{file}")
           puts "ERROR: file #{file} skipped, since it's not readable" if verbose
           next
         end
 
+        # Action: Leave as-is.
         # Skip files that are currently uploading
         last_updated = File.stat("#{upload_directory}/#{file}").mtime
         if (Time.now - last_updated) < 60*10
           next
         end
 
+        # Action: Move to rejected folder.
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         next unless (collection && item)
 
+        # Uncommon errors 1.
+        # Action: Move to rejected folder.
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
         if item_id.length > 30
           puts "WARNING: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
@@ -124,6 +135,8 @@ namespace :archive do
 
         puts '---------------------------------------------------------------'
 
+        # Uncommon errors 2.
+        # Action: Leave as-is.
         # make sure the archive directory for the collection and item exists
         # and move the file there
         begin
@@ -134,6 +147,8 @@ namespace :archive do
           next
         end
 
+        # Uncommon errors 3.
+        # Action: Leave as-is.
         begin
           FileUtils.cp(upload_directory + file, destination_path + file)
         rescue
@@ -148,6 +163,8 @@ namespace :archive do
           FileUtils.mv(destination_path + file, destination_path + "/" + basename + "-PDSC_ADMIN." + extension)
         end
 
+        # Action: If it's PDSC_ADMIN, move the file
+        # Action: If it fails to import, move to rejected.
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
         if basename.split('-').last != "PDSC_ADMIN"
@@ -366,6 +383,8 @@ namespace :archive do
     # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
     collection = Collection.where('BINARY identifier = ?', coll_id).first
     unless collection
+      # Nabu Import Messages 6.
+      # Action: Move to rejected folder.
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -373,6 +392,8 @@ namespace :archive do
     # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
     item = collection.items.where('BINARY identifier = ?', item_id).first
     unless item
+      # Nabu Import Message 7.
+      # Action: Move to rejected folder.
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -397,6 +418,8 @@ namespace :archive do
     # extract media metadata from file
     media = Nabu::Media.new full_file_path
     unless media
+      # Nabu Import Messages 3.
+      # Action: Move to rejected folder.
       puts "ERROR: was not able to parse #{full_file_path} of type #{extension} - skipping"
       return
     end
@@ -420,18 +443,23 @@ namespace :archive do
       essence.channels   = media.channels
       essence.fps        = media.fps
     rescue => e
+      # Nabu Import Messages 4.
+      # Action: Move to rejected folder.
       puts "ERROR: unable to process file #{file} - skipping"
       puts" #{e}"
       return
     end
 
     unless essence.valid?
+      # Nabu Import messages 5.
+      # Action: Move to rejected folder.
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
       return
     end
     if essence.new_record? || (essence.changed? && force_update)
       essence.save!
+      # Nabu Import Messages 2.
       puts "SUCCESS: file #{file} metadata imported into Nabu"
     end
     if essence.changed? && !force_update
