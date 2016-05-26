@@ -377,8 +377,11 @@ namespace :archive do
       return [basename, extension, coll_id, item_id, nil, nil]
     end
 
+    is_correctly_named_file = remainder.count == 1 && remainder.none?(&:empty?)
+    is_admin_file = %w(CAT df PDSC_ADMIN).include?(remainder.last)
+
     # don't allow too few or too many dashes
-    unless (remainder.count == 1 && remainder.none?(&:empty?)) || %w(CAT df PDSC_ADMIN).include?(remainder.last)
+    unless is_correctly_named_file || is_admin_file
       puts "ERROR: invalid filename for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
