@@ -30,6 +30,8 @@ class CollectionsController < ApplicationController
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
+          with(:item_admin_ids, current_user.id) if current_user
+          with(:item_user_ids, current_user.id) if current_user
         end
       end
       sort_column(Collection).each do |c|

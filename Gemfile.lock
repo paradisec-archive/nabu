@@ -140,7 +140,6 @@ GEM
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
-    fattr (2.2.1)
     ffi (1.9.10)
     formatador (0.2.4)
     formtastic (2.2.1)
@@ -173,7 +172,7 @@ GEM
     has_scope (0.6.0.rc)
       actionpack (>= 3.2, < 5)
       activesupport (>= 3.2, < 5)
-    highline (1.6.15)
+    highline (1.7.8)
     hike (1.2.3)
     i18n (0.7.0)
     inherited_resources (1.4.1)
@@ -229,8 +228,7 @@ GEM
       builder (>= 2.0.0)
       faraday
       faraday_middleware
-    options (2.3.0)
-      fattr
+    options (2.3.2)
     orm_adapter (0.5.0)
     paper_trail (2.7.1)
       activerecord (~> 3.0)
@@ -247,8 +245,8 @@ GEM
     polyglot (0.3.5)
     powerpack (0.1.1)
     pr_geohash (1.0.0)
-    progress_bar (0.4.0)
-      highline (~> 1.6.1)
+    progress_bar (1.0.5)
+      highline (~> 1.6)
       options (~> 2.3.0)
     pry (0.9.12.4)
       coderay (~> 1.0)

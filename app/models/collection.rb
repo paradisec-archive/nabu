@@ -183,6 +183,12 @@ class Collection < ActiveRecord::Base
 
     # Things we want to sort or use :with on
     integer :id
+    integer :item_admin_ids, :references => User, :multiple => true do
+      items.flat_map(&:admin_ids).uniq
+    end
+    integer :item_user_ids, :references => User, :multiple => true do
+      items.flat_map(&:user_ids).uniq
+    end
     string :title
     string :identifier
     string :university_name
