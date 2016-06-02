@@ -79,7 +79,7 @@ class RepositoryController < ApplicationController
 
       if match
         file_begin = match[1]
-        file_end = match[1] if match[2] && !match[2].empty?
+        file_end = match[2] if match[2] && !match[2].empty?
       end
 
       response.header["Content-Range"] = "bytes " + file_begin.to_s + "-" + file_end.to_s + "/" + file_size.to_s
