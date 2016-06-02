@@ -344,6 +344,7 @@ class ItemsController < ApplicationController
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
+          with(:user_ids, current_user.id) if current_user
         end
       end
       sort_column(Item).each do |c|
@@ -386,6 +387,7 @@ class ItemsController < ApplicationController
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
+          with(:user_ids, current_user.id) if current_user
         end
       end
       sort_column(Item).each do |c|
