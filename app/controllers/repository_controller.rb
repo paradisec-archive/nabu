@@ -96,14 +96,22 @@ class RepositoryController < ApplicationController
     response.header["Accept-Ranges"] =  "bytes"
     response.header["Content-Transfer-Encoding"] = "binary"
 
-    send_file(
-      essence.path,
-      :filename => essence.filename,
-      :type => essence.mimetype,
-      :disposition => "inline",
-      :status => status_code,
-      :stream =>  'true',
-      :buffer_size  =>  4096
-     )
+    if status_code == "200 OK"
+      send_file(
+        essence.path,
+        :filename => essence.filename,
+        :type => essence.mimetype,
+        :disposition => "inline",
+        :status => status_code,
+        :stream =>  'true',
+        :buffer_size  =>  4096
+       )
+    else
+      send_data(
+        IO.binread(essence.path, file_end.to_i - file_begin.to_i + 1, file_begin.to_i),
+        :type => 'application/octet-stream',
+        :status => status_code
+      )
+    end
   end
 end
