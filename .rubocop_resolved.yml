@@ -7,6 +7,13 @@ Style/HashSyntax:
 Style/StringLiterals:
   Enabled: false
 
+# Currently being discussed on https://github.com/bbatsov/rubocop/issues/3019
+Style/EmptyCaseCondition:
+  Enabled: false
+
+Style/EmptyElse:
+  Enabled: false
+
 Style/EmptyLines:
   Enabled: false
 

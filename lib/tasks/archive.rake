@@ -345,7 +345,7 @@ namespace :archive do
         data += directories(full_path)
       end
     end
-    return data
+    data
   end
 
 
