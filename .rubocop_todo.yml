@@ -410,7 +410,6 @@ Style/RedundantParentheses:
 Style/RedundantReturn:
   Exclude:
     - 'lib/monkeypatch.rb'
-    - 'lib/tasks/archive.rake'
 
 # Cop supports --auto-correct.
 Style/RedundantSelf:
