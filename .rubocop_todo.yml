@@ -175,23 +175,6 @@ Style/Documentation:
   Enabled: false
 
 # Cop supports --auto-correct.
-Style/EmptyCaseCondition:
-  Exclude:
-    - 'app/models/collection.rb'
-    - 'app/models/identifiable_by_doi.rb'
-    - 'config/initializers/rollbar.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: empty, nil, both
-Style/EmptyElse:
-  Exclude:
-    - 'app/helpers/application_helper.rb'
-    - 'app/models/item.rb'
-    - 'app/services/downloads_report_service.rb'
-    - 'lib/media.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.
 Style/ExtraSpacing:
   Exclude:
