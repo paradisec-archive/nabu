@@ -96,7 +96,9 @@ namespace :archive do
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
         # Action: Leave as-is.
-        next unless File.file? "#{upload_directory}/#{file}"
+        unless File.file? "#{upload_directory}/#{file}"
+          next
+        end
 
         # Nabu Import Messages 9.
         # Action: Leave as-is.
@@ -123,7 +125,9 @@ namespace :archive do
 
         # Action: Move to rejected folder.
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        next unless (collection && item)
+        unless collection && item
+          next
+        end
 
         # Uncommon errors 1.
         # Action: Move to rejected folder.
