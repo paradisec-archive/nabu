@@ -95,6 +95,11 @@ namespace :archive do
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
+        # To move to the archive, have success true
+        # To move to rejected, have success false
+        # To leave alone, skip an iteration of this loop with next
+        success = true
+
         # Action: Leave as-is.
         unless File.file? "#{upload_directory}/#{file}"
           next
