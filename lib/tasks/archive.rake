@@ -120,13 +120,13 @@ namespace :archive do
         # skip files of size 0 bytes
         unless File.size?("#{upload_directory}/#{file}")
           puts "WARNING: file #{file} skipped, since it is empty" if verbose
-          next
+          success = false
         end
 
         # Action: Move to rejected folder.
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         unless collection && item
-          next
+          success = false
         end
 
         # Uncommon errors 1.
@@ -134,7 +134,7 @@ namespace :archive do
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
         if item_id.length > 30
           puts "WARNING: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
-          next
+          success = false
         end
 
         puts '---------------------------------------------------------------'
@@ -154,37 +154,42 @@ namespace :archive do
         # Action: If it fails to import, move to rejected.
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
-        if is_non_admin_file
+        if is_non_admin_file && success
           # extract media metadata from file
           puts "Inspecting file #{file}..."
           begin
-            import_metadata(destination_path, file, item, extension, force_update)
+            success = import_metadata(destination_path, file, item, extension, force_update)
           rescue => e
             puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
-            next
+            success = false
           end
         end
 
-        # Uncommon errors 2.
-        # Action: Leave as-is.
-        # make sure the archive directory for the collection and item exists
-        # and move the file there
-        begin
-          destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
-          FileUtils.mkdir_p(destination_path)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
-          next
-        end
+        # if meta data import was successful then we move to archive else move to rejected
+        if success
+          # Uncommon errors 2.
+          # Action: Leave as-is.
+          # make sure the archive directory for the collection and item exists
+          # and move the file there
+          begin
+            destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+            FileUtils.mkdir_p(destination_path)
+          rescue
+            puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
+            next
+          end
 
-        # Uncommon errors 3.
-        # Action: Leave as-is.
-        begin
-          FileUtils.cp(upload_directory + file, destination_path + file)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
-          next
+          # Uncommon errors 3.
+          # Action: Leave as-is.
+          begin
+            FileUtils.cp(upload_directory + file, destination_path + file)
+          rescue
+            puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+            next
+          end
+        else
+          # TODO: copy to the rejected place
         end
 
         puts "INFO: file #{file} copied into archive at #{destination_path}"
@@ -431,7 +436,7 @@ namespace :archive do
       # Nabu Import Messages 3.
       # Action: Move to rejected folder.
       puts "ERROR: was not able to parse #{full_file_path} of type #{extension} - skipping"
-      return
+      return false
     end
 
     # find essence file in Nabu DB; if there is none, create a new one
@@ -457,7 +462,7 @@ namespace :archive do
       # Action: Move to rejected folder.
       puts "ERROR: unable to process file #{file} - skipping"
       puts" #{e}"
-      return
+      return false
     end
 
     case
@@ -466,15 +471,19 @@ namespace :archive do
       # Action: Move to rejected folder.
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
+      false
     when essence.new_record? || (essence.changed? && force_update)
       essence.save!
       # Nabu Import Messages 2.
       puts "SUCCESS: file #{file} metadata imported into Nabu"
+      true
     when essence.changed?
       puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
+      true
     else
       # essence already exists, and is unchanged - don't do anything or log anything.
+      true
     end
   end
 
