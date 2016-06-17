@@ -188,7 +188,8 @@ namespace :archive do
           end
         end
 
-        # if everything went well, remove file from original directory
+        # if everything went well, meaning it was either moved into the archive, or moved to the rejected folder,
+        # remove file from original directory
         FileUtils.rm(upload_directory + file)
         puts "...done"
       end
