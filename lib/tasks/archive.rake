@@ -196,7 +196,20 @@ namespace :archive do
 
           puts "INFO: file #{file} copied into archive at #{destination_path}"
         else
-          # TODO: copy to the rejected place
+          rejected_directory = upload_directory + "Rejected/"
+          unless File.directory?(rejected_directory)
+            puts "WARNING: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
+            next
+          end
+
+          begin
+            FileUtils.cp(upload_directory + file, rejected_directory + file)
+          rescue
+            puts "WARNING: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
+            next
+          end
+
+          puts "INFO: file #{file} copied into rejected file folder at #{rejected_directory}"
         end
 
         # if everything went well, remove file from original directory
