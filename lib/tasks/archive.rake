@@ -165,6 +165,9 @@ namespace :archive do
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           FileUtils.mv(destination_path + file, destination_path + "/" + basename + "-PDSC_ADMIN." + extension)
+
+          file = basename + "-PDSC_ADMIN." + extension
+          basename, _extension, _coll_id, _item_id, _collection, _item = parse_file_name(file)
         end
 
         is_non_admin_file = basename.split('-').last != "PDSC_ADMIN"
