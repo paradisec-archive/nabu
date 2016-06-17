@@ -146,8 +146,12 @@ namespace :archive do
 
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
-          # TODO: catch if mv failed to rename the file. Raise an error.
+          begin
+            FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          rescue
+            puts "WARNING: file #{file} skipped - not able to rename within upload folder" if verbose
+            next
+          end
 
           file = basename + "-PDSC_ADMIN." + extension
           basename, _extension, _coll_id, _item_id, _collection, _item = parse_file_name(file)
