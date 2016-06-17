@@ -139,29 +139,6 @@ namespace :archive do
 
         puts '---------------------------------------------------------------'
 
-        # Uncommon errors 2.
-        # Action: Leave as-is.
-        # make sure the archive directory for the collection and item exists
-        # and move the file there
-        begin
-          destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
-          FileUtils.mkdir_p(destination_path)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
-          next
-        end
-
-        # Uncommon errors 3.
-        # Action: Leave as-is.
-        begin
-          FileUtils.cp(upload_directory + file, destination_path + file)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
-          next
-        end
-
-        puts "INFO: file #{file} copied into archive at #{destination_path}"
-
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           FileUtils.mv(destination_path + file, destination_path + "/" + basename + "-PDSC_ADMIN." + extension)
@@ -187,6 +164,29 @@ namespace :archive do
             next
           end
         end
+
+        # Uncommon errors 2.
+        # Action: Leave as-is.
+        # make sure the archive directory for the collection and item exists
+        # and move the file there
+        begin
+          destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+          FileUtils.mkdir_p(destination_path)
+        rescue
+          puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
+          next
+        end
+
+        # Uncommon errors 3.
+        # Action: Leave as-is.
+        begin
+          FileUtils.cp(upload_directory + file, destination_path + file)
+        rescue
+          puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+          next
+        end
+
+        puts "INFO: file #{file} copied into archive at #{destination_path}"
 
         # if everything went well, remove file from original directory
         FileUtils.rm(upload_directory + file)
