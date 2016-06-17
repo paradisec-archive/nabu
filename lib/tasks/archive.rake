@@ -193,11 +193,11 @@ namespace :archive do
             puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
             next
           end
+
+          puts "INFO: file #{file} copied into archive at #{destination_path}"
         else
           # TODO: copy to the rejected place
         end
-
-        puts "INFO: file #{file} copied into archive at #{destination_path}"
 
         # if everything went well, remove file from original directory
         FileUtils.rm(upload_directory + file)
