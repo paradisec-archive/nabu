@@ -9,18 +9,18 @@ module Nabu
     end
 
     def parse(data)
-      book = load_spreadsheet(data)
+      @book = load_spreadsheet(data)
       return unless @errors.empty?
 
-      book.sheet 0
-      coll_id = book.row(4)[1].to_s
+      @book.sheet 0
+      coll_id = @book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
-      collector = parse_user(book)
+      collector = parse_user
       unless collector
         @errors << "ERROR collector does not exist"
         return
       end
-      parse_collection_info(book, collector, coll_id)
+      parse_collection_info(collector, coll_id)
       return unless @errors.empty?
 
       if @collection.save
@@ -31,13 +31,13 @@ module Nabu
       end
 
       # parse items in XLS file
-      item_start_row = if book.row(12)[0].include?('Item Identifier')
+      item_start_row = if @book.row(12)[0].include?('Item Identifier')
                          13
                        else
                          14
                        end
-      item_start_row.upto(book.last_row) do |row_number|
-        row = book.row(row_number)
+      item_start_row.upto(@book.last_row) do |row_number|
+        row = @book.row(row_number)
         break if row[0].nil? # if first cell empty
         parse_row(row, collector)
       end
@@ -70,11 +70,11 @@ module Nabu
       nil
     end
 
-    def parse_user(book)
-      if book.row(7)[0].include?('e.g. Linda Barwick')
-        first_name, last_name = pre_may_2016_parse_user_names(book)
+    def parse_user
+      if @book.row(7)[0].include?('e.g. Linda Barwick')
+        first_name, last_name = pre_may_2016_parse_user_names
       else
-        first_name, last_name = parse_user_names(book)
+        first_name, last_name = parse_user_names
       end
 
       user = User.where(first_name: first_name, last_name: last_name).first
@@ -87,8 +87,8 @@ module Nabu
       user
     end
 
-    def pre_may_2016_parse_user_names(book)
-      name = book.row(7)[1]
+    def pre_may_2016_parse_user_names
+      name = @book.row(7)[1]
       unless name
         @errors << "Got no name for collector"
         return nil
@@ -102,9 +102,9 @@ module Nabu
       [first_name, last_name]
     end
 
-    def parse_user_names(book)
-      first_name = book.row(7)[1]
-      last_name = book.row(8)[1]
+    def parse_user_names
+      first_name = @book.row(7)[1]
+      last_name = @book.row(8)[1]
 
       unless first_name
         @errors << "Got no name for collector"
@@ -117,7 +117,7 @@ module Nabu
       [first_name, last_name]
     end
 
-    def parse_collection_info(book, collector, coll_id)
+    def parse_collection_info(collector, coll_id)
       if @collection
         if @collection.collector != collector
           @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
@@ -132,8 +132,8 @@ module Nabu
       @collection.title = 'PLEASE PROVIDE TITLE'
       @collection.description = 'PLEASE PROVIDE DESCRIPTION'
       # update collection details
-      @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
-      @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
+      @collection.title = @book.row(5)[1] unless @book.row(5)[1].blank?
+      @collection.description = @book.row(6)[1] unless @book.row(6)[1].blank?
     end
 
     def parse_row(row, collector)
