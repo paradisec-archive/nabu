@@ -32,7 +32,7 @@ end
 # Coding style for log messages:
 # # Only use SUCCESS if an entire action has been completed successfully, not part of the action
 # # Use INFO for progress through part of an action
-# # WARNING and ERROR have their usual meaning
+# # ERROR has its usual meaning
 # # No need for a keyword for announcing a particular action is about to start,
 # # or has just finished
 namespace :archive do
@@ -124,7 +124,7 @@ namespace :archive do
         # Action: Move to rejected folder.
         # skip files of size 0 bytes
         unless File.size?("#{upload_directory}/#{file}")
-          puts "WARNING: file #{file} skipped, since it is empty" if verbose
+          puts "ERROR: file #{file} skipped, since it is empty" if verbose
           success = false
         end
 
@@ -138,7 +138,7 @@ namespace :archive do
         # Action: Move to rejected folder.
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
         if item_id.length > 30
-          puts "WARNING: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
+          puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
           success = false
         end
 
@@ -149,7 +149,7 @@ namespace :archive do
           begin
             FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
           rescue
-            puts "WARNING: file #{file} skipped - not able to rename within upload folder" if verbose
+            puts "ERROR: file #{file} skipped - not able to rename within upload folder" if verbose
             next
           end
 
@@ -169,7 +169,7 @@ namespace :archive do
           begin
             success = import_metadata(destination_path, file, item, extension, force_update)
           rescue => e
-            puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+            puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
             success = false
           end
@@ -185,7 +185,7 @@ namespace :archive do
             destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
             FileUtils.mkdir_p(destination_path)
           rescue
-            puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
+            puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
             next
           end
 
@@ -194,7 +194,7 @@ namespace :archive do
           begin
             FileUtils.cp(upload_directory + file, destination_path + file)
           rescue
-            puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+            puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
             next
           end
 
@@ -202,14 +202,14 @@ namespace :archive do
         else
           rejected_directory = upload_directory + "Rejected/"
           unless File.directory?(rejected_directory)
-            puts "WARNING: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
+            puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
             next
           end
 
           begin
             FileUtils.cp(upload_directory + file, rejected_directory + file)
           rescue
-            puts "WARNING: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
+            puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
             next
           end
 
@@ -264,7 +264,7 @@ namespace :archive do
         end
 
         if ignore_update_file_prefixes.any? {|prefix| basename.start_with?(prefix) }
-          puts "WARNING: file #{file} skipped - suspected of being crash-prone"
+          puts "ERROR: file #{file} skipped - suspected of being crash-prone"
           next
         end
 
@@ -272,7 +272,7 @@ namespace :archive do
         begin
           import_metadata(directory, file, item, extension, force_update)
         rescue => e
-          puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+          puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
           puts " >> #{e.backtrace}"
           next
         end
@@ -501,7 +501,7 @@ namespace :archive do
       puts "SUCCESS: file #{file} metadata imported into Nabu"
       true
     when essence.changed?
-      puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
+      puts "ERROR: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
       true
     else
