@@ -258,10 +258,6 @@ module Nabu
   end
 
   class Version1NabuSpreadsheet < NabuSpreadsheet
-    def item_start_row
-      13
-    end
-
     def parse_user_names
       name = @book.row(7)[1]
       unless name
@@ -277,13 +273,12 @@ module Nabu
       [first_name, last_name]
     end
 
+    def item_start_row
+      13
+    end
   end
 
   class Version2NabuSpreadsheet < NabuSpreadsheet
-    def item_start_row
-      14
-    end
-
     def parse_user_names
       first_name = @book.row(7)[1]
       last_name = @book.row(8)[1]
@@ -297,6 +292,10 @@ module Nabu
         last_name = nil
       end
       [first_name, last_name]
+    end
+
+    def item_start_row
+      14
     end
   end
 end
