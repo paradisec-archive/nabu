@@ -44,4 +44,12 @@ class PageController < ApplicationController
     @universities = University.all
     @fundingBodies = FundingBody.all
   end
+
+  def apidoc
+    @page_title = "Nabu - API Documentation"
+  end
+
+  def contact
+    @page_title = "Nabu - Contact"
+  end
 end
