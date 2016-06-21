@@ -2,14 +2,39 @@ module Nabu
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
 
-    def initialize
+    def self.new_of_correct_type(data)
+      book = load_spreadsheet(data)
+      new(book)
+    end
+
+    # In theory, the program could determine which extension to try first by using Content-Type.
+    def self.load_spreadsheet(data)
+      # open Spreadsheet as "file"
+      string_io = StringIO.new(data)
+      try_xls(string_io) || try_xlsx(string_io)
+    end
+
+    def self.try_xls(string_io)
+      Roo::Spreadsheet.open(string_io, extension: :xls)
+    rescue Ole::Storage::FormatError
+      nil
+    end
+
+    def self.try_xlsx(string_io)
+      Roo::Spreadsheet.open(string_io, extension: :xlsx)
+    rescue Zip::Error
+      nil
+    end
+
+    def initialize(book)
       @notices = []
       @errors = []
       @items = []
+      @book = book
     end
 
-    def parse(data)
-      @book = load_spreadsheet(data)
+    def parse
+      @errors << 'ERROR File is neither XLS nor XLSX' unless @book
       return unless @errors.empty?
 
       @book.sheet 0
@@ -48,27 +73,6 @@ module Nabu
     end
 
     private
-
-    # In theory, the program could determine which extension to try first by using Content-Type.
-    def load_spreadsheet(data)
-      # open Spreadsheet as "file"
-      string_io = StringIO.new(data)
-      book = try_xls(string_io) || try_xlsx(string_io)
-      @errors << 'ERROR File is neither XLS nor XLSX' unless book
-      book
-    end
-
-    def try_xls(string_io)
-      Roo::Spreadsheet.open(string_io, extension: :xls)
-    rescue Ole::Storage::FormatError
-      nil
-    end
-
-    def try_xlsx(string_io)
-      Roo::Spreadsheet.open(string_io, extension: :xlsx)
-    rescue Zip::Error
-      nil
-    end
 
     def parse_user
       if @book.row(7)[0].include?('e.g. Linda Barwick')
