@@ -42,7 +42,7 @@ module Nabu
 
     def parse
       @book.sheet 0
-      coll_id = @book.row(4)[1].to_s
+      coll_id = parse_coll_id
       @collection = Collection.find_by_identifier coll_id
       collector = parse_user
       unless collector
@@ -100,8 +100,8 @@ module Nabu
       @collection.title = 'PLEASE PROVIDE TITLE'
       @collection.description = 'PLEASE PROVIDE DESCRIPTION'
       # update collection details
-      @collection.title = @book.row(5)[1] unless @book.row(5)[1].blank?
-      @collection.description = @book.row(6)[1] unless @book.row(6)[1].blank?
+      @collection.title = parse_collection_title unless parse_collection_title.blank?
+      @collection.description = parse_collection_description unless parse_collection_description.blank?
     end
 
     def parse_row(row, collector)
@@ -195,7 +195,7 @@ module Nabu
       end
 
       # Add agents
-      [7..9, 10..12, 13..15, 16..18, 19..21, 22..24].each do |agent_cell_range|
+      [13..15, 16..18, 19..21, 22..24, 25..27, 28..30].each do |agent_cell_range|
         break unless row[agent_cell_range.begin].present?
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
@@ -258,6 +258,18 @@ module Nabu
   end
 
   class Version1NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(4)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(5)[1]
+    end
+
+    def parse_collection_description
+      @book.row(6)[1]
+    end
+
     def parse_user_names
       name = @book.row(7)[1]
       unless name
@@ -279,9 +291,21 @@ module Nabu
   end
 
   class Version2NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(6)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(7)[1]
+    end
+
+    def parse_collection_description
+      @book.row(8)[1]
+    end
+
     def parse_user_names
-      first_name = @book.row(7)[1]
-      last_name = @book.row(8)[1]
+      first_name = @book.row(9)[1]
+      last_name = @book.row(10)[1]
 
       unless first_name
         @errors << "Got no name for collector"
@@ -295,7 +319,7 @@ module Nabu
     end
 
     def item_start_row
-      14
+      16
     end
   end
 end
