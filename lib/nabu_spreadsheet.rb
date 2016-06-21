@@ -74,12 +74,7 @@ module Nabu
     private
 
     def parse_user
-      if @book.row(7)[0].include?('e.g. Linda Barwick')
-        first_name, last_name = pre_may_2016_parse_user_names
-      else
-        first_name, last_name = parse_user_names
-      end
-
+      first_name, last_name = parse_user_names
       user = User.where(first_name: first_name, last_name: last_name).first
 
       unless user
@@ -88,36 +83,6 @@ module Nabu
       end
       user.save if user.valid?
       user
-    end
-
-    def pre_may_2016_parse_user_names
-      name = @book.row(7)[1]
-      unless name
-        @errors << "Got no name for collector"
-        return nil
-      end
-
-      first_name, last_name = name.split(',').map(&:strip)
-
-      if last_name == ''
-        last_name = nil
-      end
-      [first_name, last_name]
-    end
-
-    def parse_user_names
-      first_name = @book.row(7)[1]
-      last_name = @book.row(8)[1]
-
-      unless first_name
-        @errors << "Got no name for collector"
-        return nil
-      end
-
-      if last_name == ''
-        last_name = nil
-      end
-      [first_name, last_name]
     end
 
     def parse_collection_info(collector, coll_id)
@@ -296,11 +261,42 @@ module Nabu
     def item_start_row
       13
     end
+
+    def parse_user_names
+      name = @book.row(7)[1]
+      unless name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      first_name, last_name = name.split(',').map(&:strip)
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
+    end
+
   end
 
   class Version2NabuSpreadsheet < NabuSpreadsheet
     def item_start_row
       14
+    end
+
+    def parse_user_names
+      first_name = @book.row(7)[1]
+      last_name = @book.row(8)[1]
+
+      unless first_name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
     end
   end
 end
