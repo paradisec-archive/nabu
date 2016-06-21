@@ -189,7 +189,7 @@ module Nabu
           date_conv = date.to_date
         rescue
           @notices << "Item #{item.identifier} : Date invalid - Item skipped"
-          return
+          return nil
         end
         item.originated_on = date_conv unless date_conv.blank?
       end
@@ -199,6 +199,7 @@ module Nabu
         break unless row[agent_cell_range.begin].present?
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
+        # errors added in parse_agent, so don't need to add any more before returning
         return nil unless item_agent
         if item.item_agents.any? { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }
           # item itself is valid, just don't add the duplicate item_agent to it
