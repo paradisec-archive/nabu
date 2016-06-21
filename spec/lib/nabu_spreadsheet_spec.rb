@@ -34,6 +34,11 @@ describe Nabu::NabuSpreadsheet do
         nabu_spreadsheet.parse
         expect(nabu_spreadsheet.errors).to eq([])
       end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
     end
 
     context 'xlsx file provided' do
@@ -42,6 +47,16 @@ describe Nabu::NabuSpreadsheet do
       it 'is valid' do
         nabu_spreadsheet.parse
         expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
       end
     end
 
