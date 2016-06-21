@@ -7,10 +7,11 @@ module Nabu
       case
       when book.nil?
         NullNabuSpreadsheet.new
-      when book.row(7)[0].include?('e.g. Linda Barwick')
-        Version1NabuSpreadsheet.new(book)
-      else
+      # Currently parsed as a Float of value 2.0
+      when book.row(1)[2].to_i == 2
         Version2NabuSpreadsheet.new(book)
+      else
+        Version1NabuSpreadsheet.new(book)
       end
     end
 
