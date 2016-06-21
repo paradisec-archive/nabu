@@ -7,8 +7,10 @@ module Nabu
       case
       when book.nil?
         NullNabuSpreadsheet.new
+      when book.row(7)[0].include?('e.g. Linda Barwick')
+        Version1NabuSpreadsheet.new(book)
       else
-        new(book)
+        Version2NabuSpreadsheet.new(book)
       end
     end
 
@@ -58,11 +60,6 @@ module Nabu
       end
 
       # parse items in XLS file
-      item_start_row = if @book.row(12)[0].include?('Item Identifier')
-                         13
-                       else
-                         14
-                       end
       item_start_row.upto(@book.last_row) do |row_number|
         row = @book.row(row_number)
         break if row[0].nil? # if first cell empty
@@ -292,6 +289,18 @@ module Nabu
 
     def parse
       # Can't parse anything
+    end
+  end
+
+  class Version1NabuSpreadsheet < NabuSpreadsheet
+    def item_start_row
+      13
+    end
+  end
+
+  class Version2NabuSpreadsheet < NabuSpreadsheet
+    def item_start_row
+      14
     end
   end
 end
