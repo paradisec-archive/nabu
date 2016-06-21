@@ -4,6 +4,7 @@ module Nabu
 
     def self.new_of_correct_type(data)
       book = load_spreadsheet(data)
+      book.sheet(0) unless book.nil?
       case
       when book.nil?
         NullNabuSpreadsheet.new
@@ -42,7 +43,6 @@ module Nabu
     end
 
     def parse
-      @book.sheet 0
       coll_id = parse_coll_id
       @collection = Collection.find_by_identifier coll_id
       collector = parse_user
