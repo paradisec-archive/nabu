@@ -194,6 +194,52 @@ module Nabu
         item.originated_on = date_conv unless date_conv.blank?
       end
 
+      # add region
+      if row[7].present?
+        item.region = row[7]
+      end
+
+      # add original media
+      if row[8].present?
+        item.original_media = row[8]
+      end
+
+      # add data categories
+      if row[9].present?
+        data_category_names = row[9].split('|')
+        data_category_names.each do |data_category_name|
+          data_category = DataCategory.find_by_name(data_category_name)
+          if data_category
+            item.data_categories << data_category unless item.data_categories.include?(data_category)
+          else
+            @notices << "Item #{item.identifier} : Data category #{data_category_name} not found - Item skipped"
+            return nil
+          end
+        end
+      end
+
+      # add discourse type
+      if row[10].present?
+        discourse_type_name = row[10]
+        discourse_type = DiscourseType.find_by_name(discourse_type_name)
+        if discourse_type
+          item.discourse_type = discourse_type
+        else
+          @notices << "Item #{item.identifier} : Discourse type #{discourse_type_name} not found - Item skipped"
+          return nil
+        end
+      end
+
+      # add dialect
+      if row[11].present?
+        item.dialect = row[11]
+      end
+
+      # add language as given
+      if row[12].present?
+        item.language = row[12]
+      end
+
       # Add agents
       [13..15, 16..18, 19..21, 22..24, 25..27, 28..30].each do |agent_cell_range|
         break unless row[agent_cell_range.begin].present?

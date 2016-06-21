@@ -10,12 +10,16 @@ describe Nabu::NabuSpreadsheet do
     Item.destroy_all
     Collection.destroy_all
     AgentRole.destroy_all
+    DataCategory.destroy_all
+    DiscourseType.destroy_all
     Country.create!(code: 'AD', name: 'Andorra') unless Country.find_by_code('AD')
     Country.create!(code: 'AF', name: 'Afghanistan') unless Country.find_by_code('AF')
     Language.create!(code: 'eng', name: 'English') unless Language.find_by_code('eng')
     Language.create!(code: 'deu', name: 'German') unless Language.find_by_code('deu')
     Language.create!(code: 'cmn', name: 'Mandarin') unless Language.find_by_code('cmn')
     Language.create!(code: 'yue', name: 'Cantonese') unless Language.find_by_code('yue')
+    DataCategory.create!(name: 'primary text') unless DataCategory.find_by_name('primary text')
+    DiscourseType.create!(name: 'formulaic_discourse') unless DiscourseType.find_by_name('formulaic_discourse')
     create(:user, first_name: 'VKS', last_name: nil)
     create(:user, first_name: 'John', last_name: 'Smith')
     create(:user, first_name: 'Andrew', last_name: 'Grimm')
@@ -154,6 +158,43 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse
       item = nabu_spreadsheet.items.first
       expect(item.originated_on).to eq(Date.new(2015, 10, 26))
+    end
+
+    it 'can handle region' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.region).to eq('Oceania, Indian Ocean, Polynesia')
+    end
+
+    it 'can handle original media' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.original_media).to eq('Text')
+    end
+
+    # This only tests it can parse one data category, but code for multiple categories are implemented
+    it 'can handle data categories' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.data_categories.first.name).to eq('primary text')
+    end
+
+    it 'can handle discourse type' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.discourse_type.name).to eq('formulaic_discourse')
+    end
+
+    it 'can handle dialect' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.dialect).to eq('Viennese')
+    end
+
+    it 'can handle language as given' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.language).to eq('German')
     end
 
     it "can handle first agent's role" do
