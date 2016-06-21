@@ -4,7 +4,12 @@ module Nabu
 
     def self.new_of_correct_type(data)
       book = load_spreadsheet(data)
-      new(book)
+      case
+      when book.nil?
+        NullNabuSpreadsheet.new
+      else
+        new(book)
+      end
     end
 
     # In theory, the program could determine which extension to try first by using Content-Type.
@@ -34,9 +39,6 @@ module Nabu
     end
 
     def parse
-      @errors << 'ERROR File is neither XLS nor XLSX' unless @book
-      return unless @errors.empty?
-
       @book.sheet 0
       coll_id = @book.row(4)[1].to_s
       @collection = Collection.find_by_identifier coll_id
@@ -278,6 +280,18 @@ module Nabu
       item_agent.agent_role = agent_role
 
       item_agent
+    end
+  end
+
+  class NullNabuSpreadsheet < NabuSpreadsheet
+    def initialize
+      @notices = []
+      @errors = ['ERROR File is neither XLS nor XLSX']
+      @items = []
+    end
+
+    def parse
+      # Can't parse anything
     end
   end
 end
