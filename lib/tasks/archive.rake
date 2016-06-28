@@ -108,6 +108,7 @@ namespace :archive do
         # Nabu Import Messages 9.
         # Action: Leave as-is.
         # skip files that can't be read
+        # WIP: CONFIRMED as working.
         unless File.readable?("#{upload_directory}/#{file}")
           puts "ERROR: file #{file} skipped, since it's not readable" if verbose
           next
@@ -115,6 +116,7 @@ namespace :archive do
 
         # Action: Leave as-is.
         # Skip files that are currently uploading
+        # WIP: CONFIRMED as working.
         last_updated = File.stat("#{upload_directory}/#{file}").mtime
         if (Time.now - last_updated) < 60*10
           next
