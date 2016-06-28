@@ -125,6 +125,7 @@ namespace :archive do
         # Nabu Import Messages 8.
         # Action: Move to rejected folder.
         # skip files of size 0 bytes
+        # WIP: CONFIRMED as working.
         unless File.size?("#{upload_directory}/#{file}")
           puts "ERROR: file #{file} skipped, since it is empty" if verbose
           success = false
