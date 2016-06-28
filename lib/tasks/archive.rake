@@ -139,7 +139,7 @@ namespace :archive do
         # Uncommon errors 1.
         # Action: Move to rejected folder.
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
-        if item_id.length > 30
+        if success && item_id.length > 30
           puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
           success = false
         end
