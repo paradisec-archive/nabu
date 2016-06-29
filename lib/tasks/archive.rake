@@ -174,13 +174,13 @@ namespace :archive do
         if is_non_admin_file && success
           # extract media metadata from file
           puts "Inspecting file #{file}..."
-          # begin
+          begin
             success = import_metadata(upload_directory, file, item, extension, force_update)
-          # rescue => e
-          #   puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
-          #   puts " >> #{e.backtrace}"
-          #   success = false
-          # end
+          rescue => e
+            puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+            puts " >> #{e.backtrace}"
+            success = false
+          end
         end
 
         # if meta data import was successful then we move to archive else move to rejected
