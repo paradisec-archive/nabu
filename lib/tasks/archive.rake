@@ -484,10 +484,6 @@ namespace :archive do
       essence = Essence.new(:item => item, :filename => file)
     end
 
-    #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
-    # WIP: Call this from the rake tasks.
-    # generate_derived_files(full_file_path, item, essence, extension, media)
-
     # update essence entry with metadata from file
     begin
       essence.mimetype   = media.mimetype
