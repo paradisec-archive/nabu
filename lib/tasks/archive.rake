@@ -140,6 +140,7 @@ namespace :archive do
         # Uncommon errors 1.
         # Action: Move to rejected folder.
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
+        # WIP: CONFIRMED as working.
         if success && item_id.length > 30
           puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
           success = false
@@ -148,6 +149,7 @@ namespace :archive do
         puts '---------------------------------------------------------------'
 
         # move old style CAT and df files to the new naming scheme
+        # WIP: Not tested.
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           begin
             FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
