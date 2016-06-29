@@ -226,6 +226,17 @@ namespace :archive do
         # if everything went well, meaning it was either moved into the archive, or moved to the rejected folder,
         # remove file from original directory
         FileUtils.rm(upload_directory + file)
+
+        # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
+        # so don't worry about success value.
+        # REVIEW: Can this code throw an exception?
+        if success
+          full_file_path = destination_path + "/" + file
+          essence = Essence.where(:item_id => item, :filename => file).first
+          media = Nabu::Media.new full_file_path
+          generate_derived_files(full_file_path, item, essence, extension, media)
+        end
+
         puts "...done"
       end
     end
