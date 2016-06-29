@@ -35,7 +35,8 @@ class Essence < ActiveRecord::Base
   validates :channels, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
 
-  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps
+  # No need for doi to be attr_accessible
+  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated
 
   def type
     types = mimetype.split("/",2)
