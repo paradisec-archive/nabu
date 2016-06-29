@@ -289,6 +289,12 @@ namespace :archive do
           puts " >> #{e.backtrace}"
           next
         end
+
+        # REVIEW: Can this code throw an exception?
+        full_file_path = directory + "/" + file
+        essence = Essence.where(:item_id => item, :filename => file).first
+        media = Nabu::Media.new full_file_path
+        generate_derived_files(full_file_path, item, essence, extension, media)
       end
     end
     puts "===" if verbose
