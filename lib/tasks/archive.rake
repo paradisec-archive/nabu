@@ -159,6 +159,9 @@ namespace :archive do
 
         is_non_admin_file = basename.split('-').last != "PDSC_ADMIN"
 
+        # coll_id or item_id being nil should not be a problem, as destination_path is only used if success is true
+        destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+
         # Action: If it's PDSC_ADMIN, move the file
         # Action: If it fails to import, move to rejected.
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
@@ -182,7 +185,6 @@ namespace :archive do
           # make sure the archive directory for the collection and item exists
           # and move the file there
           begin
-            destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
             FileUtils.mkdir_p(destination_path)
           rescue
             puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
