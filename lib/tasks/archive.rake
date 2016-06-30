@@ -32,7 +32,7 @@ end
 # Coding style for log messages:
 # # Only use SUCCESS if an entire action has been completed successfully, not part of the action
 # # Use INFO for progress through part of an action
-# # WARNING and ERROR have their usual meaning
+# # ERROR has its usual meaning
 # # No need for a keyword for announcing a particular action is about to start,
 # # or has just finished
 namespace :archive do
@@ -95,6 +95,11 @@ namespace :archive do
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
       dir_contents.each do |file|
+        # To move to the archive, have success true
+        # To move to rejected, have success false
+        # To leave alone, skip an iteration of this loop with next
+        success = true
+
         # Action: Leave as-is.
         unless File.file? "#{upload_directory}/#{file}"
           next
@@ -119,52 +124,34 @@ namespace :archive do
         # Action: Move to rejected folder.
         # skip files of size 0 bytes
         unless File.size?("#{upload_directory}/#{file}")
-          puts "WARNING: file #{file} skipped, since it is empty" if verbose
-          next
+          puts "ERROR: file #{file} skipped, since it is empty" if verbose
+          success = false
         end
 
         # Action: Move to rejected folder.
         basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
         unless collection && item
-          next
+          success = false
         end
 
         # Uncommon errors 1.
         # Action: Move to rejected folder.
         # skip files with item_id longer than 30 chars, because OLAC can't deal with them
-        if item_id.length > 30
-          puts "WARNING: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
-          next
+        if success && item_id.length > 30
+          puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
+          success = false
         end
 
         puts '---------------------------------------------------------------'
 
-        # Uncommon errors 2.
-        # Action: Leave as-is.
-        # make sure the archive directory for the collection and item exists
-        # and move the file there
-        begin
-          destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
-          FileUtils.mkdir_p(destination_path)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to create directory #{destination_path}" if verbose
-          next
-        end
-
-        # Uncommon errors 3.
-        # Action: Leave as-is.
-        begin
-          FileUtils.cp(upload_directory + file, destination_path + file)
-        rescue
-          puts "WARNING: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
-          next
-        end
-
-        puts "INFO: file #{file} copied into archive at #{destination_path}"
-
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          FileUtils.mv(destination_path + file, destination_path + "/" + basename + "-PDSC_ADMIN." + extension)
+          begin
+            FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          rescue
+            puts "ERROR: file #{file} skipped - not able to rename within upload folder" if verbose
+            next
+          end
 
           file = basename + "-PDSC_ADMIN." + extension
           basename, _extension, _coll_id, _item_id, _collection, _item = parse_file_name(file)
@@ -176,21 +163,73 @@ namespace :archive do
         # Action: If it fails to import, move to rejected.
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
         # will be copied, but not added to the list of imported files in Nabu.
-        if is_non_admin_file
+        if is_non_admin_file && success
           # extract media metadata from file
           puts "Inspecting file #{file}..."
           begin
-            import_metadata(destination_path, file, item, extension, force_update)
+            success = import_metadata(upload_directory, file, item, extension, force_update)
           rescue => e
-            puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+            puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
+            success = false
+          end
+        end
+
+        # if meta data import was successful then we move to archive else move to rejected
+        if success
+          # Uncommon errors 2.
+          # Action: Leave as-is.
+          # make sure the archive directory for the collection and item exists
+          # and move the file there
+          begin
+            destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+            FileUtils.mkdir_p(destination_path)
+          rescue
+            puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
             next
           end
+
+          # Uncommon errors 3.
+          # Action: Leave as-is.
+          begin
+            FileUtils.cp(upload_directory + file, destination_path + file)
+          rescue
+            puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+            next
+          end
+
+          puts "INFO: file #{file} copied into archive at #{destination_path}"
+        else
+          rejected_directory = upload_directory + "Rejected/"
+          unless File.directory?(rejected_directory)
+            puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
+            next
+          end
+
+          begin
+            FileUtils.cp(upload_directory + file, rejected_directory + file)
+          rescue
+            puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
+            next
+          end
+
+          puts "INFO: file #{file} copied into rejected file folder at #{rejected_directory}"
         end
 
         # if everything went well, meaning it was either moved into the archive, or moved to the rejected folder,
         # remove file from original directory
         FileUtils.rm(upload_directory + file)
+
+        # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
+        # so don't worry about success value.
+        # REVIEW: Can this code throw an exception?
+        if success
+          full_file_path = destination_path + "/" + file
+          essence = Essence.where(:item_id => item, :filename => file).first
+          media = Nabu::Media.new full_file_path
+          generate_derived_files(full_file_path, item, essence, extension, media)
+        end
+
         puts "...done"
       end
     end
@@ -236,7 +275,7 @@ namespace :archive do
         end
 
         if ignore_update_file_prefixes.any? {|prefix| basename.start_with?(prefix) }
-          puts "WARNING: file #{file} skipped - suspected of being crash-prone"
+          puts "ERROR: file #{file} skipped - suspected of being crash-prone"
           next
         end
 
@@ -244,10 +283,16 @@ namespace :archive do
         begin
           import_metadata(directory, file, item, extension, force_update)
         rescue => e
-          puts "WARNING: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+          puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
           puts " >> #{e.backtrace}"
           next
         end
+
+        # REVIEW: Can this code throw an exception?
+        full_file_path = directory + "/" + file
+        essence = Essence.where(:item_id => item, :filename => file).first
+        media = Nabu::Media.new full_file_path
+        generate_derived_files(full_file_path, item, essence, extension, media)
       end
     end
     puts "===" if verbose
@@ -437,9 +482,6 @@ namespace :archive do
       essence = Essence.new(:item => item, :filename => file)
     end
 
-    #attempt to generate derived files such as lower quality versions or thumbnails, continue even if this fails
-    generate_derived_files(full_file_path, item, essence, extension, media)
-
     # update essence entry with metadata from file
     begin
       essence.mimetype   = media.mimetype
@@ -454,7 +496,7 @@ namespace :archive do
       # Action: Move to rejected folder.
       puts "ERROR: unable to process file #{file} - skipping"
       puts" #{e}"
-      return
+      return false
     end
 
     case
@@ -463,15 +505,19 @@ namespace :archive do
       # Action: Move to rejected folder.
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
+      false
     when essence.new_record? || (essence.changed? && force_update)
       essence.save!
       # Nabu Import Messages 2.
       puts "SUCCESS: file #{file} metadata imported into Nabu"
+      true
     when essence.changed?
-      puts "WARNING: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
+      puts "ERROR: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
       puts essence.changes.inspect
+      true
     else
       # essence already exists, and is unchanged - don't do anything or log anything.
+      true
     end
   end
 
