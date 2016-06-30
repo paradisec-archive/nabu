@@ -1,0 +1,22 @@
+ignore_unused_routes:
+  # Leave this alone
+  - ^admin/
+  # I haven't worked with comments much. Leave them alone.
+  - ^comments#
+  # Leave this alone
+  - ^users#
+  - ^#$
+
+ignore_unreachable_actions:
+  # Leave this alone
+  - ^active_admin/
+  # I haven't worked with comments much. Leave them alone.
+  - ^comments#
+  # Leave this alone
+  - ^devise/
+  # Leave this alone
+  - ^admin/
+  # Leave this alone
+  - ^inherited_resources/
+  # Leave this alone
+  - ^users#

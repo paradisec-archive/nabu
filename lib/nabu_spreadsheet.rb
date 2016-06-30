@@ -2,25 +2,55 @@ module Nabu
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
 
-    def initialize
+    def self.new_of_correct_type(data)
+      book = load_spreadsheet(data)
+      book.sheet(0) unless book.nil?
+      case
+      when book.nil?
+        NullNabuSpreadsheet.new
+      # Currently parsed as a Float of value 2.0
+      when book.row(1)[2].to_i == 2
+        Version2NabuSpreadsheet.new(book)
+      else
+        Version1NabuSpreadsheet.new(book)
+      end
+    end
+
+    # In theory, the program could determine which extension to try first by using Content-Type.
+    def self.load_spreadsheet(data)
+      # open Spreadsheet as "file"
+      string_io = StringIO.new(data)
+      try_xls(string_io) || try_xlsx(string_io)
+    end
+
+    def self.try_xls(string_io)
+      Roo::Spreadsheet.open(string_io, extension: :xls)
+    rescue Ole::Storage::FormatError
+      nil
+    end
+
+    def self.try_xlsx(string_io)
+      Roo::Spreadsheet.open(string_io, extension: :xlsx)
+    rescue Zip::Error
+      nil
+    end
+
+    def initialize(book)
       @notices = []
       @errors = []
       @items = []
+      @book = book
     end
 
-    def parse(data)
-      book = load_spreadsheet(data)
-      return unless @errors.empty?
-
-      book.sheet 0
-      coll_id = book.row(4)[1].to_s
+    def parse
+      coll_id = parse_coll_id
       @collection = Collection.find_by_identifier coll_id
-      collector = parse_user(book)
+      collector = parse_user
       unless collector
         @errors << "ERROR collector does not exist"
         return
       end
-      parse_collection_info(book, collector, coll_id)
+      parse_collection_info(collector, coll_id)
       return unless @errors.empty?
 
       if @collection.save
@@ -31,8 +61,8 @@ module Nabu
       end
 
       # parse items in XLS file
-      13.upto(book.last_row) do |row_number|
-        row = book.row(row_number)
+      item_start_row.upto(@book.last_row) do |row_number|
+        row = @book.row(row_number)
         break if row[0].nil? # if first cell empty
         parse_row(row, collector)
       end
@@ -44,51 +74,19 @@ module Nabu
 
     private
 
-    # In theory, the program could determine which extension to try first by using Content-Type.
-    def load_spreadsheet(data)
-      # open Spreadsheet as "file"
-      string_io = StringIO.new(data)
-      book = try_xls(string_io) || try_xlsx(string_io)
-      @errors << 'ERROR File is neither XLS nor XLSX' unless book
-      book
-    end
-
-    def try_xls(string_io)
-      Roo::Spreadsheet.open(string_io, extension: :xls)
-    rescue Ole::Storage::FormatError
-      nil
-    end
-
-    def try_xlsx(string_io)
-      Roo::Spreadsheet.open(string_io, extension: :xlsx)
-    rescue Zip::Error
-      nil
-    end
-
-    def parse_user(book)
-      name = book.row(7)[1]
-      unless name
-        @errors << "Got no name for collector"
-        return nil
-      end
-
-      first_name, last_name = name.split(',').map(&:strip)
-
-      if last_name == ''
-        last_name = nil
-      end
-
+    def parse_user
+      first_name, last_name = parse_user_names
       user = User.where(first_name: first_name, last_name: last_name).first
 
       unless user
-        @errors << "Please create user #{name} first<br/>"
+        @errors << "Please create user #{[first_name, last_name].join(" ")} first<br/>"
         return nil
       end
       user.save if user.valid?
       user
     end
 
-    def parse_collection_info(book, collector, coll_id)
+    def parse_collection_info(collector, coll_id)
       if @collection
         if @collection.collector != collector
           @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
@@ -103,8 +101,8 @@ module Nabu
       @collection.title = 'PLEASE PROVIDE TITLE'
       @collection.description = 'PLEASE PROVIDE DESCRIPTION'
       # update collection details
-      @collection.title = book.row(5)[1] unless book.row(5)[1].blank?
-      @collection.description = book.row(6)[1] unless book.row(6)[1].blank?
+      @collection.title = parse_collection_title unless parse_collection_title.blank?
+      @collection.description = parse_collection_description unless parse_collection_description.blank?
     end
 
     def parse_row(row, collector)
@@ -192,9 +190,70 @@ module Nabu
           date_conv = date.to_date
         rescue
           @notices << "Item #{item.identifier} : Date invalid - Item skipped"
-          return
+          return nil
         end
         item.originated_on = date_conv unless date_conv.blank?
+      end
+
+      # add region
+      if row[7].present?
+        item.region = row[7]
+      end
+
+      # add original media
+      if row[8].present?
+        item.original_media = row[8]
+      end
+
+      # add data categories
+      if row[9].present?
+        data_category_names = row[9].split('|')
+        data_category_names.each do |data_category_name|
+          data_category = DataCategory.find_by_name(data_category_name)
+          if data_category
+            item.data_categories << data_category unless item.data_categories.include?(data_category)
+          else
+            @notices << "Item #{item.identifier} : Data category #{data_category_name} not found - Item skipped"
+            return nil
+          end
+        end
+      end
+
+      # add discourse type
+      if row[10].present?
+        discourse_type_name = row[10]
+        discourse_type = DiscourseType.find_by_name(discourse_type_name)
+        if discourse_type
+          item.discourse_type = discourse_type
+        else
+          @notices << "Item #{item.identifier} : Discourse type #{discourse_type_name} not found - Item skipped"
+          return nil
+        end
+      end
+
+      # add dialect
+      if row[11].present?
+        item.dialect = row[11]
+      end
+
+      # add language as given
+      if row[12].present?
+        item.language = row[12]
+      end
+
+      # Add agents
+      [13..15, 16..18, 19..21, 22..24, 25..27, 28..30].each do |agent_cell_range|
+        break unless row[agent_cell_range.begin].present?
+        agent_cells = row[agent_cell_range]
+        item_agent = parse_agent(agent_cells)
+        # errors added in parse_agent, so don't need to add any more before returning
+        return nil unless item_agent
+        if item.item_agents.any? { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }
+          # item itself is valid, just don't add the duplicate item_agent to it
+          @notices << "Item #{item.identifier} : Duplicate role #{item_agent.agent_role.name}, user #{item_agent.user.name} ignored"
+        else
+          item.item_agents << item_agent
+        end
       end
 
       if item.valid?
@@ -203,6 +262,112 @@ module Nabu
         @notices << "WARNING: item #{item.identifier} invalid - skipped"
       end
     end
+
+    def parse_agent(cells)
+      original_role_name = cells[0]
+      first_name = cells[1]
+      last_name = cells[2]
+      last_name = nil if last_name.blank?
+
+      item_agent = ItemAgent.new
+
+      user = User.where(first_name: first_name, last_name: last_name).first
+
+      unless user
+        @errors << "Please create role user #{[first_name, last_name].join(" ")} first<br/>"
+        return nil
+      end
+
+      role_name = original_role_name.strip.tr(' ', '_').downcase
+      agent_role = AgentRole.where(name: role_name).first
+
+      unless agent_role
+        @errors << "Role not valid: #{original_role_name}"
+        return nil
+      end
+
+      item_agent.user = user
+      item_agent.agent_role = agent_role
+
+      item_agent
+    end
   end
 
+  class NullNabuSpreadsheet < NabuSpreadsheet
+    def initialize
+      @notices = []
+      @errors = ['ERROR File is neither XLS nor XLSX']
+      @items = []
+    end
+
+    def parse
+      # Can't parse anything
+    end
+  end
+
+  class Version1NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(4)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(5)[1]
+    end
+
+    def parse_collection_description
+      @book.row(6)[1]
+    end
+
+    def parse_user_names
+      name = @book.row(7)[1]
+      unless name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      first_name, last_name = name.split(',').map(&:strip)
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
+    end
+
+    def item_start_row
+      13
+    end
+  end
+
+  class Version2NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(6)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(7)[1]
+    end
+
+    def parse_collection_description
+      @book.row(8)[1]
+    end
+
+    def parse_user_names
+      first_name = @book.row(9)[1]
+      last_name = @book.row(10)[1]
+
+      unless first_name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
+    end
+
+    def item_start_row
+      16
+    end
+  end
 end

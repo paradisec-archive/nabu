@@ -256,8 +256,8 @@ class CollectionsController < ApplicationController
     # get XSL data
     data = params[:collection][:metadata].read
     # parse XML file as Spreadsheet
-    sheet = Nabu::NabuSpreadsheet.new
-    sheet.parse data
+    sheet = Nabu::NabuSpreadsheet.new_of_correct_type(data)
+    sheet.parse
 
     if sheet.valid?
       @collection = sheet.collection

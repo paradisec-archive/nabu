@@ -18,6 +18,8 @@ module HasReturnToLastSearch
     redirect_to controller: params[:controller], action: :search
   end
 
+  private
+
   # utility method to keep the multiple uses of this proc consistent w/ no typos
   def only_action_params
     Proc.new { |k, _v| %w(controller action).include?(k) }

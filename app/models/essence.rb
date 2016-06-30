@@ -2,19 +2,20 @@
 #
 # Table name: essences
 #
-#  id         :integer          not null, primary key
-#  item_id    :integer
-#  filename   :string(255)
-#  mimetype   :string(255)
-#  bitrate    :integer
-#  samplerate :integer
-#  size       :integer
-#  duration   :float
-#  channels   :integer
-#  fps        :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  doi        :string(255)
+#  id                      :integer          not null, primary key
+#  item_id                 :integer
+#  filename                :string(255)
+#  mimetype                :string(255)
+#  bitrate                 :integer
+#  samplerate              :integer
+#  size                    :integer
+#  duration                :float
+#  channels                :integer
+#  fps                     :integer
+#  created_at              :datetime
+#  updated_at              :datetime
+#  doi                     :string(255)
+#  derived_files_generated :boolean
 #
 
 class Essence < ActiveRecord::Base
@@ -34,7 +35,8 @@ class Essence < ActiveRecord::Base
   validates :channels, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
 
-  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps
+  # No need for doi to be attr_accessible
+  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated
 
   def type
     types = mimetype.split("/",2)
