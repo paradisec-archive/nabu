@@ -427,12 +427,9 @@ namespace :archive do
 
     # extract media metadata from file
     media = Nabu::Media.new full_file_path
-    unless media
-      # Nabu Import Messages 3.
-      # Action: Move to rejected folder.
-      puts "ERROR: was not able to parse #{full_file_path} of type #{extension} - skipping"
-      return
-    end
+
+    # Nabu Import Messages 3 can't possibly happen. Nabu::Media.new either returns with something truthy,
+    # or causes an exception.
 
     # find essence file in Nabu DB; if there is none, create a new one
     essence = Essence.where(:item_id => item, :filename => file).first
