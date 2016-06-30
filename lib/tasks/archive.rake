@@ -175,10 +175,12 @@ namespace :archive do
           # extract media metadata from file
           puts "Inspecting file #{file}..."
           begin
+            # WIP: CONFIRMED as working for a valid file.
             success = import_metadata(upload_directory, file, item, extension, force_update)
           rescue => e
             puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
+            # WIP: CONFIRMED as working.
             success = false
           end
         end
@@ -189,6 +191,7 @@ namespace :archive do
           # Action: Leave as-is.
           # make sure the archive directory for the collection and item exists
           # and move the file there
+          # WIP: CONFIRMED as working.
           begin
             FileUtils.mkdir_p(destination_path)
           rescue
@@ -198,6 +201,7 @@ namespace :archive do
 
           # Uncommon errors 3.
           # Action: Leave as-is.
+          # WIP: CONFIRMED as working.
           begin
             FileUtils.cp(upload_directory + file, destination_path + file)
           rescue
@@ -209,6 +213,7 @@ namespace :archive do
         else
           rejected_directory = upload_directory + "Rejected/"
           unless File.directory?(rejected_directory)
+            # WIP: CONFIRMED as working.
             puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
             next
           end
@@ -216,6 +221,7 @@ namespace :archive do
           begin
             FileUtils.cp(upload_directory + file, rejected_directory + file)
           rescue
+            # WIP: CONFIRMED as working.
             puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
             next
           end
@@ -438,6 +444,7 @@ namespace :archive do
     #use basename to avoid having item_id contain the extension
     coll_id, item_id, *remainder = basename.split('-')
     unless item_id
+      # WIP: CONFIRMED as working.
       puts "ERROR: could not parse collection id and item id for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -447,6 +454,7 @@ namespace :archive do
     unless collection
       # Nabu Import Messages 6.
       # Action: Move to rejected folder.
+      # WIP: CONFIRMED as working.
       puts "ERROR: could not find collection id=#{coll_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -456,6 +464,7 @@ namespace :archive do
     unless item
       # Nabu Import Message 7.
       # Action: Move to rejected folder.
+      # WIP: CONFIRMED as working.
       puts "ERROR: could not find item pid=#{coll_id}-#{item_id} for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -465,6 +474,7 @@ namespace :archive do
 
     # don't allow too few or too many dashes
     unless is_correctly_named_file || is_admin_file
+      # WIP: CONFIRMED as working.
       puts "ERROR: invalid filename for file #{file} - skipping" if verbose
       return [basename, extension, coll_id, item_id, nil, nil]
     end
@@ -501,6 +511,7 @@ namespace :archive do
     rescue => e
       # Nabu Import Messages 4.
       # Action: Move to rejected folder.
+      # WIP: CONFIRMED as working.
       puts "ERROR: unable to process file #{file} - skipping"
       puts" #{e}"
       return false
@@ -510,6 +521,7 @@ namespace :archive do
     when !essence.valid?
       # Nabu Import messages 5.
       # Action: Move to rejected folder.
+      # WIP: CONFIRMED as working.
       puts "ERROR: invalid metadata for #{file} of type #{extension} - skipping"
       essence.errors.each { |field, msg| puts "#{field}: #{msg}" }
       false
