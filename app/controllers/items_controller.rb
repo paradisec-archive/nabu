@@ -169,7 +169,17 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    @items = Item.accessible_by(current_ability).where :id => params[:item_ids].split(' ')
+    @items = Item.includes(
+      :data_categories, :countries, :content_languages,
+      :subject_languages, :university, :collector, :essences, :operator,
+      :discourse_type, :admins, :access_condition, :comments,
+      :users, :agents,
+      item_agents: [:agent_role, :user],
+      collection: [
+        :countries, :languages, :collector, :university, :admins, :access_condition, :field_of_research, :grants, :operator,
+        items: [:admins, :users]
+      ]
+    ).accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
     params[:item].delete_if {|k, v| v.blank?}
 
