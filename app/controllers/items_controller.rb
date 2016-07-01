@@ -176,7 +176,8 @@ class ItemsController < ApplicationController
       :users, :agents,
       item_agents: [:agent_role, :user],
       collection: [
-        :countries, :languages, :collector, :university, :admins, :access_condition, :field_of_research, :grants, :operator
+        :countries, :languages, :collector, :university, :admins, :access_condition, :field_of_research, :grants, :operator,
+        items: [:admins, :users]
       ]
     ).accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
