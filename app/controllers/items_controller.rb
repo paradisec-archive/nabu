@@ -169,12 +169,15 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    # agent_role belongs to ItemAgent, :user doesn't belong to Item
     @items = Item.includes(
-      :data_categories, :collection, :countries, :content_languages,
+      :data_categories, :countries, :content_languages,
       :subject_languages, :university, :collector, :essences, :operator,
       :discourse_type, :admins, :access_condition, :comments,
-      item_agents: [:agent_role, :user]
+      :users, :agents,
+      item_agents: [:agent_role, :user],
+      collection: [
+        :countries, :languages, :collector, :university, :admins, :access_condition, :field_of_research, :grants, :operator
+      ]
     ).accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
     params[:item].delete_if {|k, v| v.blank?}

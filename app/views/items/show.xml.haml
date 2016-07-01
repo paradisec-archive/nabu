@@ -41,7 +41,7 @@
         %agent{:role => h(item_agent.agent_role.name)}
           = h(item_agent.user.name)
     %citation= strip_tags(item.citation)
-    %files{:numFiles => item.essences.count}
+    %files{:numFiles => item.essences.length}
       - item.essences.each do |essence|
         %file
           %name= essence.filename
@@ -71,7 +71,7 @@
       %dataAccessConditions= item.access_condition_name
       %dataAccessNarrative= item.access_narrative
       %adminComment= item.admin_comment
-    %userComments{:numComments => item.comments.count}
+    %userComments{:numComments => item.comments.length}
       - item.comments.each do |comment|
         %comment
           %author= comment.owner.name if comment.owner
