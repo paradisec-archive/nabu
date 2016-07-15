@@ -19,7 +19,10 @@ class BatchDoiMintingService
   # The way this find works ensures that the minting occurs in a top-down manner allowing for
   # Items to reference their parent records by DOI
   def find_unminted_objects
-    (Collection.where(doi: nil).includes(:collector, :university).limit(@batch_size) + Item.where(doi: nil).includes(:collector, :university, :collection).limit(@batch_size)).first(@batch_size)
+    (
+      Collection.where(doi: nil).includes(:collector, :university).limit(@batch_size) +
+      Item.where(doi: nil).includes(:collector, :university, :collection).limit(@batch_size)
+    ).first(@batch_size)
   end
 
   def run
