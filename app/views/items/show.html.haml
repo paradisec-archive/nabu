@@ -131,12 +131,18 @@
           - else
             = @item.operator_name
 
-      -# WIP: Add Data Types.
+      -# WIP DONE: Add Data Types.
       %tr
         %th Data Categories
         %td
           - @item.data_categories.each do |category|
             = category.name
+            %br
+      %tr
+        %th Data Types
+        %td
+          - @item.data_types.each do |type|
+            = type.name
             %br
 
       %tr

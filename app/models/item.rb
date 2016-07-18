@@ -75,9 +75,12 @@ class Item < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
 
-  # WIP: Need to add relationship to data types.
+  # WIP DONE: Need to add relationship to data types.
   has_many :item_data_categories, :dependent => :destroy
   has_many :data_categories, :through => :item_data_categories, :validate => true
+
+  has_many :item_data_types, :dependent => :destroy
+  has_many :data_types, :through => :item_data_types, :validate => true
 
   has_many :essences, :dependent => :restrict
   has_many :comments, :as => :commentable, :dependent => :destroy
@@ -101,15 +104,15 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-    # WIP: Need to include bulk_edit_append_data_type_ids.
-    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
+    # WIP DONE: Need to include bulk_edit_append_data_type_ids.
+    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
-                  # WIP: Need to include data_type_ids.
-                  :country_ids, :data_category_ids,
+                  # WIP DONE: Need to include data_type_ids.
+                  :country_ids, :data_category_ids, :data_type_ids,
                   :content_language_ids, :subject_language_ids,
                   :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
                   :access_condition_id,
@@ -433,9 +436,13 @@ class Item < ActiveRecord::Base
     subject_languages.map(&:name).join(';')
   end
 
-  # WIP: Need to include csv_data_types.
+  # WIP DONE: Need to include csv_data_types.
   def csv_data_categories
     data_categories.map(&:name).join(';')
+  end
+
+  def csv_data_types
+    data_types.map(&:name).join(';')
   end
 
   def csv_item_agents

@@ -25,8 +25,10 @@ class Ability
       # Anyone can read these entities - need them for creation
       can :read, Language
       can :read, Country
-      # WIP: Need to include DataType
+      # WIP DONE: Need to include DataType
       can :read, DataCategory
+      # DataType seems to work fine without this `can` statement, but include it for consistency.
+      can :read, DataType
       can :read, DiscourseType
 
       # Only collection_admins can manage a collection

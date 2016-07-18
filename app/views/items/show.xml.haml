@@ -32,10 +32,13 @@
       %west_limit= item.west_limit
     %university= item.university_name
     %operator= item.operator_name
-    -# WIP: Add data types.
+    -# WIP DONE: Add data types.
     %dataCategories
       - item.data_categories.each do |category|
         %category= category.name
+    %dataTypes
+      - item.data_types.each do |type|
+        %type= type.name
     %discourseType= item.discourse_type_name
     %agents
       - item.item_agents.each do |item_agent|
