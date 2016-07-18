@@ -584,4 +584,8 @@ class Item < ActiveRecord::Base
       collection.save
     end
   end
+
+  def access_class
+    AccessCondition.access_classification(access_condition)
+  end
 end

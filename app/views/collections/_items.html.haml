@@ -40,7 +40,7 @@
                 -#tooltip is access condition name + optional access narrative
                 -access_condition = item.access_condition ? item.access_condition.name : 'Access conditions not set'
                 -access_condition = "#{access_condition}\n\n#{item.access_narrative}".strip
-                -access_class = @collection.access_class
+                -access_class = item.access_class
 
                 %span.access{title: access_condition, class: access_class}
               %td= item.title
