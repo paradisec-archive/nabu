@@ -135,10 +135,15 @@
           %th= label_tag :operator_id
           %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
-        -# WIP: Add input for data types.
+        -# WIP DONE: Add input for data types.
         %tr
           %th= label_tag :data_category_ids, 'Data Categories'
+          -# REVIEW: Why is data_category used as a class?
           %td= hidden_field_tag :data_category_ids, params[:data_category_ids], :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+
+        %tr
+          %th= label_tag :data_type_ids, 'Data Types'
+          %td= hidden_field_tag :data_type_ids, params[:data_type_ids], :data => {:placeholder => 'Choose a type...', :url => data_types_path, :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :discourse_type_id
