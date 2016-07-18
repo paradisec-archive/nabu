@@ -4,7 +4,8 @@ class DataTypesController < ApplicationController
   respond_to :json
 
   def index
-    @data_types = @data_types.order('name').where('name like ?', "%#{params[:q]}%").limit(10)
+    # No need for a limit, as the number of DataType objects is fairly small.
+    @data_types = @data_types.order('name').where('name like ?', "%#{params[:q]}%")
 
     respond_with @data_types
   end
