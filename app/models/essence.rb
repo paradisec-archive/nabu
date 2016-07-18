@@ -19,8 +19,6 @@
 #
 
 class Essence < ActiveRecord::Base
-  include IdentifiableByDoi
-
   has_paper_trail
 
   belongs_to :item
@@ -87,10 +85,6 @@ class Essence < ActiveRecord::Base
     cite
   end
 
-  def title
-    filename
-  end
-
   def full_path
     # TODO: probably want to change this to be filename at some point, non-urgent though
     "#{item.full_path}/essences/#{id}"
@@ -100,8 +94,4 @@ class Essence < ActiveRecord::Base
     item.collector_name
   end
 
-  # for DOI relationship linking: nil <- Collection <- Item <- Essence
-  def parent
-    item
-  end
 end

@@ -31,6 +31,10 @@ describe Essence do
         essence.should_receive(:doi) { doi }.twice
         essence.citation
       end
+
+      it 'does not blow up' do
+        essence.citation
+      end
     end
 
     context 'DOI nil' do
@@ -39,6 +43,10 @@ describe Essence do
       it 'uses URI' do
         essence.should_receive(:doi) { doi }.once
         essence.should_receive(:full_path) { '' }
+        essence.citation
+      end
+
+      it 'does not blow up' do
         essence.citation
       end
     end
