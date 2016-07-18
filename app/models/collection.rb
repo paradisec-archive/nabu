@@ -145,7 +145,10 @@ class Collection < ActiveRecord::Base
   searchable(
     # No need for auto_index, so long as reindex is run every half hour.
     auto_index: false,
-    include: [:university, :collector, :operator, :field_of_research, :languages, :countries, :admins]
+    include: [
+      :university, :collector, :operator, :field_of_research, :languages, :countries, :admins,
+      items: [:admins, :users]
+    ]
   ) do
     # Things we want to perform full text search on
     text :title
