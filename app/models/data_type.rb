@@ -7,5 +7,14 @@
 #
 
 class DataType < ActiveRecord::Base
+  has_paper_trail
+
+  validates :name, :presence => true, :uniqueness => true
+
   attr_accessible :name
+
+  scope :alpha, order(:name)
+
+  has_many :item_data_types
+  has_many :items, :through => :item_data_types, :dependent => :restrict
 end
