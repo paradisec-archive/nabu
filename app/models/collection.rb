@@ -271,14 +271,7 @@ class Collection < ActiveRecord::Base
   end
 
   def access_class
-    case
-    when access_condition_name && access_condition_name.start_with?('Open')
-      'open'
-    when access_condition_name && access_condition_name.start_with?('Closed')
-      'closed'
-    else
-      'other'
-    end
+    AccessCondition.access_classification(access_condition)
   end
 
   def has_coordinates
