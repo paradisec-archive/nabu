@@ -1,3 +1,11 @@
+# == Schema Information
+#
+# Table name: item_data_types
+#
+#  item_id      :integer
+#  data_type_id :integer
+#
+
 class ItemDataType < ActiveRecord::Base
   has_paper_trail
 
