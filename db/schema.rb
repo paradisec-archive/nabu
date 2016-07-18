@@ -237,9 +237,9 @@ ActiveRecord::Schema.define(:version => 20160718033605) do
 
   add_index "item_data_categories", ["item_id", "data_category_id"], :name => "index_item_data_categories_on_item_id_and_data_category_id", :unique => true
 
-  create_table "item_data_types", :id => false, :force => true do |t|
-    t.integer "item_id"
-    t.integer "data_type_id"
+  create_table "item_data_types", :force => true do |t|
+    t.integer "item_id",      :null => false
+    t.integer "data_type_id", :null => false
   end
 
   add_index "item_data_types", ["data_type_id"], :name => "index_item_data_types_on_data_type_id"

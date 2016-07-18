@@ -2,8 +2,9 @@
 #
 # Table name: item_data_types
 #
-#  item_id      :integer
-#  data_type_id :integer
+#  id           :integer          not null, primary key
+#  item_id      :integer          not null
+#  data_type_id :integer          not null
 #
 
 class ItemDataType < ActiveRecord::Base
