@@ -25,6 +25,7 @@ class Ability
       # Anyone can read these entities - need them for creation
       can :read, Language
       can :read, Country
+      # WIP: Need to include DataType
       can :read, DataCategory
       can :read, DiscourseType
 

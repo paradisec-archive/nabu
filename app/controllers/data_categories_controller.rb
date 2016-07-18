@@ -1,3 +1,4 @@
+# WIP: Need to create equivalent for DataType.
 class DataCategoriesController < ApplicationController
   load_and_authorize_resource
 

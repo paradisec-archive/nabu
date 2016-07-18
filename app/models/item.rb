@@ -75,6 +75,7 @@ class Item < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
   has_many :agents, :through => :item_agents, :validate => true, :source => :user
 
+  # WIP: Need to add relationship to data types.
   has_many :item_data_categories, :dependent => :destroy
   has_many :data_categories, :through => :item_data_categories, :validate => true
 
@@ -100,12 +101,14 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
+    # WIP: Need to include bulk_edit_append_data_type_ids.
     :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
+                  # WIP: Need to include data_type_ids.
                   :country_ids, :data_category_ids,
                   :content_language_ids, :subject_language_ids,
                   :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
@@ -128,6 +131,7 @@ class Item < ActiveRecord::Base
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
+  # WIP: Need to include data_types
   DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages
                          admins users agents data_categories)
 
@@ -244,6 +248,7 @@ class Item < ActiveRecord::Base
   searchable(
     # No need for auto_index, so long as reindex is run every half hour.
     auto_index: false,
+    # WIP: Need to include :data_types.
     include: [:content_languages, :subject_languages, :countries, :data_categories, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
   ) do
     # Things we want to perform full text search on
@@ -271,6 +276,7 @@ class Item < ActiveRecord::Base
     text :countries do
       countries.map(&:name)
     end
+    # WIP: Need to include :data_types
     text :data_categories do
       data_categories.map(&:name)
     end
@@ -297,6 +303,7 @@ class Item < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
     integer :subject_language_ids, :references => Language, :multiple => true
+    # WIP: Need to include data_type_ids.
     integer :data_category_ids, :references => DataCategory, :multiple => true
     integer :discourse_type_id, :references => DiscourseType
     integer :access_condition_id, :references => AccessCondition
@@ -349,6 +356,7 @@ class Item < ActiveRecord::Base
     string :country_codes, :multiple => true do
       countries.map(&:code)
     end
+    # WIP: Need to include data_types.
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
     end
@@ -425,6 +433,7 @@ class Item < ActiveRecord::Base
     subject_languages.map(&:name).join(';')
   end
 
+  # WIP: Need to include csv_data_types.
   def csv_data_categories
     data_categories.map(&:name).join(';')
   end
@@ -514,6 +523,7 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
       end
 
+      # WIP: Need to include data_types.
       item_data_categories.includes(:data_category).each do |cat|
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
