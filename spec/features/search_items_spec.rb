@@ -8,8 +8,8 @@ describe 'Item Search', search: true do
     end
     before do
       # Ensure that full_identifier can't be confused with identifier
-      item.stub(:full_identifier) { (item.collection.identifier + '-' + item.identifier).reverse }
-      fail if item.full_identifier.include?(item.identifier)
+      item.stub(:full_identifier) { (item.collection.identifier + '-' + item.identifier).tr('a-yA-Y0-8', 'b-zB-Z1-9') }
+      fail "Full identifier #{item.full_identifier}, identifier #{item.identifier}" if item.full_identifier.include?(item.identifier)
       Sunspot.remove_all!(Item)
       Sunspot.index!(item)
     end
