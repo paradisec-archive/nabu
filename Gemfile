@@ -95,6 +95,9 @@ group :development, :test do
 
   gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
   gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
+
+  # Tool for writing clean and consistent HAML
+  gem 'haml_lint', '>= 0.18.0', require: false
 end
 
 group :development do
