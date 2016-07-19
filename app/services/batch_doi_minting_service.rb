@@ -17,11 +17,12 @@ class BatchDoiMintingService
   end
 
   # The way this find works ensures that the minting occurs in a top-down manner allowing for
-  # Items to reference their parent records by DOI
+  # Items and Essences to reference their parent records by DOI
   def find_unminted_objects
     (
       Collection.where(doi: nil, private: false).includes(:collector, :university).limit(@batch_size) +
-      Item.joins(:collection).where(doi: nil, private: false, collection: {private: false}).includes(:collector, :university, :collection).limit(@batch_size)
+      Item.joins(:collection).where(doi: nil, private: false, collection: {private: false}).includes(:collector, :university, :collection).limit(@batch_size) +
+      Essence.joins(item: :collection).where(doi: nil, item: {private: false, collection: {private: false}}).includes(item: [:collector, :collection]).limit(@batch_size)
     ).first(@batch_size)
   end
 
@@ -38,11 +39,14 @@ class BatchDoiMintingService
   def public_object?(unminted_object)
     # Refactor: If too much code tests whether a collection is public or not, consider implementing
     # Collection#public?, akin to Item#public?
+    # Refactor: Also consider Essence#public? if too much code tests whether an essence is public or not.
     case unminted_object
     when Collection
       unminted_object.private == false
     when Item
       unminted_object.public?
+    when Essence
+      unminted_object.item.public?
     else
       # Shouldn't happen. Default to not minting.
       false

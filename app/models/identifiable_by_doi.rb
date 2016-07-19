@@ -13,7 +13,6 @@ module IdentifiableByDoi
       end
       xml.tag! 'publisher', 'PARADISEC'
       # Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
-      # Essences are not minted DOIs any more, but there isn't much benefit from removing code handling this scenario.
       publicationYear = case
 			when is_a?(Item)
 			  originated_on || created_at
@@ -38,7 +37,6 @@ module IdentifiableByDoi
       end
 
       # parent should exist for everything except Collection
-      # Essences (something that has a parent, but is not an Item) are not minted DOIs any more, but there isn't much benefit from removing code handling this scenario.
       if parent.present?
         xml.tag! 'relatedIdentifiers' do
           xml.tag! 'relatedIdentifier', parent.doi, relatedIdentifierType: 'DOI', relationType: is_a?(Item) ? 'IsPartOf' : 'IsSourceOf'
