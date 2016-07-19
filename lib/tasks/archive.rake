@@ -33,7 +33,6 @@ end
 # # Only use SUCCESS if an entire action has been completed successfully, not part of the action
 # # Use INFO for progress through part of an action
 # # ERROR has its usual meaning
-# # DEBUG means temporary messages that will hopefully be removed
 # # No need for a keyword for announcing a particular action is about to start,
 # # or has just finished
 namespace :archive do
@@ -209,9 +208,8 @@ namespace :archive do
 
           begin
             FileUtils.cp(upload_directory + file, rejected_directory + file)
-          rescue => e
+          rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
-            puts "DEBUG: [#{e.message}]: #{e.backtrace}" if verbose
             next
           end
 
