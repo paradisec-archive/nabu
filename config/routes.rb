@@ -22,6 +22,7 @@ Nabu::Application.routes.draw do
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
   resources :data_categories, :only => [:index, :show]
+  resources :data_types, :only => [:index, :show]
   resources :collections, :except => [:index] do
     collection do
       get 'last_search' => 'collections#return_to_last_search'

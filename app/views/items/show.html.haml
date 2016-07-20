@@ -137,6 +137,12 @@
           - @item.data_categories.each do |category|
             = category.name
             %br
+      %tr
+        %th Data Types
+        %td
+          - @item.data_types.each do |type|
+            = type.name
+            %br
 
       %tr
         %th Discourse type

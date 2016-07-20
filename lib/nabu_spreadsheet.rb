@@ -1,4 +1,5 @@
 module Nabu
+  # TODO: Create spreadsheet version which handles DataType entries.
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
 
