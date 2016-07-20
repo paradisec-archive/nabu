@@ -170,9 +170,9 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    # WIP: Need to eagerly load data types.
+    # WIP DONE: Need to eagerly load data types.
     @items = Item.includes(
-      :data_categories, :countries, :content_languages,
+      :data_categories, :data_types, :countries, :content_languages,
       :subject_languages, :university, :collector, :essences, :operator,
       :discourse_type, :admins, :access_condition, :comments,
       item_agents: [:agent_role, :user],
