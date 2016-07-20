@@ -1,6 +1,5 @@
 require 'nokogiri'
 module Nabu
-  # REQUIREMENTS: Should this be changed for data types?
   class ExSite9
     attr_accessor :notices, :errors, :collection
 

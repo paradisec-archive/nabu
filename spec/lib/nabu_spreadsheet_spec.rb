@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-# REQUIREMENTS: Should this change to include data types?
 describe Nabu::NabuSpreadsheet do
   let(:nabu_spreadsheet) { Nabu::NabuSpreadsheet.new_of_correct_type(data) }
   let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xls') }
