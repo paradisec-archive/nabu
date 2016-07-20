@@ -530,7 +530,7 @@ class Item < ActiveRecord::Base
         xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
       end
 
-      # WIP: Need to include data_types.
+      # WIP DONE: Need to include data_types.
       item_data_categories.includes(:data_category).each do |cat|
         case cat.data_category.name
         when 'historical reconstruction', 'historical_text'
@@ -548,17 +548,15 @@ class Item < ActiveRecord::Base
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
           xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
-        when 'photo'
-          xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
-        when 'moving image'
-          xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
-        when 'sound'
-          xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
         when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else
           # ignore
         end
+      end
+
+      data_types.each do |data_type|
+        xml.tag! 'dc:type', data_type.name, 'xsi:type' => 'dcterms:DCMIType'
       end
 
       if access_condition
