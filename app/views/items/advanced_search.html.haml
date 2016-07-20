@@ -135,7 +135,6 @@
           %th= label_tag :operator_id
           %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
-        -# WIP DONE: Add input for data types.
         %tr
           %th= label_tag :data_category_ids, 'Data Categories'
           -# REVIEW: Why is data_category used as a class?

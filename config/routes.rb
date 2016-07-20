@@ -21,7 +21,6 @@ Nabu::Application.routes.draw do
   end
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
-  # WIP DONE: Add data types.
   resources :data_categories, :only => [:index, :show]
   resources :data_types, :only => [:index, :show]
   resources :collections, :except => [:index] do

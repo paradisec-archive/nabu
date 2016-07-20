@@ -172,7 +172,6 @@
         %th= f.label :operator_id
         %td= f.hidden_field :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
-      -# WIP DONE: Add input for data types.
       %tr
         %th= f.label :data_category_ids, 'Data Categories'
         -# REVIEW: Why is data_category a class here?
