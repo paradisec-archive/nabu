@@ -131,9 +131,8 @@ class Item < ActiveRecord::Base
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
-  # WIP: Need to include data_types
   DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages
-                         admins users agents data_categories)
+                         admins users agents data_categories data_types)
 
 
   paginates_per 10
