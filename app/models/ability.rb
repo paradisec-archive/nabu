@@ -26,6 +26,8 @@ class Ability
       can :read, Language
       can :read, Country
       can :read, DataCategory
+      # DataType seems to work fine without this `can` statement, but include it for consistency.
+      can :read, DataType
       can :read, DiscourseType
 
       # Only collection_admins can manage a collection

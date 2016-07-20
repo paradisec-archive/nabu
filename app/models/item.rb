@@ -78,6 +78,9 @@ class Item < ActiveRecord::Base
   has_many :item_data_categories, :dependent => :destroy
   has_many :data_categories, :through => :item_data_categories, :validate => true
 
+  has_many :item_data_types, :dependent => :destroy
+  has_many :data_types, :through => :item_data_types, :validate => true
+
   has_many :essences, :dependent => :restrict
   has_many :comments, :as => :commentable, :dependent => :destroy
 
@@ -100,13 +103,13 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids
+    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
                   :north_limit, :south_limit, :west_limit, :east_limit,
                   :collector_id, :university_id, :operator_id,
-                  :country_ids, :data_category_ids,
+                  :country_ids, :data_category_ids, :data_type_ids,
                   :content_language_ids, :subject_language_ids,
                   :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
                   :access_condition_id,
@@ -129,7 +132,7 @@ class Item < ActiveRecord::Base
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
   DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages
-                         admins users agents data_categories)
+                         admins users agents data_categories data_types)
 
 
   paginates_per 10
@@ -244,7 +247,7 @@ class Item < ActiveRecord::Base
   searchable(
     # No need for auto_index, so long as reindex is run every half hour.
     auto_index: false,
-    include: [:content_languages, :subject_languages, :countries, :data_categories, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
+    include: [:content_languages, :subject_languages, :countries, :data_categories, :data_types, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
   ) do
     # Things we want to perform full text search on
     text :title
@@ -274,6 +277,9 @@ class Item < ActiveRecord::Base
     text :data_categories do
       data_categories.map(&:name)
     end
+    text :data_types do
+      data_types.map(&:name)
+    end
     text :filename do
       essences.map(&:filename)
     end
@@ -298,6 +304,7 @@ class Item < ActiveRecord::Base
     integer :university_id, :references => University
     integer :subject_language_ids, :references => Language, :multiple => true
     integer :data_category_ids, :references => DataCategory, :multiple => true
+    integer :data_type_ids, :references => DataType, :multiple => true
     integer :discourse_type_id, :references => DiscourseType
     integer :access_condition_id, :references => AccessCondition
     integer :agent_ids, :references => User, :multiple => true
@@ -351,6 +358,9 @@ class Item < ActiveRecord::Base
     end
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
+    end
+    string :data_types, :multiple => true do
+      data_types.map(&:name)
     end
     string :filename, multiple: true do
       essences.map(&:filename)
@@ -427,6 +437,10 @@ class Item < ActiveRecord::Base
 
   def csv_data_categories
     data_categories.map(&:name).join(';')
+  end
+
+  def csv_data_types
+    data_types.map(&:name).join(';')
   end
 
   def csv_item_agents
@@ -532,16 +546,32 @@ class Item < ActiveRecord::Base
         when 'typological analysis'
           xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
         when 'photo'
-          xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
+          end
         when 'moving image'
-          xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
+          end
         when 'sound'
-          xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
+          end
         when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else
           # ignore
         end
+      end
+
+      data_types.each do |data_type|
+        xml.tag! 'dc:type', data_type.name, 'xsi:type' => 'dcterms:DCMIType'
       end
 
       if access_condition

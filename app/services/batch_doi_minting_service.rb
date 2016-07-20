@@ -19,10 +19,12 @@ class BatchDoiMintingService
   # The way this find works ensures that the minting occurs in a top-down manner allowing for
   # Items and Essences to reference their parent records by DOI
   def find_unminted_objects
+    # OPTIMIZATION: This isn't optimized for saving a lot of objects, but when eager loaded is added,
+    # the amount of memory consumed is unacceptably large.
     (
       Collection.where(doi: nil, private: false).includes(:collector, :university).limit(@batch_size) +
       Item.joins(:collection).where(doi: nil, private: false, collection: {private: false}).includes(:collector, :university, :collection).limit(@batch_size) +
-      Essence.joins(item: :collection).where(doi: nil, item: {private: false, collection: {private: false}}).includes(item: [:collector, :collection]).limit(@batch_size)
+      Essence.includes(item: [:collector, :collection]).where(doi: nil, item: {private: false, collection: {private: false}}).limit(@batch_size)
     ).first(@batch_size)
   end
 

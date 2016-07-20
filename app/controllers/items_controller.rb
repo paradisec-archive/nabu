@@ -8,7 +8,7 @@ class ItemsController < ApplicationController
 
   INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
                          :csv_filenames, :csv_mimetypes, :csv_fps_values, :csv_samplerates, :csv_channel_counts,
-                         :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories,
+                         :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories, :csv_data_types,
                          :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name,
                          :access_narrative]
 
@@ -170,7 +170,7 @@ class ItemsController < ApplicationController
 
   def bulk_update
     @items = Item.includes(
-      :data_categories, :countries, :content_languages,
+      :data_categories, :data_types, :countries, :content_languages,
       :subject_languages, :university, :collector, :essences, :operator,
       :discourse_type, :admins, :access_condition, :comments,
       item_agents: [:agent_role, :user],

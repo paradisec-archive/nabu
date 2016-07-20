@@ -174,11 +174,20 @@
 
       %tr
         %th= f.label :data_category_ids, 'Data Categories'
+        -# REVIEW: Why is data_category a class here?
         %td= f.hidden_field :data_category_ids, :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
             = f.check_box :bulk_edit_append_data_category_ids
+
+      %tr
+        %th= f.label :data_type_ids, 'Data Types'
+        %td= f.hidden_field :data_type_ids, :data => {:placeholder => 'Choose a type...', :url => data_types_path, :multiple => true}, :class => 'select2'
+        - if params[:action] == 'bulk_edit'
+          %td.append
+            %small Append
+            = f.check_box :bulk_edit_append_data_type_ids
 
       %tr
         %th= f.label :discourse_type_id
