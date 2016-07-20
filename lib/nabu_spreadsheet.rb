@@ -1,5 +1,5 @@
 module Nabu
-  # WIP: Should this change to include data types?
+  # REQUIREMENTS: Should this change to include data types?
   class NabuSpreadsheet
     attr_accessor :notices, :errors, :collection, :items
 
