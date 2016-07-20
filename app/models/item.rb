@@ -251,8 +251,8 @@ class Item < ActiveRecord::Base
   searchable(
     # No need for auto_index, so long as reindex is run every half hour.
     auto_index: false,
-    # WIP: Need to include :data_types.
-    include: [:content_languages, :subject_languages, :countries, :data_categories, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
+    # WIP DONE: Need to include :data_types.
+    include: [:content_languages, :subject_languages, :countries, :data_categories, :data_types, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
   ) do
     # Things we want to perform full text search on
     text :title
@@ -279,9 +279,12 @@ class Item < ActiveRecord::Base
     text :countries do
       countries.map(&:name)
     end
-    # WIP: Need to include :data_types
+    # WIP DONE: Need to include :data_types
     text :data_categories do
       data_categories.map(&:name)
+    end
+    text :data_types do
+      data_types.map(&:name)
     end
     text :filename do
       essences.map(&:filename)
@@ -306,8 +309,9 @@ class Item < ActiveRecord::Base
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
     integer :subject_language_ids, :references => Language, :multiple => true
-    # WIP: Need to include data_type_ids.
+    # WIP DONE: Need to include data_type_ids.
     integer :data_category_ids, :references => DataCategory, :multiple => true
+    integer :data_type_ids, :references => DataType, :multiple => true
     integer :discourse_type_id, :references => DiscourseType
     integer :access_condition_id, :references => AccessCondition
     integer :agent_ids, :references => User, :multiple => true
@@ -359,9 +363,12 @@ class Item < ActiveRecord::Base
     string :country_codes, :multiple => true do
       countries.map(&:code)
     end
-    # WIP: Need to include data_types.
+    # WIP DONE: Need to include data_types.
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
+    end
+    string :data_types, :multiple => true do
+      data_types.map(&:name)
     end
     string :filename, multiple: true do
       essences.map(&:filename)
