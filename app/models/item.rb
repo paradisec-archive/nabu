@@ -545,6 +545,24 @@ class Item < ActiveRecord::Base
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
           xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
+        when 'photo'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'Image', 'xsi:type' => 'dcterms:DCMIType'
+          end
+        when 'moving image'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'MovingImage', 'xsi:type' => 'dcterms:DCMIType'
+          end
+        when 'sound'
+          # HACK: Temporary code to handle scenario of data_types not being populated after deploying
+          # current version.
+          if data_types.empty?
+            xml.tag! 'dc:type', 'Sound', 'xsi:type' => 'dcterms:DCMIType'
+          end
         when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else
