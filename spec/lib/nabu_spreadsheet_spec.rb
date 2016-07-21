@@ -138,7 +138,6 @@ describe Nabu::NabuSpreadsheet do
       end
 
       it 'has no warnings' do
-        pending 'WIP'
         nabu_spreadsheet.parse
         expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
       end

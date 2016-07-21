@@ -223,8 +223,8 @@ module Nabu
       end
 
       # add discourse type
-      if row[10].present?
-        discourse_type_name = row[10]
+      if row[discourse_type_column].present?
+        discourse_type_name = row[discourse_type_column]
         discourse_type = DiscourseType.find_by_name(discourse_type_name)
         if discourse_type
           item.discourse_type = discourse_type
@@ -235,17 +235,17 @@ module Nabu
       end
 
       # add dialect
-      if row[11].present?
-        item.dialect = row[11]
+      if row[dialect_column].present?
+        item.dialect = row[dialect_column]
       end
 
       # add language as given
-      if row[12].present?
-        item.language = row[12]
+      if row[language_column].present?
+        item.language = row[language_column]
       end
 
       # Add agents
-      [13..15, 16..18, 19..21, 22..24, 25..27, 28..30].each do |agent_cell_range|
+      agent_cell_ranges.each do |agent_cell_range|
         break unless row[agent_cell_range.begin].present?
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
@@ -293,6 +293,24 @@ module Nabu
       item_agent.agent_role = agent_role
 
       item_agent
+    end
+
+    def discourse_type_column
+      10
+    end
+
+    def dialect_column
+      discourse_type_column + 1
+    end
+
+    def language_column
+      discourse_type_column + 2
+    end
+
+    def agent_cell_ranges
+      [3..5, 6..8, 9..11, 12..14, 15..17, 18..20].map do |base_range|
+        (discourse_type_column + base_range.begin)..(discourse_type_column + base_range.end)
+      end
     end
   end
 
@@ -404,6 +422,10 @@ module Nabu
 
     def item_start_row
       16
+    end
+
+    def discourse_type_column
+      11
     end
   end
 end
