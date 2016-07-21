@@ -12,6 +12,8 @@ module Nabu
       # Currently parsed as a Float of value 2.0
       when book.row(1)[2].to_i == 2
         Version2NabuSpreadsheet.new(book)
+      when book.row(1)[2].to_i == 3
+        Version3NabuSpreadsheet.new(book)
       else
         Version1NabuSpreadsheet.new(book)
       end
@@ -340,6 +342,39 @@ module Nabu
   end
 
   class Version2NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(6)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(7)[1]
+    end
+
+    def parse_collection_description
+      @book.row(8)[1]
+    end
+
+    def parse_user_names
+      first_name = @book.row(9)[1]
+      last_name = @book.row(10)[1]
+
+      unless first_name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
+    end
+
+    def item_start_row
+      16
+    end
+  end
+
+  class Version3NabuSpreadsheet < NabuSpreadsheet
     def parse_coll_id
       @book.row(6)[1].to_s
     end
