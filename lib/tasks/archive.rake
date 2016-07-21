@@ -48,20 +48,25 @@ namespace :archive do
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
+      # To move to rejected, have success false
+      # To leave alone, skip an iteration of this loop with next, or have success true
+
+      # Action: Leave as-is.
       next unless File.file? "#{Nabu::Application.config.scan_directory}/#{file}"
       basename, _, coll_id, item_id, collection, item = parse_file_name(file, 'wav')
+      # Action: Move to rejected folder.
       next if !collection || !item
 
+      # Action: Leave as-is.
       # if metadata files exist, skip to the next file
       metadata_filename_imp = Nabu::Application.config.write_imp + basename + ".imp.xml"
       metadata_filename_id3 = Nabu::Application.config.write_id3 + basename + ".id3.v2_3.xml"
       next if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
 
+      # Action: Move to rejected folder.
       # check if the item's "metadata ready for export" flag is set
       # raise a warning if not and skip file
       if !item.metadata_exportable
-        # Nabu Import Messages 7.
-        # Action: Move to rejected folder.
         puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping" if verbose
         next
       end
