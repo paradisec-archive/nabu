@@ -222,6 +222,20 @@ module Nabu
         end
       end
 
+      # add data_types
+      if data_types_column && row[data_types_column].present?
+        data_type_names = row[data_types_column].split('|')
+        data_type_names.each do |data_type_name|
+          data_type = DataType.find_by_name(data_type_name)
+          if data_type
+            item.data_types << data_type unless item.data_types.include?(data_type)
+          else
+            @notices << "Item #{item.identifier} : Data type #{data_type_name} not found - Item skipped"
+            return nil
+          end
+        end
+      end
+
       # add discourse type
       if row[discourse_type_column].present?
         discourse_type_name = row[discourse_type_column]
@@ -297,6 +311,10 @@ module Nabu
 
     def discourse_type_column
       10
+    end
+
+    def data_types_column
+      nil
     end
 
     def dialect_column
@@ -422,6 +440,10 @@ module Nabu
 
     def item_start_row
       16
+    end
+
+    def data_types_column
+      10
     end
 
     def discourse_type_column

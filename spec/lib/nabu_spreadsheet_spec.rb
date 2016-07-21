@@ -253,6 +253,12 @@ describe Nabu::NabuSpreadsheet do
       expect(item.data_categories.first.name).to eq('primary text')
     end
 
+    it 'can handle data types' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.data_types.map(&:name)).to eq(['MovingImage', 'PhysicalObject'])
+    end
+
     it 'can handle discourse type' do
       nabu_spreadsheet.parse
       item = nabu_spreadsheet.items.first
