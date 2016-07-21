@@ -11,6 +11,7 @@ describe Nabu::NabuSpreadsheet do
     Collection.destroy_all
     AgentRole.destroy_all
     DataCategory.destroy_all
+    DataType.destroy_all
     DiscourseType.destroy_all
     Country.create!(code: 'AD', name: 'Andorra') unless Country.find_by_code('AD')
     Country.create!(code: 'AF', name: 'Afghanistan') unless Country.find_by_code('AF')
@@ -19,6 +20,8 @@ describe Nabu::NabuSpreadsheet do
     Language.create!(code: 'cmn', name: 'Mandarin') unless Language.find_by_code('cmn')
     Language.create!(code: 'yue', name: 'Cantonese') unless Language.find_by_code('yue')
     DataCategory.create!(name: 'primary text') unless DataCategory.find_by_name('primary text')
+    DataType.create!(name: 'MovingImage') unless DataType.find_by_name('MovingImage')
+    DataType.create!(name: 'PhysicalObject') unless DataType.find_by_name('PhysicalObject')
     DiscourseType.create!(name: 'formulaic_discourse') unless DiscourseType.find_by_name('formulaic_discourse')
     create(:user, first_name: 'VKS', last_name: nil)
     create(:user, first_name: 'John', last_name: 'Smith')
@@ -70,6 +73,77 @@ describe Nabu::NabuSpreadsheet do
       it 'is invalid' do
         nabu_spreadsheet.parse
         expect(nabu_spreadsheet).to_not be_valid
+      end
+    end
+  end
+
+  describe 'Past versions' do
+    context 'Version 1' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xlsx') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'is parsed by Version1NabuSpreadsheet' do
+        expect(nabu_spreadsheet).to be_a(Nabu::Version1NabuSpreadsheet)
+      end
+    end
+
+    context 'Version 2' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/Version 2 PDSC_minimal_metadataxls.xls') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'is parsed by Version2NabuSpreadsheet' do
+        expect(nabu_spreadsheet).to be_a(Nabu::Version2NabuSpreadsheet)
+      end
+    end
+
+    context 'Version 3' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/Version 3 PDSC_minimal_metadataxls.xls') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'is parsed by Version3NabuSpreadsheet' do
+        expect(nabu_spreadsheet).to be_a(Nabu::Version3NabuSpreadsheet)
       end
     end
   end
@@ -177,6 +251,12 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse
       item = nabu_spreadsheet.items.first
       expect(item.data_categories.first.name).to eq('primary text')
+    end
+
+    it 'can handle data types' do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      expect(item.data_types.map(&:name)).to eq(['MovingImage', 'PhysicalObject'])
     end
 
     it 'can handle discourse type' do
