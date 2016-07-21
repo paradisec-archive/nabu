@@ -12,6 +12,8 @@ module Nabu
       # Currently parsed as a Float of value 2.0
       when book.row(1)[2].to_i == 2
         Version2NabuSpreadsheet.new(book)
+      when book.row(1)[2].to_i == 3
+        Version3NabuSpreadsheet.new(book)
       else
         Version1NabuSpreadsheet.new(book)
       end
@@ -220,9 +222,23 @@ module Nabu
         end
       end
 
+      # add data_types
+      if data_types_column && row[data_types_column].present?
+        data_type_names = row[data_types_column].split('|')
+        data_type_names.each do |data_type_name|
+          data_type = DataType.find_by_name(data_type_name)
+          if data_type
+            item.data_types << data_type unless item.data_types.include?(data_type)
+          else
+            @notices << "Item #{item.identifier} : Data type #{data_type_name} not found - Item skipped"
+            return nil
+          end
+        end
+      end
+
       # add discourse type
-      if row[10].present?
-        discourse_type_name = row[10]
+      if row[discourse_type_column].present?
+        discourse_type_name = row[discourse_type_column]
         discourse_type = DiscourseType.find_by_name(discourse_type_name)
         if discourse_type
           item.discourse_type = discourse_type
@@ -233,17 +249,17 @@ module Nabu
       end
 
       # add dialect
-      if row[11].present?
-        item.dialect = row[11]
+      if row[dialect_column].present?
+        item.dialect = row[dialect_column]
       end
 
       # add language as given
-      if row[12].present?
-        item.language = row[12]
+      if row[language_column].present?
+        item.language = row[language_column]
       end
 
       # Add agents
-      [13..15, 16..18, 19..21, 22..24, 25..27, 28..30].each do |agent_cell_range|
+      agent_cell_ranges.each do |agent_cell_range|
         break unless row[agent_cell_range.begin].present?
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
@@ -291,6 +307,28 @@ module Nabu
       item_agent.agent_role = agent_role
 
       item_agent
+    end
+
+    def discourse_type_column
+      10
+    end
+
+    def data_types_column
+      nil
+    end
+
+    def dialect_column
+      discourse_type_column + 1
+    end
+
+    def language_column
+      discourse_type_column + 2
+    end
+
+    def agent_cell_ranges
+      [3..5, 6..8, 9..11, 12..14, 15..17, 18..20].map do |base_range|
+        (discourse_type_column + base_range.begin)..(discourse_type_column + base_range.end)
+      end
     end
   end
 
@@ -369,6 +407,47 @@ module Nabu
 
     def item_start_row
       16
+    end
+  end
+
+  class Version3NabuSpreadsheet < NabuSpreadsheet
+    def parse_coll_id
+      @book.row(6)[1].to_s
+    end
+
+    def parse_collection_title
+      @book.row(7)[1]
+    end
+
+    def parse_collection_description
+      @book.row(8)[1]
+    end
+
+    def parse_user_names
+      first_name = @book.row(9)[1]
+      last_name = @book.row(10)[1]
+
+      unless first_name
+        @errors << "Got no name for collector"
+        return nil
+      end
+
+      if last_name == ''
+        last_name = nil
+      end
+      [first_name, last_name]
+    end
+
+    def item_start_row
+      16
+    end
+
+    def data_types_column
+      10
+    end
+
+    def discourse_type_column
+      11
     end
   end
 end
