@@ -74,6 +74,54 @@ describe Nabu::NabuSpreadsheet do
     end
   end
 
+  describe 'Past versions' do
+    context 'Version 1' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xlsx') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'is parsed by Version1NabuSpreadsheet' do
+        expect(nabu_spreadsheet).to be_a(Nabu::Version1NabuSpreadsheet)
+      end
+    end
+
+    context 'Version 2' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/Version 2 PDSC_minimal_metadataxls.xls') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'is parsed by Version2NabuSpreadsheet' do
+        expect(nabu_spreadsheet).to be_a(Nabu::Version2NabuSpreadsheet)
+      end
+    end
+  end
+
   describe '#parse' do
     it 'determines collection identifier' do
       nabu_spreadsheet.parse
