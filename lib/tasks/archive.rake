@@ -48,32 +48,64 @@ namespace :archive do
     # by matching the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx"
     dir_contents.each do |file|
-      next unless File.file? "#{Nabu::Application.config.scan_directory}/#{file}"
-      basename, _, coll_id, item_id, collection, item = parse_file_name(file, 'wav')
-      next if !collection || !item
+      # To move to rejected, have success false
+      # To leave alone, skip an iteration of this loop with next, or have success true
+      success = true
 
+      # Action: Leave as-is.
+      unless File.file? "#{Nabu::Application.config.scan_directory}/#{file}"
+        next
+      end
+      basename, _, coll_id, item_id, collection, item = parse_file_name(file, 'wav')
+      # Action: Move to rejected folder.
+      if !collection || !item
+        # No need to log a failure message, as parse_file_name does that.
+        success = false
+      end
+
+      # Action: Leave as-is.
       # if metadata files exist, skip to the next file
       metadata_filename_imp = Nabu::Application.config.write_imp + basename + ".imp.xml"
       metadata_filename_id3 = Nabu::Application.config.write_id3 + basename + ".id3.v2_3.xml"
-      next if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
-
-      # check if the item's "metadata ready for export" flag is set
-      # raise a warning if not and skip file
-      if !item.metadata_exportable
-        # Nabu Import Messages 7.
-        # Action: Move to rejected folder.
-        puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping" if verbose
+      if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
         next
       end
 
-      template = ItemOfflineTemplate.new
-      template.item = item
-      data_imp = template.render_to_string :template => "items/show.imp.xml"
-      data_id3 = template.render_to_string :template => "items/show.id3.xml"
+      # Action: Move to rejected folder.
+      # check if the item's "metadata ready for export" flag is set
+      # raise a warning if not and skip file
+      if success && !item.metadata_exportable
+        puts "ERROR: metadata of item pid=#{coll_id}-#{item_id} is not complete for file #{file} - skipping" if verbose
+        success = false
+      end
 
-      File.open(metadata_filename_imp, 'w') {|f| f.write(data_imp)}
-      File.open(metadata_filename_id3, 'w') {|f| f.write(data_id3)}
-      puts "SUCCESS: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n created for #{file}"
+      if success
+        template = ItemOfflineTemplate.new
+        template.item = item
+        data_imp = template.render_to_string :template => "items/show.imp.xml"
+        data_id3 = template.render_to_string :template => "items/show.id3.xml"
+
+        File.open(metadata_filename_imp, 'w') {|f| f.write(data_imp)}
+        File.open(metadata_filename_id3, 'w') {|f| f.write(data_id3)}
+        puts "SUCCESS: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n created for #{file}"
+      else
+        rejected_directory = Nabu::Application.config.scan_directory + "Rejected/"
+        unless File.directory?(rejected_directory)
+          puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
+          next
+        end
+
+        begin
+          FileUtils.cp(Nabu::Application.config.scan_directory + file, rejected_directory + file)
+        rescue
+          puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
+          next
+        end
+
+        puts "INFO: file #{file} copied into rejected file folder at #{rejected_directory}"
+        # Only delete in the failure scenario, not in the success scenario
+        FileUtils.rm(Nabu::Application.config.scan_directory + file)
+      end
     end
   end
 
