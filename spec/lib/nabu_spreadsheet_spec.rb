@@ -163,13 +163,11 @@ describe Nabu::NabuSpreadsheet do
       end
 
       it 'has no warnings' do
-        pending 'Pending test'
         nabu_spreadsheet.parse
         expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
       end
 
       it 'determines item identifier' do
-        pending 'Pending test'
         nabu_spreadsheet.parse
         item = nabu_spreadsheet.items.first
         expect(item.identifier).to eq('107')

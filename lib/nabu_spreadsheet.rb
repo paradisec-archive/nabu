@@ -109,7 +109,10 @@ module Nabu
     end
 
     def parse_row(row, collector)
-      item_id = row[0].to_s
+      item_id = case row[0]
+                when Float then row[0].round.to_s
+                else row[0].to_s
+                end
 
       # if collection_id is part of item_id string, remove it
       item_id.slice! "#{@collection.identifier}-"
