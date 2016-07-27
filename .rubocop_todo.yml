@@ -11,7 +11,7 @@ Metrics/AbcSize:
 
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 446
+  Max: 461
 
 Metrics/CyclomaticComplexity:
   Max: 62
@@ -315,7 +315,6 @@ Style/NegatedIf:
     - 'app/models/item.rb'
     - 'lib/exsite9.rb'
     - 'lib/media.rb'
-    - 'lib/tasks/archive.rake'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
