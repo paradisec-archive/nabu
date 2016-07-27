@@ -25,7 +25,7 @@ class AdminFilesService
       puts "Working through directory #{directory}" if @verbose
 
       path, item_id = File.split(directory)
-      path, coll_id = File.split(path)
+      _path, coll_id = File.split(path)
 
       puts "item #{coll_id}-#{item_id}"
       # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
@@ -36,7 +36,7 @@ class AdminFilesService
 
       file = directory + "/#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
 
-      next if File.exists?(file)
+      next if File.exist?(file)
 
       template = ItemOfflineTemplate.new
       template.item = item
