@@ -148,6 +148,35 @@ describe Nabu::NabuSpreadsheet do
     end
   end
 
+  describe 'Formatting issues' do
+    context 'Automatic format for identifier' do
+      let(:data) { File.binread('spec/support/data/minimal_metadata/Paradisec minimal data numeric identifier 20160727a.xls') }
+
+      it 'is valid' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet).to be_valid
+      end
+
+      it 'has no errors' do
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.errors).to eq([])
+      end
+
+      it 'has no warnings' do
+        pending 'Pending test'
+        nabu_spreadsheet.parse
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+      end
+
+      it 'determines item identifier' do
+        pending 'Pending test'
+        nabu_spreadsheet.parse
+        item = nabu_spreadsheet.items.first
+        expect(item.identifier).to eq('107')
+      end
+    end
+  end
+
   describe '#parse' do
     it 'determines collection identifier' do
       nabu_spreadsheet.parse
