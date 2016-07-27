@@ -28,13 +28,40 @@ class NoisevisFilesService
         puts "---------------------------------------------------------------" if @verbose
         puts "Inspecting file #{file}..."
         # REVIEW: wav or mp3?
-        basename, extension, coll_id, item_id, collection, item = parse_file_name(file, "wav")
+        basename, _extension, _coll_id, _item_id, collection, item = parse_file_name(file, "wav")
         unless collection && item
           # No need to log a failure message, as parse_file_name does that.
           next
         end
 
-        # WIP: Rest of service.
+        spectrum_filename = basename + "-spectrum-PDSC_ADMIN.jpg"
+        json_filename = basename + "-spectrum-PDSC_ADMIN.json"
+
+        if File.exist?("#{directory}/#{spectrum_filename}") && File.exist?("#{directory}/#{json_filename}")
+          next
+        end
+
+        begin
+          result = system("noisevis -json true -i #{directory}/#{file} -o #{directory}/#{spectrum_filename}")
+        rescue
+          puts "ERROR: unable to process file #{file} - skipping"
+          next
+        end
+
+        unless result
+          puts "ERROR: unable to process file #{file} - skipping"
+          next
+        end
+
+        # Need to change json filename
+        begin
+          File.mv("#{directory}/#{spectrum_filename}.json", "#{directory}/#{json_filename}")
+        rescue
+          puts "ERROR: file #{file} skipped - not able to rename JSON file" if @verbose
+          next
+        end
+
+        puts "Created #{spectrum_filename} and #{json_filename}"
       end
     end
     puts "===" if @verbose
