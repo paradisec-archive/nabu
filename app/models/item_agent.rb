@@ -17,7 +17,7 @@ class ItemAgent < ActiveRecord::Base
 
   attr_accessible :user_id, :user, :agent_role_id, :agent_role, :item_id, :item
 
-  validates :user_id, :presence => true
+  validates :user, :presence => true
   validates :agent_role_id, :presence => true
   validates_uniqueness_of :item_id, :scope => [:agent_role_id, :user_id]
 end

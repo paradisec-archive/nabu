@@ -294,8 +294,19 @@ module Nabu
       user = User.where(first_name: first_name, last_name: last_name).first
 
       unless user
-        @errors << "Please create role user #{[first_name, last_name].join(" ")} first<br/>"
-        return nil
+        random_string = SecureRandom.base64(16)
+        user = User.new({
+          first_name: first_name,
+          last_name: last_name,
+          password: random_string,
+          password_confirmation: random_string,
+          contact_only: true
+        }, :as => :contact_only)
+        unless user.valid?
+          @errors << "Couldn't create user #{first_name} #{last_name}<br/>"
+          return nil
+        end
+        @notices << "Note: Contact #{first_name} #{last_name} created<br/>"
       end
 
       role_name = original_role_name.strip.tr(' ', '_').downcase
