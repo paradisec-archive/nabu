@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+# This test suite generates some random strings as output, as a result of the `before_validation` block of `User`.
+# It may be possible to eliminate it, but there's the risk of something going wrong as a result.
 describe Nabu::NabuSpreadsheet do
   let(:nabu_spreadsheet) { Nabu::NabuSpreadsheet.new_of_correct_type(data) }
   let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xls') }
@@ -24,7 +26,8 @@ describe Nabu::NabuSpreadsheet do
     DataType.create!(name: 'PhysicalObject') unless DataType.find_by_name('PhysicalObject')
     DiscourseType.create!(name: 'formulaic_discourse') unless DiscourseType.find_by_name('formulaic_discourse')
     create(:user, first_name: 'VKS', last_name: nil)
-    create(:user, first_name: 'John', last_name: 'Smith')
+    # Don't create this user - see if the parser can create a contact only user instead.
+    # create(:user, first_name: 'John', last_name: 'Smith')
     create(:user, first_name: 'Andrew', last_name: 'Grimm')
     create(:agent_role, name: 'speaker')
     create(:agent_role, name: 'recorder')
@@ -44,7 +47,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
     end
 
@@ -63,7 +66,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
     end
 
@@ -93,7 +96,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
 
       it 'is parsed by Version1NabuSpreadsheet' do
@@ -116,7 +119,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
 
       it 'is parsed by Version2NabuSpreadsheet' do
@@ -139,7 +142,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
 
       it 'is parsed by Version3NabuSpreadsheet' do
@@ -164,7 +167,7 @@ describe Nabu::NabuSpreadsheet do
 
       it 'has no warnings' do
         nabu_spreadsheet.parse
-        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako"]).to eq([])
+        expect(nabu_spreadsheet.notices - ["Saved collection VKS, Recording of Selako", "Note: Contact John Smith created<br/>"]).to eq([])
       end
 
       it 'determines item identifier' do
@@ -309,6 +312,13 @@ describe Nabu::NabuSpreadsheet do
       item = nabu_spreadsheet.items.first
       item_agent = item.item_agents.first
       expect(item_agent.agent_role.name).to eq("speaker")
+    end
+
+    it "can create a contact-only user" do
+      nabu_spreadsheet.parse
+      item = nabu_spreadsheet.items.first
+      item_agent = item.item_agents.first
+      expect(item_agent.user.contact_only).to eq(true)
     end
   end
 end
