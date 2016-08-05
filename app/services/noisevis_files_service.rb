@@ -28,7 +28,7 @@ class NoisevisFilesService
         puts "---------------------------------------------------------------" if @verbose
         puts "Inspecting file #{file}..."
         # REVIEW: wav or mp3?
-        basename, _extension, _coll_id, _item_id, collection, item = parse_file_name(file, "wav")
+        basename, _extension, _coll_id, _item_id, collection, item = parse_file_name(file, "mp3")
         unless collection && item
           # No need to log a failure message, as parse_file_name does that.
           next
