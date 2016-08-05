@@ -55,7 +55,7 @@ class NoisevisFilesService
 
         # Need to change json filename
         begin
-          File.mv("#{directory}/#{spectrum_filename}.json", "#{directory}/#{json_filename}")
+          FileUtils.mv("#{directory}/#{spectrum_filename}.json", "#{directory}/#{json_filename}")
         rescue
           puts "ERROR: file #{file} skipped - not able to rename JSON file" if @verbose
           next
