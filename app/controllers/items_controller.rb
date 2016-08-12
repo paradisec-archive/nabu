@@ -130,10 +130,13 @@ class ItemsController < ApplicationController
       when essence_mimetype =~ /^video\/(mp4|mpeg|webm|ogg)/
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
+      # REQUIREMENTS: Is there an assumption that every original will have a thumbnail? Isn't that fragile?
       when essence_mimetype =~ /^image\/(jpeg|png|gif|tiff|bmp)/
         images_values[essence_basename] ||= []
         images_values[essence_basename] << repository_essence_url
+      # REQUIREMENTS: How do we determine if something is a document?
       when essence_mimetype =~ /application\/(pdf|xml)/ || essence_mimetype =~ /text\/plain/
+        # REQUIREMENTS: Can you confirm there's no nesting for documents?
         # No nesting.
         documents_values << repository_essence_url
       else
