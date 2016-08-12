@@ -124,9 +124,11 @@ class ItemsController < ApplicationController
       when "mp3", "ogg", "oga"
         # REQUIREMENTS: What should happen if there isn't a spectrum file?
         unless audio_values.key?(essence_basename)
-          audio_values[essence_basename] = {"files" => []}
-          spectrum_filename = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
-          audio_values[essence_basename]["spectrum"] = spectrum_filename
+          spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
+          audio_values[essence_basename] = {
+            "files" => [],
+            "spectrum" => spectrum_url
+          }
         end
         audio_values[essence_basename]["files"] << repository_essence_url
       when "mp4", "webm", "ogg", "ogv", "mov", "webm"
