@@ -137,11 +137,9 @@ class ItemsController < ApplicationController
         images_values[essence_basename] ||= []
         images_values[essence_basename] << repository_essence_url
       when "pdf"
-        # REQUIREMENTS: Can you confirm there's no nesting for documents?
-        # No nesting.
         documents_values << repository_essence_url
       else
-        Rails.logger.info "Don't know how to handle #{essence.inspect}"
+        # Ignore the file
       end
     end
     response_value = {
