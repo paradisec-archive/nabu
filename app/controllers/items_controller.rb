@@ -90,6 +90,71 @@ class ItemsController < ApplicationController
     end
   end
 
+  # REVIEW: should it be identifier/data.json or just identifier.json?
+  def data
+    audio_values = {}
+    documents_values = []
+    eaf_values = {}
+    flextext_values = {}
+    images_values = {}
+    ixt_values = {}
+    trs_values = {}
+    video_values = {}
+    @item.essences.each do |essence|
+      essence_filename = essence.filename
+      essence_extension = File.extname(essence_filename)[1..-1]
+      essence_basename = File.basename(essence_filename)
+      essence_mimetype = essence.mimetype
+      repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
+      case
+      when essence_extension == "eaf"
+        eaf_values[essence_basename] ||= []
+        eaf_values[essence_basename] << repository_essence_url
+      when essence_extension == "flextext"
+        flextext_values[essence_basename] ||= []
+        flextext_values[essence_basename] << repository_essence_url
+      when essence_extension == "ixt"
+        ixt_values[essence_basename] ||= []
+        ixt_values[essence_basename] << repository_essence_url
+      when essence_extension == "trs"
+        trs_values[essence_basename] ||= []
+        trs_values[essence_basename] << repository_essence_url
+      when essence_mimetype =~ /^audio\/(mpeg|ogg|(x-)?wav)/
+        audio_values[essence_basename] ||= {"files" => []}
+        audio_values[essence_basename]["files"] << repository_essence_url
+        # unless audio_values.key?(essence_basename)
+        #   audio_values[essence_basename] = {"files" => []}
+        #   audio_values[essence_basename]["spectrum"] = -spectrum-PDSC_ADMIN.jpg
+      when essence_mimetype =~ /^video\/(mp4|mpeg|webm|ogg)/
+        video_values[essence_basename] ||= []
+        video_values[essence_basename] << repository_essence_url
+      when essence_mimetype =~ /^image\/(jpeg|png|gif|tiff|bmp)/
+        images_values[essence_basename] ||= []
+        images_values[essence_basename] << repository_essence_url
+      when essence_mimetype =~ /application\/(pdf|xml)/ || essence_mimetype =~ /text\/plain/
+        # No nesting.
+        documents_values << repository_essence_url
+      else
+        Rails.logger.info "Don't know how to handle #{essence.inspect}"
+      end
+    end
+    response_value = {
+      "audio" => audio_values,
+      "documents" => documents_values,
+      "eaf" => eaf_values,
+      "flextext" => flextext_values,
+      "images" => images_values,
+      "ixt" => ixt_values,
+      "trs" => trs_values,
+      "video" => video_values
+    }
+    respond_to do |format|
+      format.json do
+        render json: response_value
+      end
+    end
+  end
+
   def create
     @item.assign_attributes(params[:item].except(:item_agents_attributes))
 
