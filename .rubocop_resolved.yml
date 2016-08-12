@@ -1,6 +1,10 @@
 Metrics/LineLength:
   Max: 512
 
+# RATIONALE: gsub is not a performance bottleneck, and tr is rarely used, and is somewhat unintuitive.
+Performance/StringReplacement:
+  Enabled: false
+
 Style/HashSyntax:
   Enabled: false
 

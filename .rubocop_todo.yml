@@ -33,13 +33,6 @@ Performance/RedundantMatch:
     - 'app/models/item.rb'
 
 # Cop supports --auto-correct.
-Performance/StringReplacement:
-  Exclude:
-    - 'app/controllers/items_controller.rb'
-    - 'spec/features/search_collections_spec.rb'
-    - 'spec/features/search_items_spec.rb'
-
-# Cop supports --auto-correct.
 Style/AlignArray:
   Exclude:
     - 'app/models/item.rb'
