@@ -104,22 +104,24 @@ class ItemsController < ApplicationController
       essence_filename = essence.filename
       essence_extension = File.extname(essence_filename)[1..-1]
       essence_basename = File.basename(essence_filename)
-      essence_mimetype = essence.mimetype
       repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
-      case
-      when essence_extension == "eaf"
+      case essence_extension
+      when "eaf"
         eaf_values[essence_basename] ||= []
         eaf_values[essence_basename] << repository_essence_url
-      when essence_extension == "flextext"
+      when "flextext"
         flextext_values[essence_basename] ||= []
         flextext_values[essence_basename] << repository_essence_url
-      when essence_extension == "ixt"
+      when "ixt"
         ixt_values[essence_basename] ||= []
         ixt_values[essence_basename] << repository_essence_url
-      when essence_extension == "trs"
+      when "trs"
         trs_values[essence_basename] ||= []
         trs_values[essence_basename] << repository_essence_url
-      when essence_mimetype =~ /^audio\/(mpeg|ogg|(x-)?wav)/
+      # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
+      # ENHANCEMENT: Using essence.mimetype would be more robust.
+      # when "mp3", "webm", "ogg", "oga"
+      when "mp3", "ogg", "oga"
         # REQUIREMENTS: What should happen if there isn't a spectrum file?
         unless audio_values.key?(essence_basename)
           audio_values[essence_basename] = {"files" => []}
@@ -127,15 +129,14 @@ class ItemsController < ApplicationController
           audio_values[essence_basename]["spectrum"] = spectrum_filename
         end
         audio_values[essence_basename]["files"] << repository_essence_url
-      when essence_mimetype =~ /^video\/(mp4|mpeg|webm|ogg)/
+      when "mp4", "webm", "ogg", "ogv", "mov", "webm"
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
       # REQUIREMENTS: Is there an assumption that every original will have a thumbnail? Isn't that fragile?
-      when essence_mimetype =~ /^image\/(jpeg|png|gif|tiff|bmp)/
+      when "jpg", "jpeg", "png"
         images_values[essence_basename] ||= []
         images_values[essence_basename] << repository_essence_url
-      # REQUIREMENTS: How do we determine if something is a document?
-      when essence_mimetype =~ /application\/(pdf|xml)/ || essence_mimetype =~ /text\/plain/
+      when "pdf"
         # REQUIREMENTS: Can you confirm there's no nesting for documents?
         # No nesting.
         documents_values << repository_essence_url
