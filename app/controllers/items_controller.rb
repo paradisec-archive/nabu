@@ -120,11 +120,13 @@ class ItemsController < ApplicationController
         trs_values[essence_basename] ||= []
         trs_values[essence_basename] << repository_essence_url
       when essence_mimetype =~ /^audio\/(mpeg|ogg|(x-)?wav)/
-        audio_values[essence_basename] ||= {"files" => []}
+        # REQUIREMENTS: What should happen if there isn't a spectrum file?
+        unless audio_values.key?(essence_basename)
+          audio_values[essence_basename] = {"files" => []}
+          spectrum_filename = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
+          audio_values[essence_basename]["spectrum"] = spectrum_filename
+        end
         audio_values[essence_basename]["files"] << repository_essence_url
-        # unless audio_values.key?(essence_basename)
-        #   audio_values[essence_basename] = {"files" => []}
-        #   audio_values[essence_basename]["spectrum"] = -spectrum-PDSC_ADMIN.jpg
       when essence_mimetype =~ /^video\/(mp4|mpeg|webm|ogg)/
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
