@@ -427,7 +427,6 @@ Style/SpaceAfterColon:
 Style/SpaceAfterComma:
   Exclude:
     - 'Capfile'
-    - 'app/controllers/items_controller.rb'
     - 'app/controllers/oai_controller.rb'
     - 'app/models/collection.rb'
     - 'app/models/essence.rb'
