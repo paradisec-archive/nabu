@@ -122,9 +122,13 @@ class ItemsController < ApplicationController
       # ENHANCEMENT: Using essence.mimetype would be more robust.
       # when "mp3", "webm", "ogg", "oga"
       when "mp3", "ogg", "oga"
-        # REQUIREMENTS: What should happen if there isn't a spectrum file?
         unless audio_values.key?(essence_basename)
           spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
+          # Copied from Essence#path and Essence#full_identifier.
+          # REVIEW: Check this works. Can't be tested on development.
+          unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
+            spectrum_url = nil
+          end
           audio_values[essence_basename] = {
             "files" => [],
             "spectrum" => spectrum_url
