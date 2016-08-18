@@ -138,10 +138,23 @@ class ItemsController < ApplicationController
       when "mp4", "webm", "ogg", "ogv", "mov", "webm"
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
-      # REQUIREMENTS: Is there an assumption that every original will have a thumbnail? Isn't that fragile?
       when "jpg", "jpeg", "png"
-        images_values[essence_basename] ||= []
-        images_values[essence_basename] << repository_essence_url
+        thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
+
+        # Copied from Essence#path and Essence#full_identifier.
+        # REVIEW: Check this works. Can't be tested on development.
+        unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
+          thumbnail_url = nil
+        end
+
+        # REVIEW: Can multiple files have the same basename?
+        unless images_values.key?(essence_basename)
+          images_values[essence_basename] = {
+            "originals" => [],
+            "thumbnail" => thumbnail_url
+          }
+        end
+        images_values[essence_basename]["originals"] << repository_essence_url
       when "pdf"
         documents_values << repository_essence_url
       else
