@@ -125,7 +125,6 @@ class ItemsController < ApplicationController
         unless audio_values.key?(essence_basename)
           spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
           # Copied from Essence#path and Essence#full_identifier.
-          # REVIEW: Check this works. Can't be tested on development.
           unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
             spectrum_url = nil
           end
@@ -142,12 +141,11 @@ class ItemsController < ApplicationController
         thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
 
         # Copied from Essence#path and Essence#full_identifier.
-        # REVIEW: Check this works. Can't be tested on development.
         unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
           thumbnail_url = nil
         end
 
-        # REVIEW: Can multiple files have the same basename?
+        # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
         unless images_values.key?(essence_basename)
           images_values[essence_basename] = {
             "originals" => [],
