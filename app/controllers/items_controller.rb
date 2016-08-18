@@ -103,7 +103,7 @@ class ItemsController < ApplicationController
     @item.essences.each do |essence|
       essence_filename = essence.filename
       essence_extension = File.extname(essence_filename)[1..-1]
-      essence_basename = File.basename(essence_filename)
+      essence_basename = File.basename(essence_filename, "." + essence_extension)
       repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
       case essence_extension
       when "eaf"
