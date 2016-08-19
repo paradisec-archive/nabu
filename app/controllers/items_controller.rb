@@ -53,7 +53,7 @@ class ItemsController < ApplicationController
     #For creating duplicate items
     if params[:id]
       existing = Item.find(params[:id])
-      attributes = existing.attributes.select do |attr, value|
+      attributes = existing.attributes.select do |attr, _value|
         Item.column_names.include?(attr.to_s)
       end
 
@@ -180,7 +180,7 @@ class ItemsController < ApplicationController
       ]
     ).accessible_by(current_ability).where :id => params[:item_ids].split(' ')
 
-    params[:item].delete_if {|k, v| v.blank?}
+    params[:item].delete_if {|_k, v| v.blank?}
 
     # Collect the fields we are appending to
     appendable = {}
@@ -256,7 +256,7 @@ class ItemsController < ApplicationController
   def tidy_params
     if params[:item]
       params[:item][:item_agents_attributes] ||= {}
-      params[:item][:item_agents_attributes].each_pair do |id, iaa|
+      params[:item][:item_agents_attributes].each_pair do |_id, iaa|
         name = iaa['user_id']
         if name =~ /^NEWCONTACT:/
           iaa['user_id'] = create_contact(name)
@@ -268,8 +268,8 @@ class ItemsController < ApplicationController
 
       if params[:existing_id].present?
         agent_attrs = params[:item].delete(:item_agents_attributes)
-        new_agents = agent_attrs.select {|k,v| v[:id].nil? }
-        agent_ids = agent_attrs.reject {|k,v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|k,v| v['id'] }
+        new_agents = agent_attrs.select {|_k, v| v[:id].nil? }
+        agent_ids = agent_attrs.reject {|_k, v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|_k, v| v['id'] }
 
         params[:item][:item_agents_attributes] = {}
         i = 0
@@ -278,7 +278,7 @@ class ItemsController < ApplicationController
           i += 1
         end
 
-        new_agents.each do |k,v|
+        new_agents.each do |_k, v|
           params[:item][:item_agents_attributes][i.to_s] = {user_id: v['user_id'].to_i, agent_role_id: v['agent_role_id'].to_i}
           i += 1
         end
@@ -303,7 +303,7 @@ class ItemsController < ApplicationController
         when Sunspot::Type::BooleanType
           with field.name, params[field.name] =~ /^true|1$/ ? true : false
         when Sunspot::Type::TimeType
-          with(field.name).between (Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day)
+          with(field.name).between((Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day))
         else
           p "WARNING can't search: #{field.type} #{field.name}"
         end
@@ -407,7 +407,7 @@ class ItemsController < ApplicationController
   end
 
   def stream_csv(search_type)
-    filename = "nabu_items_#{Date.today.to_s}.csv"
+    filename = "nabu_items_#{Date.today}.csv"
     self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
     self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
     self.response.headers['Last-Modified'] = Time.now.ctime.to_s

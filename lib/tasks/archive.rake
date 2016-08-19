@@ -276,60 +276,7 @@ namespace :archive do
 
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
-
-    # get all subdirectories in archive
-    puts "---------------------------------------------------------------"
-    puts "Gathering all subdirectories in the archive..."
-    subdirs = directories(archive)
-    puts "...done"
-
-    # extract metadata from each essence file in each directory
-    subdirs.each do |directory|
-      puts "===" if verbose
-      puts "---------------------------------------------------------------" if verbose
-      puts "Working through directory #{directory}" if verbose
-      dir_contents = Dir.entries(directory)
-      dir_contents.each do |file|
-        next unless File.file? "#{directory}/#{file}"
-        puts "---------------------------------------------------------------" if verbose
-        puts "Inspecting file #{file}..."
-        basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        unless collection && item
-          puts "ERROR: skipping file #{file} - does not relate to an item #{coll_id}-#{item_id}"
-          next
-        end
-
-        # skip PDSC_ADMIN and rename CAT & df files
-        next if basename.split('-').last == "PDSC_ADMIN"
-        if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
-          next
-        end
-
-        if ignore_update_file_prefixes.any? {|prefix| basename.start_with?(prefix) }
-          puts "ERROR: file #{file} skipped - suspected of being crash-prone"
-          next
-        end
-
-        # extract media metadata from file
-        begin
-          import_metadata(directory, file, item, extension, force_update)
-        rescue => e
-          puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
-          puts " >> #{e.backtrace}"
-          next
-        end
-
-        # REVIEW: Can this code throw an exception?
-        full_file_path = directory + "/" + file
-        essence = Essence.where(:item_id => item, :filename => file).first
-        media = Nabu::Media.new full_file_path
-        generate_derived_files(full_file_path, item, essence, extension, media)
-      end
-    end
-    puts "===" if verbose
-    puts "Update Files finished." if verbose
-    puts "===" if verbose
+    UpdateFilesService.run(archive, ignore_update_file_prefixes, force_update, verbose)
   end
 
 
@@ -340,41 +287,7 @@ namespace :archive do
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
-    # get all subdirectories in archive
-    puts "---------------------------------------------------------------"
-    puts "Gathering all subdirectories in the archive..."
-    subdirs = directories(archive)
-    puts "...done"
-
-    # extract metadata from each essence file in each directory
-    subdirs.each do |directory|
-      puts "===" if verbose
-      puts "---------------------------------------------------------------" if verbose
-      puts "Working through directory #{directory}" if verbose
-
-      path, item_id = File.split(directory)
-      path, coll_id = File.split(path)
-
-      puts "item #{coll_id}-#{item_id}"
-      # force case sensitivity in MySQL - see https://dev.mysql.com/doc/refman/5.7/en/case-sensitivity.html
-      collection = Collection.where('BINARY identifier = ?', coll_id).first
-      next unless collection
-      item = collection.items.where('BINARY identifier = ?', item_id).first
-      next unless item
-
-      file = directory + "/#{item.full_identifier}-CAT-PDSC_ADMIN.xml"
-
-      next if File.exists?(file)
-
-      template = ItemOfflineTemplate.new
-      template.item = item
-      data = template.render_to_string :template => "items/show.xml.haml"
-      File.open(file, 'w') {|f| f.write(data)}
-      puts "created #{file}"
-    end
-    puts "===" if verbose
-    puts "Check and create PDSC_ADMIN Files finished." if verbose
-    puts "===" if verbose
+    AdminFilesService.run(verbose, archive)
   end
 
   desc 'Delete collection with all items'
@@ -435,6 +348,13 @@ namespace :archive do
   task :transcode_essence_files => :environment do
     batch_size = Integer(ENV['TRANSCODE_ESSENCE_FILES_BATCH_SIZE'] || 100)
     BatchTranscodeEssenceFileService.run(batch_size)
+  end
+
+  desc "Generate noisevis files"
+  task :noisevis_files => :environment do
+    archive = Nabu::Application.config.archive_directory
+    verbose = true
+    NoisevisFilesService.run(archive, verbose)
   end
 
   # HELPERS
