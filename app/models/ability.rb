@@ -7,6 +7,7 @@ class Ability
     if user.new_record? # Guests
       can :read, Collection, :private => false
       can :read, Item,       :private => false
+      can :data, Item,       :private => false
 
     elsif user.admin? # System admins
       can :manage, :all
@@ -44,6 +45,9 @@ class Ability
       # Anyone can view non-private collections
       can :read, Collection, :private => false
 
+      can :data,   Item, :public? => true
+      can :data,   Item, :item_users => { :user_id => user.id }
+      can :data,   Item, :item_admins => { :user_id => user.id }
       can :read,   Item, :public? => true
       can :read,   Item, :item_users => { :user_id => user.id }
       can :read,   Item, :item_admins => { :user_id => user.id }

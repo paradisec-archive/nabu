@@ -62,6 +62,8 @@ class NoisevisFilesService
         end
 
         puts "Created #{spectrum_filename} and #{json_filename}"
+        # Sleep for 2 seconds, to ensure that this rake task isn't using the entirety of one of the two CPUs available
+        sleep 2
       end
     end
     puts "===" if @verbose
