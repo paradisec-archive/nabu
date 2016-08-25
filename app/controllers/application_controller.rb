@@ -13,7 +13,13 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    if current_user
+    # If it's a JSON request, give a 40x rather than redirecting them
+    case
+    when request.format.symbol == :json && current_user
+      render nothing: true, :status => 403
+    when request.format.symbol == :json
+      render nothing: true, :status => 401
+    when current_user
       redirect_to root_url, :alert => exception.message
     else
       session["user_return_to"] = request.fullpath

@@ -90,6 +90,92 @@ class ItemsController < ApplicationController
     end
   end
 
+  # REVIEW: should it be identifier/data.json or just identifier.json?
+  def data
+    audio_values = {}
+    documents_values = []
+    eaf_values = {}
+    flextext_values = {}
+    images_values = {}
+    ixt_values = {}
+    trs_values = {}
+    video_values = {}
+    @item.essences.each do |essence|
+      essence_filename = essence.filename
+      essence_extension = File.extname(essence_filename)[1..-1]
+      essence_basename = File.basename(essence_filename, "." + essence_extension)
+      repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
+      case essence_extension
+      when "eaf"
+        eaf_values[essence_basename] ||= []
+        eaf_values[essence_basename] << repository_essence_url
+      when "flextext"
+        flextext_values[essence_basename] ||= []
+        flextext_values[essence_basename] << repository_essence_url
+      when "ixt"
+        ixt_values[essence_basename] ||= []
+        ixt_values[essence_basename] << repository_essence_url
+      when "trs"
+        trs_values[essence_basename] ||= []
+        trs_values[essence_basename] << repository_essence_url
+      # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
+      # ENHANCEMENT: Using essence.mimetype would be more robust.
+      # when "mp3", "webm", "ogg", "oga"
+      when "mp3", "ogg", "oga"
+        unless audio_values.key?(essence_basename)
+          spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
+          # Copied from Essence#path and Essence#full_identifier.
+          unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
+            spectrum_url = nil
+          end
+          audio_values[essence_basename] = {
+            "files" => [],
+            "spectrum" => spectrum_url
+          }
+        end
+        audio_values[essence_basename]["files"] << repository_essence_url
+      when "mp4", "webm", "ogg", "ogv", "mov", "webm"
+        video_values[essence_basename] ||= []
+        video_values[essence_basename] << repository_essence_url
+      when "jpg", "jpeg", "png"
+        thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
+
+        # Copied from Essence#path and Essence#full_identifier.
+        unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
+          thumbnail_url = nil
+        end
+
+        # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
+        unless images_values.key?(essence_basename)
+          images_values[essence_basename] = {
+            "originals" => [],
+            "thumbnail" => thumbnail_url
+          }
+        end
+        images_values[essence_basename]["originals"] << repository_essence_url
+      when "pdf"
+        documents_values << repository_essence_url
+      else
+        # Ignore the file
+      end
+    end
+    response_value = {
+      "audio" => audio_values,
+      "documents" => documents_values,
+      "eaf" => eaf_values,
+      "flextext" => flextext_values,
+      "images" => images_values,
+      "ixt" => ixt_values,
+      "trs" => trs_values,
+      "video" => video_values
+    }
+    respond_to do |format|
+      format.json do
+        render json: response_value
+      end
+    end
+  end
+
   def create
     @item.assign_attributes(params[:item].except(:item_agents_attributes))
 
