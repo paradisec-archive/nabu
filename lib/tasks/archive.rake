@@ -63,12 +63,18 @@ namespace :archive do
         success = false
       end
 
-      # Action: Leave as-is.
-      # if metadata files exist, skip to the next file
-      metadata_filename_imp = Nabu::Application.config.write_imp + basename + ".imp.xml"
-      metadata_filename_id3 = Nabu::Application.config.write_id3 + basename + ".id3.v2_3.xml"
-      if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
-        next
+      if basename.nil?
+        # Action: Move to rejected folder
+        puts "ERROR: failed to determine basename for file #{file} - skipping" if verbose
+        success = false
+      else
+        # Action: Leave as-is.
+        # if metadata files exist, skip to the next file
+        metadata_filename_imp = Nabu::Application.config.write_imp + basename + ".imp.xml"
+        metadata_filename_id3 = Nabu::Application.config.write_id3 + basename + ".id3.v2_3.xml"
+        if (File.file? "#{metadata_filename_imp}") && (File.file? "#{metadata_filename_id3}")
+          next
+        end
       end
 
       # Action: Move to rejected folder.
