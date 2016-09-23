@@ -295,7 +295,7 @@ module Nabu
 
       unless user
         random_string = SecureRandom.base64(16)
-        user = User.new({
+        user = User.create({
           first_name: first_name,
           last_name: last_name,
           password: random_string,
