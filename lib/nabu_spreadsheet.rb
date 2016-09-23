@@ -279,7 +279,7 @@ module Nabu
       if item.valid?
         @items << item
       else
-        @notices << "WARNING: item #{item.identifier} invalid - skipped"
+        @notices << "WARNING: item #{item.identifier} invalid - skipped (#{item.errors.full_messages.join(", ")})"
       end
     end
 
