@@ -22,6 +22,7 @@ We are using Capistrano for deployment.
 
 ``` bash
 cap deploy
+cap production deploy
 ```
 
 if necessary:
