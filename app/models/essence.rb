@@ -57,14 +57,14 @@ class Essence < ActiveRecord::Base
 
   def next_essence
     current_essences = Essence.where(item_id: item_id).order(:filename)
-    current_essence_index = current_essences.index { |essence| essence.filename == filename }
+    current_essence_index = current_essences.index { |essence| essence.id == id }
 
     current_essences[current_essence_index + 1]
   end
 
   def prev_essence
     current_essences = Essence.where(item_id: item_id).order(:filename)
-    current_essence_index = current_essences.index { |essence| essence.filename == filename }
+    current_essence_index = current_essences.index { |essence| essence.id == id }
 
     current_essence_index == 0 ? nil : current_essences[current_essence_index - 1]
   end
