@@ -41,6 +41,8 @@ gzip -dc nabu.sql.gz | mysql -u root nabu_devel
 spring rake sunspot:reindex
 ```
 
+- test
+
 ## Production Tasks
 
 import archive files
