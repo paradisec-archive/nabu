@@ -132,6 +132,9 @@ namespace :archive do
       # for each essence file, find its collection & item
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
+
+      copied_files_array = []
+
       dir_contents.each do |file|
         # To move to the archive, have success true
         # To move to rejected, have success false
@@ -231,16 +234,21 @@ namespace :archive do
           # Action: Leave as-is.
           begin
             FileUtils.cp(upload_directory + file, destination_path + file)
+
+            copied_files_array.push({destination_path: destination_path, file: file})
           rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
+
             next
           end
 
           puts "INFO: file #{file} copied into archive at #{destination_path}"
         else
           rejected_directory = upload_directory + "Rejected/"
+
           unless File.directory?(rejected_directory)
             puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
+
             next
           end
 
@@ -248,6 +256,7 @@ namespace :archive do
             FileUtils.cp(upload_directory + file, rejected_directory + file)
           rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
+
             next
           end
 
@@ -270,6 +279,8 @@ namespace :archive do
 
         puts "...done"
       end
+
+      check_checksums(copied_files_array)
     end
   end
 
@@ -479,9 +490,14 @@ namespace :archive do
     end
   end
 
-
   # this method tries to avoid regenerating any files that already exist
   def generate_derived_files(full_file_path, item, essence, extension, media)
     ImageTransformerService.new(media, full_file_path, item, essence, ".#{extension}").perform_conversions
+  end
+
+  def check_checksums(files_array)
+    if files_array.any?
+      ChecksumAnalyserService.check_checksums_for_files(files_array)
+    end
   end
 end
