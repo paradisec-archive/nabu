@@ -224,6 +224,7 @@ namespace :archive do
           # and move the file there
           begin
             destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+
             FileUtils.mkdir_p(destination_path)
           rescue
             puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
