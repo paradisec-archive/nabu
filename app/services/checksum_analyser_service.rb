@@ -16,16 +16,20 @@ class ChecksumAnalyserService
 
         puts "checking checksum for #{file_data_hash[:destination_path]}#{file_data_hash[:file]}"
 
-        check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
-          %x[md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}]
-        }
+        begin
+          check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
+            %x[md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}]
+          }
+        rescue StandardError => e
+          puts 'error while checking the checksum'
+        end
 
         check_result_array = check_result_string.split("\n")
 
         check_result_array.each do |result|
           if result.include?(' OK')
             checksum_successes_count += 1
-          else
+          elsif result.include?(' FAILED')
             checksum_failures_count += 1
           end
 

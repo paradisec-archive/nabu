@@ -4,6 +4,8 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun' unless defined?(Zeus)
 
+require 'helpers/expectation_helpers'
+
 require 'sunspot'
 
 require 'capybara/rspec'
@@ -18,6 +20,8 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
   config.include DeviseFeatureMacros, :type => :feature
   config.include FactoryGirl::Syntax::Methods
+  config.include ExpectationHelpers
+
   include Warden::Test::Helpers
 
   Warden.test_mode!
