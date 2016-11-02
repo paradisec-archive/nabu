@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe ChecksumAnalyserService do
-  context 'with a valid checksum and file' do
-    describe '.check_checksums_for_files' do
+  describe '.check_checksums_for_files' do
+    context 'with a valid checksum and file' do
       it 'should show a success response' do
         printed_output = capture_stdout do
           ChecksumAnalyserService.check_checksums_for_files([

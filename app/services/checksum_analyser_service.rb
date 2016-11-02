@@ -1,8 +1,8 @@
 require 'find'
 
 class ChecksumAnalyserService
-  def self.check_checksums_for_files(files_array)
-    puts "checking checksums..."
+  def self.check_checksums_for_files(file_array, check_all=false)
+    puts "checking #{check_all ? 'all' : ''} checksums..."
 
     puts "---------------------------------------------------------------"
 
@@ -10,7 +10,7 @@ class ChecksumAnalyserService
     checksum_successes_count = 0
     checksum_failures_count = 0
 
-    files_array.each do |file_data_hash|
+    file_array.each do |file_data_hash|
       if file_data_hash[:file].include?('-checksum-') && file_data_hash[:file].include?('.txt')
         checksum_check_count += 1
 
@@ -20,6 +20,8 @@ class ChecksumAnalyserService
           check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
             %x[md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}]
           }
+
+          binding.pry
         rescue StandardError => e
           puts 'error while checking the checksum'
         end
@@ -54,25 +56,20 @@ class ChecksumAnalyserService
 
   def self.check_all_checksums
     checksum_file_paths = []
+    file_array = []
 
     Find.find(Nabu::Application.config.archive_directory) do |path|
       checksum_file_paths << path if (path =~ /.+\.txt/ && path =~ /-checksum-/)
     end
 
-    checksum_file_paths.each do |path|
-      check_result_string = `md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}`
-      check_result_array = check_result_string.split("\n")
+    checksum_file_paths.each do |file_path|
+      split_path = file_path.split('/')
 
-      check_result_array.each do |result|
-        if result.include?(' OK')
-          checksum_successes_count += 1
-        else
-          checksum_failures_count += 1
-        end
+      file_array.push({ destination_path: split_path[0..(split_path.length - 2)].join('/'), file: split_path.last })
+    end
 
-        puts "#{file_data_hash[:destination_path]}#{result}"
-      end
+    binding.pry
 
-    end if checksum_file_paths.any?
+    self.check_checksums_for_files(file_array, true)
   end
 end
