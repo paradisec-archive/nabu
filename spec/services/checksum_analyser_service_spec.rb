@@ -10,9 +10,9 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        expected_output = "checking checksums...\n---------------------------------------------------------------\nchecking checksum for /Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/valid_data/AA3-001-G-checksum-PDSC_ADMIN.txt\n/Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/valid_data/AA3-001-G.wav: OK\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n1/1 checksums succeeded\n0/1 checksums failed\n"
+        expected_output = "/spec/support/data/checksum/valid_data/AA3-001-G.wav: OK\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n1/1 checksums succeeded\n0/1 checksums failed\n"
 
-        printed_output.should eq(expected_output)
+        printed_output.should match(expected_output)
       end
     end
   end
@@ -26,9 +26,11 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        expected_output = "checking checksums...\n---------------------------------------------------------------\nchecking checksum for /Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/invalid_data/AA3-001-G-checksum-PDSC_ADMIN.txt\n/Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/invalid_data/AA3-001-G.wav: FAILED\n/Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/invalid_data/md5sum: WARNING: 1 of 1 computed checksums did NOT match\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n0/1 checksums succeeded\n1/1 checksums failed\n!-------------------------------------------------------------!\nfiles that failed the checksum:\n/Users/stanislavbelkov/Terem/nabu/spec/support/data/checksum/invalid_data/AA3-001-G.wav: FAILED\n"
+        expected_output_1 = "/spec/support/data/checksum/invalid_data/AA3-001-G.wav: FAILED"
+        expected_output_2 = "/spec/support/data/checksum/invalid_data/md5sum: WARNING: 1 of 1 computed checksums did NOT match\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n0/1 checksums succeeded\n1/1 checksums failed\n!-------------------------------------------------------------!\nfiles that failed the checksum:"
 
-        printed_output.should eq(expected_output)
+        printed_output.should match(expected_output_1)
+        printed_output.should match(expected_output_2)
       end
     end
   end
