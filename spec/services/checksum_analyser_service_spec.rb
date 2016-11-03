@@ -27,7 +27,7 @@ describe ChecksumAnalyserService do
         end
 
         expected_output_1 = "/spec/support/data/checksum/invalid_data/AA3-001-G.wav: FAILED"
-        expected_output_2 = "/spec/support/data/checksum/invalid_data/md5sum: WARNING: 1 of 1 computed checksums did NOT match\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n0/1 checksums succeeded\n1/1 checksums failed\n!-------------------------------------------------------------!\nfiles that failed the checksum:"
+        expected_output_2 = "/spec/support/data/checksum/invalid_data/md5sum: WARNING: 1 of 1 computed checksums did NOT match"
 
         printed_output.should match(expected_output_1)
         printed_output.should match(expected_output_2)
