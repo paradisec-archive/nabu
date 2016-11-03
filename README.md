@@ -25,6 +25,8 @@ cap deploy
 cap production deploy
 ```
 
+Note about deployment: if you see a 'Permission denied(publickey)' error, try running `ssh-add -k` in terminal
+
 if necessary:
 
 ``` bash
