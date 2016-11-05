@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 3.2.22.2'
 
 # Databases
-gem 'mysql2'
+gem 'mysql2', '~> 0.3.17'
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'

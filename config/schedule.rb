@@ -3,3 +3,7 @@
 every 1.day, :at => '4:30 am' do
   rake "archive:mint_dois"
 end
+
+every 1.day, :at => '4:30 am' do
+  rake "data:check_all_checksums"
+end

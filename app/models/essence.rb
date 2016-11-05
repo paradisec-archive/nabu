@@ -56,11 +56,17 @@ class Essence < ActiveRecord::Base
   end
 
   def next_essence
-    Essence.where(:item_id => self.item).order(:id).where('id > ?', self.id).first
+    current_essences = Essence.where(item_id: item_id).order(:filename)
+    current_essence_index = current_essences.index { |essence| essence.id == id }
+
+    current_essences[current_essence_index + 1]
   end
 
   def prev_essence
-    Essence.where(:item_id => self.item).order(:id).where('id < ?', self.id).last
+    current_essences = Essence.where(item_id: item_id).order(:filename)
+    current_essence_index = current_essences.index { |essence| essence.id == id }
+
+    current_essence_index == 0 ? nil : current_essences[current_essence_index - 1]
   end
 
   def citation
