@@ -379,6 +379,7 @@ GEM
       rack (>= 1.0.0)
     thor (0.19.1)
     tilt (1.4.1)
+    timeliness (0.3.8)
     timers (1.1.0)
     to-csv (1.0.3)
       activesupport (>= 2.3.5)
@@ -471,6 +472,7 @@ DEPENDENCIES
   sunspot_solr
   therubyracer
   thin
+  timeliness
   to-csv
   traceroute!
   turn (~> 0.8.3)

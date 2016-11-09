@@ -94,4 +94,5 @@ module Nabu
   end
 end
 
+require 'oai_provider'
 require 'monkeypatch'
