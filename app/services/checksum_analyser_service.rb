@@ -15,8 +15,6 @@ class ChecksumAnalyserService
       if file_data_hash[:file].include?('-checksum-') && file_data_hash[:file].include?('.txt')
         checksum_check_count += 1
 
-        puts "checking checksum for #{file_data_hash[:destination_path]}#{file_data_hash[:file]}"
-
         begin
           check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
             %x[md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}]
@@ -34,9 +32,9 @@ class ChecksumAnalyserService
             checksum_failures_count += 1
 
             failed_checksum_paths.push(file_data_hash[:destination_path] + result)
-          end
 
-          puts "#{file_data_hash[:destination_path]}#{result}"
+            puts "#{file_data_hash[:destination_path]}#{result}"
+          end
         end
       end
     end
