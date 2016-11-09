@@ -38,7 +38,7 @@ class ItemProvider < OAI::Provider::Base
   repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
   repository_url 'http://catalog.paradisec.org.au/oai/item'
   record_prefix 'oai:paradisec.org.au'
-  admin_email 'thien@unimelb.edu.au'
+  admin_email 'stanislav.belkov@terem.com.au'
   sample_id 'AA1-001'
   update_granularity OAI::Const::Granularity::HIGH
   # FIXME: Doesn't include collection.
@@ -47,8 +47,7 @@ class ItemProvider < OAI::Provider::Base
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => Time.now().strftime('%Y-%m-%d'), 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
       xml.tag! 'archiveURL', 'http://catalog.paradisec.org.au'
-      xml.tag! 'participant', 'name' => 'Nick Thieberger', 'role' => 'Project Director',  'email' => 'thien@unimelb.edu.au'
-      xml.tag! 'participant', 'name' => 'Linda Barwick',  'role' => 'Project Manager', 'email' => 'Linda.Barwick@arts.usyd.edu.au'
+      xml.tag! 'participant', 'name' => 'Stas Belkov',  'role' => 'Developer', 'email' => 'stanislav.belkov@terem.com.au'
       xml.tag! 'institution', 'A consortium made up of the University of Melbourne, University of Sydney, and the Australian National University'
       xml.tag! 'institutionURL', 'http://paradisec.org.au'
       xml.tag! 'shortLocation', 'Melbourne, Sydney, Canberra, Australia'
