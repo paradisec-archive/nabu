@@ -65,6 +65,7 @@ gem 'roo', '~> 2.1.0'
 gem 'roo-xls', :github => 'roo-rb/roo-xls', :ref => '0a5ef88'
 gem 'streamio-ffmpeg'
 gem 'rake', '< 11.0'
+gem 'timeliness'
 
 # Image processing
 gem 'rmagick'
