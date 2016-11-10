@@ -9,7 +9,9 @@ class ChecksumAnalyserService
     checksum_check_count = 0
     checksum_successes_count = 0
     checksum_failures_count = 0
+    checksum_noread_count = 0
     failed_checksum_paths = []
+    noread_checksum_paths = []
 
     files_array.each do |file_data_hash|
       if file_data_hash[:file].include?('-checksum-') && file_data_hash[:file].include?('.txt')
@@ -21,6 +23,16 @@ class ChecksumAnalyserService
           }
         rescue StandardError => e
           puts 'error while checking the checksum'
+        end
+
+        unless check_result_string
+          checksum_noread_count += 1
+
+          noread_checksum_paths.push(file_data_hash[:destination_path] + file_data_hash[:file])
+
+          puts "#{file_data_hash[:destination_path]}#{file_data_hash[:file]} cannot be read"
+
+          next
         end
 
         check_result_array = check_result_string.split("\n")
@@ -48,6 +60,7 @@ class ChecksumAnalyserService
 
       puts "#{checksum_successes_count}/#{checksum_check_count} checksums succeeded"
       puts "#{checksum_failures_count}/#{checksum_check_count} checksums failed"
+      puts "#{checksum_noread_count}/#{checksum_check_count} checksums couldn't be read"
 
       if failed_checksum_paths.any?
         puts '!-------------------------------------------------------------!'
@@ -57,9 +70,20 @@ class ChecksumAnalyserService
           puts checksum_path
         end
       end
+
+      if noread_checksum_paths.any?
+        puts '!-------------------------------------------------------------!'
+        puts 'files that could not be read:'
+
+        noread_checksum_paths.each do |checksum_path|
+          puts checksum_path
+        end
+      end
     else
       puts "no checksum files were checked."
     end
+
+    true
   end
 
   def self.check_all_checksums
