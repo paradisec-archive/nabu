@@ -34,6 +34,13 @@ cap deploy:migrate
 cap sunspot:reindex
 ```
 
+Note: if you update the Solr configuration (in staging), you will need to run a script on the server to copy over the new config, and restart and reindex Solr.
+Run the below from the home directory on the server.
+
+``` bash
+./scripts/fix_solr.sh
+```
+
 ## Importing a production database into your development environment
 
 ``` bash
