@@ -52,10 +52,12 @@ ActiveAdmin.register User do
   filter :admin
 
   action_item do
-    if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).count > 1
-      link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
+    if %w(show edit).include?(params[:action])
+      if User.duplicates_of(resource.first_name, resource.last_name).count > 1
+        link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
+      end
+      link_to 'Reset Password', reset_password_admin_user_path, style: 'float: right;'
     end
-    link_to 'Reset Password', reset_password_admin_user_path, style: 'float: right;'
   end
 
   member_action :reset_password, method: :get do
