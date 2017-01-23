@@ -62,14 +62,12 @@
       %tr
         %th Countries
         %td
-          - @collection.countries.each do |country|
-            = render partial: 'countries/country_row', locals: {country: country}
+          = render partial: 'countries/country_list', locals: {countries: @collection.countries}
 
       %tr
         %th Languages
         %td
-          - @collection.languages.each do |language|
-            = render partial: 'languages/language_row', locals: {language: language}
+          = render partial: 'languages/language_list', locals: {languages: @collection.languages}
 
       %tr
         %th Region / village
