@@ -3,6 +3,7 @@ ActiveAdmin.register User do
   scope :users
   scope :contacts
   scope :admins
+  scope :collectors
   scope :all_users
 
   before_destroy :check_dependent
@@ -49,6 +50,7 @@ ActiveAdmin.register User do
   filter :rights_transferred_to
   filter :rights_transfer_reason
   filter :contact_only
+  filter :collector
   filter :admin
 
   action_item do
@@ -132,6 +134,7 @@ ActiveAdmin.register User do
       row :unconfirmed_email
       row :rights_transferred_to
       row :rights_transfer_reason
+      row :collector
       row :contact_only
       row :admin
       row :party_identifier
@@ -167,6 +170,7 @@ ActiveAdmin.register User do
       f.input :phone
       f.input :rights_transferred_to
       f.input :rights_transfer_reason
+      f.input :collector
       f.input :contact_only
       f.input :admin
       buffer =f.input :party_identifier
@@ -191,6 +195,7 @@ ActiveAdmin.register User do
     column :phone
     column :rights_transferred_to
     column :rights_transfer_reason
+    column :collector
     column :contact_only
     column :admin
     column :party_identifier

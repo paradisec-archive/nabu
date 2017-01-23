@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160718033605) do
+ActiveRecord::Schema.define(:version => 20170123051907) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -104,6 +104,13 @@ ActiveRecord::Schema.define(:version => 20160718033605) do
   add_index "collections", ["operator_id"], :name => "index_collections_on_operator_id"
   add_index "collections", ["university_id"], :name => "index_collections_on_university_id"
 
+  create_table "collections_funding_bodies", :id => false, :force => true do |t|
+    t.integer "collection_id",   :null => false
+    t.integer "funding_body_id", :null => false
+  end
+
+  add_index "collections_funding_bodies", ["collection_id", "funding_body_id"], :name => "lookup_by_collection_and_funding_body_index"
+
   create_table "comments", :force => true do |t|
     t.integer  "owner_id",         :null => false
     t.integer  "commentable_id",   :null => false
@@ -157,6 +164,13 @@ ActiveRecord::Schema.define(:version => 20160718033605) do
 
   add_index "downloads", ["essence_id"], :name => "index_downloads_on_essence_id"
   add_index "downloads", ["user_id"], :name => "index_downloads_on_user_id"
+
+  create_table "dump_for_nick", :id => false, :force => true do |t|
+    t.string "collid",                                :null => false
+    t.string "itemid",                                :null => false
+    t.text   "subject_languages", :limit => 16777215
+    t.text   "content_languages", :limit => 16777215
+  end
 
   create_table "essences", :force => true do |t|
     t.integer  "item_id"
@@ -378,6 +392,7 @@ ActiveRecord::Schema.define(:version => 20160718033605) do
     t.integer  "rights_transferred_to_id"
     t.string   "rights_transfer_reason"
     t.string   "party_identifier"
+    t.boolean  "collector",                :default => false, :null => false
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
