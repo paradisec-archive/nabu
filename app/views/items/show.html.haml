@@ -74,8 +74,7 @@
         %th Countries
         %td
           - @item.countries.each do |country|
-            = country.name_with_code
-            %br
+            = render partial: 'countries/country_row', locals: {country: country}
 
       %tr
         %th Language as given
@@ -85,23 +84,13 @@
         %th Subject language(s)
         %td
           - @item.subject_languages.each do |language|
-            .left
-              = language.name_with_code
-            .right
-              = link_to 'See other information in this language', language.language_archive_link, target: '_blank'
-            %br
-            %br
+            = render partial: 'languages/language_row', locals: {language: language}
 
       %tr
         %th Content language(s)
         %td
           - @item.content_languages.each do |language|
-            .left
-              = language.name_with_code
-            .right
-              = link_to 'See other information in this language', language.language_archive_link, target: '_blank'
-            %br
-            %br
+            = render partial: 'languages/language_row', locals: {language: language}
 
       %tr
         %th Dialect
@@ -186,19 +175,13 @@
         %th Countries
         %td
           - @item.collection.countries.each do |country|
-            = country.name
-            %br
+            = render partial: 'countries/country_row', locals: {country: country}
 
       %tr
         %th Languages
         %td
           - @item.collection.languages.each do |language|
-            .left
-              = language.name_with_code
-            .right
-              = link_to 'See other information in this language', language.language_archive_link, target: '_blank'
-            %br
-            %br
+            = render partial: 'languages/language_row', locals: {language: language}
     - if can? :manage, @item
       %div.separated-message
         = form_tag inherit_details_collection_item_path(@collection, @item), method: :put do
