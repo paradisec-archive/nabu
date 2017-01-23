@@ -55,6 +55,21 @@ ActiveAdmin.register User do
     if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).count > 1
       link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
     end
+    link_to 'Reset Password', reset_password_admin_user_path, style: 'float: right;'
+  end
+
+  member_action :reset_password, method: :get do
+    @user = resource || User.find(params[:id])
+  end
+
+  member_action :do_reset_password, method: :put do
+    @user = resource || User.find(params[:id])
+    @user.assign_attributes(params[:user])
+    if @user.save
+      redirect_to edit_admin_user_path(@user), notice: 'Password was successfully reset'
+    else
+      redirect_to edit_admin_user_path(@user), alert: "Failed to reset password:\n- #{@user.errors.message.join("\n- ")}"
+    end
   end
 
   member_action :merge, method: :get do

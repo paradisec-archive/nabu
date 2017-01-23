@@ -92,7 +92,6 @@ class User < ActiveRecord::Base
   before_validation do
     return unless self.contact_only?
     password = Devise.friendly_token.first(12)
-    p password
     self.password = password
     self.password_confirmation = password
   end
