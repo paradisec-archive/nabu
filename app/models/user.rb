@@ -72,7 +72,7 @@ class User < ActiveRecord::Base
   has_many :item_agents, :dependent => :destroy
 
   has_many :owned_items, :class_name => 'Item', :foreign_key => :collector_id, :dependent => :restrict
-  has_many :owned_collections, :class_name => 'Collection', :foreign_key => :collector_id, :dependent => :restrict
+  has_many :owned_collections, :class_name => 'Collection', :foreign_key => :collector_id
 
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
 

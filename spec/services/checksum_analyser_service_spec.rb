@@ -10,9 +10,7 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        expected_output = "/spec/support/data/checksum/valid_data/AA3-001-G.wav: OK\n---------------------------------------------------------------\n1 .txt checksum files were checked\n---------------------------------------------------------------\n1/1 checksums succeeded\n0/1 checksums failed\n"
-
-        printed_output.should match(expected_output)
+        printed_output.should include('1/1 checksums succeeded')
       end
     end
   end

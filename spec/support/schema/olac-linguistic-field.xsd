@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="http://www.language-archives.org/OLAC/1.1/"
+   xmlns="http://www.language-archives.org/OLAC/1.1/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   elementFormDefault="qualified" attributeFormDefault="qualified">
+
+   <xs:include schemaLocation="olac-extension.xsd"/>
+   <xs:import namespace="http://purl.org/dc/elements/1.1/"
+      schemaLocation="dc.xsd"/>
+
+   <xs:annotation>
+      <xs:appinfo>
+         <olac-extension>
+            <shortName>linguistic-field</shortName>
+            <longName>Code for Linguistic Field</longName>
+            <versionDate>2003-01-21</versionDate>
+            <description>Provides a controlled vocabulary for
+               describing the subject matter of a resource as relevant
+               to a particular subfield of linguistics.</description>
+            <appliesTo>dc:subject</appliesTo>
+            <documentation>http://www.language-archives.org/REC/field.html</documentation>
+         </olac-extension>
+      </xs:appinfo>
+   </xs:annotation>
+
+   <xs:complexType name="linguistic-field">
+      <xs:complexContent mixed="true">
+         <xs:extension base="dc:SimpleLiteral">
+            <xs:attribute name="code" type="olac-linguistic-field"
+               use="optional"/>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+
+   <xs:simpleType name="olac-linguistic-field">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="anthropological_linguistics"/>
+         <xs:enumeration value="applied_linguistics"/>
+         <xs:enumeration value="cognitive_science"/>
+         <xs:enumeration value="computational_linguistics"/>
+         <xs:enumeration value="discourse_analysis"/>
+         <xs:enumeration value="forensic_linguistics"/>
+         <xs:enumeration value="general_linguistics"/>
+         <xs:enumeration value="historical_linguistics"/>
+         <xs:enumeration value="history_of_linguistics"/>
+         <xs:enumeration value="language_acquisition"/>
+         <xs:enumeration value="language_documentation"/>
+         <xs:enumeration value="lexicography"/>
+         <xs:enumeration value="linguistics_and_literature"/>
+         <xs:enumeration value="linguistic_theories"/>
+         <xs:enumeration value="mathematical_linguistics"/>
+         <xs:enumeration value="morphology"/>
+         <xs:enumeration value="neurolinguistics"/>
+         <xs:enumeration value="philosophy_of_language"/>
+         <xs:enumeration value="phonetics"/>
+         <xs:enumeration value="phonology"/>
+         <xs:enumeration value="pragmatics"/>
+         <xs:enumeration value="psycholinguistics"/>
+         <xs:enumeration value="semantics"/>
+         <xs:enumeration value="sociolinguistics"/>
+         <xs:enumeration value="syntax"/>
+         <xs:enumeration value="text_and_corpus_linguistics"/>
+         <xs:enumeration value="translating_and_interpreting"/>
+         <xs:enumeration value="typology"/>
+         <xs:enumeration value="writing_systems"/>
+      </xs:restriction>
+   </xs:simpleType>
+
+</xs:schema>
