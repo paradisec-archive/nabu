@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170123051907) do
+ActiveRecord::Schema.define(:version => 20170123065800) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -342,6 +342,14 @@ ActiveRecord::Schema.define(:version => 20170123051907) do
   end
 
   add_index "latlon_boundaries", ["country_id"], :name => "index_latlon_boundaries_on_country_id"
+
+  create_table "party_identifiers", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "party_type", :null => false
+    t.string   "identifier", :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false

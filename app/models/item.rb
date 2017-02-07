@@ -140,6 +140,7 @@ class Item < ActiveRecord::Base
   after_initialize :prefill
 
   after_save :update_collection_countries_and_languages
+  before_save :propagate_collector
 
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
 
@@ -148,6 +149,19 @@ class Item < ActiveRecord::Base
       true
     else
       false
+    end
+  end
+
+  def propagate_collector
+    if collector_id_changed?
+      unless collector_id_was.nil?
+        collector_was = User.find(collector_id_was)
+        # we're removing one item from the users's 'owned' items
+        collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
+        collector_was.save
+      end
+      collector.collector = true
+      collector.save
     end
   end
 

@@ -114,7 +114,9 @@ ActiveAdmin.register User do
     column :phone
     column :contact_only
     column :admin
-    column :party_identifier
+    column :party_identifiers do |user|
+      user.party_identifiers.map{|p| p.identifier}.join(', ')
+    end
     actions do |user|
       link_to 'Merge', merge_admin_user_path(user)
     end
@@ -137,7 +139,9 @@ ActiveAdmin.register User do
       row :collector
       row :contact_only
       row :admin
-      row :party_identifier
+      row :party_identifiers do |user|
+        user.party_identifiers.map{|p| p.identifier}.join("\n")
+      end
     end
 
     h3 "Admin information"
@@ -173,12 +177,15 @@ ActiveAdmin.register User do
       f.input :collector
       f.input :contact_only
       f.input :admin
-      buffer =f.input :party_identifier
       if f.object.new_record?
         f.input :password
         f.input :password_confirmation
       end
-      buffer
+      f.has_many :party_identifiers, allow_destroy: true do |p|
+        p.input :user_id, as: :hidden, input_html: {value: f.object.id}
+        p.input :party_type, as: :select, collection: PartyIdentifier::TYPES.each_with_index.map{|t,i| [t,i]}
+        p.input :identifier, as: :string
+      end
     end
     f.actions
   end
@@ -198,6 +205,8 @@ ActiveAdmin.register User do
     column :collector
     column :contact_only
     column :admin
-    column :party_identifier
+    column :party_identifiers do |user|
+      user.party_identifiers.map{|p| p.identifier}.join(';')
+    end
   end
 end

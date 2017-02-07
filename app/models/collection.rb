@@ -100,12 +100,26 @@ class Collection < ActiveRecord::Base
   delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
 
   before_save :check_complete
+  before_save :propagate_collector
 
   def has_default_map_boundaries?
     if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
       true
     else
       false
+    end
+  end
+
+  def propagate_collector
+    if collector_id_changed?
+      unless collector_id_was.nil?
+        collector_was = User.find(collector_id_was)
+        # we're removing one collection from the users's 'owned' collections
+        collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
+        collector_was.save
+      end
+      collector.collector = true
+      collector.save
     end
   end
 
