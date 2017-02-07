@@ -24,4 +24,9 @@ class Country < ActiveRecord::Base
   has_many :languages, :through => :countries_languages, :dependent => :restrict
 
   has_one :latlon_boundary
+
+
+  def language_archive_link
+    "http://www.language-archives.org/country/#{code.upcase}"
+  end
 end

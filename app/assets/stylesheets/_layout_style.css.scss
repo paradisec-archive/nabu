@@ -250,6 +250,7 @@ body.bp {
     td {
       vertical-align: top;
       min-width: 50px;
+      max-width: 70%;
 
       .map {
         width: 100%;
@@ -266,9 +267,6 @@ body.bp {
         padding-top: 0px;
       }
 
-      a {
-        padding-left: 10px;
-      }
       div {
         input {
           margin-right: 10px;
@@ -285,8 +283,10 @@ body.bp {
       label:after {
         content: ":"
       }
-      max-width: 200px;
-      min-width: 100px;
+
+      min-width: 30%;
+      max-width: 30%;
+      width: 30%;
     }
 
     select {
@@ -316,7 +316,7 @@ body.bp {
   }
 
   input[type="text"], input[type="email"], input[type="password"],
-  textarea, td .select2-container {
+  textarea, td .select2-container, td select {
     &.short {
       width: 200px;
     }
@@ -609,4 +609,8 @@ body.bp {
     margin: 0 !important;
     padding: 0 !important;
   }
+}
+
+.full-width {
+  width: 100%;
 }

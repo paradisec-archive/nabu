@@ -3,6 +3,7 @@ ActiveAdmin.register User do
   scope :users
   scope :contacts
   scope :admins
+  scope :collectors
   scope :all_users
 
   before_destroy :check_dependent
@@ -49,11 +50,29 @@ ActiveAdmin.register User do
   filter :rights_transferred_to
   filter :rights_transfer_reason
   filter :contact_only
+  filter :collector
   filter :admin
 
   action_item do
-    if %w(show edit).include?(params[:action]) and User.duplicates_of(resource.first_name, resource.last_name).count > 1
-      link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
+    if %w(show edit).include?(params[:action])
+      if User.duplicates_of(resource.first_name, resource.last_name).count > 1
+        link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
+      end
+      link_to 'Reset Password', reset_password_admin_user_path, style: 'float: right;'
+    end
+  end
+
+  member_action :reset_password, method: :get do
+    @user = resource || User.find(params[:id])
+  end
+
+  member_action :do_reset_password, method: :put do
+    @user = resource || User.find(params[:id])
+    @user.assign_attributes(params[:user])
+    if @user.save
+      redirect_to edit_admin_user_path(@user), notice: 'Password was successfully reset'
+    else
+      redirect_to edit_admin_user_path(@user), alert: "Failed to reset password:\n- #{@user.errors.message.join("\n- ")}"
     end
   end
 
@@ -96,6 +115,10 @@ ActiveAdmin.register User do
     column :contact_only
     column :admin
     column :party_identifier
+    #TODO: uncomment once this stuff is tested in staging
+    # column :party_identifiers do |user|
+    #   user.party_identifiers.map{|p| p.identifier}.join(', ')
+    # end
     actions do |user|
       link_to 'Merge', merge_admin_user_path(user)
     end
@@ -115,9 +138,14 @@ ActiveAdmin.register User do
       row :unconfirmed_email
       row :rights_transferred_to
       row :rights_transfer_reason
+      row :collector
       row :contact_only
       row :admin
       row :party_identifier
+      #TODO: uncomment once this stuff is tested in staging
+      # row :party_identifiers do |user|
+      #   user.party_identifiers.map{|p| p.identifier}.join("\n")
+      # end
     end
 
     h3 "Admin information"
@@ -150,14 +178,20 @@ ActiveAdmin.register User do
       f.input :phone
       f.input :rights_transferred_to
       f.input :rights_transfer_reason
+      f.input :collector
       f.input :contact_only
       f.input :admin
-      buffer =f.input :party_identifier
       if f.object.new_record?
         f.input :password
         f.input :password_confirmation
       end
-      buffer
+      f.input :party_identifier
+      #TODO: uncomment once this stuff is tested in staging
+      # f.has_many :party_identifiers, allow_destroy: true do |p|
+      #   p.input :user_id, as: :hidden, input_html: {value: f.object.id}
+      #   p.input :party_type, as: :select, collection: PartyIdentifier::TYPES.each_with_index.map{|t,i| [t,i]}
+      #   p.input :identifier, as: :string
+      # end
     end
     f.actions
   end
@@ -174,8 +208,13 @@ ActiveAdmin.register User do
     column :phone
     column :rights_transferred_to
     column :rights_transfer_reason
+    column :collector
     column :contact_only
     column :admin
     column :party_identifier
+    #TODO: uncomment once this stuff is tested in staging
+    # column :party_identifiers do |user|
+    #   user.party_identifiers.map{|p| p.identifier}.join(';')
+    # end
   end
 end

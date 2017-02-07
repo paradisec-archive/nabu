@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns="http://www.language-archives.org/OLAC/1.1/"
+           targetNamespace="http://www.language-archives.org/OLAC/1.1/"
+           elementFormDefault="qualified"
+           attributeFormDefault="qualified">
+
+  <xs:annotation>
+    <xs:documentation>
+      Schema for the OLAC Metadata Set, Version 1.1
+      Steven Bird and Gary Simons, 2008-1-26
+      Schema validated at http://www.w3.org/2001/03/webdata/xsv
+      XSV 2.2-1 of 2002/12/01 21:59:33
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+
+  <!-- OLAC encoding schemes -->
+  <xs:include schemaLocation="olac-discourse-type.xsd"/>
+  <xs:include schemaLocation="olac-language.xsd"/>
+  <xs:include schemaLocation="olac-linguistic-field.xsd"/>
+  <xs:include schemaLocation="olac-linguistic-type.xsd"/>
+  <xs:include schemaLocation="olac-role.xsd"/>
+
+  <!-- top level olac element -->
+  <xs:element name="olac" type="dcterms:elementOrRefinementContainer"/>
+
+</xs:schema>
+

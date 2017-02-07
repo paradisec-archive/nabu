@@ -11,6 +11,11 @@
 @import 'select2';
 @import "active_admin/mixins";
 @import "active_admin/base";
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+@import "bootstrap/grid";
+@import "bootstrap/forms";
+@import "bootstrap/buttons";
 
 // Overriding any non-variable SASS must be done after the fact.
 // For example, to change the default status-tag color:

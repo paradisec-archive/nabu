@@ -62,20 +62,12 @@
       %tr
         %th Countries
         %td
-          - @collection.countries.each do |country|
-            #{country.name_with_code}
-            %br
+          = render partial: 'countries/country_list', locals: {countries: @collection.countries}
 
       %tr
         %th Languages
         %td
-          - @collection.languages.each do |language|
-            .left
-              #{language.name_with_code}
-            .right
-              = link_to 'See other information in this language', language.language_archive_link, target: '_blank'
-            %br
-            %br
+          = render partial: 'languages/language_list', locals: {languages: @collection.languages}
 
       %tr
         %th Region / village

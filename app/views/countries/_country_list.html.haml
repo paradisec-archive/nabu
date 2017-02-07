@@ -1,0 +1,5 @@
+- countries.each do |country|
+  = render partial: 'countries/country_row', locals: {country: country}
+- if countries.any?
+  %small
+    %em To view related information on a country, click its name
