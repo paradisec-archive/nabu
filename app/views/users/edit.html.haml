@@ -70,17 +70,21 @@
             %td= f.text_field :rights_transfer_reason, :autocomplete => :off
 
           %tr
-            %th= f.label 'Party Identifiers'
-            %td
-              %ul.list-unstyled
-                - PartyIdentifier::TYPES.each_with_index do |type, i|
-                  - existing = @user.party_identifiers.select{|x| x.party_type == i}.first
-                  %li.input-inline
-                    %input{type: 'hidden', readonly: true, name: "user[party_identifiers_attributes][#{i}][id]", value: existing.try(:id)}
-                    %input{type: 'hidden', readonly: true, name: "user[party_identifiers_attributes][#{i}][party_type]", value: i}
-                    %label.head= type
-                    %input.tail{type: 'text', required: false, name: "user[party_identifiers_attributes][#{i}][identifier]",
-                           value: existing.try(:identifier)}
+            %th= f.label 'NLA Persistent Identifier'
+            %td= f.text_field :party_identifier, :autocomplete => :off
+
+          -#TODO: uncomment when the rest of the party identifier stuff is complete and tested in staging
+          -#  %th= f.label 'Party Identifiers'
+          -#  %td
+          -#    %ul.list-unstyled
+          -#      - PartyIdentifier::TYPES.each_with_index do |type, i|
+          -#        - existing = @user.party_identifiers.select{|x| x.party_type == i}.first
+          -#        %li.input-inline
+          -#          %input{type: 'hidden', readonly: true, name: "user[party_identifiers_attributes][#{i}][id]", value: existing.try(:id)}
+          -#          %input{type: 'hidden', readonly: true, name: "user[party_identifiers_attributes][#{i}][party_type]", value: i}
+          -#          %label.head= type
+          -#          %input.tail{type: 'text', required: false, name: "user[party_identifiers_attributes][#{i}][identifier]",
+          -#                 value: existing.try(:identifier)}
 
   .twoup-2
     %fieldset
