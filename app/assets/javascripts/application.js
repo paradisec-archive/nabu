@@ -18,6 +18,11 @@
 //= require select2
 //= require markerclusterer
 //
+// For the query builder
+//= require jquery.extendext
+//= require doT
+//= require query-builder
+//
 // Our Stuff
 //= require select2_setup
 //= require per_page

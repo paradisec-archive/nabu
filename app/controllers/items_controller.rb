@@ -371,8 +371,16 @@ class ItemsController < ApplicationController
       end
     end
   end
+  FakeSolr = Struct.new(:total, :results)
 
   def build_advanced_search(params)
+    rules = params[:rule_json]
+    if rules.present?
+      evaluator = JqueryQueryBuilder::Evaluator.new(rules)
+      results = evaluator.get_matching_objects(Item.all)
+      return FakeSolr.new(results.count, results.paginate(page: params[:page], per_page: params[:per_page]))
+    end
+
     Item.solr_search(include: [:collection, :collector, :countries]) do
       # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|

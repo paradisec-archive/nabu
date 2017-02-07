@@ -15,6 +15,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+gem 'will_paginate'
+
 # Views
 gem 'jquery-rails'
 gem 'haml-rails'
@@ -73,6 +75,8 @@ gem 'rmagick'
 
 # Scheduling
 gem 'whenever', :require => false
+
+gem 'jquery_query_builder-rails'
 
 group :development, :test do
   gem 'turn', '~> 0.8.3', :require => false

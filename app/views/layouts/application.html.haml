@@ -15,9 +15,9 @@
     = stylesheet_link_tag :print,  :media => 'print'
     /[if lt IE 8]
       = stylesheet_link_tag :ie, :media => 'screen, projection'
-
     = javascript_include_tag :application
     = javascript_include_tag 'http://maps.googleapis.com/maps/api/js'
+    = javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"
 
     = csrf_meta_tags
     - analytical.identify(current_user.id, :email => current_user.email) if current_user

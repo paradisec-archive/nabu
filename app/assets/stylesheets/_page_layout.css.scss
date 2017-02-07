@@ -62,3 +62,11 @@ body.bp .input-inline {
   }
 }
 
+
+.drawer {
+  overflow: hidden;
+
+  &.closed {
+    height: 0;
+  }
+}

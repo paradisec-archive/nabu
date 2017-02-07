@@ -1,6 +1,4 @@
 
-= paginate @search.hits
-
 %table.table
   %tr
     = sortable :identifier, 'ID'
@@ -11,7 +9,7 @@
     = sortable :updated_at, 'Modification Date'
     %th Actions
 
-    - @search.each_hit_with_result do |hit, item|
+    - @search.results.each do |item|
       %tr
         %td= item.full_identifier
         %td= item.title
@@ -27,8 +25,6 @@
 
 -if @search.results.empty?
   %p.bold There were NO results for your search.
-
-= paginate @search.hits
 
 %p
   %button.per_page{:data => {:per => 10}} Show 10
