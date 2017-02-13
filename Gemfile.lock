@@ -128,6 +128,11 @@ GEM
     database_cleaner (1.2.0)
     debug_inspector (0.0.2)
     debugger-linecache (1.2.0)
+    delayed_job (4.1.2)
+      activesupport (>= 3.0, < 5.1)
+    delayed_job_active_record (4.1.1)
+      activerecord (>= 3.0, < 5.1)
+      delayed_job (>= 3.0, < 5)
     devise (2.2.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -427,7 +432,9 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   compass-rails
   country-select
+  daemons
   database_cleaner
+  delayed_job_active_record
   devise (= 2.2.3)
   email_spec
   factory_girl_rails
