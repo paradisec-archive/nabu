@@ -1,11 +1,12 @@
 class ItemCatalogService
   def initialize(item)
     @item = item
+    @template = OfflineController.new
   end
 
-  # since rendering templates is a controller or view task, simply pass in the data you want
-  # stored into the catalog file. this will probably be a render_to_string of the desired template
-  def save_file(data)
+  def save_file
+    data = @template.render_to_string template: 'items/catalog_export', formats: [:xml], handlers: [:haml], locals: {item: @item}
+
     directory = Nabu::Application.config.archive_directory +
       "#{@item.collection.identifier}/#{@item.identifier}/"
 

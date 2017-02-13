@@ -284,10 +284,11 @@ class ItemsController < ApplicationController
       end
 
       appendable.each_pair do |k, v|
-        if item.public_send(k).nil?
-          params[:item][k.to_sym] = v unless v.blank?
+        existing = item.public_send(k)
+        if existing.present?
+          params[:item][k.to_sym] = existing + v unless v.blank?
         else
-          params[:item][k.to_sym] = item.public_send(k) + v unless v.blank?
+          params[:item][k.to_sym] = v unless v.blank?
         end
       end
       unless item.update_attributes(params[:item])
@@ -461,10 +462,7 @@ class ItemsController < ApplicationController
 
   def save_item_catalog_file(item)
     return if item.nil?
-    # render the template here because you can't access render in the service
-    data = render_to_string :template => 'items/catalog_export.xml.haml', locals: {item: item}
-
-    ItemCatalogService.new(item).save_file(data)
+    ItemCatalogService.new(item).delay.save_file
   end
 
   def build_solr_search(params)

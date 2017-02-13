@@ -74,6 +74,10 @@ gem 'rmagick'
 # Scheduling
 gem 'whenever', :require => false
 
+# Background processing
+gem 'delayed_job_active_record'
+gem 'daemons'
+
 group :development, :test do
   gem 'turn', '~> 0.8.3', :require => false
   gem 'rspec-rails', '~> 2.0'
