@@ -150,10 +150,10 @@ ActiveRecord::Schema.define(:version => 20170212232129) do
   end
 
   create_table "delayed_jobs", :force => true do |t|
-    t.integer  "priority",   :default => 0, :null => false
-    t.integer  "attempts",   :default => 0, :null => false
-    t.text     "handler",                   :null => false
-    t.text     "last_error"
+    t.integer  "priority",                       :default => 0, :null => false
+    t.integer  "attempts",                       :default => 0, :null => false
+    t.text     "handler",    :limit => 16777215,                :null => false
+    t.text     "last_error", :limit => 16777215
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"

@@ -277,8 +277,9 @@ class ItemsController < ApplicationController
       end
     end
 
+    Rails.logger.info {"#{DateTime.now} BEFORE Bulk update with #{@items.count} items"}
     invalid_record = false
-    @items.each do |item|
+    @items.find_each do |item|
       if item.nil? # I don't think this should be able to be nil
         next
       end
@@ -296,20 +297,22 @@ class ItemsController < ApplicationController
         @item = item
         break
       end
+
       # save updated item info to xml file
       save_item_catalog_file(item)
     end
 
-    appendable.each_pair do |k, v|
-      params[:item][k.to_sym] = nil
-      params[:item]["bulk_edit_append_#{k}"] = v
-    end
+    Rails.logger.info {"#{DateTime.now} AFTER Bulk update"}
 
     if invalid_record
+      Rails.logger.info {"#{DateTime.now} ERROR Bulk update"}
+
       @search = build_advanced_search(params)
       @page_title = 'Nabu - Items Bulk Update'
       render :action => 'bulk_edit'
     else
+      Rails.logger.info {"#{DateTime.now} SUCCESS Bulk update"}
+
       flash[:notice] = 'Items were successfully updated.'
       redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
     end
