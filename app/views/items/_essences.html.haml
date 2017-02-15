@@ -37,6 +37,6 @@
 = paginate @files, :param_name => :files_page
 
 %p
-  %button.per_page{:data => {:per => 10, :param_name => :files_per_page}} Show 10
-  %button.per_page{:data => {:per => 50, :param_name => :files_per_page}} Show 50
-  %button.per_page{:data => {:per => @num_files, :param_name => :files_per_page}} Show all
+  -['10','50',"all #{@files.count}"].each do |n|
+    = link_to "Show #{n}", params.merge(files_per_page: n.sub('all ', ''), files_page: n.start_with?('all') ? 1 : params[:files_page]), class: 'button'
+

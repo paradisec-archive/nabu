@@ -70,3 +70,45 @@ body.bp .input-inline {
     height: 0;
   }
 }
+
+.pagination-container {
+  > * {
+    display: inline-block;
+  }
+
+  .pagination {
+    a {
+      padding: 5px;
+      margin: 2px 0;
+      &.next_page, &.previous_page {
+        padding: 2px;
+        margin: 2px;
+
+      }
+    }
+    .current {
+      font-weight: bold;
+      font-style: normal;
+    }
+  }
+
+  .next_page, .last_page, .previous_page, .first_page {
+    padding: 2px;
+    margin: 2px;
+    border: 1px solid rgba(200,200,200,0.5);
+    border-radius: 4px;
+    line-height: 1.2;
+    &.disabled {
+      border: none;
+      &:hover {
+        border: none;
+        background: inherit;
+      }
+    }
+    &:hover {
+      border: 1px solid rgba(200,200,200,1);
+      background: rgba(200,200,200,0.5);
+    }
+  }
+
+}

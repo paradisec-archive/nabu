@@ -36,7 +36,13 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    @search = build_advanced_search(params)
+    @fields = Item.column_names
+    if params[:clause].present?
+      puts "Clauses: #{params[:clause]}"
+      @search = build_query(params[:clause], params[:page], params[:per_page])
+    else
+      @search = build_advanced_search(params)
+    end
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -45,6 +51,35 @@ class ItemsController < ApplicationController
         end
       end
     end
+  end
+
+  def sql_operator(operator)
+    case operator
+      when 'is'
+        return '='
+      when 'is_not'
+        return '!='
+      when 'contains'
+        return 'like'
+      when 'without'
+        return 'not like'
+    end
+  end
+
+  def build_query(clauses, page, per_page)
+    results = Item
+    clauses.each_pair do |_, clause|
+      clause_operator = sql_operator(clause['operator'])
+      clause_sql = "#{clause['field']} #{clause_operator} ?"
+      value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
+      value_sql = value_sql.sub('true', '1').sub('false', '0')
+      if clause['logic'] && clause['logic'] == 'OR'
+        results = results.or(Item.where(clause_sql, value_sql))
+      else
+        results = results.where(clause_sql, value_sql)
+      end
+    end
+    results.page(page || 1).per(per_page || -1)
   end
 
   def new
@@ -371,16 +406,11 @@ class ItemsController < ApplicationController
       end
     end
   end
-  FakeSolr = Struct.new(:total, :results)
+  FakeSolr = Struct.new(:total, :results) do
+
+  end
 
   def build_advanced_search(params)
-    rules = params[:rule_json]
-    if rules.present?
-      evaluator = JqueryQueryBuilder::Evaluator.new(rules)
-      results = evaluator.get_matching_objects(Item.all)
-      return FakeSolr.new(results.count, results.paginate(page: params[:page], per_page: params[:per_page]))
-    end
-
     Item.solr_search(include: [:collection, :collector, :countries]) do
       # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|
@@ -392,6 +422,7 @@ class ItemsController < ApplicationController
       Sunspot::Setup.for(Item).fields.each do |field|
         next if params[field.name].blank?
         case field.type
+        when Sunspot::Type::StringType
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
         when Sunspot::Type::BooleanType

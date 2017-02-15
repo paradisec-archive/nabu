@@ -15,8 +15,6 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-gem 'will_paginate'
-
 # Views
 gem 'jquery-rails'
 gem 'haml-rails'
@@ -37,6 +35,7 @@ gem 'devise', '2.2.3'
 gem 'cancancan', '~> 1.13.1'
 
 # Database improvements
+gem 'rails_or'
 gem 'squeel'
 gem 'nilify_blanks'
 
