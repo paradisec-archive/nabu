@@ -270,10 +270,7 @@ class CollectionsController < ApplicationController
           saved_items += 1
           added_items += "#{item.identifier}, "
 
-          # render the template here because you can't access render in the service
-          data = render_to_string :template => 'items/catalog_export.xml.haml', locals: {item: item}
-
-          ItemCatalogService.new(item).save_file(data)
+          ItemCatalogService.new(item).delay.save_file
         end
       end
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
