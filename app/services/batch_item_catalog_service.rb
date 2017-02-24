@@ -15,8 +15,6 @@ class BatchItemCatalogService
   end
 
   def process_item(item)
-    data = @offline_template.render_to_string :template => 'items/catalog_export.xml.haml', locals: {item: item}
-
-    ItemCatalogService.new(item).save_file(data)
+    ItemCatalogService.new(item).delay.save_file
   end
 end
