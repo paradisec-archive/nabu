@@ -106,7 +106,7 @@ module Nabu
     def probe
       return @data if @data
 
-      output = %x{ffprobe -v0 -show_format -show_streams -of json #{@file}}
+      output = %x{ffprobe -v 0 -show_format -show_streams -of json #{@file}}
       raise "Error running ffprobe, returned #{$?} output: #{output}" unless $?.success?
 
       # deal with invalid UTF-8
