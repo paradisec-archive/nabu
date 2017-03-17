@@ -75,9 +75,9 @@
         - @fields.each do |col|
           %option{value: col, selected: clause['field'] == col}= col.titleize
       %select.operator{name: "clause[#{i}][operator]"}
-        - ['is', 'is_not', 'contains', 'does not contain'].each do |op|
+        - ['is', 'is_not', 'contains', 'does_not_contain', 'is_null', 'is_not_null'].each do |op|
           %option{value: op, selected: clause['operator'] == op}= op.titleize
-      %input.field-value{name: "clause[#{i}][input]", type: "text", value: clause['input'].to_s}
+      %input.field-value{name: "clause[#{i}][input]", type: "text", value: clause['input'].to_s, disabled: ['is_null', 'is_not_null'].include?(clause['operator'])}
       %div.actions
         %button.remove{name: "clause[#{i}]", role: "button", type: "button"} ×
         %button.add{role: "button", type: "button"} +
@@ -115,26 +115,28 @@
     }
 
     function replaceWithTextInput(el) {
-      replaceWithType(el, 'text')
+      return replaceWithType(el, 'text')
     }
 
     function replaceWithBooleanInput(el) {
-      replaceWithType(el, 'boolean');
+      return replaceWithType(el, 'boolean');
     }
 
     function replaceWithDateInput(el) {
       var field = replaceWithType(el, 'date');
       field.attr('id', 'dateClause'+$(el).prop('name').replace(/\D/,''));
       $(field).datepicker(window.datePickerOptions)
+      return field;
     }
 
     function replaceWithNumber(el) {
-      replaceWithType(el, 'number');
+      return replaceWithType(el, 'number');
     }
 
     function replaceWithCollection(el, id) {
       var field = replaceWithType(el, null, id);
       setup_select2(field);
+      return field;
     }
 
     function replaceWithAutocomplete(el, id) {
@@ -150,31 +152,35 @@
           break;
       }
       setup_select2(field);
+      return field;
     }
 
     function replaceFieldByType(typeForField, fieldName, valueField) {
       switch (typeForField) {
         case 'boolean':
-          replaceWithBooleanInput(valueField);
+          return replaceWithBooleanInput(valueField);
           break;
         case 'number':
-          replaceWithNumber(valueField);
+          return replaceWithNumber(valueField);
           break;
         case 'date':
-          replaceWithDateInput(valueField);
+          return replaceWithDateInput(valueField);
           break;
         case 'collection':
-          replaceWithCollection(valueField, fieldName);
+          return replaceWithCollection(valueField, fieldName);
           break;
         case 'autocomplete':
-          replaceWithAutocomplete(valueField, fieldName);
+          return replaceWithAutocomplete(valueField, fieldName);
           break;
         case 'text':
         default:
-          replaceWithTextInput(valueField);
+          return replaceWithTextInput(valueField);
           break;
       }
     }
+    $(document).on('change', '.operator', function() {
+      $(this).closest('.clause').find('.field-value').attr('disabled', $(this).val().indexOf('null') !== -1);
+    });
 
     $(document).on('change', '.field-name', function() {
       var fieldName = $(this).val();
@@ -209,8 +215,11 @@
     $(function() {
       $('.clause .field-value').each(function() {
         var fieldName = $(this).closest('.clause').find('.field-name').val();
+        var operator = $(this).closest('.clause').find('.operator').val();
         var typeForField = typesForFields[fieldName];
-        replaceFieldByType(typeForField, fieldName, $(this));
+        var field = replaceFieldByType(typeForField, fieldName, $(this));
+        $(field).attr('disabled', operator.indexOf('null') !== -1);
+        console.log(field, (operator.indexOf('null') !== -1));
       })
     })
   });

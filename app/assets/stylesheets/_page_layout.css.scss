@@ -117,5 +117,6 @@ body.bp .input-inline {
 }
 
 .drawer-toggle {
-  display: block;
+  display: inline-block;
+  clear: both;
 }

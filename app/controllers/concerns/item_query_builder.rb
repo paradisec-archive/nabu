@@ -50,8 +50,12 @@ module ItemQueryBuilder
         return '!='
       when 'contains'
         return 'like'
-      when 'does not contain'
+      when 'does_not_contain'
         return 'not like'
+      when 'is_null'
+        return 'is null'
+      when 'is_not_null'
+        return 'is not null'
     end
   end
 
@@ -61,15 +65,21 @@ module ItemQueryBuilder
     params = []
     clauses.each_pair do |_, clause|
       clause_operator = sql_operator(clause['operator'])
-      clause_sql = "#{clause['field']} #{clause_operator} ?"
-      value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
-      value_sql = value_sql.sub('true', '1').sub('false', '0')
+      clause_sql = "#{clause['field']} #{clause_operator}"
+
+      if clause['input']
+        clause_sql += ' ?'
+
+        value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
+        value_sql = value_sql.sub('true', '1').sub('false', '0')
+        params.push value_sql
+      end
+
       if clause['logic']
         query.push "#{clause['logic']} #{clause_sql}"
       else
         query.push clause_sql
       end
-      params.push value_sql
     end
     results = results.where(query.join(' '), *params)
     results.page(page || 1).per(per_page || -1)
