@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include HasReturnToLastSearch
+  include ItemQueryBuilder
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
@@ -36,7 +37,14 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    @search = build_advanced_search(params)
+    @fields = ItemQueryBuilder::FIELDS
+    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
+    if params[:clause].present?
+      puts "Clauses: #{params[:clause]}"
+      @search = build_query(params[:clause], params[:page], params[:per_page])
+    else
+      @search = build_advanced_search(params)
+    end
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -375,6 +383,9 @@ class ItemsController < ApplicationController
       end
     end
   end
+  FakeSolr = Struct.new(:total, :results) do
+
+  end
 
   def build_advanced_search(params)
     Item.solr_search(include: [:collection, :collector, :countries]) do
@@ -388,6 +399,7 @@ class ItemsController < ApplicationController
       Sunspot::Setup.for(Item).fields.each do |field|
         next if params[field.name].blank?
         case field.type
+        when Sunspot::Type::StringType
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
         when Sunspot::Type::BooleanType
