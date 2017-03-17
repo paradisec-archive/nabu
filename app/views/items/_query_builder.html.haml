@@ -1,19 +1,38 @@
 :css
-  .clause select, body.bp .clause input[type="text"] {
+  .clause select, .clause .select2, body.bp .clause input[type="text"] {
         margin: 0;
         padding: 5px 0;
-        display: inline-block;
-        min-width: 100px;
+        display: table-cell;
+        min-width: 200px;
+        width: 200px;
         max-width: 200px;
     }
+  .clause {
+    display: table;
+  }
+  .clause .actions {
+        display: table-cell;
+  }
   .clause button {
       margin: 0;
       padding: 5px;
   }
-  body.bp .qb > .clause > select,
-  body.bp .qb > .clause > input,
-  body.bp .qb > .clause > button {
+  .input-templates {
+    display: none;
   }
+
+.input-templates
+  = text_field_tag :text
+  = text_field_tag :date, nil, class: 'short'
+  = number_field_tag :number, nil, step: 'any'
+  = select_tag :boolean, options_for_select([%w(True true), %w(False false)], nil), include_blank: true
+  -# autocomplete (replace url, name and placeholder)
+  = hidden_field_tag :autocomplete
+  -# collection (pick by id)
+  = select_tag :collection_id, options_from_collection_for_select(Collection.all, :id, :identifier, nil), include_blank: true, data: {placeholder: 'Choose a collection...'}, class: 'select2'
+  = select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, nil), include_blank: true, data: {placeholder: 'Choose a university...'}, class: 'select2'
+  = select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, nil), include_blank: true, data: {placeholder: 'Choose a data access condition...'}, class: 'select2'
+  = select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, nil), include_blank: true, data: {placeholder: 'Choose a discourse...'}, class: 'select2'
 
 %form.qb{action: advanced_search_items_path}
   = hidden_field_tag :per_page, params[:per_page] || 10
@@ -22,21 +41,24 @@
   - (params['clause'] || {_:{}}).values.each_with_index do |clause, i|
     .clause{id: "clause[#{i}]"}
       - if i != 0
-        %select{name: "clause[#{i}][logic]"}
+        %select.boolean-type{name: "clause[#{i}][logic]"}
           -['AND', 'OR'].each do |l|
             %option{value: l, selected: l == clause['logic']}= l
-      %select{name: "clause[#{i}][field]"}
+      %select.field-name{name: "clause[#{i}][field]"}
         - @fields.each do |col|
           %option{value: col, selected: clause['field'] == col}= col.titleize
-      %select{name: "clause[#{i}][operator]"}
+      %select.operator{name: "clause[#{i}][operator]"}
         - ['is', 'is_not', 'contains', 'without'].each do |op|
           %option{value: op, selected: clause['operator'] == op}= op.titleize
-      %input{name: "clause[#{i}][input]", type: "text", value: clause['input'].to_s}
-      %button.remove{name: "clause[#{i}]", role: "button", type: "button"} ×
-      %button.add{role: "button", type: "button"} +
+      %input.field-value{name: "clause[#{i}][input]", type: "text", value: clause['input'].to_s}
+      %div.actions
+        %button.remove{name: "clause[#{i}]", role: "button", type: "button"} ×
+        %button.add{role: "button", type: "button"} +
   %button.submit{role: "submit", type: "submit"} Submit
 
 :javascript
+  var typesForFields = #{@types_for_fields.to_json};
+
   var logicSelect = '<select name="clause[0][logic]"><option value="AND">AND</option><option value="OR">OR</option></select>';
   $(document).ready(function() {
     $('button.add:not(:last)').remove();
@@ -50,6 +72,91 @@
           $('div.clause:last').append(addButton.clone());
         }
     });
+
+    function replaceWithType(el, name, id) {
+      var newInput;
+      if (id) {
+        newInput = $('#'+id).clone();
+      } else {
+        newInput = $('.input-templates > [name="'+name+'"]').clone();
+      }
+      newInput.attr('name', el.attr('name')).addClass('field-value');
+      newInput.val(el.last().val());
+      el.last().after(newInput);
+      el.remove();
+      return newInput;
+    }
+
+    function replaceWithTextInput(el) {
+      replaceWithType(el, 'text')
+    }
+
+    function replaceWithBooleanInput(el) {
+      replaceWithType(el, 'boolean');
+    }
+
+    function replaceWithDateInput(el) {
+      var field = replaceWithType(el, 'date');
+      field.attr('id', 'dateClause'+$(el).prop('name').replace(/\D/,''));
+      $(field).datepicker(window.datePickerOptions)
+    }
+
+    function replaceWithNumber(el) {
+      replaceWithType(el, 'number');
+    }
+
+    function replaceWithCollection(el, id) {
+      var field = replaceWithType(el, null, id);
+      setup_select2(field);
+    }
+
+    function replaceWithAutocomplete(el, id) {
+      var field = replaceWithType(el, 'autocomplete');
+      field.addClass('select2').data('placeholder', 'Choose a '+id.replace('_id', '')+'...');
+      switch (id) {
+        case 'collector_id':
+        case 'operator_id':
+          field.data('url', "#{users_path}");
+          break;
+        case 'language':
+          field.data('url', "#{languages_path}");
+          break;
+      }
+      setup_select2(field);
+    }
+
+    function replaceFieldByType(typeForField, fieldName, valueField) {
+      switch (typeForField) {
+        case 'boolean':
+          replaceWithBooleanInput(valueField);
+          break;
+        case 'number':
+          replaceWithNumber(valueField);
+          break;
+        case 'date':
+          replaceWithDateInput(valueField);
+          break;
+        case 'collection':
+          replaceWithCollection(valueField, fieldName);
+          break;
+        case 'autocomplete':
+          replaceWithAutocomplete(valueField, fieldName);
+          break;
+        case 'text':
+        default:
+          replaceWithTextInput(valueField);
+          break;
+      }
+    }
+
+    $(document).on('change', '.field-name', function() {
+      var fieldName = $(this).val();
+      var typeForField = typesForFields[fieldName];
+      var valueField = $(this).closest('.clause').find('.field-value');
+      $(this).closest('.clause').find('.ui-datepicker-trigger').remove(); // remove any leftover datepicker stuff
+      replaceFieldByType(typeForField, fieldName, valueField);
+    });
+
     $(document).on('click', 'button.add', function() {
         var numRows = $('div.clause').length;
         var row = $('[id="clause[0]"]').clone();
@@ -63,6 +170,20 @@
         row.find('input').val('');
         row.find('option').attr('selected', null);
         if (!row.find('button.add').length) row.append(addButton);
+
         $('.qb button.submit').before(row);
+
+        var fieldName = $(row).find('.field-name').val();
+        var typeForField = typesForFields[fieldName];
+        replaceFieldByType(typeForField, fieldName, $(row).find('.field-value'));
     });
+
+    // re-init the fields after page load
+    $(function() {
+      $('.clause .field-value').each(function() {
+        var fieldName = $(this).closest('.clause').find('.field-name').val();
+        var typeForField = typesForFields[fieldName];
+        replaceFieldByType(typeForField, fieldName, $(this));
+      })
+    })
   });

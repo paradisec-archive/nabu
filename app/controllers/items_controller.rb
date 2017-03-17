@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include HasReturnToLastSearch
+  include ItemQueryBuilder
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
@@ -36,7 +37,8 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    @fields = Item.column_names
+    @fields = ItemQueryBuilder::FIELDS
+    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
     if params[:clause].present?
       puts "Clauses: #{params[:clause]}"
       @search = build_query(params[:clause], params[:page], params[:per_page])
@@ -51,35 +53,6 @@ class ItemsController < ApplicationController
         end
       end
     end
-  end
-
-  def sql_operator(operator)
-    case operator
-      when 'is'
-        return '='
-      when 'is_not'
-        return '!='
-      when 'contains'
-        return 'like'
-      when 'without'
-        return 'not like'
-    end
-  end
-
-  def build_query(clauses, page, per_page)
-    results = Item
-    clauses.each_pair do |_, clause|
-      clause_operator = sql_operator(clause['operator'])
-      clause_sql = "#{clause['field']} #{clause_operator} ?"
-      value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
-      value_sql = value_sql.sub('true', '1').sub('false', '0')
-      if clause['logic'] && clause['logic'] == 'OR'
-        results = results.or(Item.where(clause_sql, value_sql))
-      else
-        results = results.where(clause_sql, value_sql)
-      end
-    end
-    results.page(page || 1).per(per_page || -1)
   end
 
   def new

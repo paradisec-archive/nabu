@@ -106,12 +106,11 @@ module Nabu
     def probe
       return @data if @data
 
-      output = %x{avprobe -show_format -show_streams -of json #@file}
-      raise "Error running avprobe, returned #{$?} output: #{output}" unless $?.success?
+      output = %x{ffprobe -v 0 -show_format -show_streams -of json #@file}
+      raise "Error running ffprobe, returned #{$?} output: #{output}" unless $?.success?
 
       # deal with invlaid UTF-8
       output.encode!('UTF-8', 'UTF-8', :invalid => :replace)
-
       @data = JSON.parse output
 
       if @data.empty? or @data['streams'].empty?
