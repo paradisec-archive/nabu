@@ -329,7 +329,7 @@ class Item < ActiveRecord::Base
     integer :id
     string :title
     string :identifier
-    string :full_identifier
+    string :full_identifier, stored: true
     string :university_name
     string :collector_name
     string :collector_sortname
