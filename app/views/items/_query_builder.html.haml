@@ -1,21 +1,48 @@
 :css
-  .clause select, .clause .select2, body.bp .clause input[type="text"] {
-        margin: 0;
-        padding: 5px 0;
-        display: table-cell;
-        min-width: 200px;
-        width: 200px;
-        max-width: 200px;
-    }
+  .clause select, body.bp .clause input {
+    margin: 0;
+    padding: 5px 0;
+    height: 26px;
+    display: table-cell;
+    min-width: 200px;
+    width: 200px;
+    max-width: 200px;
+  }
+  body.bp .clause input {
+    padding: 2px 0 0 0;
+    box-sizing: border-box;
+    box-shadow: none;
+  }
+  .clause .select2-container {
+    margin: 0;
+    padding: 0;
+    height: 26px;
+    display: table-cell;
+    min-width: 200px;
+    width: 200px;
+    max-width: 200px;
+  }
   .clause {
     display: table;
   }
   .clause .actions {
-        display: table-cell;
+    display: table-cell;
+    padding-left: 10px;
   }
-  .clause button {
-      margin: 0;
-      padding: 5px;
+  body.bp .clause button {
+    margin: 0;
+    padding: 0;
+    height: 26px;
+    width: 26px;
+    line-height: 26px;
+    color: #20538d;
+    font-weight: bold;
+    background: white;
+  }
+  body.bp .clause button:focus,
+  body.bp .clause button:hover {
+    outline: none;
+    background: #e5efff;
   }
   .input-templates {
     display: none;
