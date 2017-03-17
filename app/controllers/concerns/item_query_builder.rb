@@ -50,24 +50,28 @@ module ItemQueryBuilder
         return '!='
       when 'contains'
         return 'like'
-      when 'without'
+      when 'does not contain'
         return 'not like'
     end
   end
 
   def build_query(clauses, page, per_page)
     results = Item # TODO: add includes/joins here for languages, essences etc
+    query = []
+    params = []
     clauses.each_pair do |_, clause|
       clause_operator = sql_operator(clause['operator'])
       clause_sql = "#{clause['field']} #{clause_operator} ?"
       value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
       value_sql = value_sql.sub('true', '1').sub('false', '0')
-      if clause['logic'] && clause['logic'] == 'OR'
-        results = results.or(Item.where(clause_sql, value_sql))
+      if clause['logic']
+        query.push "#{clause['logic']} #{clause_sql}"
       else
-        results = results.where(clause_sql, value_sql)
+        query.push clause_sql
       end
+      params.push value_sql
     end
+    results = results.where(query.join(' '), *params)
     results.page(page || 1).per(per_page || -1)
   end
 end

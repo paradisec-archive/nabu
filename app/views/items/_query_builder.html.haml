@@ -75,7 +75,7 @@
         - @fields.each do |col|
           %option{value: col, selected: clause['field'] == col}= col.titleize
       %select.operator{name: "clause[#{i}][operator]"}
-        - ['is', 'is_not', 'contains', 'without'].each do |op|
+        - ['is', 'is_not', 'contains', 'does not contain'].each do |op|
           %option{value: op, selected: clause['operator'] == op}= op.titleize
       %input.field-value{name: "clause[#{i}][input]", type: "text", value: clause['input'].to_s}
       %div.actions
