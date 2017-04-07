@@ -48,7 +48,7 @@ module ItemQueryBuilder
       'essences.fps' => 'number',
       'essences.samplerate' => 'number',
       'essences.channels' => 'number',
-  }
+  }.with_indifferent_access
 
   OPERATORS = ['is', 'is_not', 'contains', 'does_not_contain', 'is_null', 'is_not_null', 'less_than', 'more_than']
 
@@ -102,10 +102,15 @@ module ItemQueryBuilder
         clause_sql = "not exists (select id from #{join_name} where #{field} #{inverse_operator}"
       end
 
-      if clause['input']
+      input_value = clause['input']
+      if input_value
         clause_sql += ' ?'
 
-        value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
+        if TYPES_FOR_FIELDS[field] == 'date'
+          input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
+        end
+
+        value_sql = clause_operator.include?('like') ? "%#{input_value}%" : input_value
         value_sql = value_sql.sub('true', '1').sub('false', '0')
         values.push value_sql
       end

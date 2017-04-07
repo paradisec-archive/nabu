@@ -49,7 +49,7 @@ Nabu::Application.configure do
   # config.assets.precompile += %w( search.js )
   config.assets.precompile += %w[active_admin.css active_admin.js per_page.js jquery-query.js maps.js]
   config.assets.precompile += %w[screen.css print.css ie.css]
-  config.assets.precompile += %w[query_builder.js]
+  config.assets.precompile += %w[query_builder.js advanced_search.js advanced_search.js.coffee]
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
