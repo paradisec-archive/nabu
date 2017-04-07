@@ -63,6 +63,11 @@ class ItemSearchService
         end
       end
 
+      if params[:exclusions].present?
+        exclusions = params[:exclusions].split(',')
+        without(:id, exclusions)
+      end
+
       unless current_user && current_user.admin?
         any_of do
           with(:private, false)

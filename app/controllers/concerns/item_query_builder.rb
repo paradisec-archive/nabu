@@ -1,6 +1,4 @@
 module ItemQueryBuilder
-  FIELDS = Item.column_names.sort # TODO: add join tables to this
-
   # used by the front-end to provide a relevant input mechanism for the selected field
   TYPES_FOR_FIELDS = {
       collection_id: 'collection',
@@ -38,50 +36,95 @@ module ItemQueryBuilder
       south_limit: 'number',
       west_limit: 'number',
       east_limit: 'number',
-      doi: 'text'
+      doi: 'text',
+      'countries.id' => 'autocomplete',
+      'subject_languages.id' => 'autocomplete',
+      'content_languages.id' => 'autocomplete',
+      'data_categories.id' => 'autocomplete',
+      'data_types.id' => 'autocomplete',
+      'agents.id' => 'autocomplete',
+      'essences.filename' => 'text',
+      'essences.mimetype' => 'autocomplete',
+      'essences.fps' => 'number',
+      'essences.samplerate' => 'number',
+      'essences.channels' => 'number',
   }
 
+  OPERATORS = ['is', 'is_not', 'contains', 'does_not_contain', 'is_null', 'is_not_null', 'less_than', 'more_than']
 
-  def sql_operator(operator)
+
+  def sql_operator(operator, invert=false)
     case operator
       when 'is'
-        return '='
+        return invert ? '!=' : '='
       when 'is_not'
-        return '!='
+        return invert ? '=' : '!='
       when 'contains'
-        return 'like'
+        return invert ? 'not like' : 'like'
       when 'does_not_contain'
-        return 'not like'
+        return invert ? 'like' : 'not like'
       when 'is_null'
-        return 'is null'
+        return invert ? 'is not null' : 'is null'
       when 'is_not_null'
-        return 'is not null'
+        return invert ? 'is null' : 'is not null'
+      when 'less_than'
+        return invert ? '>=' : '<'
+      when 'more_than'
+        return invert ? '<=' : '>'
     end
   end
 
-  def build_query(clauses, page, per_page)
-    results = Item # TODO: add includes/joins here for languages, essences etc
+  def build_query(params)
+    clauses = params[:clause]
+    page = params[:page] || 1
+    per_page = params[:per_page] || -1
+
+    results = Item
+    joins = []
     query = []
-    params = []
+    values = []
     clauses.each_pair do |_, clause|
-      clause_operator = sql_operator(clause['operator'])
-      clause_sql = "#{clause['field']} #{clause_operator}"
+      field = clause['field']
+      if field.include?('.')
+        join_name = field.split('.').first
+        joins.push join_name
+        field = field.sub(/^.+_languages/, 'languages')
+      else
+        join_name = nil
+      end
+
+      clause_operator = sql_operator(clause['operator'], clause['logic'] == 'NOT')
+      is_negative = clause_operator.include?('not')
+      clause_sql = "#{field} #{clause_operator}"
+
+      if is_negative && join_name.present?
+        inverse_operator = sql_operator(clause['operator'], false)
+        clause_sql = "not exists (select id from #{join_name} where #{field} #{inverse_operator}"
+      end
 
       if clause['input']
         clause_sql += ' ?'
 
         value_sql = clause_operator.include?('like') ? "%#{clause['input']}%" : clause['input']
         value_sql = value_sql.sub('true', '1').sub('false', '0')
-        params.push value_sql
+        values.push value_sql
+      end
+
+      if is_negative && join_name.present?
+        clause_sql += ')'
       end
 
       if clause['logic']
-        query.push "#{clause['logic']} #{clause_sql}"
+        query.push "#{clause['logic'].sub('NOT', 'AND')} #{clause_sql}"
       else
         query.push clause_sql
       end
     end
-    results = results.where(query.join(' '), *params)
-    results.page(page || 1).per(per_page || -1)
+    results = results.includes(joins.uniq).where(query.join(' '), *values)
+    if params[:exclusions].present?
+      exclusions = params[:exclusions].split(',')
+      results = results.where('items.id not in (?)', exclusions)
+    end
+    results.page(page).per(per_page)
   end
 end

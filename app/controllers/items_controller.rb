@@ -38,15 +38,7 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    @fields = ItemQueryBuilder::FIELDS
-    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
-    if params[:clause].present?
-      @search = build_query(params[:clause], params[:page], params[:per_page])
-      session[:result_ids] = @search.map(&:full_identifier)
-    else
-      @search = ItemSearchService.build_advanced_search(params, current_user)
-      session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
-    end
+    build_advanced_search(params)
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -260,7 +252,7 @@ class ItemsController < ApplicationController
     @item.collection = Collection.new
     @page_title = 'Nabu - Items Bulk Update'
 
-    @search = ItemSearchService.build_advanced_search(params, current_user)
+    build_advanced_search(params)
   end
 
 
@@ -317,7 +309,7 @@ class ItemsController < ApplicationController
     if invalid_record
       Rails.logger.info {"#{DateTime.now} ERROR Bulk update"}
 
-      @search = ItemSearchService.build_advanced_search(params, current_user)
+      build_advanced_search(params[:original_search_params])
       @page_title = 'Nabu - Items Bulk Update'
       render :action => 'bulk_edit'
     else
@@ -447,5 +439,19 @@ class ItemsController < ApplicationController
         @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       end
     end
+  end
+
+  def build_advanced_search(params)
+    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
+    @fields = @types_for_fields.keys.map(&:to_s).sort
+
+    if params[:clause].present?
+      @search = build_query(params)
+      session[:result_ids] = @search.map(&:full_identifier)
+    else
+      @search = ItemSearchService.build_advanced_search(params, current_user)
+      session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
+    end
+
   end
 end

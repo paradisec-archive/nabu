@@ -6,7 +6,7 @@
 
 %p== #{@search.total} search results
 
-= render 'items/search_results'
+= render partial: 'search_results', locals: {show_exclusions: true}
 
 = form_for @item, :url => bulk_update_items_path, :method => :put do |f|
   - if @item.errors.any?

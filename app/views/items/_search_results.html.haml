@@ -10,6 +10,8 @@
     %th Countries
     = sortable :updated_at, 'Modification Date'
     %th Actions
+    - if show_exclusions
+      %th Exclude?
 
     - res = @search.respond_to?(:results) ? @search.results : @search
     - res.each do |item|
@@ -25,12 +27,18 @@
         %td
           = link_to 'View', [item.collection, item]
           = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
+        - if show_exclusions
+          %td
+            %label{style: 'width: 100%; display: block; text-align:center'}= check_box_tag('exclude[]', item.id, false, id: "exclude_#{item.id}")
 
 -if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
   = render partial: 'items/pagination', locals: {results: @search}
 -else
   %p.bold There were NO results for your search.
 
-%p
+%div
   -['10','50','100',"all #{@search.respond_to?(:total) ? @search.total : @search.total_count}"].each do |n|
     = link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+  - if show_exclusions
+    .right
+      = link_to 'Clear Exclusions', params.merge(exclusions: []) if params[:exclusions].present?
