@@ -1,18 +1,3 @@
-- content_for :page_scripts do
-  = javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.3.2/wavesurfer.min.js'
-  = javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js'
-
-
-:css
-  #audio_controls {
-    text-align: center;
-  }
-  #audio-controls a {
-    height: 15px;
-    width: 15px;
-    line-height: 15px;
-  }
-
 .right
   = link_to 'Previous file', [@collection, @item, @essence.prev_essence], :class => 'button' if @essence.prev_essence
   - if @essence.next_essence
@@ -84,7 +69,7 @@
         %td.empty
         %td.empty
           - if can? :download, @essence
-            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence)
+            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
           - else
             %p No access rights to download essence.
             %p
@@ -96,59 +81,21 @@
     %legend Preview
     #media_item
       - if can? :display, @essence
-        - case @essence.mimetype
-        - when /^image\/(jpeg|png|gif|tiff|bmp)/
-          = image_tag display_collection_item_essence_path(@collection, @item, @essence)
-        - when /^audio\/(mpeg|ogg|(x-)?wav)/
-          #waveform
-            %p Loading...
-          #audio_controls
-            %span#current_time.left 00:00:00
-            %a.skip.back-2x{title: 'Back 30 seconds', data: {skip: -30}}
-              %i.glyphicon.glyphicon-fast-backward
-            %a.skip.back{title: 'Back 5 seconds', data: {skip: -5}}
-              %i.glyphicon.glyphicon-step-backward
-            %a.play-pause
-              %i.glyphicon.glyphicon-play
-            %a.skip.forward{title: 'Forward 5 seconds', data: {skip: 5}}
-              %i.glyphicon.glyphicon-step-forward
-            %a.skip.forward-2x{title: 'Forward 30 seconds', data: {skip: 30}}
-              %i.glyphicon.glyphicon-fast-forward
-            %span#duration.right 00:00:00
-
-          :javascript
-            var wavesurfer = WaveSurfer.create({
-                container: '#waveform'
-            });
-            var toTimeString = function (seconds) {
-                var hours   = Math.floor(seconds / 3600);
-                var minutes = Math.floor((seconds - (hours * 3600)) / 60);
-                var seconds_part = Math.floor(seconds - (hours * 3600) - (minutes * 60));
-
-                if (hours   < 10) {hours   = "0"+hours;}
-                if (minutes < 10) {minutes = "0"+minutes;}
-                if (seconds_part < 10) {seconds_part = "0"+seconds_part;}
-                return hours+':'+minutes+':'+seconds_part;
-            }
-            wavesurfer.load('#{display_collection_item_essence_path(@collection, @item, @essence)}');
-            wavesurfer.on('ready', function() {
-              $('#waveform').find('p').remove();
-              $('#duration').text(toTimeString(wavesurfer.getDuration()));
-            });
-            wavesurfer.on('audioprocess', function() {
-              $('#current_time').text(toTimeString(wavesurfer.getCurrentTime()));
-            });
-            var controls = $('#audio_controls');
-            controls.find('.skip').click(function() {wavesurfer.skip($(this).data('skip'));})
-            controls.find('.play-pause').click(function() {
-              $(this).find('i').toggleClass('glyphicon-play glyphicon-pause');
-              wavesurfer.playPause();
-            });
-
-        - when /^video\/(mp4|mpeg|webm|ogg)/
-          = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+        - if File.exist?(@essence.path)
+          - case @essence.mimetype
+          - when /^image\/(jpeg|png|gif|tiff|bmp)/
+            = image_tag display_collection_item_essence_path(@collection, @item, @essence)
+          - when /^audio\/(mpeg|ogg|(x-)?wav)/
+            = audio_tag display_collection_item_essence_path(@collection, @item, @essence), controls: true, type: @essence.mimetype
+          - when /^video\/(mp4|mpeg|webm|ogg)/
+            = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+          - else
+            %i Can't display file preview - unknown file format.
         - else
-          %i Can't display file preview - unknown file format.
+          %p
+            File is not present on the server. Please contact
+            =link_to 'admin@paradisec.org.au', 'mailto:admin@paradisec.org.au'
+            to report this.
       - else
         %p No access rights to preview essence.
         %p
