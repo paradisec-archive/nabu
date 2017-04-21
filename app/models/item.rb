@@ -259,8 +259,6 @@ class Item < ActiveRecord::Base
   end
 
   searchable(
-    # No need for auto_index, so long as reindex is run every half hour.
-    auto_index: false,
     include: [:content_languages, :subject_languages, :countries, :data_categories, :data_types, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
   ) do
     # Things we want to perform full text search on

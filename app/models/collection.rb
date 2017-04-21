@@ -157,8 +157,6 @@ class Collection < ActiveRecord::Base
   end
 
   searchable(
-    # No need for auto_index, so long as reindex is run every half hour.
-    auto_index: false,
     include: [
       :university, :collector, :operator, :field_of_research, :languages, :countries, :admins,
       items: [:admins, :users]
