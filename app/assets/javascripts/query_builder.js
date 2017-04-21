@@ -54,7 +54,9 @@ $(document).ready(function() {
 
     function replaceWithAutocomplete(el, id) {
         var field = replaceWithType(el, 'autocomplete');
-        var placeholderLabel = id.replace('_id', '').replace('_',' ').replace('s.id','').replace(/ie$/,'y')
+        var placeholderLabel = id.replace('_id', '').replace('_',' ').replace('s.id','')
+                                 .replace(/ie$/,'y').replace('s.m', ' m');
+        var useIdAsLabel = false;
         field.addClass('select2').data('placeholder', 'Choose a '+placeholderLabel+'...');
         switch (id) {
             case 'collector_id':
@@ -75,8 +77,12 @@ $(document).ready(function() {
             case 'data_types.id':
                 field.data('url', dataTypesPath);
                 break;
+            case 'essences.mimetype':
+                field.data('url', mimeTypesPath);
+                useIdAsLabel = true;
+                break;
         }
-        setup_select2(field);
+        setup_select2(field, useIdAsLabel);
         return field;
     }
 
