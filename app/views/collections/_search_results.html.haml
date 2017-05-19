@@ -6,8 +6,8 @@
     = sortable :identifier, 'ID'
     = sortable :title
     = sortable :collector_sortname, 'Collector'
-    %th Countries
-    %th Languages
+    = sortable :sort_country, 'Countries'
+    = sortable :sort_language, 'Languages'
     = sortable :created_at, 'Creation Date'
     = sortable :university_name, 'Source university'
     %th Actions
@@ -18,10 +18,10 @@
         %td= collection.title
         %td= collection.collector.name
         %td
-          - collection.countries.each do |country|
+          - collection.countries.order(:name).each do |country|
             = country.name
         %td
-          - collection.languages.each do |language|
+          - collection.languages.order(:name).each do |language|
             = language.name
         %td= collection.created_at.to_date
         %td= collection.university_name

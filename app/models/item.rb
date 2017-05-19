@@ -368,6 +368,9 @@ class Item < ActiveRecord::Base
     string :country_codes, :multiple => true do
       countries.map(&:code)
     end
+    string :sort_country do
+      countries.order('name ASC').map(&:name).join(',')
+    end
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
     end

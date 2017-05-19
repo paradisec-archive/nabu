@@ -153,7 +153,7 @@ class Collection < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{identifier title collector_sortname university_name created_at}
+    %w{identifier title collector_sortname university_name created_at sort_language sort_country}
   end
 
   searchable(
@@ -225,6 +225,12 @@ class Collection < ActiveRecord::Base
     end
     string :country_codes, :multiple => true do
       countries.map(&:code)
+    end
+    string :sort_language do
+      languages.order('name ASC').map(&:name).join(',')
+    end
+    string :sort_country do
+      countries.order('name ASC').map(&:name).join(',')
     end
     float :north_limit
     float :south_limit

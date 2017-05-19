@@ -7,7 +7,7 @@
     = sortable :title
     = sortable :collector_sortname, 'Collector'
     = sortable :language, 'Language as given'
-    %th Countries
+    = sortable :sort_country, 'Countries'
     = sortable :updated_at, 'Modification Date'
     %th Actions
     - if show_exclusions
@@ -21,7 +21,7 @@
         %td= item.collector.name
         %td= item.language
         %td
-          - item.countries.each do |country|
+          - item.countries.order(:name).each do |country|
             = country.name
         %td= item.updated_at.to_date
         %td
