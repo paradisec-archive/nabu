@@ -149,8 +149,8 @@
   %fieldset
     %legend{style: 'width: 100%;'}
       %span= "Content Files (#{@num_files})"
-      %a{style: 'float: right;',
-         href: "#{Nabu::Application.config.viewer_url}/#/#{@collection.identifier}/#{@item.identifier}"} View all
+    %h3.text-center{style: 'margin-fbottom: 0.5rem;'}
+      %a{href: "#{Nabu::Application.config.viewer_url}/#/#{@collection.identifier}/#{@item.identifier}"} View file contents
     = render :partial => 'essences'
 
   %fieldset
