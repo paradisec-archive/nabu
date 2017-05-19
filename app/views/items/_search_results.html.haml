@@ -41,4 +41,5 @@
     = link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
   - if show_exclusions
     .right
+      %button#update_exclusions{style: 'display: none;'} Exclude
       = link_to 'Clear Exclusions', params.merge(exclusions: []) if params[:exclusions].present?

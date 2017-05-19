@@ -62,6 +62,8 @@ $(document).ready(function() {
             case 'collector_id':
             case 'operator_id':
             case 'agents.id':
+            case 'users.id':
+            case 'admins.id':
                 field.data('url', usersPath);
                 break;
             case 'subject_languages.id':

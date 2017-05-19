@@ -43,6 +43,8 @@ module ItemQueryBuilder
       'data_categories.id' => 'autocomplete',
       'data_types.id' => 'autocomplete',
       'agents.id' => 'autocomplete',
+      'admins.id' => 'autocomplete',
+      'users.id' => 'autocomplete',
       'essences.filename' => 'text',
       'essences.mimetype' => 'autocomplete',
       'essences.fps' => 'number',
@@ -87,8 +89,13 @@ module ItemQueryBuilder
       field = clause['field']
       if field.include?('.')
         join_name = field.split('.').first
+        join_name = join_name.sub(/(?!essences)/, 'item_\1')
+        field = field.sub(/(users|admins|agents).id/, 'item_\1.user_id')
+        field = field.sub(/(.*languages).id/, 'item_\1.language_id')
+        field = field.sub(/(.*countries).id/, 'item_\1.country_id')
+        field = field.sub(/(.*data_categories).id/, 'item_\1.data_category_id')
+        field = field.sub(/(.*data_types).id/, 'item_\1.data_type_id')
         joins.push join_name
-        field = field.sub(/^.+_languages/, 'languages')
       else
         join_name = nil
       end
