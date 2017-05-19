@@ -5,6 +5,8 @@ ActiveAdmin.register_page "Activity Log" do
       div :class => 'panel_contents' do
         insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Version.where(:item_type => 'Collection').order('created_at desc').limit(10) do
 
+          column 'Timestamp', :created_at
+
           column :collection_id do |v|
             collection = v.reify
             if collection
@@ -14,12 +16,12 @@ ActiveAdmin.register_page "Activity Log" do
             end
           end
 
-          column :event
-
           column :changed_by do |v|
             u = User.where(:id => v.whodunnit).first
             u.nil? ? 'NA' : u.name
           end
+
+          column :event
 
           column :changeset do |v|
             ul do
