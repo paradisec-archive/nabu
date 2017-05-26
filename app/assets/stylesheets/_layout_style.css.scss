@@ -198,7 +198,7 @@ body.bp {
   table.table {
     box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 3px;
     margin-bottom: 5px;
-    word-break: break-word;
+    word-break: keep-all;
 
     th {
       background: #617798;
@@ -246,7 +246,7 @@ body.bp {
   table.form {
     margin-bottom: 0;
     overflow-x: scroll;
-    word-break: break-word;
+    word-break: keep-all;
     td {
       vertical-align: top;
       min-width: 50px;
@@ -411,9 +411,10 @@ body.bp {
   // audio / video
   #media_item {
     text-align: center;
-    img, video {
-      width: 90%;
-      border: 5px solid black;
+    > * {
+      width: 100%;
+      height: auto;
+      min-height: 32px;
     }
   }
 
@@ -613,4 +614,8 @@ body.bp {
 
 .full-width {
   width: 100%;
+}
+
+.hidden {
+  display: none;
 }

@@ -35,6 +35,7 @@ gem 'devise', '2.2.3'
 gem 'cancancan', '~> 1.13.1'
 
 # Database improvements
+gem 'rails_or'
 gem 'squeel'
 gem 'nilify_blanks'
 

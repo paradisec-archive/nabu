@@ -1,5 +1,5 @@
-
-= paginate @search.hits
+-if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
+  = render partial: 'items/pagination', locals: {results: @search}
 
 %table.table
   %tr
@@ -7,31 +7,39 @@
     = sortable :title
     = sortable :collector_sortname, 'Collector'
     = sortable :language, 'Language as given'
-    %th Countries
+    = sortable :sort_country, 'Countries'
     = sortable :updated_at, 'Modification Date'
     %th Actions
+    - if show_exclusions
+      %th Exclude?
 
-    - @search.each_hit_with_result do |hit, item|
+    - res = @search.respond_to?(:results) ? @search.results : @search
+    - res.each do |item|
       %tr
         %td= item.full_identifier
         %td= item.title
         %td= item.collector.name
         %td= item.language
         %td
-          - item.countries.each do |country|
+          - item.countries.order(:name).each do |country|
             = country.name
         %td= item.updated_at.to_date
         %td
           = link_to 'View', [item.collection, item]
           = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
+        - if show_exclusions
+          %td
+            %label{style: 'width: 100%; display: block; text-align:center'}= check_box_tag('exclude[]', item.id, false, id: "exclude_#{item.id}")
 
--if @search.results.empty?
+-if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
+  = render partial: 'items/pagination', locals: {results: @search}
+-else
   %p.bold There were NO results for your search.
 
-= paginate @search.hits
-
-%p
-  %button.per_page{:data => {:per => 10}} Show 10
-  %button.per_page{:data => {:per => 50}} Show 50
-  %button.per_page{:data => {:per => 100}} Show 100
-  %button.per_page{:data => {:per => @search.total}} Show all #{@search.total}
+%div
+  -['10','50','100',"all #{@search.respond_to?(:total) ? @search.total : @search.total_count}"].each do |n|
+    = link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+  - if show_exclusions
+    .right
+      %button#update_exclusions{style: 'display: none;'} Exclude
+      = link_to 'Clear Exclusions', params.merge(exclusions: []) if params[:exclusions].present?

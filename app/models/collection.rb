@@ -153,12 +153,10 @@ class Collection < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{identifier title collector_sortname university_name created_at}
+    %w{identifier title collector_sortname university_name created_at sort_language sort_country}
   end
 
   searchable(
-    # No need for auto_index, so long as reindex is run every half hour.
-    auto_index: false,
     include: [
       :university, :collector, :operator, :field_of_research, :languages, :countries, :admins,
       items: [:admins, :users]
@@ -227,6 +225,12 @@ class Collection < ActiveRecord::Base
     end
     string :country_codes, :multiple => true do
       countries.map(&:code)
+    end
+    string :sort_language do
+      languages.order('name ASC').map(&:name).join(',')
+    end
+    string :sort_country do
+      countries.order('name ASC').map(&:name).join(',')
     end
     float :north_limit
     float :south_limit

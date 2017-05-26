@@ -69,7 +69,7 @@
         %td.empty
         %td.empty
           - if can? :download, @essence
-            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence)
+            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
           - else
             %p No access rights to download essence.
             %p
@@ -79,18 +79,23 @@
 .twoup-2
   %fieldset
     %legend Preview
-    
     #media_item
       - if can? :display, @essence
-        - case @essence.mimetype
-        - when /^image\/(jpeg|png|gif|tiff|bmp)/
-          = image_tag display_collection_item_essence_path(@collection, @item, @essence)
-        - when /^audio\/(mpeg|ogg|(x-)?wav)/
-          = audio_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
-        - when /^video\/(mp4|mpeg|webm|ogg)/
-          = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+        - if File.exist?(@essence.path)
+          - case @essence.mimetype
+          - when /^image\/(jpeg|png|gif|tiff|bmp)/
+            = image_tag display_collection_item_essence_path(@collection, @item, @essence)
+          - when /^audio\/(mpeg|ogg|(x-)?wav)/
+            = audio_tag display_collection_item_essence_path(@collection, @item, @essence), controls: true, type: @essence.mimetype
+          - when /^video\/(mp4|mpeg|webm|ogg)/
+            = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
+          - else
+            %i Can't display file preview - unknown file format.
         - else
-          %i Can't display file preview - unknown file format.
+          %p
+            File is not present on the server. Please contact
+            =link_to 'admin@paradisec.org.au', 'mailto:admin@paradisec.org.au'
+            to report this.
       - else
         %p No access rights to preview essence.
         %p

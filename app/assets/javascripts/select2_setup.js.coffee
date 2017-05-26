@@ -1,4 +1,4 @@
-@setup_select2 = (element) ->
+@setup_select2 = (element, noinit=false) ->
   options = {}
   if $(element).data('required')
     options['allowClear'] = false
@@ -20,6 +20,7 @@
     options['ajax'] = {
       url: url,
       dataType: 'json',
+      delay: 250,
       data: (term, page) ->
         params = { q: term, page: page }
         if extra_name
@@ -34,26 +35,30 @@
           results.push {id: d.id, text: text}
         {results: results}
     }
-    options['initSelection'] = (element, callback) ->
-      results = []
-      ids = $(element).val().split(/, ?/)
-      for id in ids
-        data = {}
-        $.ajax(
-          url: url + '/' + id,
-          dataType: 'json',
-          async: false,
-          success: (object) ->
-            data = object
-        )
-        text = data.name
-        if data.code
-          text = text + " (" + data.code + ")"
-        if options['multiple']
-          results.push { id: data.id, text: text }
-        else
-          results = { id: data.id, text: text }
-      callback.call(null, results)
+    if noinit
+      options['initSelection'] = (element, callback) ->
+        callback.call(null, {id: $(element).val(), text: $(element).val()})
+    else
+      options['initSelection'] = (element, callback) ->
+        results = []
+        ids = $(element).val().split(/, ?/)
+        for id in ids
+          data = {}
+          $.ajax(
+            url: url + '/' + id,
+            dataType: 'json',
+            async: false,
+            success: (object) ->
+              data = object
+          )
+          text = data.name
+          if data.code
+            text = text + " (" + data.code + ")"
+          if options['multiple']
+            results.push { id: data.id, text: text }
+          else
+            results = { id: data.id, text: text }
+        callback.call(null, results)
 
   createable = $(element).data('createable')
   if createable

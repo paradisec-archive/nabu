@@ -3,7 +3,10 @@
     =link_to 'Return To Results', last_search_items_path, :class => 'button'
 
 .right
-  = link_to 'Previous item', [@collection, @item.prev_item], :class => 'button' if @item.prev_item
+  - prev_item = NextItemService.find_prev_item(@item, session)
+  - next_item = NextItemService.find_next_item(@item, session)
+
+  = link_to 'Previous item', [prev_item.collection, prev_item], :class => 'button' if prev_item
 
   - if can? :update, @item
     = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'
@@ -11,10 +14,7 @@
   - if can? :update, @item
     = link_to 'Duplicate Item', "/collections/#{@collection.identifier}/items/new?id=#{@item.id}", :class => 'button'
 
-  - if @item.next_item
-    = link_to 'Next item', [@collection, @item.next_item], :class => 'button'
-  - else
-    = link_to 'Next item', [@collection, @item.next_item], :class => 'button invisible'
+  = link_to 'Next item', [next_item.collection, next_item], :class => 'button' if next_item
 
 .clear{:style => "padding-top: 7px"}
 
@@ -149,8 +149,8 @@
   %fieldset
     %legend{style: 'width: 100%;'}
       %span= "Content Files (#{@num_files})"
-      %a{style: 'float: right;',
-         href: "#{Nabu::Application.config.viewer_url}/#/#{@collection.identifier}/#{@item.identifier}"} View all
+    %h3.text-center{style: 'margin-fbottom: 0.5rem;'}
+      %a{href: "#{Nabu::Application.config.viewer_url}/#/#{@collection.identifier}/#{@item.identifier}"} View file contents
     = render :partial => 'essences'
 
   %fieldset

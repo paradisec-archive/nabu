@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include HasReturnToLastSearch
+  include ItemQueryBuilder
 
   before_filter :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
@@ -22,6 +23,7 @@ class ItemsController < ApplicationController
     end
 
     @search = build_solr_search(params)
+    session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
 
     @page_title = 'Nabu - Item Search'
     respond_to do |format|
@@ -36,7 +38,7 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    @search = build_advanced_search(params)
+    build_advanced_search(params)
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -250,7 +252,7 @@ class ItemsController < ApplicationController
     @item.collection = Collection.new
     @page_title = 'Nabu - Items Bulk Update'
 
-    @search = build_advanced_search(params)
+    build_advanced_search(params)
   end
 
 
@@ -307,7 +309,7 @@ class ItemsController < ApplicationController
     if invalid_record
       Rails.logger.info {"#{DateTime.now} ERROR Bulk update"}
 
-      @search = build_advanced_search(params)
+      build_advanced_search(params[:original_search_params])
       @page_title = 'Nabu - Items Bulk Update'
       render :action => 'bulk_edit'
     else
@@ -376,83 +378,6 @@ class ItemsController < ApplicationController
     end
   end
 
-  def build_advanced_search(params)
-    Item.solr_search(include: [:collection, :collector, :countries]) do
-      # Full text search
-      Sunspot::Setup.for(Item).all_text_fields.each do |field|
-        next if params[field.name].blank?
-        keywords params[field.name], :fields => [field.name]
-      end
-
-      # Exact search
-      Sunspot::Setup.for(Item).fields.each do |field|
-        next if params[field.name].blank?
-        case field.type
-        when Sunspot::Type::IntegerType
-          with field.name, params[field.name]
-        when Sunspot::Type::BooleanType
-          with field.name, params[field.name] =~ /^true|1$/ ? true : false
-        when Sunspot::Type::TimeType
-          with(field.name).between((Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day))
-        else
-          p "WARNING can't search: #{field.type} #{field.name}"
-        end
-      end
-
-      # GEO Is special
-      if params[:north_limit]
-        all_of do
-          with(:north_limit).less_than    params[:north_limit]
-          with(:north_limit).greater_than params[:south_limit]
-
-          with(:south_limit).less_than    params[:north_limit]
-          with(:south_limit).greater_than params[:south_limit]
-
-          if params[:west_limit] <= params[:east_limit]
-            with(:west_limit).greater_than params[:west_limit]
-            with(:west_limit).less_than    params[:east_limit]
-
-            with(:east_limit).greater_than params[:west_limit]
-            with(:east_limit).less_than    params[:east_limit]
-          else
-            any_of do
-              all_of do
-                with(:west_limit).greater_than params[:west_limit]
-                with(:west_limit).less_than    180
-              end
-              all_of do
-                with(:west_limit).less_than    params[:east_limit]
-                with(:west_limit).greater_than(-180)
-              end
-            end
-            any_of do
-              all_of do
-                with(:east_limit).greater_than params[:west_limit]
-                with(:east_limit).less_than    180
-              end
-              all_of do
-                with(:east_limit).less_than    params[:east_limit]
-                with(:east_limit).greater_than(-180)
-              end
-            end
-          end
-        end
-      end
-
-      unless current_user && current_user.admin?
-        any_of do
-          with(:private, false)
-          with(:admin_ids, current_user.id) if current_user
-          with(:user_ids, current_user.id) if current_user
-        end
-      end
-      sort_column(Item).each do |c|
-        order_by c, sort_direction
-      end
-      paginate :page => params[:page], :per_page => params[:per_page]
-    end
-  end
-
   def find_by_full_identifier
     if params[:id]
       collection_identifier, item_identifier = params[:id].split(/-/)
@@ -509,10 +434,24 @@ class ItemsController < ApplicationController
         @search = if search_type == :basic
                     build_solr_search(params.merge(page: @search.results.next_page))
                   else
-                    build_advanced_search(params.merge(page: @search.results.next_page))
+                    ItemSearchService.build_advanced_search(params.merge(page: @search.results.next_page), current_user)
                   end
         @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       end
     end
+  end
+
+  def build_advanced_search(params)
+    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
+    @fields = @types_for_fields.keys.map(&:to_s).sort
+
+    if params[:clause].present?
+      @search = build_query(params)
+      session[:result_ids] = @search.map(&:full_identifier)
+    else
+      @search = ItemSearchService.build_advanced_search(params, current_user)
+      session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
+    end
+
   end
 end

@@ -111,7 +111,6 @@ module Nabu
 
       # deal with invalid UTF-8
       output.encode!('UTF-8', 'UTF-8', :invalid => :replace)
-
       @data = JSON.parse output
 
       if @data.empty? or @data['streams'].empty?

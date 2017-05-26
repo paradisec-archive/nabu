@@ -1,3 +1,6 @@
+- content_for :page_scripts do
+  = javascript_include_tag('advanced_search')
+
 %h1 Advanced Search Items
 
 .right
@@ -5,307 +8,315 @@
 .clear
 
 - if params.length > 2
-  %p== #{@search.total} search results
+  %p== #{@search.total_count rescue @search.total} search results
 
-  = render 'search_results'
+  = render partial: 'search_results', locals: {show_exclusions: true}
+
+  %br
+  .clear
 
   -if can? :bulk_edit, Item
     .right
       = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+= hidden_field_tag(:existing_exclusions, params[:exclusions], id: 'existing_exclusions')
 
-  .clear
-
-
-= form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit' do
-
-  - if params[:per_page]
-    = hidden_field_tag :per_page, params[:per_page]
-
-  .twoup-1
-    %fieldset
-      %legend Item details
-      .right
-        = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']], params[:private]), :include_blank => true
-        = label_tag :private, 'Private: Hide metadata from all users'
-      .clear
-
-      %table.form
-        %tr
-          %th= label_tag :full_identifier, 'Item ID'
-          %td= text_field_tag :full_identifier, params[:full_identifier], :class => 'short'
-
-        %tr
-          %th
-            = label_tag :title
-            %br
-            %i (published)
-          %td
-            = text_field_tag :title, params[:title], {:placeholder => 'Please enter a title'}
-            %br
-            Blank
-            = check_box_tag :title_blank, 1, params[:title_blank]
-
-        %tr
-          %th
-            = label_tag :description
-            %br
-            %i (published)
-          %td
-            = text_field_tag :description, params[:description]
-            %br
-            Blank
-            = check_box_tag :description_blank, 1, params[:description_blank]
-
-        %tr
-          %th= label_tag :originated_on, 'Origination date'
-          %td
-            = text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
-            %br
-            Blank
-            = check_box_tag :originated_on_blank, 1, params[:originated_on_blank]
-
-        %tr
-          %th= label_tag :originated_on_narrative, 'Origination date free form'
-          %td
-            = text_field_tag :originated_on_narrative, params[:originated_on_narrative]
-            %br
-            Blank
-            = check_box_tag :originated_on_narrative_blank, 1, params[:originated_on_narrative_blank]
-
-        %tr
-          %th= label_tag :external, 'Item not held by Paradisec'
-          %td= select_tag :external, options_for_select([['True', 'true'], ['False', 'false']], params[:external]), :include_blank => true
-
-        %tr
-          %th= label_tag :url, 'URL'
-          %td
-            = text_field_tag :url, params[:url]
-            %br
-            Blank
-            = check_box_tag :url_blank, 1, params[:url_blank]
-
-        %tr
-          %th= label_tag :collector_id
-          %td= hidden_field_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
-
-        %tr
-          %th= label_tag :country_ids, 'Countries'
-          %td= hidden_field_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
-
-        %tr
-          %th= label_tag :language, 'Language as given'
-          %td
-            = text_field_tag :language, params[:language]
-            %br
-            Blank
-            = check_box_tag :language_blank, 1, params[:language_blank]
-
-        %tr
-          %th= label_tag :subject_language_ids, 'Subject languages'
-          %td
-            = hidden_field_tag :subject_language_ids, params[:subject_language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
-
-        %tr
-          %th= label_tag :content_language_ids, 'Content language'
-          %td
-            = hidden_field_tag :content_language_ids, params[:content_language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
-
-        %tr
-          %th= label_tag :dialect
-          %td
-            = text_field_tag :dialect, params[:dialect]
-            %br
-            Blank
-            = check_box_tag :dialect_blank, 1, params[:dialect_blank]
-
-        %tr
-          %th= label_tag :region, 'Region / village'
-          %td
-            = text_field_tag :region, params[:region]
-            %br
-            Blank
-            = check_box_tag :region_blank, 1, params[:region_blank]
-
-        %tr
-          %th= label_tag :university_id, 'Originating university'
-          %td= select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, params[:university_id]), :include_blank => true, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+%a.drawer-toggle.drawer-qb{href:'#', class: params[:clause].present? ? '' : 'hidden'} Switch to Classic mode
+.drawer.drawer-qb{class: params[:clause].present? ? '' : 'closed'}
+  = render partial: 'items/query_builder'
 
 
-        %tr
-          %th= label_tag :operator_id
-          %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+%a.drawer-toggle.drawer-as{href:'#', class: params[:clause].present? ? 'hidden' : ''} Switch to Builder mode
+.drawer.drawer-as{class: params[:clause].present? ? 'closed' : ''}
+  = form_tag advanced_search_items_path, :method => :get, :class => 'no-empty-submit', id: 'advanced_search_form' do
+    = hidden_field_tag(:exclusions, params[:exclusions], class: 'exclusions')
+    - if params[:per_page]
+      = hidden_field_tag :per_page, params[:per_page]
 
-        %tr
-          %th= label_tag :data_category_ids, 'Data Categories'
-          -# REVIEW: Why is data_category used as a class?
-          %td= hidden_field_tag :data_category_ids, params[:data_category_ids], :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+    .twoup-1
+      %fieldset
+        %legend Item details
+        .right
+          = select_tag :private, options_for_select([['True', 'true'], ['False', 'false']], params[:private]), :include_blank => true
+          = label_tag :private, 'Private: Hide metadata from all users'
+        .clear
 
-        %tr
-          %th= label_tag :data_type_ids, 'Data Types'
-          %td= hidden_field_tag :data_type_ids, params[:data_type_ids], :data => {:placeholder => 'Choose a type...', :url => data_types_path, :multiple => true}, :class => 'select2'
+        %table.form
+          %tr
+            %th= label_tag :full_identifier, 'Item ID'
+            %td= text_field_tag :full_identifier, params[:full_identifier], :class => 'short'
 
-        %tr
-          %th= label_tag :discourse_type_id
-          %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+          %tr
+            %th
+              = label_tag :title
+              %br
+              %i (published)
+            %td
+              = text_field_tag :title, params[:title], {:placeholder => 'Please enter a title'}
+              %br
+              Blank
+              = check_box_tag :title_blank, 1, params[:title_blank]
 
-        %tr
-          %th= label_tag :agent_id, 'Agents'
-          %td= hidden_field_tag :agent_ids, params[:agent_ids], :data => {:placeholder => 'Choose an agent...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#agent_ids', :multiple => true}, :class => 'select2'
+          %tr
+            %th
+              = label_tag :description
+              %br
+              %i (published)
+            %td
+              = text_field_tag :description, params[:description]
+              %br
+              Blank
+              = check_box_tag :description_blank, 1, params[:description_blank]
 
-    %fieldset
-      %legend Essence Details
-      %table.form
-        %tr
-          %th= label_tag :filename, 'Filename'
-          %td= text_field_tag :filename, params[:filename]
-        %tr
-          %th= label_tag :mimetype, 'Mime Type'
-          %td= hidden_field_tag :mimetype, params[:mimetype], :data => {:placeholder => 'Choose a mimetype...', :url => list_mimetypes_path}, :class => 'select2'
-        %tr
-          %th= label_tag :framesPerSecond, 'FPS'
-          %td= text_field_tag :framesPerSecond, params[:framesPerSecond]
-        %tr
-          %th= label_tag :samplerate, 'Sample Rate'
-          %td= text_field_tag :samplerate, params[:samplerate]
-        %tr
-          %th= label_tag :channels, 'Channels'
-          %td= text_field_tag :channels, params[:channels]
+          %tr
+            %th= label_tag :originated_on, 'Origination date'
+            %td
+              = text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
+              %br
+              Blank
+              = check_box_tag :originated_on_blank, 1, params[:originated_on_blank]
 
-  .twoup-2
-    %fieldset
-      %legend Map Search
-      %table.form
-        %tr
-          %td{:colspan => 2}
-            = hidden_field_tag :north_limit, params[:north_limit], :class => 'north_limit'
-            = hidden_field_tag :south_limit, params[:south_limit], :class => 'south_limit'
-            = hidden_field_tag :east_limit,  params[:east_limit],  :class => 'east_limit'
-            = hidden_field_tag :west_limit,  params[:west_limit],  :class => 'west_limit'
-            .map{:data => {:editable => 'true'}}
+          %tr
+            %th= label_tag :originated_on_narrative, 'Origination date free form'
+            %td
+              = text_field_tag :originated_on_narrative, params[:originated_on_narrative]
+              %br
+              Blank
+              = check_box_tag :originated_on_narrative_blank, 1, params[:originated_on_narrative_blank]
 
-    %fieldset
-      %legend Archive information
-      %table.form
-        %tr
-          %th Ready for metadata export:
-          %td= select_tag :metadata_exportable, options_for_select([['True', 'true'], ['False', 'false']], params[:metadata_exportable]), :include_blank => true
+          %tr
+            %th= label_tag :external, 'Item not held by Paradisec'
+            %td= select_tag :external, options_for_select([['True', 'true'], ['False', 'false']], params[:external]), :include_blank => true
 
-        %tr
-          %th= label_tag :born_digital
-          %td= select_tag :born_digital, options_for_select([['True', 'true'], ['False', 'false']], params[:born_digital]), :include_blank => true
+          %tr
+            %th= label_tag :url, 'URL'
+            %td
+              = text_field_tag :url, params[:url]
+              %br
+              Blank
+              = check_box_tag :url_blank, 1, params[:url_blank]
 
-        %tr
-          %th Tapes returned to depositor:
-          %td= select_tag :tapes_returned, options_for_select([['True', 'true'], ['False', 'false']], params[:tapes_returned]), :include_blank => true
+          %tr
+            %th= label_tag :collector_id
+            %td= hidden_field_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
 
-        %tr
-          %th= label_tag :original_media
-          %td
-            = text_field_tag :original_media, params[:original_media]
-            %br
-            Blank
-            = check_box_tag :original_media_blank, 1, params[:original_media_blank]
+          %tr
+            %th= label_tag :country_ids, 'Countries'
+            %td= hidden_field_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
 
-        %tr
-          %th Date received:
-          %td
-            = text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
-            %br
-            Blank
-            = check_box_tag :received_on_blank, 1, params[:received_on_blank]
+          %tr
+            %th= label_tag :language, 'Language as given'
+            %td
+              = text_field_tag :language, params[:language]
+              %br
+              Blank
+              = check_box_tag :language_blank, 1, params[:language_blank]
 
-        %tr
-          %th Date digitised:
-          %td
-            = text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
-            %br
-            Blank
-            = check_box_tag :digitised_on_blank, 1, params[:digitised_on_blank]
+          %tr
+            %th= label_tag :subject_language_ids, 'Subject languages'
+            %td
+              = hidden_field_tag :subject_language_ids, params[:subject_language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
-        %tr
-          %th= label_tag :ingest_notes
-          %td
-            = text_area_tag :ingest_notes, params[:ingest_notes]
-            %br
-            Blank
-            = check_box_tag :ingest_notes_blank, 1, params[:ingest_notes_blank]
+          %tr
+            %th= label_tag :content_language_ids, 'Content language'
+            %td
+              = hidden_field_tag :content_language_ids, params[:content_language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
 
-        %tr
-          %th Metadata imported:
-          %td
-            = text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
-            %br
-            Blank
-            = check_box_tag :metadata_imported_on_blank, 1, params[:metadata_imported_on_blank]
+          %tr
+            %th= label_tag :dialect
+            %td
+              = text_field_tag :dialect, params[:dialect]
+              %br
+              Blank
+              = check_box_tag :dialect_blank, 1, params[:dialect_blank]
 
-        %tr
-          %th Metadata exported:
-          %td
-            = text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
-            %br
-            Blank
-            = check_box_tag :metadata_exported_on_blank, 1, params[:metadata_exported_on_blank]
+          %tr
+            %th= label_tag :region, 'Region / village'
+            %td
+              = text_field_tag :region, params[:region]
+              %br
+              Blank
+              = check_box_tag :region_blank, 1, params[:region_blank]
 
-        %tr
-          %th= label_tag :tracking
-          %td
-            = text_field_tag :tracking, params[:tracking]
-            %br
-            Blank
-            = check_box_tag :tracking_blank, 1, params[:tracking_blank]
-
-    %fieldset
-      %legend Admin information
-      %table.form
-        %tr
-          %th Record created
-          %td
-            = text_field_tag :created_at, params[:created_at], :class => 'dateinput short'
-            %br
-            Blank
-            = check_box_tag :created_at_blank, 1, params[:created_at_blank]
-
-        %tr
-          %th Record modified
-          %td
-            = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short'
-            %br
-            Blank
-            = check_box_tag :updated_at_blank, 1, params[:updated_at_blank]
-
-        %tr
-          %th= label_tag :admin_ids, 'Edit access'
-          %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
-
-        %tr
-          %th= label_tag :user_ids, 'Read/Download access'
-          %td= hidden_field_tag :user_ids, params[:user_ids], :data => {:placeholder => 'Choose a user...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#user_ids', :multiple => true}, :class => 'select2'
-
-        %tr
-          %th= label_tag :access_condition, 'Data access conditions'
-          %td= select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, params[:access_condition_id]), :include_blank => true, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
-
-        %tr
-          %th= label_tag :access_narrative, 'Data access details'
-          %td
-            = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
-            %br
-            Blank
-            = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
-
-        %tr
-          %th= label_tag :admin_comment, 'Comments'
-          %td
-            = text_area_tag :admin_comment, params[:admin_comment], :rows => 5
-            %br
-            Blank
-            = check_box_tag :admin_comment_blank, 1, params[:admin_comment_blank]
+          %tr
+            %th= label_tag :university_id, 'Originating university'
+            %td= select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, params[:university_id]), :include_blank => true, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
 
 
-    = submit_tag 'Search', :name => nil
-    = submit_tag 'Clear', :name => :clear
+          %tr
+            %th= label_tag :operator_id
+            %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
 
-  .clear
+          %tr
+            %th= label_tag :data_category_ids, 'Data Categories'
+            -# REVIEW: Why is data_category used as a class?
+            %td= hidden_field_tag :data_category_ids, params[:data_category_ids], :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+
+          %tr
+            %th= label_tag :data_type_ids, 'Data Types'
+            %td= hidden_field_tag :data_type_ids, params[:data_type_ids], :data => {:placeholder => 'Choose a type...', :url => data_types_path, :multiple => true}, :class => 'select2'
+
+          %tr
+            %th= label_tag :discourse_type_id
+            %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+
+          %tr
+            %th= label_tag :agent_id, 'Agents'
+            %td= hidden_field_tag :agent_ids, params[:agent_ids], :data => {:placeholder => 'Choose an agent...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#agent_ids', :multiple => true}, :class => 'select2'
+
+      %fieldset
+        %legend Essence Details
+        %table.form
+          %tr
+            %th= label_tag :filename, 'Filename'
+            %td= text_field_tag :filename, params[:filename]
+          %tr
+            %th= label_tag :mimetype, 'Mime Type'
+            %td= hidden_field_tag :mimetype, params[:mimetype], :data => {:placeholder => 'Choose a mimetype...', :url => list_mimetypes_path}, :class => 'select2'
+          %tr
+            %th= label_tag :framesPerSecond, 'FPS'
+            %td= text_field_tag :framesPerSecond, params[:framesPerSecond]
+          %tr
+            %th= label_tag :samplerate, 'Sample Rate'
+            %td= text_field_tag :samplerate, params[:samplerate]
+          %tr
+            %th= label_tag :channels, 'Channels'
+            %td= text_field_tag :channels, params[:channels]
+
+    .twoup-2
+      %fieldset
+        %legend Map Search
+        %table.form
+          %tr
+            %td{:colspan => 2}
+              = hidden_field_tag :north_limit, params[:north_limit], :class => 'north_limit'
+              = hidden_field_tag :south_limit, params[:south_limit], :class => 'south_limit'
+              = hidden_field_tag :east_limit,  params[:east_limit],  :class => 'east_limit'
+              = hidden_field_tag :west_limit,  params[:west_limit],  :class => 'west_limit'
+              .map{:data => {:editable => 'true'}}
+
+      %fieldset
+        %legend Archive information
+        %table.form
+          %tr
+            %th Ready for metadata export:
+            %td= select_tag :metadata_exportable, options_for_select([['True', 'true'], ['False', 'false']], params[:metadata_exportable]), :include_blank => true
+
+          %tr
+            %th= label_tag :born_digital
+            %td= select_tag :born_digital, options_for_select([['True', 'true'], ['False', 'false']], params[:born_digital]), :include_blank => true
+
+          %tr
+            %th Tapes returned to depositor:
+            %td= select_tag :tapes_returned, options_for_select([['True', 'true'], ['False', 'false']], params[:tapes_returned]), :include_blank => true
+
+          %tr
+            %th= label_tag :original_media
+            %td
+              = text_field_tag :original_media, params[:original_media]
+              %br
+              Blank
+              = check_box_tag :original_media_blank, 1, params[:original_media_blank]
+
+          %tr
+            %th Date received:
+            %td
+              = text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
+              %br
+              Blank
+              = check_box_tag :received_on_blank, 1, params[:received_on_blank]
+
+          %tr
+            %th Date digitised:
+            %td
+              = text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
+              %br
+              Blank
+              = check_box_tag :digitised_on_blank, 1, params[:digitised_on_blank]
+
+          %tr
+            %th= label_tag :ingest_notes
+            %td
+              = text_area_tag :ingest_notes, params[:ingest_notes]
+              %br
+              Blank
+              = check_box_tag :ingest_notes_blank, 1, params[:ingest_notes_blank]
+
+          %tr
+            %th Metadata imported:
+            %td
+              = text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
+              %br
+              Blank
+              = check_box_tag :metadata_imported_on_blank, 1, params[:metadata_imported_on_blank]
+
+          %tr
+            %th Metadata exported:
+            %td
+              = text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
+              %br
+              Blank
+              = check_box_tag :metadata_exported_on_blank, 1, params[:metadata_exported_on_blank]
+
+          %tr
+            %th= label_tag :tracking
+            %td
+              = text_field_tag :tracking, params[:tracking]
+              %br
+              Blank
+              = check_box_tag :tracking_blank, 1, params[:tracking_blank]
+
+      %fieldset
+        %legend Admin information
+        %table.form
+          %tr
+            %th Record created
+            %td
+              = text_field_tag :created_at, params[:created_at], :class => 'dateinput short'
+              %br
+              Blank
+              = check_box_tag :created_at_blank, 1, params[:created_at_blank]
+
+          %tr
+            %th Record modified
+            %td
+              = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short'
+              %br
+              Blank
+              = check_box_tag :updated_at_blank, 1, params[:updated_at_blank]
+
+          %tr
+            %th= label_tag :admin_ids, 'Edit access'
+            %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
+
+          %tr
+            %th= label_tag :user_ids, 'Read/Download access'
+            %td= hidden_field_tag :user_ids, params[:user_ids], :data => {:placeholder => 'Choose a user...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#user_ids', :multiple => true}, :class => 'select2'
+
+          %tr
+            %th= label_tag :access_condition, 'Data access conditions'
+            %td= select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, params[:access_condition_id]), :include_blank => true, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
+
+          %tr
+            %th= label_tag :access_narrative, 'Data access details'
+            %td
+              = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
+              %br
+              Blank
+              = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
+
+          %tr
+            %th= label_tag :admin_comment, 'Comments'
+            %td
+              = text_area_tag :admin_comment, params[:admin_comment], :rows => 5
+              %br
+              Blank
+              = check_box_tag :admin_comment_blank, 1, params[:admin_comment_blank]
+
+
+      = submit_tag 'Search', :name => nil
+      = submit_tag 'Clear', :name => :clear
+
+    .clear
 
   %p
     = link_to 'Export CSV (visible results)', advanced_search_items_path(:format => :csv, :params => params) if can? :search_csv, Item

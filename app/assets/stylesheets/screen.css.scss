@@ -19,6 +19,7 @@
 @import 'bootstrap-sprockets';
 @import 'bootstrap/variables';
 @import 'bootstrap/mixins';
+@import 'bootstrap/type';
 @import 'bootstrap/glyphicons';
 
 // This import applies a global reset to any page that imports this stylesheet.
@@ -55,4 +56,3 @@ form.bp {
 @import 'page_layout';
 
 @import 'layout_style';
-

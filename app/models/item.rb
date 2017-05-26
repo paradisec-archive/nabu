@@ -259,8 +259,6 @@ class Item < ActiveRecord::Base
   end
 
   searchable(
-    # No need for auto_index, so long as reindex is run every half hour.
-    auto_index: false,
     include: [:content_languages, :subject_languages, :countries, :data_categories, :data_types, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
   ) do
     # Things we want to perform full text search on
@@ -329,7 +327,7 @@ class Item < ActiveRecord::Base
     integer :id
     string :title
     string :identifier
-    string :full_identifier
+    string :full_identifier, stored: true
     string :university_name
     string :collector_name
     string :collector_sortname
@@ -369,6 +367,9 @@ class Item < ActiveRecord::Base
     end
     string :country_codes, :multiple => true do
       countries.map(&:code)
+    end
+    string :sort_country do
+      countries.order('name ASC').map(&:name).join(',')
     end
     string :data_categories, :multiple => true do
       data_categories.map(&:name)
