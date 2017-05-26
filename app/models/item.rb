@@ -255,7 +255,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{full_identifier title collector_sortname updated_at language}
+    %w{full_identifier title collector_sortname updated_at language sort_country}
   end
 
   searchable(
