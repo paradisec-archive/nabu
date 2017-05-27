@@ -24,13 +24,14 @@ ActiveAdmin.register User do
 
   # add pagination buttons to index page sidebar
   sidebar :paginate, :only => :index  do
-    para button_tag 'Show 10', :class => 'per_page', :data => {:per => 10}
-    para button_tag 'Show 50', :class => 'per_page', :data => {:per => 50}
     count = User.count
     unless params[:scope].blank?
       count = User.public_send(params[:scope].to_sym).count
     end
-    button_tag "Show all #{count}", :class => 'per_page', :data => {:per => count}
+
+    ['10', '50', "all #{count}"].each do |n|
+      para link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+    end
   end
 
   # change pagination

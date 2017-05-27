@@ -1,9 +1,8 @@
 ActiveAdmin.register Download do
   sidebar :paginate, :only => :index  do
-    para button_tag 'Show 10', :class => 'per_page', :data => {:per => 10}
-    para button_tag 'Show 50', :class => 'per_page', :data => {:per => 50}
-    count = Download.count
-    button_tag "Show all #{count}", :class => 'per_page', :data => {:per => count}
+    ['10', '50', "all #{Download.count}"].each do |n|
+      para link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+    end
   end
 
   # change pagination
