@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170212232129) do
+ActiveRecord::Schema.define(:version => 20170604041355) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"
@@ -326,6 +326,7 @@ ActiveRecord::Schema.define(:version => 20170212232129) do
     t.float    "west_limit"
     t.float    "east_limit"
     t.string   "doi"
+    t.integer  "essences_count"
   end
 
   add_index "items", ["access_condition_id"], :name => "index_items_on_access_condition_id"
