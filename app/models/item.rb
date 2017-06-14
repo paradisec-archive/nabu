@@ -255,7 +255,7 @@ class Item < ActiveRecord::Base
   end
 
   def self.sortable_columns
-    %w{full_identifier title collector_sortname updated_at language sort_country}
+    %w{full_identifier title collector_sortname updated_at language sort_country essences_count}
   end
 
   searchable(
@@ -383,6 +383,7 @@ class Item < ActiveRecord::Base
     string :mimetype, multiple: true do
       essences.map(&:mimetype)
     end
+    integer :essences_count
 
     # Things we want to check blankness of
     blank_fields = [:title, :description, :originated_on, :originated_on_narrative, :url, :language, :dialect, :region, :original_media, :received_on, :digitised_on, :ingest_notes, :metadata_imported_on, :metadata_exported_on, :tracking, :access_narrative, :admin_comment]
