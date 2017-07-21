@@ -1,0 +1,29 @@
+%h2 Bulk edit items
+
+%p
+  %b
+    Edit made on:
+  =@start_time
+%p
+  %b
+    Total items:
+  =@items_count
+
+-if @failed_items.any?
+  %h3 Failed items
+  %table
+    %thead
+      %th Item ID
+      %th Failed reasons
+    %tbody
+      -@failed_items.each do |item|
+        -next unless item.errors.present?
+        %tr
+          %td=item.full_identifier
+          %td
+            %ul
+              -item.errors.full_messages.each do |error_msg|
+                %li=error_msg
+
+-else
+  %p All items have been updated successfully

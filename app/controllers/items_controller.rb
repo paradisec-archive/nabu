@@ -257,67 +257,15 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
-    @items = Item.includes(
-      :data_categories, :data_types, :countries, :content_languages,
-      :subject_languages, :university, :collector, :essences, :operator,
-      :discourse_type, :admins, :access_condition, :comments,
-      item_agents: [:agent_role, :user],
-      collection: [
-        :countries, :languages, :collector, :university, :admins, :access_condition, :field_of_research, :grants, :operator,
-        items: [:admins]
-      ]
-    ).accessible_by(current_ability).where :id => params[:item_ids].split(' ')
+    accessible_items = Item.accessible_by(current_ability)
+                           .where(id: params[:item_ids].split(' '))
+                           .pluck(:id)
+    BulkUpdateItemsService.new(item_ids: accessible_items,
+                               current_user_email: current_user.try(:email),
+                               updates: params[:item]).delay.update_items
 
-    params[:item].delete_if {|_k, v| v.blank?}
-
-    # Collect the fields we are appending to
-    appendable = {}
-    params[:item].each_pair do |k, v|
-      if k =~ /^bulk_edit_append_(.*)/
-        appendable[$1] = params[:item].delete $1 if v == "1"
-        params[:item].delete k
-      end
-    end
-
-    Rails.logger.info {"#{DateTime.now} BEFORE Bulk update with #{@items.count} items"}
-    invalid_record = false
-    @items.find_each do |item|
-      if item.nil? # I don't think this should be able to be nil
-        next
-      end
-
-      appendable.each_pair do |k, v|
-        existing = item.public_send(k)
-        if existing.present?
-          params[:item][k.to_sym] = existing + v unless v.blank?
-        else
-          params[:item][k.to_sym] = v unless v.blank?
-        end
-      end
-      unless item.update_attributes(params[:item])
-        invalid_record = true
-        @item = item
-        break
-      end
-
-      # save updated item info to xml file
-      save_item_catalog_file(item)
-    end
-
-    Rails.logger.info {"#{DateTime.now} AFTER Bulk update"}
-
-    if invalid_record
-      Rails.logger.info {"#{DateTime.now} ERROR Bulk update"}
-
-      build_advanced_search(params[:original_search_params])
-      @page_title = 'Nabu - Items Bulk Update'
-      render :action => 'bulk_edit'
-    else
-      Rails.logger.info {"#{DateTime.now} SUCCESS Bulk update"}
-
-      flash[:notice] = 'Items were successfully updated.'
-      redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
-    end
+    flash[:notice] = "Items will be updated shortly, you'll be notified once it's completed"
+    redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
   end
 
   def display
