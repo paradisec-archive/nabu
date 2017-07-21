@@ -48,7 +48,7 @@
 
     %p
       - ['10', '50', "all #{@num_collections}"].each do |n|
-        = link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+        = link_to "Show #{n}", params.merge(collections_per_page: n.sub('all ', ''), collections_page: n.start_with?('all') ? 1 : params[:collections_page]), class: 'button'
 
 
 
