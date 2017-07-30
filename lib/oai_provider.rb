@@ -109,7 +109,9 @@ module OAI::Provider
           raise OAI::VerbException.new
         end
 
-        send(methodize(verb), params)
+        resumption_token = params.find { |k,v| %w{resumptionToken resumption_token}.include?(k) }
+        # if there is a resumption token, only the resumption should be pass through
+        send(methodize(verb), resumption_token ? Hash[[resumption_token]] : params)
 
       rescue => err
         if err.respond_to?(:code)
