@@ -10,16 +10,21 @@ class BulkUpdateItemsService
     Rails.logger.info {"#{DateTime.now} BEFORE Bulk update with #{items.size} items"}
     @failed_items = []
     items.each do |item|
-      appending = {}
-      @appendable.each_pair do |k, v|
-        existing = item.public_send(k)
-        appending[k] = existing.present? ? existing + v : v
-      end
+      begin
+        appending = {}
+        @appendable.each_pair do |k, v|
+          existing = item.public_send(k)
+          appending[k] = existing.present? ? existing + v : v
+        end
 
-      if item.update_attributes(@updates.merge(appending))
-        ItemCatalogService.new(item).save_file
-      else
-        @failed_items << item
+        if item.update_attributes(@updates.merge(appending))
+          ItemCatalogService.new(item).save_file
+        else
+          @failed_items << item
+        end
+      rescue => e
+        Rails.logger.error {"#{DateTime.now} DURING Bulk update - Failed to process #{item.full_identifier}. #{e}"}
+        @failed_items << item unless @failed_items.include?(item)
       end
     end
 
@@ -28,7 +33,7 @@ class BulkUpdateItemsService
         @current_user_email,
         @failed_items,
         items.size,
-        @start_time
+        @start_time.in_time_zone('Australia/Sydney')
       ).deliver
     end
   end
