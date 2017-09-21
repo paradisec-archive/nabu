@@ -322,3 +322,37 @@
           %td.append
             %small Append
             = f.check_box :bulk_edit_append_admin_comment
+
+  - if params[:action] == 'bulk_edit'
+    %fieldset
+      %legend Bulk Delete
+      %table.form
+        - if @item.bulk_deleteable[:countries].present?
+          %tr
+            %th= f.label :bulk_delete_country_ids, 'Countries'
+            %td= f.hidden_field :bulk_delete_country_ids,
+              data: { placeholder: 'Choose countries to delete', data: @item.bulk_deleteable[:countries].to_json, multiple: true }, class: 'select2'
+
+        - if @item.bulk_deleteable[:subject_languages].present?
+          %tr
+            %th= f.label :bulk_delete_subject_language_ids, 'Subject Languages'
+            %td= f.hidden_field :bulk_delete_subject_language_ids,
+              data: { placeholder: 'Choose subject languages to delete', data: @item.bulk_deleteable[:subject_languages].to_json, multiple: true }, class: 'select2'
+
+        - if @item.bulk_deleteable[:content_languages].present?
+          %tr
+            %th= f.label :bulk_delete_content_language_ids, 'Content Languages'
+            %td= f.hidden_field :bulk_delete_content_language_ids,
+              data: { placeholder: 'Choose content languages to delete', data: @item.bulk_deleteable[:content_languages].to_json, multiple: true }, class: 'select2'
+
+        - if @item.bulk_deleteable[:data_categories].present?
+          %tr
+            %th= f.label :bulk_delete_data_category_ids, 'Data Categories'
+            %td= f.hidden_field :bulk_delete_data_category_ids,
+              data: { placeholder: 'Choose data categories to delete', data: @item.bulk_deleteable[:data_categories].to_json, multiple: true }, class: 'select2'
+
+        - if @item.bulk_deleteable[:data_types].present?
+          %tr
+            %th= f.label :bulk_delete_data_type_ids, 'Data Categories'
+            %td= f.hidden_field :bulk_delete_data_type_ids,
+              data: { placeholder: 'Choose data types to delete', data: @item.bulk_deleteable[:data_types].to_json, multiple: true }, class: 'select2'

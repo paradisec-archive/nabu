@@ -66,4 +66,8 @@
     options['createSearchChoice'] = (term) ->
       return {id: 'NEWCONTACT:'+term, text: term}
 
+  data = $(element).data('data')
+  if data
+    options['data'] = data
+
   $(element).select2(options)

@@ -103,7 +103,10 @@ class Item < ActiveRecord::Base
     :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
     :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
     :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids
+    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids,
+
+    :bulk_delete_country_ids, :bulk_delete_subject_language_ids,
+    :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids
   ]
   attr_reader(*bulk)
   attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
@@ -615,5 +618,9 @@ class Item < ActiveRecord::Base
 
   def access_class
     AccessCondition.access_classification(access_condition)
+  end
+
+  def bulk_deleteable
+    @bulk_deleteable ||= {}
   end
 end

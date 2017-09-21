@@ -253,6 +253,7 @@ class ItemsController < ApplicationController
     @page_title = 'Nabu - Items Bulk Update'
 
     build_advanced_search(params)
+    build_deletable_params(@item, @items)
   end
 
 
@@ -395,11 +396,29 @@ class ItemsController < ApplicationController
 
     if params[:clause].present?
       @search = build_query(params)
+      @items = @search
       session[:result_ids] = @search.map(&:full_identifier)
     else
       @search = ItemSearchService.build_advanced_search(params, current_user)
+      @items = @search.hits.map(&:result)
       session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
     end
+  end
 
+  def build_deletable_params(item, items)
+    item.bulk_deleteable[:countries] = bulk_deletable_relation(ItemCountry, Country, :country_id, items)
+    item.bulk_deleteable[:subject_languages] = bulk_deletable_relation(ItemSubjectLanguage, Language, :language_id, items)
+    item.bulk_deleteable[:content_languages] = bulk_deletable_relation(ItemContentLanguage, Language, :language_id, items)
+    item.bulk_deleteable[:data_categories] = bulk_deletable_relation(ItemDataCategory, DataCategory, :data_category_id, items)
+    item.bulk_deleteable[:data_types] = bulk_deletable_relation(ItemDataType, DataType, :data_type_id, items)
+  end
+
+  def bulk_deletable_relation(relation, associated_resource, associated_resource_id, items)
+    ids = relation.where(item_id: items.map(&:id))
+            .group_by(&associated_resource_id)
+            .select { |k,v| v.size == items.size }.keys
+    associated_resource.where(id: ids).map do |resource|
+      { id: resource.id, text: resource.name }
+    end if ids.present?
   end
 end

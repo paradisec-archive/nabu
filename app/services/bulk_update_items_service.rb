@@ -16,6 +16,10 @@ class BulkUpdateItemsService
         appending[k] = existing.present? ? existing + v : v
       end
 
+      @deletable.each_pair do |k, v|
+        item.send("#{k}=", item.send(k) - v)
+      end
+
       if item.update_attributes(@updates.merge(appending))
         ItemCatalogService.new(item).save_file
       else
@@ -53,6 +57,14 @@ class BulkUpdateItemsService
     @updates.each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
         @appendable[$1] = @updates[$1] if v == '1' && @updates[$1].present?
+        @updates.delete(k)
+      end
+    end
+
+    @deletable = {}
+    @updates.each_pair do |k, v|
+      if k =~ /^bulk_delete_(.*)/
+        @deletable[$1] = v.map(&:to_i)
         @updates.delete(k)
       end
     end
