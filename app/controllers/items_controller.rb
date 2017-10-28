@@ -416,7 +416,7 @@ class ItemsController < ApplicationController
   def bulk_deletable_relation(relation, associated_resource, associated_resource_id, items)
     ids = relation.where(item_id: items.map(&:id))
             .group_by(&associated_resource_id)
-            .select { |k,v| v.size == items.size }.keys
+            .keys
     associated_resource.where(id: ids).map do |resource|
       { id: resource.id, text: resource.name }
     end if ids.present?

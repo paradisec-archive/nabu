@@ -353,6 +353,6 @@
 
         - if @item.bulk_deleteable[:data_types].present?
           %tr
-            %th= f.label :bulk_delete_data_type_ids, 'Data Categories'
+            %th= f.label :bulk_delete_data_type_ids, 'Data Types'
             %td= f.hidden_field :bulk_delete_data_type_ids,
               data: { placeholder: 'Choose data types to delete', data: @item.bulk_deleteable[:data_types].to_json, multiple: true }, class: 'select2'
