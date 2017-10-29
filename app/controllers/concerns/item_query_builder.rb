@@ -114,7 +114,12 @@ module ItemQueryBuilder
         clause_sql += ' ?'
 
         if TYPES_FOR_FIELDS[field] == 'date'
-          input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
+          begin
+            input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
+          rescue Exception => e
+            Rails.logger.error e.message
+            Rails.logger.error e.backtrace.first(10).join("\n")
+          end
         end
 
         value_sql = clause_operator.include?('like') ? "%#{input_value}%" : input_value
@@ -132,6 +137,8 @@ module ItemQueryBuilder
         query.push clause_sql
       end
     end
+    Rails.logger.debug "Query: #{query}"
+    Rails.logger.debug "Values: #{values}"
     results = results.includes(joins.uniq).where(query.join(' '), *values)
     if params[:exclusions].present?
       exclusions = params[:exclusions].split(',')
