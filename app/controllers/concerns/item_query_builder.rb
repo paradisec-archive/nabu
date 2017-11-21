@@ -116,9 +116,8 @@ module ItemQueryBuilder
         if TYPES_FOR_FIELDS[field] == 'date'
           begin
             input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
-          rescue Exception => e
-            Rails.logger.error e.message
-            Rails.logger.error e.backtrace.first(10).join("\n")
+          rescue Exception
+            Rails.logger.error "Failed to parse date from input string '#{input_value}'. Expected format was 'YYYY-MM-DD'"
           end
         end
 
@@ -137,8 +136,7 @@ module ItemQueryBuilder
         query.push clause_sql
       end
     end
-    Rails.logger.debug "Query: #{query}"
-    Rails.logger.debug "Values: #{values}"
+
     results = results.includes(joins.uniq).where(query.join(' '), *values)
     if params[:exclusions].present?
       exclusions = params[:exclusions].split(',')

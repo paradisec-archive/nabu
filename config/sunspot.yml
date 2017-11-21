@@ -17,7 +17,7 @@ development:
     hostname: localhost
     bind_address: 127.0.0.1
     port: 8982
-    log_level: INFO
+    log_level: WARNING
 
 test:
   solr:
