@@ -160,6 +160,9 @@ GEM
     formtastic (2.2.1)
       actionpack (>= 3.0)
     fssm (0.2.10)
+    graphiql-rails (1.4.8)
+      rails
+    graphql (1.7.7)
     guard (2.2.5)
       formatador (>= 0.2.4)
       listen (~> 2.1)
@@ -440,6 +443,8 @@ DEPENDENCIES
   devise (= 2.2.3)
   email_spec
   factory_girl_rails
+  graphiql-rails
+  graphql
   guard-bundler
   guard-rails
   guard-rspec
@@ -494,4 +499,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.15.3
+   1.16.1
