@@ -4,11 +4,14 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user
     }
-    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 100)
     render json: result
+  end
+
+  def schema
+    render text: NabuSchema.to_definition
   end
 
   private
@@ -22,7 +25,7 @@ class GraphqlController < ApplicationController
       else
         {}
       end
-    when Hash, ActionController::Parameters
+    when Hash, ActiveSupport::HashWithIndifferentAccess
       ambiguous_param
     when nil
       {}
