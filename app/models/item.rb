@@ -40,11 +40,10 @@
 #  east_limit              :float
 #  doi                     :string(255)
 #
-
-# FIXME: This includes this module within Object. That's bad.
-include ActionView::Helpers::SanitizeHelper
 class Item < ActiveRecord::Base
   include IdentifiableByDoi
+  include HasBoundaries
+  include ActionView::Helpers::SanitizeHelper
 
   delegate :url_helpers, :to => 'Rails.application.routes'
   has_paper_trail

@@ -6,7 +6,7 @@ class GraphqlController < ApplicationController
     context = {
       current_user: current_user
     }
-    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 100)
+    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
     render json: result
   end
 
