@@ -344,6 +344,7 @@ class ItemsController < ApplicationController
 
   def build_solr_search(params)
     Item.solr_search(include: [:collection, :collector, :countries]) do
+      logger.info params[:search]
       fulltext params[:search]
 
       facet :content_language_ids, :country_ids

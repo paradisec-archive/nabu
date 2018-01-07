@@ -24,6 +24,7 @@ class Essence < ActiveRecord::Base
   has_paper_trail
 
   belongs_to :item, counter_cache: true
+  delegate :collection, to: :item
 
   validates :item, :associated => true
   validates :filename, :presence => true
