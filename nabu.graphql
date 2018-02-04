@@ -1,0 +1,191 @@
+type Boundary {
+  east_limit: Float!
+  north_limit: Float!
+  south_limit: Float!
+  west_limit: Float!
+}
+
+type Collection {
+  access_class: String
+  access_narrative: String
+  boundaries: Boundary
+  citation: String
+  collector: Person
+  comments: String
+  complete: Boolean
+  content_languages: [Language]
+  countries: [Country]
+  description: String
+  doi: String
+  doi_xml: String
+  field_of_research: FieldOfResearch
+  grants: [Grant]
+  id: ID!
+  identifier: String!
+  media: String
+  metadata_source: String
+  operator: Person
+  orthographic_notes: String
+  permalink: String!
+  region: String
+  subject_languages: [Language]
+  tape_location: Boolean
+  title: String!
+  university: University
+}
+
+type Country {
+  boundaries: [Boundary]
+  code: String!
+  id: ID!
+  languages: [Language]
+  name: String!
+}
+
+type DataCategory {
+  id: ID!
+  items: [Item]
+  name: String!
+}
+
+type DataType {
+  id: ID!
+  items: [Item]
+  name: String!
+}
+
+type DiscourseType {
+  id: ID!
+  itesm: [Item]
+  name: String!
+}
+
+type Essence {
+  bitrate: Int
+  channels: Int
+  citation: String
+  collection: Collection
+  doi: String
+  doi_xml: String
+  duration: Float
+  filename: String
+  fps: Int
+  id: ID!
+  item: Item
+  mimetype: String
+  permalink: String!
+  samplerate: Int
+  size: Int
+}
+
+type FieldOfResearch {
+  collections: [Collection]
+  id: ID!
+  identifier: String!
+  name: String!
+}
+
+type FundingBody {
+  funded_collections: [Collection]
+  grants: [Grant]
+  id: ID!
+  key_prefix: String
+  name: String!
+}
+
+type Grant {
+  colleciton: Collection
+  funding_body: FundingBody
+  id: ID!
+  identifier: String
+}
+
+type Item {
+  access_class: String
+  access_narrative: String
+  agents: [Person]
+  born_digital: Boolean
+  boundaries: Boundary
+  citation: String
+  collection: Collection!
+  collector: Person!
+  content_languages: [Language]
+  countries: [Country]
+  data_categories: [DataCategory]
+  data_types: [DataType]
+  description: String
+  dialect: String
+  digitised_on: String
+  discourse_type: DiscourseType
+  doi: String
+  doi_xml: String
+  essences: [Essence]
+  full_identifier: String!
+  id: ID!
+  identifier: String!
+  ingest_notes: String
+  language: String
+  operator: Person
+  original_media: String
+  originated_on: String
+  originated_on_narrative: String
+  permalink: String!
+  received_on: String
+  region: String
+  subject_languages: [Language]
+  title: String
+  tracking: String
+  university: University
+}
+
+type Language {
+  archive_link: String
+  code: String!
+  collection: [Collection]
+  countries: [Country]
+  id: ID!
+  items_for_content: [Item]
+  items_for_language: [Item]
+  name: String!
+  retired: Boolean
+}
+
+type Person {
+  collected_items: Item
+  country: String
+  first_name: String
+  id: ID!
+  last_name: String
+}
+
+type Query {
+  items(
+    limit: Int = 10,
+    page: Int = 1,
+    title: String,
+    identifier: String,
+    full_identifier: String,
+    collection_identifier: String,
+    collector_name: String,
+    university_name: String,
+    operator_name: String,
+    discourse_type_name: String,
+    description: String,
+    language: String,
+    dialect: String,
+    region: String,
+    access_narrative: String,
+    tracking: String,
+    ingest_notes: String,
+    born_digital: Boolean,
+    originated_on: String
+  ): [Item]
+}
+
+type University {
+  collections: [Collection]
+  id: ID!
+  items: [Item]
+  name: String!
+  party_identifier: String
+}

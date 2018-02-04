@@ -1,5 +1,13 @@
 Nabu::Application.routes.draw do
 
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+    get '/graphql-schema', to: 'graphql#schema'
+  end
+
+
+  post "/graphql", to: "graphql#execute"
+
   ActiveAdmin.routes(self)
 
   devise_for :users

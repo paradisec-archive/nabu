@@ -32,6 +32,7 @@
 
 class Collection < ActiveRecord::Base
   include IdentifiableByDoi
+  include HasBoundaries
 
   has_paper_trail
   nilify_blanks
@@ -51,8 +52,12 @@ class Collection < ActiveRecord::Base
   has_many :collection_languages, :dependent => :destroy
   has_many :languages, :through => :collection_languages, :validate => true
 
+  has_many :subject_languages, through: :items
+  has_many :content_languages, through: :items
+
   has_many :collection_countries, :dependent => :destroy
   has_many :countries, :through => :collection_countries, :validate => true
+  has_many :item_countries, through: :items, source: :countries
 
   has_many :collection_admins, :dependent => :destroy
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
