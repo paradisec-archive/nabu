@@ -5,6 +5,7 @@ gem 'rails', '~> 3.2.22.2'
 # Databases
 gem 'mysql2', '~> 0.3.17'
 gem 'graphql'
+gem "graphiql-rails"
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'
@@ -81,7 +82,6 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 
 group :development, :test do
-  gem "graphiql-rails"
   gem 'turn', '~> 0.8.3', :require => false
   gem 'rspec-rails', '~> 2.0'
   gem 'sextant'

@@ -4,7 +4,9 @@
   %p
     The PARADISEC catalog exposes a number of APIs for harvesting the public data of the site. PARADISEC makes use of
     = link_to 'OAI-PMH', 'http://www.openarchives.org/pmh/'
-    for its harvesting APIs.
+    for its harvesting APIs. The public data is also available on GraphQL API
+    = link_to 'GraphQL API', 'http://graphql.org/'
+    format.
 
 %h2 Harvesting Collections
 
@@ -52,3 +54,24 @@
   %p
     About OLAC:
     = link_to 'http://www.language-archives.org/documents.html#Standards', 'http://www.language-archives.org/documents.html#Standards'
+
+%h2 GraphQL API
+
+.page-box
+  %h3
+    = link_to 'GraphQL', 'http://graphql.org/'
+
+  %p
+    GraphQL is a query language that allow API consumers to specify only the subset of data that they interested on.
+    Our GraphQL API is available at:
+    = link_to 'http://catalog.paradisec.org.au/graphql', 'http://catalog.paradisec.org.au/graphql'
+
+  %p
+    The easiest way to start exploring our GraphQL API is by using an in-browser GraphQL query editor available at:
+    = link_to 'http://catalog.paradisec.org.au/graphiql', 'http://catalog.paradisec.org.au/graphiql'
+  %p
+    The GraphiQL editor is already pre-loaded with example query. Full definition of available attributes can also be viewed by clicking on 'Docs'.
+
+  %p
+    Our GraphQL schema definition is also available at:
+    = link_to 'http://catalog.paradisec.org.au/paradisec.graphql', 'http://catalog.paradisec.org.au/paradisec.graphql'
