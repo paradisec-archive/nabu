@@ -4,9 +4,11 @@
   %p
     The PARADISEC catalog exposes a number of APIs for harvesting the public data of the site. PARADISEC makes use of
     = link_to 'OAI-PMH', 'http://www.openarchives.org/pmh/'
-    for its harvesting APIs. The public data is also available on GraphQL API
+    for its harvesting APIs.
+  %p
+    The public data is also available through a
     = link_to 'GraphQL API', 'http://graphql.org/'
-    format.
+    \.
 
 %h2 Harvesting Collections
 
@@ -62,16 +64,33 @@
     = link_to 'GraphQL', 'http://graphql.org/'
 
   %p
-    GraphQL is a query language that allow API consumers to specify only the subset of data that they interested on.
+    GraphQL is a query language that allows API consumers to customise the response based on what data is interesting to them.
+
+  %p
     Our GraphQL API is available at:
     = link_to 'http://catalog.paradisec.org.au/graphql', 'http://catalog.paradisec.org.au/graphql'
 
   %p
-    The easiest way to start exploring our GraphQL API is by using an in-browser GraphQL query editor available at:
-    = link_to 'http://catalog.paradisec.org.au/graphiql', 'http://catalog.paradisec.org.au/graphiql'
-  %p
-    The GraphiQL editor is already pre-loaded with example query. Full definition of available attributes can also be viewed by clicking on 'Docs'.
+    A very simple search for an item based on its identifier would look like this:
+    %pre.codeblock
+      %code
+        :preserve
+          {
+            items(full_identifier: "ABC") {
+              full_identifier
+              title
+            }
+          }
+    This query finds all items which have 'ABC' in their identifier (including collection identifier),
+    and then lists the full identifier and title of results.
 
   %p
-    Our GraphQL schema definition is also available at:
+    You can start exploring our GraphQL API by using the in-browser GraphiQL query editor available at:
+    = link_to 'http://catalog.paradisec.org.au/graphiql', 'http://catalog.paradisec.org.au/graphiql'
+  %p
+    The GraphiQL editor is already pre-loaded with a more complex example query.
+    You can view the full definition of available attributes by clicking on 'Docs' in the GraphiQL editor.
+  
+  %p
+    For technical consumers, our GraphQL schema definition is available at:
     = link_to 'http://catalog.paradisec.org.au/paradisec.graphql', 'http://catalog.paradisec.org.au/paradisec.graphql'

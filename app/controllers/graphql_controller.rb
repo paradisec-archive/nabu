@@ -1,5 +1,11 @@
 class GraphqlController < ApplicationController
   def execute
+    # since this is a JSON request, don't use authorize! which will try and redirect to login page
+    unless can? :graphql, Item
+      render status: 401, json: {error: 'Must be logged in to query Nabu'}
+      return
+    end
+    
     variables = ensure_hash(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
@@ -11,7 +17,7 @@ class GraphqlController < ApplicationController
   end
 
   def schema
-    render text: NabuSchema.to_definition
+    render text: NabuSchema.to_definition, content_type: 'text/plain'
   end
 
   private

@@ -167,6 +167,9 @@
         %legend Essence Details
         %table.form
           %tr
+            %th= label_tag :no_files, 'No files'
+            %td= check_box_tag :no_files, 'true', params[:no_files]
+          %tr
             %th= label_tag :filename, 'Filename'
             %td= text_field_tag :filename, params[:filename]
           %tr

@@ -62,6 +62,10 @@ class ItemSearchService
           end
         end
       end
+      
+      if params[:no_files]
+        with(:essences_count).greater_than(0)
+      end
 
       if params[:exclusions].present?
         exclusions = params[:exclusions].split(',')

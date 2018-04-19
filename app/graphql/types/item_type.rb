@@ -6,6 +6,7 @@ Types::ItemType = GraphQL::ObjectType.define do
   field :full_identifier, !types.String
   field :collection, !Types::CollectionType
   field :essences, types[Types::EssenceType]
+  field :essences_count, types.Int
   field :title, types.String
   field :description, types.String
   field :originated_on, types.String

@@ -16,7 +16,7 @@ class Ability
       # Users can manage themseleves
       can :manage, User, :id => user.id
       can :read, User
-
+      can :graphql, Item
       # Anyone can create a university
       can :create, University
 

@@ -50,6 +50,7 @@ module ItemQueryBuilder
       'essences.fps' => 'number',
       'essences.samplerate' => 'number',
       'essences.channels' => 'number',
+      'essences_count' => 'number',
   }.with_indifferent_access
 
   OPERATORS = ['is', 'is_not', 'contains', 'does_not_contain', 'is_null', 'is_not_null', 'less_than', 'more_than']
@@ -75,6 +76,79 @@ module ItemQueryBuilder
         return invert ? '<=' : '>'
     end
   end
+  
+  def parse_field(clause)
+    field = clause['field']
+    if field.include?('.')
+      join_name = field.split('.').first
+      join_name = join_name.sub(/(?!essences)/, 'item_\1')
+      field = field.sub(/(users|admins|agents).id/, 'item_\1.user_id')
+      field = field.sub(/(.*languages).id/, 'item_\1.language_id')
+      field = field.sub(/(.*countries).id/, 'item_\1.country_id')
+      field = field.sub(/(.*data_categories).id/, 'item_\1.data_category_id')
+      field = field.sub(/(.*data_types).id/, 'item_\1.data_type_id')
+    else
+      join_name = nil
+    end
+    
+    return field, join_name
+  end
+  
+  def parse_input_value(clause, field, clause_operator, clause_sql, values)
+    input_value = clause['input']
+    if input_value
+      clause_sql += ' ?'
+
+      if TYPES_FOR_FIELDS[field] == 'date'
+        begin
+          input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
+        rescue Exception
+          Rails.logger.error "Failed to parse date from input string '#{input_value}'. Expected format was 'YYYY-MM-DD'"
+        end
+      end
+      
+      value_sql = clause_operator.include?('like') ? "%#{input_value}%" : input_value
+      value_sql = value_sql.sub('true', '1').sub('false', '0')
+      values.push value_sql
+      
+      if TYPES_FOR_FIELDS[field] == 'boolean'
+        # deal with weird 'true = true but false may be null' issue
+        if input_value == 'false' || input_value == false
+          # wrap the current clause in brackets to avoid polluting the boolean logic with this OR
+          clause_sql = clause_sql.sub(field, "(#{field}")
+          clause_sql += " OR #{field} is null)"
+        end
+      end
+    end
+    
+    return input_value, clause_sql
+  end
+  
+  def process_clause(clause, joins, query, values)
+    field, join_name = parse_field(clause)
+    joins.push join_name if join_name.present?
+
+    clause_operator = sql_operator(clause['operator'], clause['logic'] == 'NOT')
+    is_negative = clause_operator.include?('not')
+    clause_sql = "#{field} #{clause_operator}"
+
+    if is_negative && join_name.present?
+      inverse_operator = sql_operator(clause['operator'], false)
+      clause_sql = "not exists (select id from #{join_name} where #{field} #{inverse_operator}"
+    end
+
+    input_value, clause_sql = parse_input_value(clause, field, clause_operator, clause_sql, values)
+
+    if is_negative && join_name.present?
+      clause_sql += ')'
+    end
+
+    if clause['logic']
+      query.push "#{clause['logic'].sub('NOT', 'AND')} #{clause_sql}"
+    else
+      query.push clause_sql
+    end
+  end
 
   def build_query(params)
     clauses = params[:clause]
@@ -86,55 +160,7 @@ module ItemQueryBuilder
     query = []
     values = []
     clauses.each_pair do |_, clause|
-      field = clause['field']
-      if field.include?('.')
-        join_name = field.split('.').first
-        join_name = join_name.sub(/(?!essences)/, 'item_\1')
-        field = field.sub(/(users|admins|agents).id/, 'item_\1.user_id')
-        field = field.sub(/(.*languages).id/, 'item_\1.language_id')
-        field = field.sub(/(.*countries).id/, 'item_\1.country_id')
-        field = field.sub(/(.*data_categories).id/, 'item_\1.data_category_id')
-        field = field.sub(/(.*data_types).id/, 'item_\1.data_type_id')
-        joins.push join_name
-      else
-        join_name = nil
-      end
-
-      clause_operator = sql_operator(clause['operator'], clause['logic'] == 'NOT')
-      is_negative = clause_operator.include?('not')
-      clause_sql = "#{field} #{clause_operator}"
-
-      if is_negative && join_name.present?
-        inverse_operator = sql_operator(clause['operator'], false)
-        clause_sql = "not exists (select id from #{join_name} where #{field} #{inverse_operator}"
-      end
-
-      input_value = clause['input']
-      if input_value
-        clause_sql += ' ?'
-
-        if TYPES_FOR_FIELDS[field] == 'date'
-          begin
-            input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
-          rescue Exception
-            Rails.logger.error "Failed to parse date from input string '#{input_value}'. Expected format was 'YYYY-MM-DD'"
-          end
-        end
-
-        value_sql = clause_operator.include?('like') ? "%#{input_value}%" : input_value
-        value_sql = value_sql.sub('true', '1').sub('false', '0')
-        values.push value_sql
-      end
-
-      if is_negative && join_name.present?
-        clause_sql += ')'
-      end
-
-      if clause['logic']
-        query.push "#{clause['logic'].sub('NOT', 'AND')} #{clause_sql}"
-      else
-        query.push clause_sql
-      end
+      process_clause(clause, joins, query, values)
     end
 
     results = results.includes(joins.uniq).where(query.join(' '), *values)
