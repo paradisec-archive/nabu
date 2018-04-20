@@ -1,0 +1,35 @@
+# ==============================================================
+# Docker compose file for local development environment
+# - starts a MySQL server with no root pw
+# - mounts persistent volumes for DB data and Rails bundler cache 
+# - mounts current working dir into the app so code changes you make
+#   locally are reflected in the container
+# ==============================================================
+
+version: "3"
+
+services:
+  nabu:
+    build: .
+    command: ./entrypoint.sh
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - bundler:/bundler
+    environment:
+      RAILS_ENV: development
+  
+  db:
+    image: mysql:5.5
+    ports:
+      - '3306:3306'
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+volumes:
+  bundler:
+  db-data:
