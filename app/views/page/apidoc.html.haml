@@ -77,8 +77,12 @@
         :preserve
           {
             items(full_identifier: "ABC") {
-              full_identifier
-              title
+              total
+              next_page
+              results {
+                full_identifier
+                title
+              }
             }
           }
     This query finds all items which have 'ABC' in their identifier (including collection identifier),
