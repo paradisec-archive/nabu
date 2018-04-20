@@ -1,7 +1,9 @@
+ItemResult = Struct.new('ItemResult', :total, :next_page, :results)
+
 Types::QueryType = GraphQL::ObjectType.define do
   name 'Query'
 
-  field :items, types[Types::ItemType] do
+  field :items, Types::ItemResultType do
     argument :limit, types.Int, default_value: 10
     argument :page, types.Int, default_value: 1
     # argument :sort_order, types.String, default_value: :full_identifier
@@ -47,7 +49,14 @@ Types::QueryType = GraphQL::ObjectType.define do
         # this is hard to optimise as it's more on Ruby memory/object allocation not db query optimisation
         per_page: args['limit'] > 500 ? 500 : args['limit']
       }
-      ItemSearchService.build_advanced_search(search_params, ctx[:current_user]).results
+      
+      search = ItemSearchService.build_advanced_search(search_params, ctx[:current_user])
+      results = search.results
+      ItemResult.new(
+        search.total,
+        results.next_page,
+        results
+      )
     }
   end
 end
