@@ -7,14 +7,6 @@ class ItemsController < ApplicationController
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
 
-  INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
-                         :csv_filenames, :csv_mimetypes, :csv_fps_values, :csv_samplerates, :csv_channel_counts,
-                         :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories, :csv_data_types,
-                         :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name,
-                         :access_narrative]
-
-  CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map{|f| f.to_s.titleize}, write_headers: true}
-
   def search
     if params[:clear]
       params.delete(:search)
@@ -22,7 +14,7 @@ class ItemsController < ApplicationController
       return
     end
 
-    @search = build_solr_search(params)
+    @search = ItemSearchService.build_solr_search(params, current_user)
     session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
 
     @page_title = 'Nabu - Item Search'
@@ -343,53 +335,29 @@ class ItemsController < ApplicationController
     ItemCatalogService.new(item).delay.save_file
   end
 
-  def build_solr_search(params)
-    Item.solr_search(include: [:collection, :collector, :countries]) do
-      logger.info params[:search]
-      fulltext params[:search]
-
-      facet :content_language_ids, :country_ids
-      facet :collector_id, :limit => 100
-
-      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
-      with(:content_language_codes, params[:language_code]) if params[:language_code].present?
-      with(:country_codes, params[:country_code]) if params[:country_code].present?
-
-      unless current_user && current_user.admin?
-        any_of do
-          with(:private, false)
-          with(:admin_ids, current_user.id) if current_user
-          with(:user_ids, current_user.id) if current_user
-        end
-      end
-      sort_column(Item).each do |c|
-        order_by c, sort_direction
-      end
-      paginate :page => params[:page], :per_page => params[:per_page]
-    end
-  end
-
   def stream_csv(search_type)
-    filename = "nabu_items_#{Date.today}.csv"
-    self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
-    self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
-    self.response.headers['Last-Modified'] = Time.now.ctime.to_s
+    downloader = CsvDownloader.new(search_type, params, current_user)
+    export_all = params[:export_all] || false
+    per_page = (params[:per_page] || 10).to_i
+    
+    # only stream CSV if small enough
+    if @search.total <= 5000 || (!export_all && per_page <= 5000)
+      filename, body = downloader.stream(@search)
+      
+      self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
+      self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+      self.response.headers['Last-Modified'] = Time.now.ctime.to_s
 
-    # use enumerator to customise streaming the response
-    self.response_body = Enumerator.new do |output|
-      # wrap the IO output so that CSV pushes writes directly into it
-      csv = CSV.new(output, CSV_OPTIONS)
-      @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-      # if the user requested all results, iterate over the remaining pages
-      while params[:export_all] && @search.results.next_page
-        @search = if search_type == :basic
-                    build_solr_search(params.merge(page: @search.results.next_page))
-                  else
-                    ItemSearchService.build_advanced_search(params.merge(page: @search.results.next_page), current_user)
-                  end
-        @search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-      end
+      self.response_body = Enumerator.new &body
+      return
     end
+    
+    # otherwise use delayed_job to email a CSV
+    
+    downloader.delay.email
+    
+    flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
+    redirect_to action: :advanced_search
   end
 
   def build_advanced_search(params)

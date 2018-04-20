@@ -1,0 +1,11 @@
+%h2 CSV export completed
+
+%p
+  Your CSV export started on
+  = @start_time.strftime('%a %d/%m/%Y %T')
+  is now complete!
+  
+%p
+  Please find attached a CSV file containing the
+  = @total
+  items that you requested.

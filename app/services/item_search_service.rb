@@ -1,4 +1,30 @@
 class ItemSearchService
+  def self.build_solr_search(params, current_user)
+    Item.solr_search(include: [:collection, :collector, :countries]) do
+      Rails.logger.info params[:search]
+      fulltext params[:search]
+
+      facet :content_language_ids, :country_ids
+      facet :collector_id, :limit => 100
+
+      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
+      with(:content_language_codes, params[:language_code]) if params[:language_code].present?
+      with(:country_codes, params[:country_code]) if params[:country_code].present?
+
+      unless current_user && current_user.admin?
+        any_of do
+          with(:private, false)
+          with(:admin_ids, current_user.id) if current_user
+          with(:user_ids, current_user.id) if current_user
+        end
+      end
+      sort_column(Item, params).each do |c|
+        order_by c, sort_direction(params)
+      end
+      paginate :page => params[:page], :per_page => params[:per_page]
+    end
+  end
+
   def self.build_advanced_search(params, current_user)
     Item.solr_search(include: [:collection, :collector, :countries]) do
       # Full text search
