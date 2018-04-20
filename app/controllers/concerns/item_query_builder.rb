@@ -94,31 +94,66 @@ module ItemQueryBuilder
     return field, join_name
   end
   
+  def input_value_preprocess(field, input_value)
+    if TYPES_FOR_FIELDS[field] == 'date'
+      begin
+        return DateTime.parse(input_value).strftime('%Y-%m-%d'), nil
+      rescue Exception
+        Rails.logger.error "Failed to parse date from input string '#{input_value}'. Expected format was 'YYYY-MM-DD'"
+      end
+    end
+    
+    if field == 'identifier' && input_value.include?('-')
+      c_identifier, i_identifier = input_value.split('-')
+      collection_id = Collection.find_by_identifier(c_identifier).try(:id)
+      
+      collection_clause = " AND collection_id = #{collection_id || 'null'}";
+      return i_identifier, collection_clause
+    end
+    
+    return input_value, nil 
+  end
+  
+  def input_value_postprocess(field, input_value, clause_sql)
+    if TYPES_FOR_FIELDS[field] == 'boolean'
+      # deal with weird 'true = true but false may be null' issue
+      if input_value == 'false' || input_value == false
+        # wrap the current clause in brackets to avoid polluting the boolean logic with this OR
+        clause_sql = clause_sql.sub(field, "(#{field}")
+        clause_sql += " OR #{field} is null)"
+      end
+    end
+    
+    if field == 'identifier' && clause_sql.include?('collection_id')
+      clause_sql = "(#{clause_sql})"
+    end
+    
+    return input_value, clause_sql
+  end
+  
+  def format_like_clause(clause_operator, input_value, field, clause_sql)
+    return input_value unless clause_operator.include?('like')
+    
+    if field == 'identifier' && clause_sql.include?('collection_id')
+      return "#{input_value}%"
+    end
+    
+    return "%#{input_value}%"
+  end
+  
   def parse_input_value(clause, field, clause_operator, clause_sql, values)
     input_value = clause['input']
     if input_value
       clause_sql += ' ?'
 
-      if TYPES_FOR_FIELDS[field] == 'date'
-        begin
-          input_value = DateTime.parse(input_value).strftime('%Y-%m-%d')
-        rescue Exception
-          Rails.logger.error "Failed to parse date from input string '#{input_value}'. Expected format was 'YYYY-MM-DD'"
-        end
-      end
+      input_value, new_clause = input_value_preprocess(field, input_value)
+      clause_sql += new_clause if new_clause.present?
       
-      value_sql = clause_operator.include?('like') ? "%#{input_value}%" : input_value
+      value_sql = format_like_clause(clause_operator, input_value, field, clause_sql)
       value_sql = value_sql.sub('true', '1').sub('false', '0')
       values.push value_sql
       
-      if TYPES_FOR_FIELDS[field] == 'boolean'
-        # deal with weird 'true = true but false may be null' issue
-        if input_value == 'false' || input_value == false
-          # wrap the current clause in brackets to avoid polluting the boolean logic with this OR
-          clause_sql = clause_sql.sub(field, "(#{field}")
-          clause_sql += " OR #{field} is null)"
-        end
-      end
+      input_value, clause_sql = input_value_postprocess(field, input_value, clause_sql)
     end
     
     return input_value, clause_sql
@@ -164,6 +199,7 @@ module ItemQueryBuilder
     end
 
     results = results.includes(joins.uniq).where(query.join(' '), *values)
+    puts "[QB] #{results.to_sql}"
     if params[:exclusions].present?
       exclusions = params[:exclusions].split(',')
       results = results.where('items.id not in (?)', exclusions)

@@ -285,7 +285,7 @@ class Collection < ActiveRecord::Base
     end
     cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
     cite += '; ' unless cite == ""
-    cite += "<i>#{sanitize(title)}</i> (#{identifier}), "
+    cite += "<i>#{title}</i> (#{identifier}), "
     cite += "Digital collection managed by PARADISEC. "
     cite += "[#{access_class.capitalize} Access] "
     if doi

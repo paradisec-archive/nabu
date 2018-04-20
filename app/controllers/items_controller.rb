@@ -92,8 +92,9 @@ class ItemsController < ApplicationController
     end
   end
 
-  # REVIEW: should it be identifier/data.json or just identifier.json?
   def data
+    authorize! :read, User # require logged in user
+
     audio_values = {}
     documents_values = []
     eaf_values = {}

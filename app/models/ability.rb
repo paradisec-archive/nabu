@@ -13,10 +13,10 @@ class Ability
       can :manage, :all
 
     else
-      # Users can manage themseleves
+      # Users can manage themselves
       can :manage, User, :id => user.id
       can :read, User
-      can :graphql, Item
+
       # Anyone can create a university
       can :create, University
 
@@ -37,6 +37,7 @@ class Ability
       can :manage, Collection, :collection_admins => { :user_id => user.id }
       can :update, Collection, :operator_id => user.id
       can :update, Collection, :collector_id => user.id
+      
       can :advanced_search, Collection
       cannot :search_csv, Collection
       cannot :bulk_edit, Collection
@@ -57,10 +58,13 @@ class Ability
       can :manage, Item, :collection  => { :collector_id => user.id }
       can :manage, Item, :collection  => { :operator_id => user.id }
       can :manage, Item, :item_admins => { :user_id => user.id }
+
       can :advanced_search, Item
       can :new_report, Item
       can :send_report, Item
       can :report_sent, Item
+      can :graphql, Item
+
       cannot :search_csv, Item
       cannot :bulk_edit, Item
       cannot :bulk_update, Item

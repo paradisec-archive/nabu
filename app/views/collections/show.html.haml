@@ -75,7 +75,7 @@
 
       %tr
         %th Cite as
-        %td= @collection.citation.html_safe
+        %td= sanitize(@collection.citation, tags: %w(i)).html_safe
 
       %tr
         - if !@collection.has_coordinates
