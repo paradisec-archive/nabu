@@ -357,7 +357,7 @@ class ItemsController < ApplicationController
     downloader.delay.email
     
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
-    redirect_to action: :advanced_search
+    redirect_to :back
   end
 
   def build_advanced_search(params)
