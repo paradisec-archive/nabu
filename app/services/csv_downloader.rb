@@ -12,18 +12,17 @@ class CsvDownloader
       search_type = search_type
       @params = params
       @current_user = current_user
+      @csv_requested_time = DateTime.now
   end
 
   def email
-    start_time = DateTime.now
-    
     search = if @search_type == :basic
                ItemSearchService.build_solr_search(@params, @current_user)
              else
                ItemSearchService.build_advanced_search(@params, @current_user)
              end
 
-    Rails.logger.info {"#{start_time} Generating CSV for download"}
+    Rails.logger.info {"#{DateTime.now} Generating CSV for download"}
 
     filename = "nabu_items_#{Date.today}.csv"
     path = "#{Rails.root}/tmp/#{filename}"
@@ -43,11 +42,14 @@ class CsvDownloader
     
     total = @params[:export_all] ? search.total : (@params[:per_page] || 10) 
     
+    Rails.logger.info {"#{DateTime.now} Generating CSV for download"}
+    
     if @current_user.email.present?
       CsvDownloadMailer.csv_download_email(
         @current_user.email,
+        @current_user.name,
         total,
-        start_time.in_time_zone('Australia/Sydney'),
+        @csv_requested_time.in_time_zone('Australia/Sydney'),
         filename,
         path
       ).deliver
