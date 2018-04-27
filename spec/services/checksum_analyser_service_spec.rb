@@ -10,23 +10,23 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        printed_output.should include('1/1 checksums succeeded')
+        printed_output.should include('Checked 1 essence checksum in 1 file. 1 passed | 0 failed')
       end
     end
   end
 
   context 'with an invalid checksum' do
     describe '.check_checksums_for_files' do
-      it 'should show a failure response' do
+      it 'should check all sums in file and show a failure response only for failed sums' do
         printed_output = capture_stdout do
           ChecksumAnalyserService.check_checksums_for_files([
-            { destination_path: Rails.root.join('spec/support/data/checksum/invalid_data/'), file: 'AA3-001-G-checksum-PDSC_ADMIN.txt' }
+            { destination_path: Rails.root.join('spec/support/data/checksum/invalid_data/'), file: 'AA3-001-checksum-PDSC_ADMIN.txt' }
           ])
         end
 
-        expected_output = "\n0/1 checksums succeeded\n1/1 checksums failed\n"
-
-        printed_output.should match(expected_output)
+        printed_output.should include('Checked 3 essence checksums in 1 file. 1 passed | 2 failed')
+        printed_output.should include('AA3-001-G.wav: FAILED')
+        printed_output.should include('AA3-001-X.wav: FAILED')
       end
     end
   end

@@ -1,86 +1,70 @@
 require 'find'
 
+# files_array shape:
+# [
+# 	{
+# 		destination_path: '/srv/catalog/COLL/ITEM1/',
+# 		file: 'COLL-ITEM1-checksum-PDSC_ADMIN.txt'
+# 	},
+# 	{
+# 		destination_path: '/srv/catalog/COLL/ITEM2/',
+# 		file: 'COLL-ITEM2-checksum-PDSC_ADMIN.txt'
+# 	},
+# ]
+
 class ChecksumAnalyserService
   def self.check_checksums_for_files(files_array)
-    puts "checking checksums..."
+    return if files_array.empty?
 
-    puts "---------------------------------------------------------------"
+    checksum_files = files_array.select { |imported_file| imported_file[:file].include?('-checksum-PDSC_ADMIN.txt') }
 
-    checksum_check_count = 0
-    checksum_successes_count = 0
-    checksum_failures_count = 0
-    checksum_noread_count = 0
+    puts "[CHECKSUM] Found #{checksum_files.count} checksums #{"file".pluralize(checksum_files.count)} (out of a total of #{files_array.count} #{"file".pluralize(files_array.count)}) ..."
+    
+    # each checksum_file can contain multiple checksums (potentially one for each file in the item)
+    total_checksums = 0
+    ok_checksums = 0
+    failed_checksums = 0
+    
     failed_checksum_paths = []
-    noread_checksum_paths = []
 
-    files_array.each do |file_data_hash|
-      if file_data_hash[:file].include?('-checksum-') && file_data_hash[:file].include?('.txt')
-        checksum_check_count += 1
-
-        begin
-          check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
-            %x[md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]}]
-          }
-        rescue StandardError => e
-          puts 'error while checking the checksum'
-        end
-
-        unless check_result_string
-          checksum_noread_count += 1
-
-          noread_checksum_paths.push(file_data_hash[:destination_path] + file_data_hash[:file])
-
-          puts "#{file_data_hash[:destination_path]}#{file_data_hash[:file]} cannot be read"
-
-          next
-        end
-
-        check_result_array = check_result_string.split("\n")
-
-        check_result_array.each do |result|
-          if result.include?(' OK')
-            checksum_successes_count += 1
-          elsif result.include?(' FAILED')
-            checksum_failures_count += 1
-
-            failed_checksum_paths.push(file_data_hash[:destination_path] + result)
-
-            puts "#{file_data_hash[:destination_path]}#{result}"
-          end
-        end
-      end
-    end
-
-    puts '---------------------------------------------------------------'
-
-    if checksum_check_count > 0
-      puts "#{checksum_check_count} .txt checksum files were checked"
-
-      puts '---------------------------------------------------------------'
-
-      puts "#{checksum_successes_count}/#{checksum_check_count} checksums succeeded"
-      puts "#{checksum_failures_count}/#{checksum_check_count} checksums failed"
-      puts "#{checksum_noread_count}/#{checksum_check_count} checksums couldn't be read"
-
-      if failed_checksum_paths.any?
-        puts '!-------------------------------------------------------------!'
-        puts 'files that failed the checksum:'
-
-        failed_checksum_paths.each do |checksum_path|
-          puts checksum_path
-        end
+    checksum_files.each do |file_data_hash|
+      begin
+        check_result_string = Dir.chdir("#{file_data_hash[:destination_path]}") {
+          %x[ md5sum -c #{file_data_hash[:destination_path]}#{file_data_hash[:file]} 2>&1 ]
+        }
+      rescue StandardError => e
+        printf "[CHECKSUM] error while reading the checksum file #{file_data_hash[:file]}, unable to check if sums are valid: #{e.message}"
+        next # no need to continue, we failed to even read the txt file
       end
 
-      if noread_checksum_paths.any?
-        puts '!-------------------------------------------------------------!'
-        puts 'files that could not be read:'
+      # extract lines that have useful info
+      check_result_array = check_result_string.split(/[\r\n]/).select { |line| /( OK| FAILED)/.match(line) }.map(&:chomp)
 
-        noread_checksum_paths.each do |checksum_path|
-          puts checksum_path
+      # test if checksums passed/failed and collect failed file paths
+      check_result_array.each do |result|
+        total_checksums += 1
+
+        if result.include?(' OK')
+          ok_checksums += 1
+        elsif result.include?(' FAILED')
+          failed_checksums += 1
+
+          failed_checksum_paths.push(file_data_hash[:destination_path] + result)
+          printf "[!!!] #{file_data_hash[:destination_path]}#{result}\n"
         end
+      end # checksum results loop
+
+    end # checksum files loop
+
+    puts "[CHECKSUM] Checked #{total_checksums} essence #{"checksum".pluralize(total_checksums)} in #{checksum_files.count} #{"file".pluralize(checksum_files.count)}. #{ok_checksums} passed | #{failed_checksums} failed"
+
+    if failed_checksums > 0
+      puts "[CHECKSUM] Files that failed the checksum check:"
+      
+      failed_checksum_paths.each do |checksum_path|
+        puts "[CHECKSUM] - #{checksum_path}"
+        # TODO: move file to rejected
       end
-    else
-      puts "no checksum files were checked."
     end
 
     true
