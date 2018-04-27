@@ -134,12 +134,15 @@ namespace :archive do
       # "#{collection_id}-#{item_id}-xxx.xxx"
 
       files_array = dir_contents.select {|file| File.file?("#{upload_directory}/#{file}") }
+      next unless files_array.any?
 
       checksum_files = files_array.select { |file| file.include?('-checksum-PDSC_ADMIN.txt') }.map{|file| {destination_path: upload_directory, file: file}}
+      failed_checksum_files = []
+      if checksum_files.any?
+        puts "[CHECKSUM] Found #{checksum_files.count} checksums #{"file".pluralize(checksum_files.count)} (out of a total of #{files_array.count} #{"file".pluralize(files_array.count)}) ..."
 
-      puts "[CHECKSUM] Found #{checksum_files.count} checksums #{"file".pluralize(checksum_files.count)} (out of a total of #{files_array.count} #{"file".pluralize(files_array.count)}) ..."
-
-      failed_checksum_files = check_checksums(checksum_files)
+        failed_checksum_files = check_checksums(checksum_files)
+      end
 
       puts 'Start processing files to import...'
       files_array.each do |file|
