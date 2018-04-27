@@ -340,6 +340,8 @@ class ItemsController < ApplicationController
     export_all = params[:export_all] || false
     per_page = (params[:per_page] || 10).to_i
     
+    #TODO: fix CSV stream for builder method
+
     # only stream CSV if small enough
     if @search.total <= 5000 || (!export_all && per_page <= 5000)
       filename, body = downloader.stream(@search)

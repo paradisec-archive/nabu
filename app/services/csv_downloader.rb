@@ -9,7 +9,7 @@ class CsvDownloader
   CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map{|f| f.to_s.titleize}, write_headers: true}
 
   def initialize(search_type, params, current_user)
-      search_type = search_type
+      @search_type = search_type
       @params = params
       @current_user = current_user
       @csv_requested_time = DateTime.now

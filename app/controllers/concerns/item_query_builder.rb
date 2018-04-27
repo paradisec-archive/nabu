@@ -108,7 +108,7 @@ module ItemQueryBuilder
       collection_id = Collection.find_by_identifier(c_identifier).try(:id)
       
       collection_clause = " AND collection_id = #{collection_id || 'null'}";
-      return i_identifier, collection_clause
+      return i_identifier || '', collection_clause
     end
     
     return input_value, nil 
@@ -132,6 +132,7 @@ module ItemQueryBuilder
   end
   
   def format_like_clause(clause_operator, input_value, field, clause_sql)
+    return nil unless input_value
     return input_value unless clause_operator.include?('like')
     
     if field == 'identifier' && clause_sql.include?('collection_id')
@@ -140,17 +141,24 @@ module ItemQueryBuilder
     
     return "%#{input_value}%"
   end
+
+  def format_boolean_clause(value_sql)
+    return nil unless value_sql
+    value_sql.sub('true', '1').sub('false', '0')
+  end
   
   def parse_input_value(clause, field, clause_operator, clause_sql, values)
     input_value = clause['input']
     if input_value
       clause_sql += ' ?'
 
+      # TODO: handle identifier like 'AA1-' that will break the system
+
       input_value, new_clause = input_value_preprocess(field, input_value)
       clause_sql += new_clause if new_clause.present?
       
       value_sql = format_like_clause(clause_operator, input_value, field, clause_sql)
-      value_sql = value_sql.sub('true', '1').sub('false', '0')
+      value_sql = format_boolean_clause(value_sql)
       values.push value_sql
       
       input_value, clause_sql = input_value_postprocess(field, input_value, clause_sql)

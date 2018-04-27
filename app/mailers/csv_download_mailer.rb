@@ -9,6 +9,8 @@ class CsvDownloadMailer < ActionMailer::Base
     @filename = filename
     
     attachments[@filename] = File.read(path)
+
+    puts "Sending CSV download to #{@user_name} [#{@email}] with attachment #{@filename} containing #{@total} results"
     
     mail(to: email, subject: "Nabu - CSV export started on #{start_time.strftime('%a %e %b %Y %i:%M %P')} has been completed")
   end
