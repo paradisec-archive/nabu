@@ -133,18 +133,22 @@ namespace :archive do
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
 
-      copied_files_array = []
+      files_array = dir_contents.select {|file| File.file?("#{upload_directory}/#{file}") }
 
-      dir_contents.each do |file|
+      checksum_files = files_array.select { |file| file.include?('-checksum-PDSC_ADMIN.txt') }.map{|file| {destination_path: upload_directory, file: file}}
+
+      puts "[CHECKSUM] Found #{checksum_files.count} checksums #{"file".pluralize(checksum_files.count)} (out of a total of #{files_array.count} #{"file".pluralize(files_array.count)}) ..."
+
+      failed_checksum_files = check_checksums(checksum_files)
+
+      puts 'Start processing files to import...'
+      files_array.each do |file|
+        puts '---------------------------------------------------------------'
+
         # To move to the archive, have success true
         # To move to rejected, have success false
         # To leave alone, skip an iteration of this loop with next
         success = true
-
-        # Action: Leave as-is.
-        unless File.file? "#{upload_directory}/#{file}"
-          next
-        end
 
         # Nabu Import Messages 9.
         # Action: Leave as-is.
@@ -159,6 +163,11 @@ namespace :archive do
         last_updated = File.stat("#{upload_directory}/#{file}").mtime
         if (Time.now - last_updated) < 60*10
           next
+        end
+
+        if failed_checksum_files.include?("#{upload_directory}/#{file}".gsub('//', '/'))
+          puts "ERROR: file #{file} skipped, since it failed the checksum validation" if verbose
+          success = false
         end
 
         # Nabu Import Messages 8.
@@ -183,8 +192,6 @@ namespace :archive do
           success = false
         end
 
-        puts '---------------------------------------------------------------'
-
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           begin
@@ -206,7 +213,7 @@ namespace :archive do
         # will be copied, but not added to the list of imported files in Nabu.
         if is_non_admin_file && success
           # extract media metadata from file
-          puts "Inspecting file #{file}..."
+          puts "INFO: Inspecting file #{file}..."
           begin
             success = import_metadata(upload_directory, file, item, extension, force_update)
           rescue => e
@@ -235,16 +242,14 @@ namespace :archive do
           # Action: Leave as-is.
           begin
             FileUtils.cp(upload_directory + file, destination_path + file)
-
-            copied_files_array.push({destination_path: destination_path, file: file})
           rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
 
             next
           end
 
-          puts "INFO: file #{file} copied into archive at #{destination_path}"
-        else
+          puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
+        else # if !success
           rejected_directory = upload_directory + "Rejected/"
 
           unless File.directory?(rejected_directory)
@@ -280,8 +285,6 @@ namespace :archive do
 
         puts "...done"
       end
-
-      check_checksums(copied_files_array)
     end
   end
 
@@ -479,7 +482,7 @@ namespace :archive do
     when essence.new_record? || (essence.changed? && force_update)
       essence.save!
       # Nabu Import Messages 2.
-      puts "SUCCESS: file #{file} metadata imported into Nabu"
+      puts "INFO: essence #{file} metadata imported into Nabu. The file will now be moved..."
       true
     when essence.changed?
       puts "ERROR: file #{file} metadata is different to DB - use 'FORCE=true archive:update_file' to update"
