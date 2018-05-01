@@ -1,3 +1,15 @@
+type AccessCondition {
+  collections: [Collection]
+  items: [Item]
+  name: String
+}
+
+type Agent {
+  role_name: String
+  user: Person
+  user_name: String
+}
+
 type Boundary {
   east_limit: Float!
   north_limit: Float!
@@ -102,8 +114,9 @@ type Grant {
 
 type Item {
   access_class: String
+  access_condition: AccessCondition
+  access_condition_name: String
   access_narrative: String
-  agents: [Person]
   born_digital: Boolean
   boundaries: Boundary
   citation: String
@@ -120,22 +133,32 @@ type Item {
   doi: String
   doi_xml: String
   essences: [Essence]
+  essences_count: Int
   full_identifier: String!
   id: ID!
   identifier: String!
   ingest_notes: String
+  item_agents: [Agent]
   language: String
   operator: Person
   original_media: String
   originated_on: String
   originated_on_narrative: String
   permalink: String!
+  private: Boolean
+  public: Boolean
   received_on: String
   region: String
   subject_languages: [Language]
   title: String
   tracking: String
   university: University
+}
+
+type ItemResult {
+  next_page: Int
+  results: [Item]!
+  total: Int!
 }
 
 type Language {
@@ -156,30 +179,11 @@ type Person {
   first_name: String
   id: ID!
   last_name: String
+  name: String
 }
 
 type Query {
-  items(
-    limit: Int = 10,
-    page: Int = 1,
-    title: String,
-    identifier: String,
-    full_identifier: String,
-    collection_identifier: String,
-    collector_name: String,
-    university_name: String,
-    operator_name: String,
-    discourse_type_name: String,
-    description: String,
-    language: String,
-    dialect: String,
-    region: String,
-    access_narrative: String,
-    tracking: String,
-    ingest_notes: String,
-    born_digital: Boolean,
-    originated_on: String
-  ): [Item]
+  items(access_class: String, access_condition_name: String, access_narrative: String, born_digital: Boolean, collection_identifier: String, collector_name: String, description: String, dialect: String, digitised_on: String, discourse_type_name: String, doi: String, essences_count: Int, full_identifier: String, id: ID, identifier: String, ingest_notes: String, language: String, limit: Int = 10, operator_name: String, original_media: String, originated_on: String, originated_on_narrative: String, page: Int = 1, private: Boolean, received_on: String, region: String, title: String, tracking: String, university_name: String): ItemResult
 }
 
 type University {

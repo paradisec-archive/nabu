@@ -3,5 +3,8 @@
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
 require File.expand_path('../config/application', __FILE__)
+require "graphql/rake_task"
 
 Nabu::Application.load_tasks
+
+GraphQL::RakeTask.new(schema_name: "NabuSchema", idl_outfile: 'nabu.graphql')

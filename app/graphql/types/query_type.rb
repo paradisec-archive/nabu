@@ -1,5 +1,3 @@
-ItemResult = Struct.new('ItemResult', :total, :next_page, :results)
-
 Types::QueryType = GraphQL::ObjectType.define do
   name 'Query'
 
@@ -25,6 +23,15 @@ Types::QueryType = GraphQL::ObjectType.define do
     argument :born_digital, types.Boolean
     argument :originated_on, types.String
     argument :essences_count, types.Int
+    argument :id, types.ID
+    argument :access_class, types.String
+    argument :access_condition_name, types.String
+    argument :original_media, types.String
+    argument :received_on, types.String
+    argument :digitised_on, types.String
+    argument :originated_on_narrative, types.String
+    argument :doi, types.String
+    argument :private, types.Boolean
 
     resolve ->(object, args, ctx) {
       search_params = {
@@ -35,7 +42,7 @@ Types::QueryType = GraphQL::ObjectType.define do
       
       search = ItemSearchService.build_advanced_search(search_params, ctx[:current_user])
       results = search.results
-      ItemResult.new(
+      Struct::ItemResult.new(
         search.total,
         results.next_page,
         results

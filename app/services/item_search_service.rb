@@ -35,13 +35,15 @@ class ItemSearchService
 
       # Exact search
       Sunspot::Setup.for(Item).fields.each do |field|
-        next if params[field.name].blank?
+        next if params[field.name].blank? && params[field.name] != false # use to_s to avoid `false.blank? == true` issue
+
         case field.type
           when Sunspot::Type::StringType
           when Sunspot::Type::IntegerType
             with field.name, params[field.name]
           when Sunspot::Type::BooleanType
-            with field.name, params[field.name] =~ /^true|1$/ ? true : false
+            # handle literal true and string "true" or "1" from mysql db
+            with field.name, params[field.name].to_s =~ /^true|1$/ ? true : false
           when Sunspot::Type::TimeType
             with(field.name).between((Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day))
           else

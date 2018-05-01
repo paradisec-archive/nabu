@@ -18,7 +18,7 @@ Types::ItemType = GraphQL::ObjectType.define do
   field :countries, types[Types::CountryType]
   field :subject_languages, types[Types::LanguageType]
   field :content_languages, types[Types::LanguageType]
-  field :agents, types[Types::PersonType]
+  field :item_agents, types[Types::AgentType]
   field :data_categories, types[Types::DataCategoryType]
   field :data_types, types[Types::DataTypeType]
   field :boundaries, Types::BoundaryType
@@ -26,6 +26,8 @@ Types::ItemType = GraphQL::ObjectType.define do
   field :dialect, types.String
   field :access_class, types.String
   field :access_narrative, types.String
+  field :access_condition_name, types.String
+  field :access_condition, Types::AccessConditionType
   field :region, types.String
   field :original_media, types.String
   field :born_digital, types.Boolean
@@ -36,6 +38,8 @@ Types::ItemType = GraphQL::ObjectType.define do
   field :originated_on_narrative, types.String
   field :doi, types.String
   field :doi_xml, types.String, property: :to_doi_xml
+  field :public, types.Boolean, property: :public?
+  field :private, types.Boolean
   field :citation, types.String
   field :permalink, !types.String, property: :full_path
 end
