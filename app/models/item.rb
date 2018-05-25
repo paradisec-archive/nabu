@@ -142,6 +142,8 @@ class Item < ActiveRecord::Base
   after_initialize :prefill
 
   after_save :update_collection_countries_and_languages
+  after_save :update_catalog_file
+
   before_save :propagate_collector
 
   scope :public, joins(:collection).where(:private => false, :collection => {:private => false})
@@ -313,6 +315,7 @@ class Item < ActiveRecord::Base
     # Link models for faceting or dropdowns
     integer :content_language_ids, :references => Language, :multiple => true
     integer :collector_id, :references => User
+    integer :collection_id, :references => Collection
     integer :operator_id, :references => User
     integer :country_ids, :references => Country, :multiple => true
     integer :university_id, :references => University
@@ -621,5 +624,9 @@ class Item < ActiveRecord::Base
 
   def bulk_deleteable
     @bulk_deleteable ||= {}
+  end
+
+  def update_catalog_file
+    ItemCatalogService.new(self).delay.save_file
   end
 end

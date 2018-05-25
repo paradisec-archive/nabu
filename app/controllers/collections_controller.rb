@@ -109,41 +109,18 @@ class CollectionsController < ApplicationController
   end
 
   def destroy
-    begin
-      if params[:delete_items]
-        item_destruction_errors = @collection.items.collect do |item|
-          response = ItemDestructionService.new(item, true).destroy
-          response[:messages][:error]
-        end.uniq
+    response = CollectionDestructionService.destroy(@collection)
 
-        # if there are only a couple, show them, otherwise report the total number
-        if item_destruction_errors.length <= 5
-          item_destruction_errors = item_destruction_errors.join("<br/>\n")
-        else
-          item_destruction_errors = "Encountered #{item_destruction_errors.length} warnings (often caused by missing files) while deleting the collection."
-          item_destruction_errors += "<br/>\n\tYou may want to contact the administrators and confirm that nothing bad happened." if item_destruction_errors.length > 10
-        end
+    flash[:notice] = response[:messages][:notice]
+    flash[:error] = response[:messages][:error]
 
-        @collection.items = []
-      end
-
-      # only remove the collection if there are no items left
-      @collection.destroy unless @collection.items.any?
-
-      if params[:delete_items]
-        flash[:notice] = 'Collection and all its items removed permanently (no undo possible)'
-      else
+    if response[:success]
+      if response[:can_undo]
         undo_link = view_context.link_to("undo", revert_version_path(@collection.versions.last), :method => :post, :class => 'undo')
-        flash[:notice] = "Collection removed successfully (#{undo_link})."
+        flash[:notice] = flash[:notice] + " (#{undo_link})"
       end
-
-      if item_destruction_errors.present?
-        flash[:error] = "Some errors occurred while removing dependent items:<br/>\n#{item_destruction_errors}"
-      end
-
       redirect_to search_collections_path
-    rescue ActiveRecord::DeleteRestrictionError
-      flash[:error] = 'Collection has items and cannot be removed.'
+    else
       redirect_to @collection
     end
   end
@@ -269,8 +246,6 @@ class CollectionsController < ApplicationController
           item.save!
           saved_items += 1
           added_items += "#{item.identifier}, "
-
-          ItemCatalogService.new(item).delay.save_file
         end
       end
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"

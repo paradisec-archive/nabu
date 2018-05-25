@@ -292,7 +292,7 @@
       -if @item.essences.any?
         %p.delete-warning
           %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
-        = link_to 'Delete item and contents', collection_item_path(@collection, @item, delete_essences: true), :method => :delete,
+        = link_to 'Delete item and contents', collection_item_path(@collection, @item), :method => :delete,
           :class => 'button', :confirm => 'Do you really want to delete this item and all of its content files?'
       -else
         = link_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :class => 'button', :confirm => 'Do you really want to delete this item?'

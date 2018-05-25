@@ -49,8 +49,8 @@ class EssencesController < ApplicationController
 
   def destroy
     item = @essence.item
-    message = EssenceDestructionService.destroy(@essence)
-    flash[message.keys.first] = message.values.first # there's only one pair
+    response = EssenceDestructionService.destroy(@essence)
+    flash[response.keys.first] = response.values.first # there's only one pair
     redirect_to [item.collection, item]
   end
 

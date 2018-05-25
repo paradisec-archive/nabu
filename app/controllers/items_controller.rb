@@ -175,9 +175,6 @@ class ItemsController < ApplicationController
     @item.assign_attributes(params[:item].except(:item_agents_attributes))
 
     if @item.save
-      # update xml file of the item
-      save_item_catalog_file(@item)
-
       flash[:notice] = 'Item was successfully created.'
       redirect_to [@collection, @item]
     else
@@ -191,13 +188,13 @@ class ItemsController < ApplicationController
   end
 
   def destroy
-    response = ItemDestructionService.new(@item, params[:delete_essences]).destroy
+    response = ItemDestructionService.destroy(@item)
 
     flash[:notice] = response[:messages][:notice]
     flash[:error] = response[:messages][:error]
 
     if response[:success]
-      unless params[:delete_essences]
+      if response[:can_undo]
         undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
         flash[:notice] = flash[:notice] + " (#{undo_link})"
       end
