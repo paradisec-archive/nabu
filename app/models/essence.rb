@@ -39,6 +39,10 @@ class Essence < ActiveRecord::Base
   # No need for doi to be attr_accessible
   attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated
 
+  # ensure that the item catalog gets updated when essences are added/removed
+  after_create :update_catalog_file
+  before_destroy :update_catalog_file
+
   def type
     types = mimetype.split("/",2)
     if types[1].nil?
@@ -110,5 +114,11 @@ class Essence < ActiveRecord::Base
   # for DOI relationship linking: nil <- Collection <- Item <- Essence
   def parent
     item
+  end
+
+  private
+
+  def update_catalog_file
+    ItemCatalogService.new(item).delay.save_file
   end
 end
