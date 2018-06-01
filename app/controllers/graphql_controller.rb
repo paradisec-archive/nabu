@@ -1,11 +1,14 @@
 class GraphqlController < ApplicationController
+  # avoid getting 401'd for not having a CSRF token
+  skip_before_filter :verify_authenticity_token, :only => [:execute]
+
   def execute
     # since this is a JSON request, don't use authorize! which will try and redirect to login page
     unless can? :graphql, Item
       render status: 401, json: {error: 'Must be logged in to query Nabu'}
       return
     end
-    
+
     variables = ensure_hash(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
