@@ -1,5 +1,6 @@
 require 'uri'
 require 'net/http'
+#require 'Base64' # if using custom header authentication
 
 class DoiMintingService
   module AndsResponse
@@ -12,19 +13,21 @@ class DoiMintingService
     @base_url = ENV['ANDS_URL_BASE']
     @app_id = ENV['ANDS_APP_ID']
     @format = format.to_s
-    # @shared_secret = ENV['ANDS_SHARED_SECRET']
+    @shared_secret = ENV['ANDS_SHARED_SECRET']
   end
 
   def mint_doi(doiable)
     doi_xml = doiable.to_doi_xml
     uri = URI(url_for(:mint))
-    uri.query = URI.encode_www_form(app_id: @app_id, url: doiable.full_path)
-
+    # see comment below for alternate authentication method, if sending shared secret in POST is not okay
+    uri.query = URI.encode_www_form(app_id: @app_id, shared_secret: @shared_secret, url: doiable.full_path)
     connection = Net::HTTP.new(uri.host, uri.port)
     connection.use_ssl = true
 
     request = Net::HTTP::Post.new(uri.request_uri)
     request["Content-Type"] = "application/xml"
+    # Authentication can instead be via a custom header. e.g.,:
+    # headers['Athorization'] = "Basic " + Base64.encode64(@app_id + ':' + @shared_secret)
     request.body = doi_xml
     response = connection.request(request)
 
