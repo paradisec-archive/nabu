@@ -41,7 +41,7 @@ module MediaStreaming
     else
       send_data(
           IO.binread(essence.path, file_end.to_i - file_begin.to_i + 1, file_begin.to_i),
-          :type => 'application/octet-stream',
+          :type => essence.mimetype,
           :status => status_code
       )
     end
