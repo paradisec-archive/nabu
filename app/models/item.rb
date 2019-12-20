@@ -417,20 +417,20 @@ class Item < ActiveRecord::Base
       cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
     end
     cite += ", #{originated_on.year}" if originated_on
-    cite += '; ' unless cite == ""
-    cite += "<i>#{sanitize(title)}</i>, "
+    cite += '. ' unless cite == ""
+    cite += "<i>#{sanitize(title)}</i>. "
     last = essence_types.count - 1
     essence_types.each_with_index do |type, index|
         cite += type
         if index != last
             cite += "/"
         else
-            cite += ", "
+            cite += ". "
         end
     end
-    cite += " #{Date.today}."
+    cite += " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
     if doi
-      cite += " DOI: #{doi}"
+      cite += " http://dx.doi.org/#{doi}"
     else
       cite += " #{full_path}"
     end
