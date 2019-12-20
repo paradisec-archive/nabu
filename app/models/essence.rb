@@ -84,14 +84,14 @@ class Essence < ActiveRecord::Base
       cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
     end
     cite += ", #{item.originated_on.year}" if item.originated_on
-    cite += '; ' unless cite == ""
+    cite += '. ' unless cite == ""
     cite += type
-    cite += ", "
-    cite += filename
-    cite += ", "
-    cite += "#{Date.today}."
+    cite += ". "
+    # cite += filename
+    # cite += ", "
+    cite += " #{filename} at catalog.paradisec.org.au."
     if doi
-      cite += " DOI: #{doi}"
+      cite += " https://dx.doi.org/#{doi}"
     else
       cite += " #{full_path}"
     end
