@@ -284,12 +284,12 @@ class Collection < ActiveRecord::Base
       cite += "#{collector.name} (collector)"
     end
     cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
-    cite += '; ' unless cite == ""
-    cite += "<i>#{title}</i> (#{identifier}), "
-    cite += "Digital collection managed by PARADISEC. "
-    cite += "[#{access_class.capitalize} Access] "
+    cite += '. ' unless cite == ""
+    cite += "<i>#{title}</i>. "
+    cite += "Collection #{identifier} at catalog.paradisec.org.au "
+    cite += "[#{access_class.capitalize} Access]. "
     if doi
-      cite += "DOI: #{doi}"
+      cite += "dx.doi.org/#{doi}"
     else
       cite += "#{full_path}"
     end
