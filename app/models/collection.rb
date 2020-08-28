@@ -289,7 +289,7 @@ class Collection < ActiveRecord::Base
     cite += "Collection #{identifier} at catalog.paradisec.org.au "
     cite += "[#{access_class.capitalize} Access]. "
     if doi
-      cite += "dx.doi.org/#{doi}"
+      cite += " https://dx.doi.org/#{doi}"
     else
       cite += "#{full_path}"
     end

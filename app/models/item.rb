@@ -430,7 +430,7 @@ class Item < ActiveRecord::Base
     end
     cite += " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
     if doi
-      cite += " http://dx.doi.org/#{doi}"
+      cite += " https://dx.doi.org/#{doi}"
     else
       cite += " #{full_path}"
     end
