@@ -12,7 +12,7 @@ group :assets do
   gem 'compass-rails'
 
   gem 'therubyracer'
-  gem 'libv8'
+  gem 'libv8', '<4'
 
   gem 'uglifier', '>= 1.0.3'
 end
