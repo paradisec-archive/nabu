@@ -16,7 +16,7 @@
     /[if lt IE 8]
       = stylesheet_link_tag :ie, :media => 'screen, projection'
     = javascript_include_tag :application
-    = javascript_include_tag 'https://maps.googleapis.com/maps/api/js'
+    = javascript_include_tag MAPS_JS_URL
 
     = csrf_meta_tags
     - analytical.identify(current_user.id, :email => current_user.email) if current_user

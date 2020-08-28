@@ -27,6 +27,7 @@ set :rbenv_ruby_version, "2.1.9"
 namespace :deploy do
   task :shared_config_symlink, :except => { :no_release => true } do
     run "ln -nfs #{shared_path}/config #{release_path}/config/shared"
+    run "ln -nfs #{shared_path}/config/google_maps.txt #{release_path}/config/google_maps.txt"
   end
   after 'deploy:create_symlink', 'deploy:shared_config_symlink'
 end
