@@ -1,5 +1,6 @@
 .bundle
 .ruby-version
+.ruby-gemset
 .idea/
 db/*.sqlite3
 log/*
