@@ -2,65 +2,59 @@ require 'uri'
 require 'net/http'
 
 class DoiMintingService
-  module AndsResponse
-    MINTING_SUCCESS = 'MT001'
-    UPDATE_SUCCESS = 'MT002'
-    UNAVAILABLE = 'MT005'
-  end
 
-  def initialize(format)
-    @base_url = ENV['ANDS_URL_BASE']
-    @app_id = ENV['ANDS_APP_ID']
-    @format = format.to_s
-    # @shared_secret = ENV['ANDS_SHARED_SECRET']
+  def initialize
+    @base_url = APP_CONFIG[:datacite_base_url]
+    @prefix = APP_CONFIG[:doi_prefix]
+    @user = APP_CONFIG[:datacite_user]
+    @pass = APP_CONFIG[:datacite_pass]
   end
 
   def mint_doi(doiable)
-    doi_xml = doiable.to_doi_xml
-    uri = URI(url_for(:mint))
-    uri.query = URI.encode_www_form(app_id: @app_id, url: doiable.full_path)
+    response = post_to_mds :metadata, doiable.to_doi_xml
 
-    connection = Net::HTTP.new(uri.host, uri.port)
-    connection.use_ssl = true
+    if response.code == "201"
+      doi = response.body[/\AOK \(([^\)]+)\)\z/, 1]
+      uri = URI.parse url_for(:doi)
 
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request["Content-Type"] = "application/xml"
-    request.body = doi_xml
-    response = connection.request(request)
-
-    if response.code.to_i >= 200 && response.code.to_i < 300
-      content = JSON.parse(response.body)
-      if content['response']['responsecode'] == AndsResponse::MINTING_SUCCESS
-        doiable.doi = content['response']['doi']
-        doiable.save!
-        puts "Successfully minted DOI for #{doiable.full_path} => #{doiable.doi}"
-      else
-        puts "Failed to mint DOI - DOI minting return a bad response: #{content['response']['responsecode']} / #{content['response']['message']}"
-        puts content['response']['verbosemessage']
+      response = post_to_mds :doi, "doi=#{doi}\nurl=#{doiable.full_path}"
+      if response.code == "201"
+        puts ("DOI #{doi} minted for #{doiable.full_path}")
+        doiable.doi = doi
+        doiable.save
       end
     else
-      puts "Failed to mint DOI - Server returned a bad response: #{response.code} / #{response.message}"
+      puts ("DOI minting failed for #{doiable.full_path}")
+      false
     end
   end
 
   private
 
   def url_for(action)
-    "#{@base_url}/#{action}.#{@format}/"
+    if %i(metadata doi).include? action
+      "#{@base_url}/#{action}/#{@prefix}"
+    end
+  end
+
+  def content_type_for(action)
+    case action
+    when :metadata
+      "application/xml;charset=UTF-8"
+    when :doi
+      "text/plain;charset=UTF-8"
+    end
+  end
+
+  def post_to_mds(action, body)
+    uri = URI.parse url_for(action)
+    connection = Net::HTTP.new uri.host, uri.port
+    connection.use_ssl = true
+
+    request = Net::HTTP::Put.new uri.request_uri
+    request['Content-Type'] = content_type_for(action)
+    request.basic_auth @user, @pass
+    request.body = body
+    connection.request(request)
   end
 end
-
-=begin
-# json response structure
-{
-  "response": {
-    "type": "type",
-    "responsecode": "code",
-    "message": "message",
-    "doi": "doi",
-    "url": "url",
-    "app_id": "app_id",
-    "verbosemessage": "verbosemessage"
-  }
-}
-=end
