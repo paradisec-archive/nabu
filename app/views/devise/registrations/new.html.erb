@@ -20,9 +20,15 @@
     <p><%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, :class => 'middle'%></p>
 
+    <div class="g-recaptcha" data-sitekey="6LctF0kaAAAAALUFhUdZam9RIxhzCJBolyVPg4AE"></div>
+
+    <br/>
+
     <p><%= f.submit "Sign up" %></p>
   <% end %>
 
   <%= render "devise/shared/links" %>
 
 </div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
