@@ -446,7 +446,7 @@ class Collection < ActiveRecord::Base
           end
 
           xml.citationInfo do
-            xml.fullCitation strip_tags(citation), 'style' => 'APA'
+            xml.fullCitation ActionController::Base.helpers.strip_tags(citation), 'style' => 'APA'
           end
 
           languages.each do |language|
