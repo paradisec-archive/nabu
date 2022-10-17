@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/distributedlife/traceroute.git
+  remote: https://github.com/distributedlife/traceroute
   revision: 94eb4e66e13c590e07d3b76cc154d2e32d5c5c21
   ref: 94eb4e66e13c590e07d3b76cc154d2e32d5c5c21
   specs:
@@ -7,7 +7,7 @@ GIT
       rails (>= 3.0.0)
 
 GIT
-  remote: git://github.com/roo-rb/roo-xls.git
+  remote: https://github.com/roo-rb/roo-xls
   revision: 0a5ef88c8312c48b1a97cefa9e5f21e9a7f64209
   ref: 0a5ef88
   specs:

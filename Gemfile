@@ -66,7 +66,7 @@ gem 'paper_trail', '~> 2'
 gem 'quiet_assets'
 gem 'roo', '~> 2.1.0'
 # Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
-gem 'roo-xls', :github => 'roo-rb/roo-xls', :ref => '0a5ef88'
+gem 'roo-xls', :git => 'https://github.com/roo-rb/roo-xls', :ref => '0a5ef88'
 gem 'streamio-ffmpeg'
 gem 'rake', '< 11.0'
 gem 'timeliness'
@@ -115,7 +115,7 @@ group :development do
   gem 'better_errors'
   # A Rake task gem that helps you find the unused routes and controller actions for your Rails 3+ app
   # Pull request allows ignoring of various devise things.
-  gem 'traceroute', github: 'distributedlife/traceroute', :ref => '94eb4e66e13c590e07d3b76cc154d2e32d5c5c21'
+  gem 'traceroute', :git => 'https://github.com/distributedlife/traceroute', :ref => '94eb4e66e13c590e07d3b76cc154d2e32d5c5c21'
   gem 'rubocop'
 end
 
