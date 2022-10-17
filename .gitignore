@@ -12,3 +12,5 @@ rerun.txt
 .DS_Store
 db/legacy/
 public/system/
+
+vendor/bundle
