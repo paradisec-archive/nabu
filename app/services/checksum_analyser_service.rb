@@ -18,7 +18,7 @@ class ChecksumAnalyserService
     total_checksums = 0
     ok_checksums = 0
     failed_checksums = 0
-    
+
     failed_checksum_paths = []
 
     files_array.each do |file_data_hash|
@@ -46,7 +46,7 @@ class ChecksumAnalyserService
           failed_checksums += 1
 
           failed_line = file_data_hash[:destination_path] + result
-          failed_file = failed_line.split(':').first
+          failed_file = failed_line.split.first
           failed_checksum_paths.push({failed_file: failed_file, message: failed_line})
           has_failure = true
         end
