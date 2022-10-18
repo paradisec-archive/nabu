@@ -5,7 +5,7 @@ common: &COMMON
   timeout: 5000
   adapter: mysql2
   host: 172.18.0.1
-  user: root
+  username: root
 
 production:
   <<: *COMMON
