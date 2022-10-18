@@ -3,7 +3,8 @@
 ## TEMP
 
 docker-compose build
-docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu
+alias nabu="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu"
+alias nabu_test="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app -e RAILS_ENV=test nabu_nabu"
 
 
 ## Setting up your dev environment

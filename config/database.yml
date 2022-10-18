@@ -4,7 +4,7 @@ common: &COMMON
   pool: 5
   timeout: 5000
   adapter: mysql2
-  host: localhost
+  host: 172.18.0.1
   user: root
 
 production:
