@@ -1,5 +1,11 @@
 # Nabu Catalog
 
+## TEMP
+
+docker-compose build
+docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu
+
+
 ## Setting up your dev environment
 
 This application has been configured with *guard*, it will ensure
