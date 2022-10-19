@@ -9,7 +9,7 @@ describe Nabu::NabuSpreadsheet do
   before do
     User.destroy_all
     Essence.destroy_all
-    Item.destroy_all
+    Item.all.each { |item| ItemDestructionService.destroy(item) }
     Collection.destroy_all
     AgentRole.destroy_all
     DataCategory.destroy_all

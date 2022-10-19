@@ -8,10 +8,10 @@ class EssenceDestructionService
       FileUtils.rm_f(essence.path)
 
       puts "[DELETE] Removed essence file at [#{essence.path}]"
-      
+
       admin_files_regex = essence.path.sub(/\..+?$/, '*PDSC_ADMIN*')
       FileUtils.rm_f Dir.glob(admin_files_regex)
-      
+
       puts "[DELETE] Removed any admin files for essence at [#{admin_files_regex}]"
 
       result = true

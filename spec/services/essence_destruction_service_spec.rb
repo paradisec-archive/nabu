@@ -13,7 +13,7 @@ describe EssenceDestructionService do
       response = EssenceDestructionService.destroy(essence)
       expect(response).to have_key(:notice)
       expect(response).to_not have_key(:error)
-      expect(response[:notice]).to eq('Essence removed successfully, also from archive (undo not possible).')
+      expect(response[:notice]).to eq('Essence removed successfully, and file deleted from archive (undo not possible).')
     end
   end
 
@@ -27,7 +27,7 @@ describe EssenceDestructionService do
       response = EssenceDestructionService.destroy(essence)
       expect(response).to_not have_key(:notice)
       expect(response).to have_key(:error)
-      expect(response[:error]).to eq("Essence removed, but file removing had error: No such file or directory - #{essence.path}")
+      expect(response[:error]).to eq("Essence removed, but deleting file failed with error: No such file or directory - #{essence.path}")
     end
   end
 end

@@ -63,7 +63,8 @@ describe ItemsController, type: :controller do
     context 'when creating an item' do
       it 'should attempt to create the archive directory' do
         #expect the interaction but don't try to create anything
-        controller.should_receive(:save_item_catalog_file).and_return(nil)
+        # FIXME: JF commit 36d9b0efd1d964187f51f9f3e9038f765cad272d removed this, is it needed?
+        # controller.should_receive(:save_item_catalog_file).and_return(nil)
         post :create, {collection_id: collection.identifier, item: {collector_id: user.id, identifier: '321', title: 'title goes here'}}
         expect(response).to redirect_to(params.merge(id: '321', action: :show))
         expect(flash[:notice]).to_not be_nil
@@ -79,14 +80,14 @@ describe ItemsController, type: :controller do
     context 'when destroying an item' do
       context 'with a non-admin user' do
         it 'should fail and redirect with error' do
-          delete :destroy, params.merge(delete_essences: false)
+          delete :destroy, params
           expect(response).to redirect_to(root_path)
           expect(flash[:alert]).to_not be_nil
         end
       end
       context 'with an admin user' do
         before do
-          ItemDestructionService.any_instance.stub(:destroy).and_return({success: true, messages: {notice: 'yay'}})
+          ItemDestructionService.stub(:destroy).and_return({success: true, messages: {notice: 'yay'}})
 
           @request.env['devise.mapping'] = Devise.mappings[:user]
           # log in as test user
@@ -96,23 +97,23 @@ describe ItemsController, type: :controller do
           it 'should proceed' do
             delete :destroy, params
             expect(response).to redirect_to(collection)
-            expect(flash[:notice]).to match(/^yay \(.*undo.*\)/)
+            expect(flash[:notice]).to eq('yay')
           end
         end
         context 'with essences' do
           context 'and flag set to true' do
             it 'should proceed' do
-              delete :destroy, params.merge(delete_essences: true)
+              delete :destroy, params
               expect(response).to redirect_to(collection)
               expect(flash[:notice]).to eq('yay')
             end
           end
           context 'and flag set to false' do
             before do
-              ItemDestructionService.any_instance.stub(:destroy).and_return({success: false, messages: {error: 'boo'}})
+              ItemDestructionService.stub(:destroy).and_return({success: false, messages: {error: 'boo'}})
             end
             it 'should fail and redirect with error' do
-              delete :destroy, params.merge(delete_essences: false)
+              delete :destroy, params
               expect(response).to redirect_to([collection, item])
               expect(flash[:error]).to eq('boo')
             end

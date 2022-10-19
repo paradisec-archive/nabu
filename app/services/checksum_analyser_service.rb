@@ -54,7 +54,7 @@ class ChecksumAnalyserService
 
       # add the checksum file itself to the failed files if it contained any failures (so that it gets moved to Rejected along with any failed checksum files)
       if has_failure
-        puts "[CHECKSUM] Some checksums failed in #{absolute_file_path}" if verbose        
+        puts "[CHECKSUM] Some checksums failed in #{absolute_file_path}" if verbose
         failed_checksum_paths.push({failed_file: "#{absolute_file_path}"})
       elsif verbose
         puts "[CHECKSUM] Successfully validated the checksums in #{absolute_file_path}"
@@ -66,7 +66,7 @@ class ChecksumAnalyserService
 
     if failed_checksums > 0
       puts "[CHECKSUM] Files that failed the checksum check:"
-      
+
       failed_checksum_paths.each do |failure_result|
         puts "[CHECKSUM] - #{failure_result[:message]}"
       end
@@ -80,7 +80,7 @@ class ChecksumAnalyserService
   def self.check_all_checksums
     file_array = find_checksum_files_by_collection('**')
 
-    self.check_checksums_for_files(file_array, true)    
+    self.check_checksums_for_files(file_array, true)
   end
 
   def self.check_in_batches(batch_size = 10)
@@ -101,7 +101,7 @@ class ChecksumAnalyserService
     # update checkpoint file
     File.write(checkpoint_file, batch.last)
 
-    self.check_checksums_for_files(file_array, true)    
+    self.check_checksums_for_files(file_array, true)
   end
 
   def self.find_checksum_files_by_collection(collection_pattern)
