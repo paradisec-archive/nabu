@@ -112,7 +112,6 @@ group :development, :test do
   gem 'test-unit'
   gem 'turn', '~> 0.8.3', :require => false
   gem 'rspec-rails', '~> 2.0'
-  gem 'sextant'
   gem 'thin'
 
   gem 'spring'
