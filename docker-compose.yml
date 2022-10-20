@@ -9,16 +9,16 @@
 version: "3"
 
 services:
-  # nabu:
-  #   build: .
-  #   command: ./entrypoint.sh
-  #   ports:
-  #     - '3000:3000'
-  #   volumes:
-  #     - .:/app
-  #     - bundler:/bundler
-  #   environment:
-  #     RAILS_ENV: development
+  nabu:
+    build: .
+    command: ./entrypoint.sh
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - ./vendor/bundle:/bundler
+    environment:
+      RAILS_ENV: development
 
   db:
     image: mysql:5.5
@@ -31,5 +31,4 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 
 volumes:
-  bundler:
   db-data:
