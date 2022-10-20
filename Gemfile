@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.13'
 
 # Databases
-gem 'mysql2', '~> 0.3.17'
+gem 'mysql2'
 gem 'graphql'
 gem "graphiql-rails"
 
