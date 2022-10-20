@@ -23,3 +23,5 @@
   * squeel
   * paper_trail
   * rspec_rails
+* autoprefixer-rails was deprected. Use Node.js’s Autoprefixer with PostCSS instead.
+
