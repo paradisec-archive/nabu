@@ -78,9 +78,9 @@ gem 'sunspot_solr'
 gem 'ruby-filemagic'
 
 # Deployment
-gem 'capistrano'
+gem 'capistrano', '~> 2'
 gem 'capistrano-unicorn'
-gem 'capistrano-rbenv'
+gem 'capistrano-rbenv', '~> 1'
 
 # Logging
 gem 'rollbar'
