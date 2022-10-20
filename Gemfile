@@ -141,9 +141,7 @@ group :development do
   gem 'annotate'
   gem 'binding_of_caller'
   gem 'better_errors'
-  # A Rake task gem that helps you find the unused routes and controller actions for your Rails 3+ app
-  # Pull request allows ignoring of various devise things.
-  gem 'traceroute', :git => 'https://github.com/distributedlife/traceroute', :ref => '94eb4e66e13c590e07d3b76cc154d2e32d5c5c21'
+  gem 'traceroute' # Helps find unused routes and controller actions
   gem 'rubocop'
 end
 

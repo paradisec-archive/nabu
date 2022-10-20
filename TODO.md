@@ -18,3 +18,5 @@
 ## 4.0.0
 * Should we be using sass-rails?
   * Probably yes instead of compass - but looks like it goes away as well in future versions
+* Did dropping libv8 and rubyravr break anything
+* activeadmin upgrade guide
