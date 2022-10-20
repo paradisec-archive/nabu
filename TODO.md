@@ -19,9 +19,18 @@
 * We will need to drop compass at some stage
 * Did dropping libv8 and rubyravr break anything
 * Check upgrade guides for
-  * activeadmin upgrade guide
+  * activeadmin 0.6.3 -> 1.0.0.pre5
+  * cancancan 1.13.1 -> 3.14.0
+  * capitrano 2 -> 3
+  * devise 2 -> 3
+  * formatastic 2 -> 3
+  * haml 4-> 5
+  * haml_rail 0.4 -> 1
+  * oai 0.3 -> 1.1
+  * paper_trail 2 -> 7
+  * sunspot 1 -> 2
   * squeel
-  * paper_trail
   * rspec_rails
 * autoprefixer-rails was deprected. Use Node.js’s Autoprefixer with PostCSS instead.
+* guard-sunspot doesn't work with newer versions
 

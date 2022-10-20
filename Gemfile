@@ -123,6 +123,7 @@ group :development, :test do
   gem 'letter_opener'
 
   # Guard
+  gem 'guard', '~> 2.7.0' # lock this down for now for sunspot
   gem 'guard-bundler'
   gem 'guard-rails'
   gem 'guard-rspec'
