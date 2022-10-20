@@ -88,7 +88,7 @@ gem 'newrelic_rpm'
 
 # Misc
 gem 'progress_bar'
-gem 'paper_trail', '~> 2'
+gem 'paper_trail', '~> 3'
 gem 'quiet_assets'
 gem 'roo', '~> 2.1.0'
 # Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
@@ -110,7 +110,7 @@ gem 'daemons'
 group :development, :test do
   gem 'test-unit'
   gem 'turn', '~> 0.8.3', :require => false
-  gem 'rspec-rails', '~> 2.0'
+  gem 'rspec-rails', '~> 3.0'
   gem 'thin'
 
   gem 'spring'

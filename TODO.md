@@ -21,3 +21,4 @@
 * Check upgrade guides for
   * activeadmin upgrade guide
   * squeel
+  * paper_trail
