@@ -9,8 +9,7 @@ gem 'graphql'
 gem "graphiql-rails"
 
 # Use SCSS for stylesheets
-# gem 'sass-rails', '~> 4.0.2'
-gem 'compass-rails'
+gem 'sass-rails', '~> 4.0.2'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
@@ -50,6 +49,7 @@ gem 'unicorn'
 
 
 # Views
+gem 'compass-rails'
 gem 'haml-rails'
 gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'
@@ -60,7 +60,6 @@ gem 'analytical'
 gem 'country-select'
 gem 'activeadmin'
 gem 'bootstrap-sass'
-gem 'sass-rails',  '~> 3.2.3'
 
 # Authentications
 gem 'devise', '2.2.3'
