@@ -48,6 +48,7 @@ gem 'unicorn'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+
 # Views
 gem 'haml-rails'
 gem 'to-csv', :require => 'to_csv'
@@ -60,7 +61,6 @@ gem 'country-select'
 gem 'activeadmin'
 gem 'bootstrap-sass'
 gem 'sass-rails',  '~> 3.2.3'
-gem 'meta_search', '>= 1.1.0.pre'
 
 # Authentications
 gem 'devise', '2.2.3'
