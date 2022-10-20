@@ -10,3 +10,11 @@
 
 ## Post Rollout
 * Check all dates in collections that should have a value have one
+
+
+
+# Upgrades
+
+## 4.0.0
+* Should we be using sass-rails?
+  * Probably yes instead of compass - but looks like it goes away as well in future versions
