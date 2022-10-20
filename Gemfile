@@ -62,8 +62,8 @@ gem 'activeadmin'
 gem 'bootstrap-sass'
 
 # Authentications
-gem 'devise', '2.2.3'
-gem 'cancancan', '~> 1.13.1'
+gem 'devise'
+gem 'cancancan'
 
 # Database improvements
 gem 'rails_or'
@@ -88,13 +88,13 @@ gem 'newrelic_rpm'
 
 # Misc
 gem 'progress_bar'
-gem 'paper_trail', '~> 3'
+gem 'paper_trail'
 gem 'quiet_assets'
-gem 'roo', '~> 2.1.0'
+gem 'roo'
 # Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
-gem 'roo-xls', :git => 'https://github.com/roo-rb/roo-xls', :ref => '0a5ef88'
+gem 'roo-xls'
 gem 'streamio-ffmpeg'
-gem 'rake', '< 11.0'
+gem 'rake'
 gem 'timeliness'
 
 # Image processing
@@ -109,8 +109,8 @@ gem 'daemons'
 
 group :development, :test do
   gem 'test-unit'
-  gem 'turn', '~> 0.8.3', :require => false
-  gem 'rspec-rails', '~> 3.0'
+  gem 'turn', :require => false
+  gem 'rspec-rails'
   gem 'thin'
 
   gem 'spring'

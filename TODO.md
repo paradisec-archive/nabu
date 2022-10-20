@@ -22,3 +22,4 @@
   * activeadmin upgrade guide
   * squeel
   * paper_trail
+  * rspec_rails
