@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
 
   paginates_per 10
 
-  scope :alpha, order(:first_name, :last_name)
+  scope :alpha, -> { order(:first_name, :last_name) }
 
   has_many :party_identifiers
   accepts_nested_attributes_for :party_identifiers, allow_destroy: true
@@ -73,7 +73,7 @@ class User < ActiveRecord::Base
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
 
   # find all users with multiple entries by name
-  scope :all_duplicates, select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1')
+  scope :all_duplicates, -> { select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1') }
 
   # find identifying info for single user with duplicates
   scope :duplicates_of, ->(first, last, user_ids = nil) {
@@ -83,10 +83,10 @@ class User < ActiveRecord::Base
       .where('(users.first_name = ? and users.last_name = ?) or users.id in (?)', first, last, specific_user_ids)
   }
 
-  scope :users, where(:contact_only => false)
-  scope :collectors, where(:collector => true)
-  scope :contacts, where(:contact_only => true)
-  scope :admins, where(:admin => true)
+  scope :users, -> { where(:contact_only => false) }
+  scope :collectors, -> { where(:collector => true) }
+  scope :contacts, -> { where(:contact_only => true) }
+  scope :admins, -> { where(:admin => true) }
   scope :all_users
 
   # Set random password for contacts

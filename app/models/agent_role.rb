@@ -9,7 +9,7 @@
 class AgentRole < ActiveRecord::Base
   has_paper_trail
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
 
   validates :name, :presence => true, :uniqueness => true
 

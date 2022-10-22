@@ -11,7 +11,7 @@ class DataType < ActiveRecord::Base
 
   validates :name, :presence => true, :uniqueness => true
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
 
   has_many :item_data_types
   has_many :items, :through => :item_data_types, :dependent => :restrict

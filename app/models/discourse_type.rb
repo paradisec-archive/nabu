@@ -11,7 +11,7 @@ class DiscourseType < ActiveRecord::Base
 
   validates :name, :presence => true
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
 
   has_many :items, :dependent => :restrict
 end

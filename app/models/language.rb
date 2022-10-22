@@ -18,8 +18,8 @@ class Language < ActiveRecord::Base
   validates :name, :presence => true
   validates :code, :presence => true, :uniqueness => true
 
-  default_scope includes(:countries)
-  scope :alpha, order(:name)
+  default_scope -> { includes(:countries) }
+  scope :alpha, -> { order(:name) }
 
   def name_with_code
     "#{name} - #{code}"

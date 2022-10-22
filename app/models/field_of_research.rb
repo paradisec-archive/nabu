@@ -14,7 +14,7 @@ class FieldOfResearch < ActiveRecord::Base
   validates :name, :identifier, :uniqueness => true
   validates :identifier, :numericality => {:only_integer => true}
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
 
   def name_with_identifier
     "#{identifier} - #{name}"

@@ -24,9 +24,9 @@ class Comment < ActiveRecord::Base
   validates_presence_of :commentable
   validates :owner, :presence => true, :associated => true
 
-  scope :owned_by, lambda {|owner| where('owner_id = ?', owner.id) }
-  scope :approved,   where(:status => 'approved')
-  scope :unapproved, where(:status => 'unapproved')
+  scope :owned_by, ->(owner) { where('owner_id = ?', owner.id) }
+  scope :approved,   -> { where(:status => 'approved') }
+  scope :unapproved, -> { where(:status => 'unapproved') }
 
   before_save :strip_html_tags
   before_create :moderation

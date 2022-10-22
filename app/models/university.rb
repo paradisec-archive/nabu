@@ -17,7 +17,8 @@ class University < ActiveRecord::Base
   has_many :collections, :dependent => :restrict
   has_many :items, :dependent => :restrict
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
+
   paginates_per 10
 
   def full_path

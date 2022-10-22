@@ -15,7 +15,7 @@ class FundingBody < ActiveRecord::Base
   validates :name, :presence => true
   validates :name, :key_prefix, :uniqueness => true
 
-  scope :alpha, order(:name)
+  scope :alpha, -> { order(:name) }
 
   def name_with_identifier
     "#{name} #{key_prefix}"

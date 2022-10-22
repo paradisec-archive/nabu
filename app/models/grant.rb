@@ -16,5 +16,5 @@ class Grant < ActiveRecord::Base
 
   validates_uniqueness_of :grant_identifier, scope: [:collection_id, :funding_body_id], allow_blank: true, allow_nil: true
 
-  scope :alpha, order('funding_body.name')
+  scope :alpha, -> { order('funding_body.name') }
 end
