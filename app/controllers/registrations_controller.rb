@@ -1,4 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
+  before_action :configure_permitted_parameters
+
   def create
     uri = URI.parse("https://www.google.com/recaptcha/api/siteverify")
     response = Net::HTTP.post_form(uri, 'secret' => "6LctF0kaAAAAAMJ9vKkJE6QFvDMepSSJMOJRXzeL", 'response' => params['g-recaptcha-response'])
@@ -10,5 +12,12 @@ class RegistrationsController < Devise::RegistrationsController
     else
       super
     end
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) << :first_name
+    devise_parameter_sanitizer.for(:sign_up) << :last_name
   end
 end

@@ -48,3 +48,5 @@
 
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
+* Move capctha secrets our of git
+
