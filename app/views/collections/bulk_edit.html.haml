@@ -8,7 +8,7 @@
 
 = render 'search_results'
 
-= form_for @collection, :url => bulk_update_collections_path, :method => :put do |f|
+= form_for @collection, :url => bulk_update_collections_path, :method => :patch do |f|
   - if @collection.errors.any?
     #error_explanation
       %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:

@@ -21,7 +21,7 @@ Nabu::Application.routes.draw do
   resources :users do
     member do
       get 'merge'
-      put 'merge' => 'users#merge'
+      patch 'merge' => 'users#merge'
     end
   end
   resources :countries, :only => [:index, :show]
@@ -34,7 +34,7 @@ Nabu::Application.routes.draw do
       get 'search' => 'collections#search'
       get 'advanced_search' => 'collections#advanced_search'
       get 'bulk_update' => 'collections#bulk_edit'
-      put 'bulk_update' => 'collections#bulk_update'
+      patch 'bulk_update' => 'collections#bulk_update'
       get 'metadata' => 'collections#new_from_metadata'
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
@@ -43,7 +43,7 @@ Nabu::Application.routes.draw do
       member do
         get :display
         get :data
-        put :inherit_details
+        patch :inherit_details
       end
       resources :essences, :only => [:show, :download, :destroy] do
         member do
@@ -61,7 +61,7 @@ Nabu::Application.routes.draw do
       get 'search' => 'items#search'
       get 'advanced_search' => 'items#advanced_search'
       get 'bulk_update' => 'items#bulk_edit'
-      put 'bulk_update' => 'items#bulk_update'
+      patch 'bulk_update' => 'items#bulk_update'
       get 'new_report' => 'items#new_report'
       post 'send_report' => 'items#send_report'
       get 'report_sent' => 'items#report_sent'

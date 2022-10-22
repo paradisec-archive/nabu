@@ -130,7 +130,7 @@ describe ItemsController, type: :controller do
       end
       it 'should not override existing values by default' do
         pending 'INVESTIGATE 2016-04-21: Sometimes but not always failing on development machines'
-        put :inherit_details, params
+        patch :inherit_details, params
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
@@ -139,7 +139,7 @@ describe ItemsController, type: :controller do
       end
 
       it 'should override values if flag is set to true' do
-        put :inherit_details, params.merge(override_existing: true)
+        patch :inherit_details, params.merge(override_existing: true)
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
@@ -150,7 +150,7 @@ describe ItemsController, type: :controller do
       context 'when an error occurs' do
         it 'should fail and redirect with error' do
           Item.any_instance.stub(:inherit_details_from_collection).and_return(false)
-          put :inherit_details, params
+          patch :inherit_details, params
           expect(response).to redirect_to([collection, item])
           expect(flash[:alert]).to_not be_nil
         end

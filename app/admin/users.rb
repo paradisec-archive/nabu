@@ -67,7 +67,7 @@ ActiveAdmin.register User do
     @user = resource || User.find(params[:id])
   end
 
-  member_action :do_reset_password, method: :put do
+  member_action :do_reset_password, method: :patch do
     @user = resource || User.find(params[:id])
     @user.assign_attributes(params[:user])
     if @user.save
@@ -85,7 +85,7 @@ ActiveAdmin.register User do
     @duplicates = @duplicates.reject {|d| d.id == @primary_user.id}
   end
 
-  member_action :do_merge, method: :put do
+  member_action :do_merge, method: :patch do
     if params[:user]
       ids_to_merge = params[:user].delete(:to_merge) # extract the user ids to merge
 

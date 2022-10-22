@@ -1,5 +1,5 @@
 
-= form_for @collection, :method => :put do |f|
+= form_for @collection, :method => :patch do |f|
   - if @collection.errors.any?
     #error_explanation
       %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:

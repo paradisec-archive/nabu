@@ -8,7 +8,7 @@
 
 = render partial: 'search_results', locals: {show_exclusions: true}
 
-= form_for @item, :url => bulk_update_items_path, :method => :put do |f|
+= form_for @item, :url => bulk_update_items_path, :method => :patch do |f|
   - if @item.errors.any?
     #error_explanation
       %h2== #{pluralize(@item.errors.count, 'error')} prohibited this post from being saved:
