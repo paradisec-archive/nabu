@@ -6,8 +6,8 @@ Nabu::Application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
-  # Log error messages when you accidentally call methods on nil.
-  config.whiny_nils = true
+  # Do not eager load code on boot.
+  config.eager_load = false
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
@@ -15,24 +15,35 @@ Nabu::Application.configure do
 
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.delivery_method = :letter_opener
 
   # Print deprecation notices to the Rails logger
   config.active_support.deprecation = :log
 
-  # Log the query plan for queries taking more than this (works
-  # with SQLite, MySQL, and PostgreSQL)
-  config.active_record.auto_explain_threshold_in_seconds = 0.5
+  # Raise an error on page load if there are pending migrations
+  config.active_record.migration_error = :page_load
 
-  # Expands the lines which load the assets
+  # Debug mode disables concatenation and preprocessing of assets.
+  # This option may cause significant delays in view rendering with a large
+  # number of complex assets.
   config.assets.debug = true
 
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  # Raises error for missing translations
+  # config.action_view.raise_on_missing_translations = true
+
+  ########################
+  # Our Stuff
+  ########################
 
   # Reload exsite9 lib during development
   ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
   ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
   ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'controllers', 'concerns')
+
   ActiveSupport::Dependencies.explicitly_unloadable_constants << 'ExSite9'
   ActiveSupport::Dependencies.explicitly_unloadable_constants << 'Nabu::NabuSpreadsheet'
+
+  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+  # Show emails in the browser
+  config.action_mailer.delivery_method = :letter_opener
 end

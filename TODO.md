@@ -39,7 +39,19 @@
 * Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
 * Check if vendor/assets are being pulled in properly. Maybe even move away from vendoring, can't we use gems?
-* Move to cookie sessions?
+* Move to cookie sessions? Looks like moved to active record due to size of flash message with spreadsheets #419
+* require_tree in appication.js
+* application.css is missing in assets
+*Remove IE 8 support
+* turbolinks in layout
+* config/developement.rb: do we need to set autoload paths
+* config/developement.rb: do we need to set unloadable constants
+* config/production.rb: should we use sass insteadof uglifier?
+* config/production.rb: Do we need to add precompile assets or can SASS/turbolinks take care of it for us
+* Can the cancan locale be put in their own file
+* application.rb the nabu paths are also in production why duplicated?
+* Why is google crawling disabled
+* Rakefile : should grapql be here or in tasks directory
 
 
 
