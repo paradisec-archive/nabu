@@ -107,6 +107,9 @@ gem 'whenever', :require => false
 gem 'delayed_job_active_record'
 gem 'daemons'
 
+# TODO: We should probably move to cookie sessions
+gem 'activerecord-session_store'
+
 group :development, :test do
   gem 'test-unit'
   gem 'turn', :require => false

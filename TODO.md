@@ -38,6 +38,8 @@
 * Rails 4.0 removed the ActionController::Base.asset_path option. Use the assets pipeline feature. - This is only in coffeescript, releavnt?
 * Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
+* Check if vendor/assets are being pulled in properly. Maybe even move away from vendoring, can't we use gems?
+* Move to cookie sessions?
 
 
 
