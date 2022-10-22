@@ -35,4 +35,12 @@
 * guard-sunspot doesn't work with newer versions
 * Do we need patch on form_for or does it work it out?
 * Should versions_controller exist?
+* Rails 4.0 removed the ActionController::Base.asset_path option. Use the assets pipeline feature. - This is only in coffeescript, releavnt?
 
+
+
+
+
+
+# Security
+* the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
