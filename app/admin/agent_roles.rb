@@ -4,6 +4,8 @@ ActiveAdmin.register AgentRole do
 
   before_destroy :check_dependent
 
+  permit_params :name
+
   # Don't filter by item_agents
   filter :name
 

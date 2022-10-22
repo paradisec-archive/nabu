@@ -37,5 +37,10 @@ class CommentsController < ApplicationController
     flash[:notice] = 'Comment approved.'
     redirect_to root_path
   end
+
+  def comment_params
+    params.require(:comment)
+      .permit(:body)
+  end
 end
 

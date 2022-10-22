@@ -2,6 +2,8 @@ ActiveAdmin.register FundingBody do
   menu :parent => "Other Entities"
   config.sort_order = "name_asc"
 
+  permit_params :key_prefix, :name
+
   before_destroy :check_dependent
 
   # Don't filter by grants or collections

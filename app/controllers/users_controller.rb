@@ -64,4 +64,15 @@ class UsersController < ApplicationController
       render :action => 'edit'
     end
   end
+
+  def user_params
+    params = [:party_identifiers_attributes, :first_name, :last_name, :password, :password_confirmation, :party_identifier, :collector]
+    if (user.contact_only?)
+      params << :contact_only
+    else
+      params.push(*[:email, :address, :address2, :country, :phone,:remember_me])
+    end
+
+    params.require(:user).permit(params)
+  end
 end

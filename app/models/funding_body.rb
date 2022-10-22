@@ -12,8 +12,6 @@
 class FundingBody < ActiveRecord::Base
   has_paper_trail
 
-  attr_accessible :key_prefix, :name
-
   validates :name, :presence => true
   validates :name, :key_prefix, :uniqueness => true
 

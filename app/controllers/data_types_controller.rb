@@ -13,4 +13,9 @@ class DataTypesController < ApplicationController
   def show
     respond_with @data_type
   end
+
+  def data_type_params
+    params.require(:data_type)
+      .permit(:name)
+  end
 end

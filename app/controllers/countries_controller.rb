@@ -16,4 +16,9 @@ class CountriesController < ApplicationController
       respond_with @country
     end
   end
+
+  def country_params
+    params.require(:comment)
+      .permit(:name, :code)
+  end
 end

@@ -5,6 +5,8 @@ ActiveAdmin.register Download do
     end
   end
 
+  permit_params :user, :essence
+
   # change pagination
   before_filter :only => :index do
     @per_page = params[:per_page] || 30

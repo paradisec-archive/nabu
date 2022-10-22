@@ -6,6 +6,10 @@ ActiveAdmin.register User do
   scope :collectors
   scope :all_users
 
+  permit_params :party_identifiers_attributes, :email, :first_name, :last_name,
+    :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,
+    :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector
+
   before_destroy :check_dependent
 
   controller do

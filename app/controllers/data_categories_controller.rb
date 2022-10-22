@@ -13,4 +13,9 @@ class DataCategoriesController < ApplicationController
   def show
     respond_with @data_category
   end
+
+  def data_category_params
+    params.require(:comment)
+      .permit(:name)
+  end
 end

@@ -3,6 +3,8 @@ ActiveAdmin.register Language do
   config.sort_order = "name_asc"
   actions :all, :except => [:destroy]
 
+  permit_params :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, :countries_languages_attributes
+
   filter :countries
   filter :code
   filter :name

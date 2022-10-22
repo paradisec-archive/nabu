@@ -3,6 +3,8 @@ ActiveAdmin.register Country do
   config.sort_order = "name_asc"
   actions :all, :except => [:destroy]
 
+  permit_params :name, :code
+
   # Don't filter by countries_languages, languages, or latlon boundaries
   filter :code
   filter :name

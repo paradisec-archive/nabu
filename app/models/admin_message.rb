@@ -16,5 +16,4 @@ class AdminMessage < ActiveRecord::Base
   validates :message, presence: true
   validates :start_at, presence: true
   validates :finish_at, presence: true
-  attr_accessible :finish_at, :message, :start_at
 end

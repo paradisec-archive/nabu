@@ -14,8 +14,6 @@ class University < ActiveRecord::Base
 
   validates :name, :presence => true, :uniqueness => true
 
-  attr_accessible :name, :party_identifier
-
   has_many :collections, :dependent => :restrict
   has_many :items, :dependent => :restrict
 

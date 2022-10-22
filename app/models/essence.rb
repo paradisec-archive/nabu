@@ -36,9 +36,6 @@ class Essence < ActiveRecord::Base
   validates :channels, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
 
-  # No need for doi to be attr_accessible
-  attr_accessible :item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated
-
   # ensure that the item catalog gets updated when essences are added/removed
   after_create :update_catalog_file
   before_destroy :update_catalog_file

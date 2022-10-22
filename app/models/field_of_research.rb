@@ -15,7 +15,6 @@ class FieldOfResearch < ActiveRecord::Base
   validates :identifier, :numericality => {:only_integer => true}
 
   scope :alpha, order(:name)
-  attr_accessible :name, :identifier
 
   def name_with_identifier
     "#{identifier} - #{name}"

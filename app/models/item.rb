@@ -108,21 +108,6 @@ class Item < ActiveRecord::Base
     :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids
   ]
   attr_reader(*bulk)
-  attr_accessible :identifier, :title, :external, :url, :description, :region, :collection_id,
-                  :north_limit, :south_limit, :west_limit, :east_limit,
-                  :collector_id, :university_id, :operator_id,
-                  :country_ids, :data_category_ids, :data_type_ids,
-                  :content_language_ids, :subject_language_ids,
-                  :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
-                  :access_condition_id,
-                  :access_narrative, :private,
-                  :admin_comment,
-                  :originated_on, :originated_on_narrative, :language,
-                  :dialect, :discourse_type_id,
-                  :metadata_exportable, :born_digital, :tapes_returned,
-                  :original_media, :ingest_notes, :tracking,
-                  *bulk,
-                  :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on
 
   accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
 

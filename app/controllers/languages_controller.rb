@@ -23,4 +23,9 @@ class LanguagesController < ApplicationController
   def show
     respond_with @language
   end
+
+  def language_params
+    params.require(:language)
+      .permit(:name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, :countries_languages_attributes)
+  end
 end

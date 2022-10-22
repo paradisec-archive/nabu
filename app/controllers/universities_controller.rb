@@ -7,4 +7,9 @@ class UniversitiesController < ApplicationController
     @university = University.create params[:university]
     respond_with(@university, :location => '/')
   end
+
+  def university_params
+    params.require(:essence)
+      .permit(:name, :party_identifier)
+  end
 end

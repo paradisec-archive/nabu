@@ -12,7 +12,7 @@ class MergeUser
     @phone = Set.new
     @admin = Set.new
     @contact_only = Set.new
-    
+
     users.each do |user|
       @first_name.add user.try(:first_name)
       @last_name.add user.try(:last_name)
@@ -24,7 +24,7 @@ class MergeUser
       @admin.add user.try(:admin)
       @contact_only.add user.try(:contact_only)
     end
-    
+
     # @rights_transferred_to = Set.new
     # @rights_transfer_reason = Set.new
     # @nla_persistent_identifier = Set.new

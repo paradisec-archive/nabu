@@ -2,6 +2,8 @@ ActiveAdmin.register University do
   menu :parent => "Other Entities"
   config.sort_order = "name_asc"
 
+  permit_params :name, :party_identifier
+
   before_destroy :check_dependent
 
   # Don't filter by collections of items

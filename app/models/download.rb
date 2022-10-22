@@ -19,8 +19,6 @@ class Download < ActiveRecord::Base
 
   delegate :collection, :to => :item
 
-  attr_accessible :user, :essence
-
   validates :user, :associated => true
   validates :essence, :associated => true
 end

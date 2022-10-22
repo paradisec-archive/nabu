@@ -82,17 +82,6 @@ class Collection < ActiveRecord::Base
   ]
   attr_reader(*bulk)
 
-  attr_accessible :identifier, :title, :description, :region,
-                  :north_limit, :south_limit, :west_limit, :east_limit,
-                  :collector_id, :operator_id, :university_id, :field_of_research_id,
-                  :grants_attributes,
-                  :language_ids, :country_ids, :admin_ids,
-                  :access_condition_id,
-                  :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
-                  :complete, :private, :tape_location, :deposit_form_received,
-                  :metadata,
-                  *bulk
-
   attr_accessor :metadata
 
   paginates_per 10
@@ -508,5 +497,4 @@ class Collection < ActiveRecord::Base
     end
     xml.target!
   end
-
 end

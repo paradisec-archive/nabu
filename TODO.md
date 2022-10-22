@@ -34,4 +34,5 @@
 * autoprefixer-rails was deprected. Use Node.js’s Autoprefixer with PostCSS instead.
 * guard-sunspot doesn't work with newer versions
 * Do we need patch on form_for or does it work it out?
+* Should versions_controller exist?
 

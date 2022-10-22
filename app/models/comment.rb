@@ -17,7 +17,6 @@ class Comment < ActiveRecord::Base
 
   paginates_per 5
 
-  attr_accessible :body
   belongs_to :commentable, :polymorphic => true
   belongs_to :owner, :class_name => 'User'
 

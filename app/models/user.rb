@@ -47,10 +47,6 @@ class User < ActiveRecord::Base
   # Optionally a user has transferred their rights to another one, e.g. then deceased.
   belongs_to :rights_transferred_to, :class_name => 'User'
 
-  attr_accessible :party_identifiers_attributes, :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :party_identifier, :collector
-  attr_accessible :party_identifiers_attributes, :email, :first_name, :last_name, :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email, :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector, :as => :admin
-  attr_accessible :party_identifiers_attributes, :first_name, :last_name, :password, :password_confirmation, :contact_only, :party_identifier, :collector, :as => :contact_only
-
   validates :first_name, :presence => true
   validates :email, :presence => true, :unless => proc { |user| user.contact_only? }
 

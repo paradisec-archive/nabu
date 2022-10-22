@@ -3,6 +3,8 @@ ActiveAdmin.register AdminMessage do
   config.sort_order = "message_asc"
   actions :all
 
+  permit_params :finish_at, :message, :start_at
+
   # Don't show timestamps of the ActiveRecord object (created_at or updated_at)
   index do
     selectable_column

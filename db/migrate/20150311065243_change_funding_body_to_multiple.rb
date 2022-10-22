@@ -20,7 +20,6 @@ class ChangeFundingBodyToMultiple < ActiveRecord::Migration
     add_column :collections, :grant_identifier, :string
 
     Collection.class_eval do
-      attr_accessible :grant_identifier
       belongs_to :new_funding_body, class_name: 'FundingBody', foreign_key: 'funding_body_id'
     end
 
