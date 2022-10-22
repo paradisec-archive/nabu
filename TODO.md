@@ -37,6 +37,7 @@
 * Should versions_controller exist?
 * Rails 4.0 removed the ActionController::Base.asset_path option. Use the assets pipeline feature. - This is only in coffeescript, releavnt?
 * Check link_to that move from confirm -> data-confirm works
+* CHeck f.submmit :confirm should this be data?
 
 
 

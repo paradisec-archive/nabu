@@ -11,10 +11,10 @@ Nabu::Application.routes.draw do
 
   root :to => 'page#home'
 
-  match '/contact'   => 'page#contact'
-  match '/dashboard' => 'page#dashboard'
-  match '/glossary'  => 'page#glossary'
-  match '/apidoc' => 'page#apidoc'
+  get '/contact'   => 'page#contact'
+  get '/dashboard' => 'page#dashboard'
+  get '/glossary'  => 'page#glossary'
+  get '/apidoc' => 'page#apidoc'
 
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 
@@ -68,22 +68,22 @@ Nabu::Application.routes.draw do
     end
   end
 
-  match '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
-  match '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
-  match '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence', :as => 'repository_essence', :constraints => { :essence_filename => /.*/ }
+  get '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
+  get '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
+  get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence', :as => 'repository_essence', :constraints => { :essence_filename => /.*/ }
 
-  match '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
+  get '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
 
-  match '/essences/mimetypes' => 'essences#list_mimetypes', as: 'list_mimetypes'
+  get '/essences/mimetypes' => 'essences#list_mimetypes', as: 'list_mimetypes'
 
   resources :comments, :shallow => true do
-    match 'approve' => 'comments#approve', :on => :member, :via => :post
-    match 'spam'    => 'comments#spam',    :on => :member, :via => :post
+    post 'approve' => 'comments#approve', :on => :member
+    post 'spam'    => 'comments#spam',    :on => :member
   end
   resources :universities, :only => :create
 
   scope '/oai' do
-    match 'item' => 'oai#item'
-    match 'collection' => 'oai#collection'
+    get 'item' => 'oai#item'
+    get 'collection' => 'oai#collection'
   end
 end
