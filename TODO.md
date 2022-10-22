@@ -36,6 +36,7 @@
 * Do we need patch on form_for or does it work it out?
 * Should versions_controller exist?
 * Rails 4.0 removed the ActionController::Base.asset_path option. Use the assets pipeline feature. - This is only in coffeescript, releavnt?
+* Check link_to that move from confirm -> data-confirm works
 
 
 
