@@ -64,7 +64,7 @@ class Collection < ActiveRecord::Base
 
   # require presence of these three fields
   validates :identifier, :presence => true, :uniqueness => true,
-            :format => { :with => /^[a-zA-Z0-9_]*$/, :message => "error - only letters and numbers and '_' allowed" }
+            :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
   validates :title, :presence => true
   validates :collector_id, :presence => true
 

@@ -86,7 +86,7 @@ class Item < ActiveRecord::Base
   # require presence of these three fields.
   validates :identifier, :presence => true,
             :uniqueness => {:scope => [:collection_id, :identifier]},
-            :format => { :with => /^[a-zA-Z0-9_]*$/, :message => "error - only letters and numbers and '_' allowed" }
+            :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
   validates_length_of :identifier, :within => 2..30
   validates :title, :presence => true
   validates :collector_id, :presence => true
