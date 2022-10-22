@@ -18,7 +18,7 @@ fi
 # clean up any stale pids
 rm /app/tmp/pids/server.pid &> /dev/null
 
-rails s -b 0.0.0.0
+bin/rails s -b 0.0.0.0
 if [ "$?" != "0" ]; then
   echo 'Failed to start Rails server!'
   exit 1
