@@ -87,7 +87,6 @@ class User < ActiveRecord::Base
   scope :collectors, -> { where(:collector => true) }
   scope :contacts, -> { where(:contact_only => true) }
   scope :admins, -> { where(:admin => true) }
-  scope :all_users
 
   # Set random password for contacts
   before_validation do

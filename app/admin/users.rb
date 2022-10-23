@@ -4,7 +4,6 @@ ActiveAdmin.register User do
   scope :contacts
   scope :admins
   scope :collectors
-  scope :all_users
 
   permit_params :party_identifiers_attributes, :email, :first_name, :last_name,
     :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,

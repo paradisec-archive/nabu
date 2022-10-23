@@ -14,13 +14,13 @@ module IdentifiableByDoi
       xml.tag! 'publisher', 'PARADISEC'
       # Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
       publicationYear = case
-			when is_a?(Item)
-			  originated_on || created_at
-			when is_a?(Essence)
-			  item.originated_on || created_at
-			else
-			  created_at
-			end.year
+                        when is_a?(Item)
+                          originated_on || created_at
+                        when is_a?(Essence)
+                          item.originated_on || created_at
+                        else
+                          created_at
+                        end.year
 
       xml.tag! 'publicationYear', publicationYear
 
@@ -49,9 +49,9 @@ module IdentifiableByDoi
 
   def schema_definitions
     {
-      'xmlns'  => 'http://datacite.org/schema/kernel-3',
-      'xmlns:xsi'     => 'http://www.w3.org/2001/XMLSchema-instance',
-      'xsi:schemaLocation' => 'http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd'
+      'xmlns' => 'http://datacite.org/schema/kernel-3',
+      'xsi:schemaLocation' => 'http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd',
+      'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
     }
   end
 end

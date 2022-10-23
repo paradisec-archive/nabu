@@ -14,5 +14,5 @@ class ItemDataType < ActiveRecord::Base
   belongs_to :item
 
   validates :data_type_id, :presence => true
-  validates :item_id, :presence => true
+  #validates :item_id, :presence => true
 end

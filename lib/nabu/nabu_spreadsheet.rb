@@ -301,7 +301,7 @@ module Nabu
           password: random_string,
           password_confirmation: random_string,
           contact_only: true
-        }, :as => :contact_only)
+        })
         unless user.valid?
           @errors << "Couldn't create user #{first_name} #{last_name}<br/>"
           return nil
