@@ -1,4 +1,4 @@
-require 'media'
+require 'nabu/media'
 include ActionView::Helpers::NumberHelper
 
 require "#{Rails.root}/app/helpers/application_helper"

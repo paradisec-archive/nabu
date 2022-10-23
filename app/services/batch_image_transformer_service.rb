@@ -1,4 +1,4 @@
-require 'media'
+require 'nabu/media'
 
 # Batch transformation of images.
 # For an individual transformation, see ImageTransformerService.

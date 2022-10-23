@@ -1,4 +1,4 @@
-require 'media'
+require 'nabu/media'
 
 # Transcode essence files for a single item
 class TranscodeEssenceFileService

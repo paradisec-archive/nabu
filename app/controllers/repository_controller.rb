@@ -1,5 +1,5 @@
 require 'ostruct'
-require 'media'
+require 'nabu/media'
 
 class RepositoryController < ApplicationController
   include MediaStreaming
