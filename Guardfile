@@ -91,3 +91,8 @@ guard :sunspot do
   watch('Gemfile.lock')
   watch('config/sunspot.yml')
 end
+
+guard :sunspot, :environment => 'test' do
+  watch('Gemfile.lock')
+  watch('config/sunspot.yml')
+end

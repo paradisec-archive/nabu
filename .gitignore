@@ -19,11 +19,17 @@
 # Out Stuff
 ##################
 
+# solr
+solr/data
+solr/test/data
+solr/development/data
+solr/default/data
+solr/pids
+
+
 .ruby-version
 .ruby-gemset
 .idea/
-solr/data
-solr/pids
 .sass-cache/
 rerun.txt
 .DS_Store
