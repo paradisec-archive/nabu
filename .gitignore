@@ -20,12 +20,12 @@
 ##################
 
 # solr
-solr/data
-solr/test/data
-solr/development/data
-solr/default/data
-solr/pids
-
+/solr/data
+/solr/test/data
+/solr/development/data
+/solr/default/data
+/solr/pids
+/log/sunspot*.log.*
 
 .ruby-version
 .ruby-gemset
