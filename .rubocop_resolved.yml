@@ -1,10 +1,6 @@
 Metrics/LineLength:
   Max: 512
 
-# RATIONALE: gsub is not a performance bottleneck, and tr is rarely used, and is somewhat unintuitive.
-Performance/StringReplacement:
-  Enabled: false
-
 Style/HashSyntax:
   Enabled: false
 
@@ -46,9 +42,6 @@ Style/SpaceInsideBlockBraces:
   Enabled: false
 
 Style/SpaceBeforeBlockBraces:
-  Enabled: false
-
-Style/TrailingBlankLines:
   Enabled: false
 
 # RuboCop changed its mind on preferred style

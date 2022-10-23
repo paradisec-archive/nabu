@@ -336,13 +336,13 @@ class ItemsController < ApplicationController
     downloader = CsvDownloader.new(search_type, params, current_user)
     export_all = params[:export_all] || false
     per_page = (params[:per_page] || 10).to_i
-    
+
     #TODO: fix CSV stream for builder method
 
     # only stream CSV if small enough
     if @search.total <= 5000 || (!export_all && per_page <= 5000)
       filename, body = downloader.stream(@search)
-      
+
       self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
       self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
       self.response.headers['Last-Modified'] = Time.now.ctime.to_s
@@ -350,11 +350,11 @@ class ItemsController < ApplicationController
       self.response_body = Enumerator.new &body
       return
     end
-    
+
     # otherwise use delayed_job to email a CSV
-    
+
     downloader.delay.email
-    
+
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
     redirect_to :back
   end
@@ -407,7 +407,7 @@ class ItemsController < ApplicationController
         :dialect, :discourse_type_id,
         :metadata_exportable, :born_digital, :tapes_returned,
         :original_media, :ingest_notes, :tracking,
-        :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on
+        :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on,
         :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
         :bulk_edit_append_originated_on_narrative, :bulk_edit_append_url, :bulk_edit_append_language,
         :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,

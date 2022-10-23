@@ -54,7 +54,7 @@
 * Rakefile : should grapql be here or in tasks directory
 
 
-
+# Clean up rubocop config
 
 
 

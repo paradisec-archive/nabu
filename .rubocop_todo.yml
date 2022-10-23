@@ -28,26 +28,6 @@ Metrics/PerceivedComplexity:
   Max: 68
 
 # Cop supports --auto-correct.
-Performance/RedundantMatch:
-  Exclude:
-    - 'app/models/item.rb'
-
-# Cop supports --auto-correct.
-Style/AlignArray:
-  Exclude:
-    - 'app/models/item.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle, SupportedLastArgumentHashStyles.
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Style/AlignHash:
-  Exclude:
-    - 'app/admin/languages.rb'
-    - 'app/models/collection.rb'
-    - 'app/models/item.rb'
-    - 'spec/controllers/items_controller_spec.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # SupportedStyles: always, conditionals
 Style/AndOr:
@@ -85,22 +65,6 @@ Style/BlockEndNewline:
     - 'spec/controllers/items_controller_spec.rb'
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: braces, no_braces, context_dependent
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'app/services/user_merger_service.rb'
-    - 'config/deploy.rb'
-    - 'db/migrate/20150311065243_change_funding_body_to_multiple.rb'
-    - 'db/seeds.rb'
-    - 'lib/exsite9.rb'
-    - 'spec/controllers/essences_controller_spec.rb'
-    - 'spec/controllers/items_controller_spec.rb'
-    - 'spec/services/downloads_report_service_spec.rb'
-    - 'spec/services/item_destruction_service_spec.rb'
-    - 'spec/services/user_merger_service_spec.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: IndentWhenRelativeTo, SupportedStyles, IndentOneStep, IndentationWidth.
 # SupportedStyles: case, end
 Style/CaseIndentation:
@@ -122,18 +86,6 @@ Style/ClassAndModuleChildren:
 Style/ClassVars:
   Exclude:
     - 'spec/support/db_thread.rb'
-
-# Cop supports --auto-correct.
-Style/ClosingParenthesisIndentation:
-  Exclude:
-    - 'app/controllers/repository_controller.rb'
-
-# Cop supports --auto-correct.
-Style/ColonMethodCall:
-  Exclude:
-    - 'config/environments/development.rb'
-    - 'config/environments/production.rb'
-    - 'config/environments/test.rb'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, AllowInnerBackticks.
@@ -209,15 +161,6 @@ Style/IfUnlessModifier:
     - 'lib/tasks/archive.rake'
 
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, IndentationWidth.
-# SupportedStyles: special_inside_parentheses, consistent, align_braces
-Style/IndentHash:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'lib/exsite9.rb'
-    - 'lib/nabu_spreadsheet.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # SupportedStyles: normal, rails
 Style/IndentationConsistency:
@@ -247,12 +190,6 @@ Style/Lambda:
 # Cop supports --auto-correct.
 Style/LeadingCommentSpace:
   Enabled: false
-
-# Cop supports --auto-correct.
-Style/MethodCallParentheses:
-  Exclude:
-    - 'app/oai/item_provider.rb'
-    - 'lib/exsite9.rb'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
@@ -413,11 +350,6 @@ Style/RaiseArgs:
     - 'lib/monkeypatch.rb'
 
 # Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'app/controllers/collections_controller.rb'
-
-# Cop supports --auto-correct.
 Style/RedundantParentheses:
   Exclude:
     - 'app/controllers/page_controller.rb'
@@ -504,11 +436,6 @@ Style/SpaceBeforeComment:
     - 'app/models/collection.rb'
 
 # Cop supports --auto-correct.
-Style/SpaceInsideBrackets:
-  Exclude:
-    - 'config/initializers/devise.rb'
-
-# Cop supports --auto-correct.
 Style/SpaceInsideParens:
   Exclude:
     - 'config/environments/development.rb'
@@ -533,25 +460,11 @@ Style/SymbolProc:
     - 'db/migrate/20121027032001_add_timestampes_to_essences.rb'
 
 # Cop supports --auto-correct.
-Style/Tab:
-  Exclude:
-    - 'app/models/identifiable_by_doi.rb'
-
-# Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, AllowSafeAssignment.
 # SupportedStyles: require_parentheses, require_no_parentheses
 Style/TernaryParentheses:
   Exclude:
     - 'app/helpers/application_helper.rb'
-
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline, SupportedStyles.
-# SupportedStyles: comma, consistent_comma, no_comma
-Style/TrailingCommaInLiteral:
-  Exclude:
-    - 'app/admin/catalog_report.rb'
-    - 'app/models/collection.rb'
-    - 'config/deploy.rb'
 
 # Cop supports --auto-correct.
 # Configuration parameters: AllowNamedUnderscoreVariables.
@@ -566,13 +479,6 @@ Style/TrailingWhitespace:
     - 'app/models/merge_user.rb'
     - 'db/migrate/20120621072614_deceased_users.rb'
     - 'lib/tasks/cucumber.rake'
-
-# Cop supports --auto-correct.
-Style/UnneededInterpolation:
-  Exclude:
-    - 'app/models/collection.rb'
-    - 'app/models/essence.rb'
-    - 'lib/tasks/archive.rake'
 
 # Cop supports --auto-correct.
 Style/VariableInterpolation:
