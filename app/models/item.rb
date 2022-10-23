@@ -80,7 +80,7 @@ class Item < ActiveRecord::Base
   has_many :item_data_types, :dependent => :destroy
   has_many :data_types, :through => :item_data_types, :validate => true
 
-  has_many :essences, :dependent => :restrict
+  has_many :essences, :dependent => :restrict_with_exception
   has_many :comments, :as => :commentable, :dependent => :destroy
 
   # require presence of these three fields.

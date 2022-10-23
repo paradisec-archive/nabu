@@ -14,8 +14,8 @@ class University < ActiveRecord::Base
 
   validates :name, :presence => true, :uniqueness => true
 
-  has_many :collections, :dependent => :restrict
-  has_many :items, :dependent => :restrict
+  has_many :collections, :dependent => :restrict_with_exception
+  has_many :items, :dependent => :restrict_with_exception
 
   scope :alpha, -> { order(:name) }
 

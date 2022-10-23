@@ -13,7 +13,7 @@ class AgentRole < ActiveRecord::Base
 
   validates :name, :presence => true, :uniqueness => true
 
-  has_many :item_agents, :dependent => :restrict
+  has_many :item_agents, :dependent => :restrict_with_exception
 
   def destroy
     ok_to_destroy? ? super : self

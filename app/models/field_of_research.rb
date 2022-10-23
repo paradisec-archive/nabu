@@ -20,5 +20,5 @@ class FieldOfResearch < ActiveRecord::Base
     "#{identifier} - #{name}"
   end
 
-  has_many :collections, :dependent => :restrict
+  has_many :collections, :dependent => :restrict_with_exception
 end

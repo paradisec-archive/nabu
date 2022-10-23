@@ -35,11 +35,11 @@ class Language < ActiveRecord::Base
   #validates :countries, :length => { :minimum => 1 }
 
   has_many :item_content_languages
-  has_many :items_for_content, :through => :item_content_languages, :source => :item, :dependent => :restrict
+  has_many :items_for_content, :through => :item_content_languages, :source => :item, :dependent => :restrict_with_exception
 
   has_many :item_subject_languages
-  has_many :items_for_subject, :through => :item_subject_languages, :source => :item, :dependent => :restrict
+  has_many :items_for_subject, :through => :item_subject_languages, :source => :item, :dependent => :restrict_with_exception
 
   has_many :collection_languages
-  has_many :collections, :through => :collection_languages, :dependent => :restrict
+  has_many :collections, :through => :collection_languages, :dependent => :restrict_with_exception
 end

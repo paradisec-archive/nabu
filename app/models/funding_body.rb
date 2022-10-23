@@ -22,7 +22,7 @@ class FundingBody < ActiveRecord::Base
   end
 
   has_many :grants
-  has_many :collections, through: :grants, dependent: :restrict
+  has_many :collections, through: :grants, dependent: :restrict_with_exception
 
   def destroy
     ok_to_destroy? ? super : self

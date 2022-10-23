@@ -14,5 +14,5 @@ class DataCategory < ActiveRecord::Base
   scope :alpha, -> { order(:name) }
 
   has_many :item_data_categories
-  has_many :items, :through => :item_data_categories, :dependent => :restrict
+  has_many :items, :through => :item_data_categories, :dependent => :restrict_with_exception
 end

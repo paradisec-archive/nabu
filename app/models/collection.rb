@@ -46,7 +46,7 @@ class Collection < ActiveRecord::Base
   has_many :grants
   accepts_nested_attributes_for :grants, allow_destroy: true
 
-  has_many :items, :dependent => :restrict
+  has_many :items, :dependent => :restrict_with_exception
   accepts_nested_attributes_for :items
 
   has_many :collection_languages, :dependent => :destroy
