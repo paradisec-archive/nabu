@@ -4,20 +4,17 @@ production:
     bind_address: 127.0.0.1
     port: 8983
     log_level: WARNING
-
-uat:
-  solr:
-    hostname: localhost
-    bind_address: 127.0.0.1
-    port: 8983
-    log_level: INFO
+    path: /solr/production
+    # read_timeout: 2
+    # open_timeout: 0.5
 
 development:
   solr:
     hostname: localhost
     bind_address: 127.0.0.1
     port: 8982
-    log_level: WARNING
+    log_level: INFO
+    path: /solr/development
 
 test:
   solr:
@@ -25,3 +22,12 @@ test:
     bind_address: 127.0.0.1
     port: 8981
     log_level: WARNING
+    path: /solr/test
+
+uat:
+  solr:
+    hostname: localhost
+    bind_address: 127.0.0.1
+    port: 8983
+    log_level: WARNING
+    path: /solr/uat
