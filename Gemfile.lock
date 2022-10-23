@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/mackinleysmith/guard-sunspot.git
+  revision: d7b24d843c9f8d12f71f93274bd5d5a3072faef2
+  specs:
+    guard-sunspot (0.0.1)
+      guard (~> 2.0)
+      guard-compat (~> 1.1)
+      sunspot_solr
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -175,9 +184,6 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    guard-sunspot (0.0.2)
-      guard
-      sunspot_solr
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
@@ -478,7 +484,7 @@ DEPENDENCIES
   guard-bundler
   guard-rails
   guard-rspec
-  guard-sunspot
+  guard-sunspot!
   haml-rails
   jbuilder (~> 1.2)
   jquery-rails

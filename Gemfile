@@ -129,18 +129,18 @@ group :development, :test do
 
   gem 'letter_opener'
 
-  # Guard
-  gem 'guard'
-  gem 'guard-bundler'
-  gem 'guard-rails'
-  gem 'guard-rspec'
-  gem 'guard-sunspot'
-
   gem 'rb-inotify', :require => RUBY_PLATFORM.include?('linux') ? 'rb-inotify' : false
   gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') ? 'rb-fsevent' : false
 end
 
 group :development do
+  # Guard
+  gem 'guard'
+  gem 'guard-bundler'
+  gem 'guard-rails'
+  gem 'guard-rspec'
+  gem 'guard-sunspot', :git => 'https://github.com/mackinleysmith/guard-sunspot.git'
+
   gem 'annotate'
   gem 'binding_of_caller'
   gem 'better_errors'
