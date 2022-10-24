@@ -8,7 +8,7 @@ module Nabu
       book.sheet(0) unless book.nil?
       case
       when book.nil?
-        NullNabuSpreadsheet.new
+        NullNabuSpreadsheet.new(nil)
       # Currently parsed as a Float of value 2.0
       when book.row(1)[2].to_i == 2
         Version2NabuSpreadsheet.new(book)
@@ -67,6 +67,7 @@ module Nabu
       item_start_row.upto(@book.last_row) do |row_number|
         row = @book.row(row_number)
         break if row[0].nil? # if first cell empty
+
         parse_row(row, collector)
       end
     end #parse
@@ -91,9 +92,7 @@ module Nabu
 
     def parse_collection_info(collector, coll_id)
       if @collection
-        if @collection.collector != collector
-          @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet"
-        end
+        @errors << "Collection #{coll_id} exists but with different collector #{collector.name} - please fix spreadsheet" if @collection.collector != collector
         return
       end
 
@@ -172,7 +171,7 @@ module Nabu
       if row[5].present?
         countries = row[5].split('|')
         countries.each do |country|
-          code, _ = country.strip.split(' - ')
+          code, = country.strip.split(' - ')
           cntry = Country.find_by_code(code.strip)
           unless cntry
             # try country name
@@ -189,12 +188,10 @@ module Nabu
       # add origination date
       if row[6].present?
         date = row[6].to_s
-        if date.length == 4 ## take a guess they forgot the month & day
-          date = date + "-01-01"
-        end
+        date += "-01-01" if date.length == 4 ## take a guess they forgot the month & day
         begin
           date_conv = date.to_date
-        rescue
+        rescue StandardError
           @notices << "Item #{item.identifier} : Date invalid - Item skipped"
           return nil
         end
@@ -202,14 +199,10 @@ module Nabu
       end
 
       # add region
-      if row[7].present?
-        item.region = row[7]
-      end
+      item.region = row[7] if row[7].present?
 
       # add original media
-      if row[8].present?
-        item.original_media = row[8]
-      end
+      item.original_media = row[8] if row[8].present?
 
       # add data categories
       if row[9].present?
@@ -252,22 +245,20 @@ module Nabu
       end
 
       # add dialect
-      if row[dialect_column].present?
-        item.dialect = row[dialect_column]
-      end
+      item.dialect = row[dialect_column] if row[dialect_column].present?
 
       # add language as given
-      if row[language_column].present?
-        item.language = row[language_column]
-      end
+      item.language = row[language_column] if row[language_column].present?
 
       # Add agents
       agent_cell_ranges.each do |agent_cell_range|
         break unless row[agent_cell_range.begin].present?
+
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
         # errors added in parse_agent, so don't need to add any more before returning
         return nil unless item_agent
+
         if item.item_agents.any? { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }
           # item itself is valid, just don't add the duplicate item_agent to it
           @notices << "Item #{item.identifier} : Duplicate role #{item_agent.agent_role.name}, user #{item_agent.user.name} ignored"
@@ -296,12 +287,12 @@ module Nabu
       unless user
         random_string = SecureRandom.base64(16)
         user = User.create({
-          first_name: first_name,
-          last_name: last_name,
-          password: random_string,
-          password_confirmation: random_string,
-          contact_only: true
-        })
+                             first_name: first_name,
+                             last_name: last_name,
+                             password: random_string,
+                             password_confirmation: random_string,
+                             contact_only: true
+                           })
         unless user.valid?
           @errors << "Couldn't create user #{first_name} #{last_name}<br/>"
           return nil
@@ -347,10 +338,11 @@ module Nabu
   end
 
   class NullNabuSpreadsheet < NabuSpreadsheet
-    def initialize
+    def initialize(book = nil)
       @notices = []
       @errors = ['ERROR File is neither XLS nor XLSX']
       @items = []
+      super
     end
 
     def parse
@@ -380,9 +372,7 @@ module Nabu
 
       first_name, last_name = name.split(',').map(&:strip)
 
-      if last_name == ''
-        last_name = nil
-      end
+      last_name = nil if last_name == ''
       [first_name, last_name]
     end
 
@@ -413,9 +403,7 @@ module Nabu
         return nil
       end
 
-      if last_name == ''
-        last_name = nil
-      end
+      last_name = nil if last_name == ''
       [first_name, last_name]
     end
 
@@ -446,9 +434,7 @@ module Nabu
         return nil
       end
 
-      if last_name == ''
-        last_name = nil
-      end
+      last_name = nil if last_name == ''
       [first_name, last_name]
     end
 

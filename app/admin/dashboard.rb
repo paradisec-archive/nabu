@@ -41,7 +41,7 @@ ActiveAdmin.register_page "Dashboard" do
               link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
             end
             column :title
-            default_actions
+            actions
           end
         end
       end
@@ -53,7 +53,7 @@ ActiveAdmin.register_page "Dashboard" do
               link_to item.full_identifier, [item.collection, item]
             end
             column :title
-            default_actions
+            actions
           end
         end
       end
@@ -91,7 +91,7 @@ ActiveAdmin.register_page "Dashboard" do
             end
             column :body
             column :owner
-            default_actions
+            actions
             column '', :sortable => false do |comment|
               link_to 'Approve', approve_comment_path(comment), :method => :post
             end
