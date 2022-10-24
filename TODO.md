@@ -52,6 +52,8 @@
 * application.rb the nabu paths are also in production why duplicated?
 * Why is google crawling disabled
 * Rakefile : should grapql be here or in tasks directory
+* https://relishapp.com/rspec/rspec-rails/v/3-9/docs/upgrade
+* Move away from phantomjs
 
 
 # Clean up rubocop config

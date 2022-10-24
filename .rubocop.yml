@@ -8,7 +8,7 @@ inherit_from:
   # - .rubocop_lint_cops.yml
 
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.3
 
 # Auto-gen-config has a bug with this cop
 Style/ConditionalAssignment:

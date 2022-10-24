@@ -35,9 +35,13 @@ RUN apt-get install -y \
   libffi-dev \
   nodejs \
   libmagic-dev \
-  openjdk-8-jre
+  openjdk-8-jre \
+  phantomjs
 
 RUN gem install bundler
+
+# Fix wierd phantmJS bug
+ENV QT_QPA_PLATFORM offscreen
 
 VOLUME /app
 WORKDIR /app

@@ -84,8 +84,9 @@ class Item < ActiveRecord::Base
   has_many :comments, :as => :commentable, :dependent => :destroy
 
   # require presence of these three fields.
-  validates :identifier, :presence => true,
-            :uniqueness => {:scope => [:collection_id, :identifier]},
+  validates :identifier,
+            :presence => true,
+            :uniqueness => {:scope => %i[collection_id identifier]},
             :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
   validates_length_of :identifier, :within => 2..30
   validates :title, :presence => true
@@ -96,16 +97,16 @@ class Item < ActiveRecord::Base
   validates :west_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
   validates :east_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
 
-  bulk = [
-    :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
-    :bulk_edit_append_originated_on_narrative, :bulk_edit_append_url, :bulk_edit_append_language,
-    :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
-    :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
-    :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-    :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids,
+  bulk = %i[
+    bulk_edit_append_title bulk_edit_append_description bulk_edit_append_region
+    bulk_edit_append_originated_on_narrative bulk_edit_append_url bulk_edit_append_language
+    bulk_edit_append_dialect bulk_edit_append_original_media bulk_edit_append_ingest_notes
+    bulk_edit_append_tracking bulk_edit_append_access_narrative bulk_edit_append_admin_comment
+    bulk_edit_append_country_ids bulk_edit_append_subject_language_ids bulk_edit_append_content_language_ids
+    bulk_edit_append_admin_ids bulk_edit_append_user_ids bulk_edit_append_data_category_ids bulk_edit_append_data_type_ids
 
-    :bulk_delete_country_ids, :bulk_delete_subject_language_ids,
-    :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids
+    bulk_delete_country_ids bulk_delete_subject_language_ids
+    bulk_delete_content_language_ids bulk_delete_data_category_ids bulk_delete_data_type_ids
   ]
   attr_reader(*bulk)
 
@@ -229,7 +230,7 @@ class Item < ActiveRecord::Base
       existing_attributes = Hash[*inherited_attributes.keys.map do |key|
                                    val = self.public_send(key)
                                    [key.to_sym, val] unless val.blank?
-                                 end.reject{|x| x.nil?}.flatten(1)]
+                                  end.reject{|x| x.nil?}.flatten(1)]
       # -> this merge causes the current attribute value to replace the inherited one before we update
       inherited_attributes = inherited_attributes.merge(existing_attributes)
     end

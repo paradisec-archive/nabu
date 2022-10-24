@@ -1,5 +1,5 @@
-require 'exsite9'
-require 'nabu_spreadsheet'
+require 'nabu/exsite9'
+require 'nabu/nabu_spreadsheet'
 
 class CollectionsController < ApplicationController
   include HasReturnToLastSearch

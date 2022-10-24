@@ -18,8 +18,8 @@ FactoryGirl.define do
     private false
     after(:build) do |item|
       item.countries ||= build_list(:country, 1)
-      item.subject_languages = item.subject_languages.present? ? item.subject_languages : build_list(:language, 1)
-      item.content_languages = item.content_languages.present? ? item.content_languages : build_list(:language, 1)
+      item.subject_languages = item.subject_languages.present? ? item.subject_languages : create_list(:language, 1)
+      item.content_languages = item.content_languages.present? ? item.content_languages : create_list(:language, 1)
     end
 
     trait :with_doi do

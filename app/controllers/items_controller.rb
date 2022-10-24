@@ -172,7 +172,7 @@ class ItemsController < ApplicationController
   end
 
   def create
-    @item.assign_attributes(params[:item].except(:item_agents_attributes))
+    @item.assign_attributes(item_params[:item])
 
     if @item.save
       flash[:notice] = 'Item was successfully created.'
@@ -392,14 +392,15 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item)
+    params
+      .require(:item)
       .permit(
         :identifier, :title, :external, :url, :description, :region, :collection_id,
         :north_limit, :south_limit, :west_limit, :east_limit,
         :collector_id, :university_id, :operator_id,
         :country_ids, :data_category_ids, :data_type_ids,
         :content_language_ids, :subject_language_ids,
-        :admin_ids, :agent_ids, :user_ids, :item_agents_attributes,
+        :admin_ids, :agent_ids, :user_ids,
         :access_condition_id,
         :access_narrative, :private,
         :admin_comment,
