@@ -4,7 +4,7 @@
 # - uses entrypoint script to handle bundling and starting Solr
 # =============================================================== 
 
-FROM ruby:2.3.8
+FROM ruby:2.6
 
 ENV BUNDLE_PATH /bundler
 ENV BUNDLE_HOME /gems
@@ -35,13 +35,12 @@ RUN apt-get install -y \
   libffi-dev \
   nodejs \
   libmagic-dev \
-  openjdk-8-jre \
-  phantomjs
+  openjdk-11-jre
 
-RUN gem install bundler
+RUN gem install bundler -v 1.17.3
 
 # Fix wierd phantmJS bug
-ENV QT_QPA_PLATFORM offscreen
+# ENV QT_QPA_PLATFORM offscreen
 
 VOLUME /app
 WORKDIR /app
