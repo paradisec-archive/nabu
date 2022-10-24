@@ -55,6 +55,15 @@
 * https://relishapp.com/rspec/rspec-rails/v/3-9/docs/upgrade
 * Move away from phantomjs
 
+## 4.1
+* Upgrades
+  * devise 3.5 -> 4.8
+  * graphql 1.7 -> 2.0
+  * kaminar 0.17 -> 1.2
+* layouts turbolinks stuff
+* Move secrets.yml to ENV in production
+
+
 
 # Clean up rubocop config
 
