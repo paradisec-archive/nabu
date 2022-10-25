@@ -1,7 +1,7 @@
 class OaiController < ApplicationController
   def item
     # Remove controller and action from the options.  Rails adds them automatically.
-    options = params.delete_if { |k,v| %w{controller action}.include?(k) }
+    options = params.delete_if { |k,_v| %w{controller action}.include?(k) }
     provider = ItemProvider.new
     response =  provider.process_request(options)
 
@@ -10,14 +10,14 @@ class OaiController < ApplicationController
       response = response.gsub('catalog.paradisec.org.au', "#{request.host}:#{request.port}")
     end
 
-    render :text => response, :content_type => 'text/xml'
+    render :body => response, :content_type => 'text/xml'
   end
 
   def collection
     # Remove controller and action from the options.  Rails adds them automatically.
-    options = params.reject { |k,v| %w{controller action}.include?(k) }
+    options = params.reject { |k,_v| %w{controller action}.include?(k) }
     provider = CollectionProvider.new
     response =  provider.process_request(options)
-    render :text => response, :content_type => 'text/xml'
+    render :body => response, :content_type => 'text/xml'
   end
 end
