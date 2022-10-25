@@ -64,6 +64,8 @@
 * Move secrets.yml to ENV in production
 
 
+# 4,2
+* paper_trail 7 to 10
 
 # Clean up rubocop config
 
