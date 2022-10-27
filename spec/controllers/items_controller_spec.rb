@@ -166,6 +166,7 @@ describe ItemsController, type: :controller do
   context 'when viewing an item with essences' do
     it 'should track the essence files' do
       get :show, params.merge(id: item_with_essences.identifier)
+      # FIXME: JF assigns might not work see 5.0 guide 7.5
       expect(assigns(:num_files)).to eq(1)
       expect(assigns(:files)).to eq([essence])
     end

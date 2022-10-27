@@ -71,7 +71,9 @@
 * compas 0 -> 1
 * does puma replace unicorn?
 * Can we move paper_trail to ApplicationRecord?
-
+* update deprecation 7.3 Halting Callback Chains via throw(:abort)
+* Squeel unsupported
+* 7.11 ActionController::Parameters No Longer Inherits from HashWithIndifferentAccess
 
 
 # Clean up rubocop config
