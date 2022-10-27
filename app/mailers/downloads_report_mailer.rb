@@ -1,6 +1,4 @@
-class DownloadsReportMailer < ActionMailer::Base
-  default :from => 'admin@paradisec.org.au', :to => 'admin@paradisec.org.au'
-
+class DownloadsReportMailer < ApplicationMailer
   def downloads_email(user, results, date_from, date_to)
     @user = user
     @results = results

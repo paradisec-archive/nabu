@@ -1,6 +1,4 @@
-class BulkEditReportMailer < ActionMailer::Base
-  default :from => 'no-reply@paradisec.org.au', :to => 'admin@paradisec.org.au'
-
+class BulkEditReportMailer < ApplicationMailer
   def bulk_edit_report_email(email, failed_items, items_count, start_time)
     @email = email
     @failed_items = failed_items

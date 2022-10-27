@@ -1,6 +1,4 @@
-class CommentMailer < ActionMailer::Base
-  default :from => 'admin@paradisec.org.au', :to => 'admin@paradisec.org.au'
-
+class CommentMailer < ApplicationMailer
   def comment_email(comment)
     @comment = comment
     @resource = case @comment.commentable.class.to_s
