@@ -29,7 +29,6 @@
   * oai 0.3 -> 1.1
   * paper_trail 2 -> 7
   * sunspot 1 -> 2
-  * squeel
   * rspec_rails
 * autoprefixer-rails was deprected. Use Node.js’s Autoprefixer with PostCSS instead.
 * guard-sunspot doesn't work with newer versions
@@ -72,13 +71,11 @@
 * does puma replace unicorn?
 * Can we move paper_trail to ApplicationRecord?
 * update deprecation 7.3 Halting Callback Chains via throw(:abort)
-* Squeel unsupported
 * 7.11 ActionController::Parameters No Longer Inherits from HashWithIndifferentAccess
 
 
-# Clean up rubocop config
-
-
+# Other
+* Clean up rubocop config
 
 
 # Security

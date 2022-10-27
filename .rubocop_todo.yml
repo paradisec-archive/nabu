@@ -112,7 +112,6 @@ Style/CommentIndentation:
     - 'app/models/item_user.rb'
     - 'config/deploy.rb'
     - 'config/initializers/inflections.rb'
-    - 'config/initializers/squeel.rb'
     - 'lib/media.rb'
 
 Style/Documentation:
@@ -174,7 +173,6 @@ Style/IndentationWidth:
     - 'app/helpers/application_helper.rb'
     - 'app/models/collection.rb'
     - 'app/models/item.rb'
-    - 'config/initializers/squeel.rb'
     - 'db/migrate/20111115003008_add_field_of_research_table.rb'
     - 'lib/exsite9.rb'
     - 'lib/tasks/cucumber.rake'

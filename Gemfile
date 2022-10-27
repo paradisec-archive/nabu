@@ -79,7 +79,6 @@ gem 'cancancan'
 
 # Database improvements
 gem 'rails_or'
-gem 'squeel'
 gem 'nilify_blanks'
 
 # Search
