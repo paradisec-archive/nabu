@@ -35,12 +35,14 @@ RUN apt-get install -y \
   libffi-dev \
   nodejs \
   libmagic-dev \
-  openjdk-11-jre
+  openjdk-11-jre \
+  wget
 
 RUN gem install bundler -v 1.17.3
 
-# Fix wierd phantmJS bug
-# ENV QT_QPA_PLATFORM offscreen
+# Chrome for headless testing
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
 
 VOLUME /app
 WORKDIR /app

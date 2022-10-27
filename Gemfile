@@ -154,7 +154,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'poltergeist'
+  gem 'apparition'
   gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'email_spec'
