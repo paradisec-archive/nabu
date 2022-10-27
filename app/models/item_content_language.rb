@@ -7,7 +7,7 @@
 #  language_id :integer          not null
 #
 
-class ItemContentLanguage < ActiveRecord::Base
+class ItemContentLanguage < ApplicationRecord
   has_paper_trail
 
   belongs_to :language

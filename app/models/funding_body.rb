@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class FundingBody < ActiveRecord::Base
+class FundingBody < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true

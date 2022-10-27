@@ -7,7 +7,7 @@
 #  name :string(255)
 #
 
-class Country < ActiveRecord::Base
+class Country < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true, :uniqueness => true

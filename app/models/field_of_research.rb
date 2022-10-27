@@ -7,7 +7,7 @@
 #  name       :string(255)
 #
 
-class FieldOfResearch < ActiveRecord::Base
+class FieldOfResearch < ApplicationRecord
   has_paper_trail
 
   validates :name, :identifier, :presence => true

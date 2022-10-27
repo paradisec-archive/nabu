@@ -40,7 +40,7 @@
 #  east_limit              :float
 #  doi                     :string(255)
 #
-class Item < ActiveRecord::Base
+class Item < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
   include ActionView::Helpers::SanitizeHelper

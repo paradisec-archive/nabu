@@ -8,7 +8,7 @@
 #  agent_role_id :integer          not null
 #
 
-class ItemAgent < ActiveRecord::Base
+class ItemAgent < ApplicationRecord
   has_paper_trail
 
   belongs_to :user

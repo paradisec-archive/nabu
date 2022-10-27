@@ -70,6 +70,7 @@
 # 5.0
 * compas 0 -> 1
 * does puma replace unicorn?
+* Can we move paper_trail to ApplicationRecord?
 
 
 

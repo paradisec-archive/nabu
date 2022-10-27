@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 
-class Download < ActiveRecord::Base
+class Download < ApplicationRecord
   # As Download records aren't modified, no need for paper_trail
 
   belongs_to :user

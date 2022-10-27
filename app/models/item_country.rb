@@ -7,7 +7,7 @@
 #  country_id :integer          not null
 #
 
-class ItemCountry < ActiveRecord::Base
+class ItemCountry < ApplicationRecord
   has_paper_trail
 
   belongs_to :country

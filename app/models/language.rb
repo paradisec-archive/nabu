@@ -12,7 +12,7 @@
 #  east_limit  :float
 #
 
-class Language < ActiveRecord::Base
+class Language < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true

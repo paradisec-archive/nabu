@@ -18,7 +18,7 @@
 #  derived_files_generated :boolean
 #
 
-class Essence < ActiveRecord::Base
+class Essence < ApplicationRecord
   include IdentifiableByDoi
 
   has_paper_trail

@@ -10,7 +10,7 @@
 #  updated_at :datetime         not null
 #
 
-class AdminMessage < ActiveRecord::Base
+class AdminMessage < ApplicationRecord
   has_paper_trail
 
   validates :message, presence: true

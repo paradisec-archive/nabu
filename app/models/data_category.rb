@@ -6,7 +6,7 @@
 #  name :string(255)
 #
 
-class DataCategory < ActiveRecord::Base
+class DataCategory < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true, :uniqueness => true

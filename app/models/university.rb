@@ -9,7 +9,7 @@
 #  party_identifier :string(255)
 #
 
-class University < ActiveRecord::Base
+class University < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true, :uniqueness => true

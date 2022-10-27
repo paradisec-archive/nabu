@@ -30,7 +30,7 @@
 #  doi                   :string(255)
 #
 
-class Collection < ActiveRecord::Base
+class Collection < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
 

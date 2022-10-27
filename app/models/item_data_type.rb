@@ -7,7 +7,7 @@
 #  data_type_id :integer          not null
 #
 
-class ItemDataType < ActiveRecord::Base
+class ItemDataType < ApplicationRecord
   has_paper_trail
 
   belongs_to :data_type

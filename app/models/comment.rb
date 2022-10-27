@@ -12,7 +12,7 @@
 #  status           :string(255)
 #
 
-class Comment < ActiveRecord::Base
+class Comment < ApplicationRecord
   has_paper_trail
 
   paginates_per 5

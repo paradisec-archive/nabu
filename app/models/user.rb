@@ -36,7 +36,7 @@
 #  party_identifier         :string(255)
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   # Users may not want paper_trail storing a history of their account information, so don't have has_paper_trail
 
   nilify_blanks

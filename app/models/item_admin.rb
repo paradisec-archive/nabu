@@ -7,7 +7,7 @@
 #  user_id :integer          not null
 #
 
-class ItemAdmin < ActiveRecord::Base
+class ItemAdmin < ApplicationRecord
   has_paper_trail
 
   belongs_to :user

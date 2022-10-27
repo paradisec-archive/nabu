@@ -7,7 +7,7 @@
 #  language_id :integer          not null
 #
 
-class CountriesLanguage < ActiveRecord::Base
+class CountriesLanguage < ApplicationRecord
   has_paper_trail
 
   belongs_to :country

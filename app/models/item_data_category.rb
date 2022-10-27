@@ -7,7 +7,7 @@
 #  data_category_id :integer          not null
 #
 
-class ItemDataCategory < ActiveRecord::Base
+class ItemDataCategory < ApplicationRecord
   has_paper_trail
 
   belongs_to :data_category

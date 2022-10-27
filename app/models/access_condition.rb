@@ -8,7 +8,7 @@
 #  updated_at :datetime         not null
 #
 
-class AccessCondition < ActiveRecord::Base
+class AccessCondition < ApplicationRecord
   has_paper_trail
 
   scope :alpha, -> { order(:name) }

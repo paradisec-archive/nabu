@@ -6,7 +6,7 @@
 #  name :string(255)      not null
 #
 
-class AgentRole < ActiveRecord::Base
+class AgentRole < ApplicationRecord
   has_paper_trail
 
   scope :alpha, -> { order(:name) }

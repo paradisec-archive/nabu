@@ -11,7 +11,7 @@
 #  wrapped     :boolean          default(FALSE)
 #
 
-class LatlonBoundary < ActiveRecord::Base
+class LatlonBoundary < ApplicationRecord
   has_paper_trail
 
   belongs_to :country

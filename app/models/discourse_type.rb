@@ -6,7 +6,7 @@
 #  name :string(255)      not null
 #
 
-class DiscourseType < ActiveRecord::Base
+class DiscourseType < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true

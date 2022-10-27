@@ -6,7 +6,7 @@
 #  name :string(255)      not null
 #
 
-class DataType < ActiveRecord::Base
+class DataType < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true, :uniqueness => true

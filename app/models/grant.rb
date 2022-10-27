@@ -8,7 +8,7 @@
 #  funding_body_id  :integer
 #
 
-class Grant < ActiveRecord::Base
+class Grant < ApplicationRecord
   has_paper_trail
 
   belongs_to :collection

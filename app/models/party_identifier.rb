@@ -1,4 +1,4 @@
-class PartyIdentifier < ActiveRecord::Base
+class PartyIdentifier < ApplicationRecord
   TYPES = [:NLA, :ORCID]
 
   belongs_to :user
