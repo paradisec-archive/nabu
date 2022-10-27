@@ -4,7 +4,7 @@ require 'nabu/nabu_spreadsheet'
 class CollectionsController < ApplicationController
   include HasReturnToLastSearch
 
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
+  before_action :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 

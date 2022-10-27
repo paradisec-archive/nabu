@@ -2,7 +2,7 @@ class ItemsController < ApplicationController
   include HasReturnToLastSearch
   include ItemQueryBuilder
 
-  before_filter :tidy_params, :only => [:create, :update, :bulk_update]
+  before_action :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]

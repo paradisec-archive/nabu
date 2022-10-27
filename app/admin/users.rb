@@ -38,7 +38,7 @@ ActiveAdmin.register User do
   end
 
   # change pagination
-  before_filter :only => :index do
+  before_action :only => :index do
     @per_page = params[:per_page] || 30
   end
 

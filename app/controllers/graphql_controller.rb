@@ -1,6 +1,6 @@
 class GraphqlController < ApplicationController
   # avoid getting 401'd for not having a CSRF token
-  skip_before_filter :verify_authenticity_token, :only => [:execute]
+  skip_before_action :verify_authenticity_token, :only => [:execute]
 
   def execute
     # since this is a JSON request, don't use authorize! which will try and redirect to login page
