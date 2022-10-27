@@ -130,7 +130,7 @@ class Item < ApplicationRecord
 
   before_save :propagate_collector
 
-  scope :public, -> { joins(:collection).where(:private => false, :collection => {:private => false}) }
+  scope :public_items, -> { joins(:collection).where(:private => false, :collection => {:private => false}) }
 
   def has_default_map_boundaries?
     if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
