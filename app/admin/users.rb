@@ -57,11 +57,16 @@ ActiveAdmin.register User do
   filter :collector
   filter :admin
 
-  action_item do
+  action_item :merge do
     if %w(show edit).include?(params[:action])
       if User.duplicates_of(resource.first_name, resource.last_name).count > 1
         link_to 'Merge User', merge_admin_user_path, style: 'float: right;'
       end
+    end
+  end
+
+  action_item :reset do
+    if %w(show edit).include?(params[:action])
       link_to 'Reset Password', reset_password_admin_user_path, style: 'float: right;'
     end
   end
