@@ -175,7 +175,6 @@ Style/IndentationWidth:
     - 'app/models/item.rb'
     - 'db/migrate/20111115003008_add_field_of_research_table.rb'
     - 'lib/exsite9.rb'
-    - 'lib/tasks/cucumber.rake'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
@@ -476,7 +475,6 @@ Style/TrailingWhitespace:
   Exclude:
     - 'app/models/merge_user.rb'
     - 'db/migrate/20120621072614_deceased_users.rb'
-    - 'lib/tasks/cucumber.rake'
 
 # Cop supports --auto-correct.
 Style/VariableInterpolation:
