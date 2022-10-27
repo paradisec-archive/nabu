@@ -67,6 +67,9 @@
 # 4,2
 * paper_trail 7 to 10
 
+# 5.0
+* compas 0 -> 1
+*
 # Clean up rubocop config
 
 
