@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :essence do
     item { build(:item, :with_doi) }
     created_at Date.parse('2015/01/01')

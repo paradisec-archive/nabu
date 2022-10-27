@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :item do
     sequence(:identifier) {|n| "%03d" % n}
     title 'Title of item'

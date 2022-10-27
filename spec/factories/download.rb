@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :download do
     user
     essence
