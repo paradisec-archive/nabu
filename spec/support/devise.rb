@@ -6,3 +6,10 @@ module DeviseFeatureMacros
     click_button 'Sign in'
   end
 end
+
+RSpec.configure do |config|
+  config.include Devise::Test::IntegrationHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :view
+
+  config.include DeviseFeatureMacros #, :type => :feature
+end
