@@ -29,14 +29,14 @@ describe ItemsController, type: :controller do
     context 'when viewing' do
       context 'a private item' do
         it 'should redirect to the sign in page with error' do
-          get :show, params.merge(id: private_item.identifier)
+          get :show, params: params.merge(id: private_item.identifier)
           expect(response).to redirect_to(new_user_session_path)
           expect(flash[:alert]).to_not be_nil
         end
       end
       context 'a public item' do
         it 'should proceed' do
-          get :show, params
+          get :show, params: params
           expect(response).to render_template(:show)
         end
       end
@@ -52,13 +52,13 @@ describe ItemsController, type: :controller do
     context 'when viewing' do
       context 'a private item' do
         it 'should proceed' do
-          get :show, params
+          get :show, params: params
           expect(response).to render_template(:show)
         end
       end
       context 'a public item' do
         it 'should proceed' do
-          get :show, params
+          get :show, params: params
           expect(response).to render_template(:show)
         end
       end
@@ -69,13 +69,13 @@ describe ItemsController, type: :controller do
         #expect the interaction but don't try to create anything
         # FIXME: JF commit 36d9b0efd1d964187f51f9f3e9038f765cad272d removed this, is it needed?
         # controller.should_receive(:save_item_catalog_file).and_return(nil)
-        post :create, {collection_id: collection.identifier, item: {collector_id: user.id, identifier: '321', title: 'title goes here', description: 'foo'}}
+        post :create, params: { collection_id: collection.identifier, item: {collector_id: user.id, identifier: '321', title: 'title goes here', description: 'foo'} }
         expect(response).to redirect_to(params.merge(id: '321', action: :show))
         expect(flash[:notice]).to_not be_nil
       end
       context 'that is invalid' do
         it 'should fail and show create page' do
-          post :create, {collection_id: collection.identifier, item: {title: 'title goes here'}}
+          post :create, params: { collection_id: collection.identifier, item: {title: 'title goes here'} }
           expect(response).to render_template(:new)
         end
       end
@@ -84,7 +84,7 @@ describe ItemsController, type: :controller do
     context 'when destroying an item' do
       context 'with a non-admin user' do
         it 'should fail and redirect with error' do
-          delete :destroy, params
+          delete :destroy, params: params
           expect(response).to redirect_to(root_path)
           expect(flash[:alert]).to_not be_nil
         end
@@ -99,7 +99,7 @@ describe ItemsController, type: :controller do
         end
         context 'with no essences' do
           it 'should proceed' do
-            delete :destroy, params
+            delete :destroy, params: params
             expect(response).to redirect_to(collection)
             expect(flash[:notice]).to eq('yay')
           end
@@ -107,7 +107,7 @@ describe ItemsController, type: :controller do
         context 'with essences' do
           context 'and flag set to true' do
             it 'should proceed' do
-              delete :destroy, params
+              delete :destroy, params: params
               expect(response).to redirect_to(collection)
               expect(flash[:notice]).to eq('yay')
             end
@@ -117,7 +117,7 @@ describe ItemsController, type: :controller do
               ItemDestructionService.stub(:destroy).and_return({success: false, messages: {error: 'boo'}})
             end
             it 'should fail and redirect with error' do
-              delete :destroy, params
+              delete :destroy, params: params
               expect(response).to redirect_to([collection, item])
               expect(flash[:error]).to eq('boo')
             end
@@ -134,7 +134,7 @@ describe ItemsController, type: :controller do
       end
       it 'should not override existing values by default' do
         pending 'INVESTIGATE 2016-04-21: Sometimes but not always failing on development machines'
-        patch :inherit_details, params
+        patch :inherit_details, params: params
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
@@ -143,7 +143,7 @@ describe ItemsController, type: :controller do
       end
 
       it 'should override values if flag is set to true' do
-        patch :inherit_details, params.merge(override_existing: true)
+        patch :inherit_details, params: params.merge(override_existing: true)
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).to_not be_nil
         result_item = Item.find(item.id)
@@ -165,7 +165,7 @@ describe ItemsController, type: :controller do
 
   context 'when viewing an item with essences' do
     it 'should track the essence files' do
-      get :show, params.merge(id: item_with_essences.identifier)
+      get :show, params: params.merge(id: item_with_essences.identifier)
       # FIXME: JF assigns might not work see 5.0 guide 7.5
       expect(assigns(:num_files)).to eq(1)
       expect(assigns(:files)).to eq([essence])
@@ -174,13 +174,13 @@ describe ItemsController, type: :controller do
   context 'when viewing an item as xml' do
     context 'with a specific type' do
       it 'should render the specific template' do
-        get :show, params.merge(format: :xml, xml_type: :id3)
+        get :show, params: params.merge(format: :xml, xml_type: :id3)
         expect(response).to render_template('items/show.id3')
       end
     end
     context 'with no type' do
       it 'should render the default template' do
-        get :show, params.merge(format: :xml)
+        get :show, params: params.merge(format: :xml)
         expect(response).to render_template('items/show')
       end
     end

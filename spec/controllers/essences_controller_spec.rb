@@ -19,7 +19,7 @@ describe EssencesController, type: :controller do
   context 'when not logged in' do
     context 'when viewing an essence' do
       it 'should redirect to the sign in page with error' do
-        get :show, params
+        get :show, params: params
         expect(response).to redirect_to(new_user_session_path)
         expect(flash[:alert]).to_not be_nil
       end
@@ -37,7 +37,7 @@ describe EssencesController, type: :controller do
         it 'should redirect to show terms page' do
           session.delete("terms_#{collection.id}")
 
-          get :show, params
+          get :show, params: params
           expect(response).to redirect_to(params.merge(action: :show_terms))
         end
       end
@@ -47,7 +47,7 @@ describe EssencesController, type: :controller do
           # test user has already agreed to terms
           session["terms_#{collection.id}"] = true
 
-          get :show, params
+          get :show, params: params
           expect(response.status).to eq(200)
           expect(response).to render_template(:show)
         end
@@ -61,7 +61,7 @@ describe EssencesController, type: :controller do
           # admin doesn't need to agree
           session["terms_#{collection.id}"] = false
 
-          get :show, params
+          get :show, params: params
           expect(response.status).to eq(200)
           expect(response).to render_template(:show)
           expect(flash[:error]).to be_nil
@@ -72,7 +72,7 @@ describe EssencesController, type: :controller do
         let(:access_condition) { nil }
 
         it 'should redirect to show item page with error' do
-          get :show, params
+          get :show, params: params
           expect(session).to_not have_key("terms_#{collection.id}")
           expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
           expect(flash[:error]).to eq 'Item does not have data access conditions set'
@@ -87,7 +87,7 @@ describe EssencesController, type: :controller do
       end
       context 'when agreeing to terms' do
         it 'should redirect to show essence page' do
-          get :agree_to_terms, params.merge(agree: 1)
+          get :agree_to_terms, params: params.merge(agree: 1)
           expect(session).to have_key("terms_#{collection.id}")
           expect(session["terms_#{collection.id}"]).to eq(true)
           expect(response).to redirect_to(params.merge(action: :show))
@@ -97,7 +97,7 @@ describe EssencesController, type: :controller do
 
       context 'when not agreeing to terms' do
         it 'should redirect to show item page with error' do
-          get :agree_to_terms, params
+          get :agree_to_terms, params: params
           expect(session).to_not have_key("terms_#{collection.id}")
           expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
           expect(flash[:error]).to_not be_nil

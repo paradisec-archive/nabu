@@ -4,5 +4,7 @@ require:
   - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.4
   NewCops: enable
+
+  TargetRubyVersion: 2.4
+  TargetRailsVersion: 5.0
