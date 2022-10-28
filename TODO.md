@@ -73,6 +73,7 @@
 * update deprecation 7.3 Halting Callback Chains via throw(:abort)
 * 7.11 ActionController::Parameters No Longer Inherits from HashWithIndifferentAccess
 * Do we need the paper_trail association tracking gem
+* sunspot_rails upgrade to latest redo the configs 
 
 
 # Other

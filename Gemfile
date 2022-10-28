@@ -83,7 +83,6 @@ gem 'nilify_blanks'
 
 # Search
 gem 'sunspot_rails'
-gem 'sunspot_solr'
 
 # Media Detection
 gem 'ruby-filemagic'
@@ -143,7 +142,6 @@ group :development do
   gem 'guard'
   gem 'guard-rails'
   gem 'guard-rspec'
-  gem 'guard-sunspot', :git => 'https://github.com/mackinleysmith/guard-sunspot.git'
 
   gem 'annotate'
   gem 'binding_of_caller'

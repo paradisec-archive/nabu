@@ -30,5 +30,16 @@ services:
       MYSQL_ROOT_PASSWORD: 
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 
+  solr:
+    image: solr:7.7.2
+    ports:
+      - '8983:8983'
+    volumes:
+      - ./solr:/opt/solr/server/solr
+      - solr-data:/opt/solr/server/solr/mycores
+    restart:
+      unless-stopped
+
 volumes:
   db-data:
+  solr-data:

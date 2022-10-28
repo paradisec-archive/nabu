@@ -86,8 +86,3 @@ guard :rspec, cmd: "bundle exec rspec" do
     Dir[File.join("**/#{m[1]}.feature")][0] || "spec/acceptance"
   end
 end
-
-guard :sunspot, :environment => 'test' do
-  watch('Gemfile.lock')
-  watch('config/sunspot.yml')
-end
