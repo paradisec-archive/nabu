@@ -73,7 +73,7 @@ class User < ApplicationRecord
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
 
   # find all users with multiple entries by name
-  scope :all_duplicates, -> { select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1') }
+  scope :all_duplicates, -> { distinct.select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1') }
 
   # find identifying info for single user with duplicates
   scope :duplicates_of, ->(first, last, user_ids = nil) {

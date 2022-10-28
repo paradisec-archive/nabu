@@ -8,8 +8,8 @@ module DeviseFeatureMacros
 end
 
 RSpec.configure do |config|
-  config.include Devise::Test::IntegrationHelpers, type: :controller
-  config.include Devise::Test::IntegrationHelpers, type: :view
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
 
   config.include DeviseFeatureMacros #, :type => :feature
 end

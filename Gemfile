@@ -123,6 +123,7 @@ group :development, :test do
   gem 'test-unit'
   gem 'turn', :require => false
   gem 'rspec-rails'
+  gem 'rails-controller-testing'
   gem 'thin'
 
   gem 'spring-commands-rspec'

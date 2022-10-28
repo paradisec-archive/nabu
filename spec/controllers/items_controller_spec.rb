@@ -91,7 +91,7 @@ describe ItemsController, type: :controller do
       end
       context 'with an admin user' do
         before do
-          ItemDestructionService.stub(:destroy).and_return({success: true, messages: {notice: 'yay'}})
+          allow(ItemDestructionService).to receive(:destroy).and_return({success: true, messages: {notice: 'yay'}})
 
           @request.env['devise.mapping'] = Devise.mappings[:user]
           # log in as test user
@@ -114,7 +114,7 @@ describe ItemsController, type: :controller do
           end
           context 'and flag set to false' do
             before do
-              ItemDestructionService.stub(:destroy).and_return({success: false, messages: {error: 'boo'}})
+              allow(ItemDestructionService).to receive(:destroy).and_return({success: false, messages: {error: 'boo'}})
             end
             it 'should fail and redirect with error' do
               delete :destroy, params: params

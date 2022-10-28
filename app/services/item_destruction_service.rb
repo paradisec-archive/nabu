@@ -3,7 +3,7 @@ class ItemDestructionService
     response = {success: true, messages: {}, can_undo: true}
 
     # remove essence records
-    deleted_essence_count = Essence.delete_all(item_id: item.id)
+    deleted_essence_count = Essence.where(item_id: item.id).delete_all
     item.essences = [] # force item to have no essences
 
     item.destroy
