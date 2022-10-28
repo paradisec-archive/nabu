@@ -147,7 +147,9 @@ group :development do
   gem 'binding_of_caller'
   gem 'better_errors'
   gem 'traceroute' # Helps find unused routes and controller actions
-  gem 'rubocop'
+  gem 'rubocop-rails', :require => false
+  gem 'rubocop-rake', :require => false
+  gem 'rubocop-rspec', :require => false
 end
 
 group :test do
