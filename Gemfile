@@ -140,8 +140,8 @@ end
 group :development do
   # Guard
   gem 'guard'
-  gem 'guard-rails'
-  gem 'guard-rspec'
+  gem 'guard-rails', :require => false
+  gem 'guard-rspec', :require => false
 
   gem 'annotate'
   gem 'binding_of_caller'
