@@ -1,7 +1,7 @@
 class PageController < ApplicationController
   def home
     @page_title = "Nabu - Home"
-    item_counts = Item.count(:group => :collection_id)
+    item_counts = Item.group(:collection_id).count
     @coordinates = Collection.where(:private => false).map{|c| c.center_coordinate(item_counts)}.compact
     @content = render_to_string :partial => 'page/infowindow'
   end

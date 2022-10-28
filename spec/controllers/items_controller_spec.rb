@@ -47,7 +47,7 @@ describe ItemsController, type: :controller do
     before do
       @request.env['devise.mapping'] = Devise.mappings[:user]
       # log in as test user
-      sign_in :user, user
+    sign_in(user, scope: :user)
     end
     context 'when viewing' do
       context 'a private item' do
@@ -95,7 +95,7 @@ describe ItemsController, type: :controller do
 
           @request.env['devise.mapping'] = Devise.mappings[:user]
           # log in as test user
-          sign_in :user, manager
+          sign_in(manager, scope: :user)
         end
         context 'with no essences' do
           it 'should proceed' do
@@ -130,7 +130,7 @@ describe ItemsController, type: :controller do
       before do
         @request.env['devise.mapping'] = Devise.mappings[:user]
         # log in as test user
-        sign_in :user, manager
+        sign_in(manager, scope: :user)
       end
       it 'should not override existing values by default' do
         pending 'INVESTIGATE 2016-04-21: Sometimes but not always failing on development machines'

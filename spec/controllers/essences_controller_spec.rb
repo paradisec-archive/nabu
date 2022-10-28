@@ -30,7 +30,7 @@ describe EssencesController, type: :controller do
     before do
       @request.env['devise.mapping'] = Devise.mappings[:user]
       # log in as test user
-      sign_in :user, user
+      sign_in(user, scope: :user)
     end
     context 'when viewing an essence' do
       context 'when not agreed to terms' do
@@ -55,7 +55,7 @@ describe EssencesController, type: :controller do
       context 'as an admin' do
         before do
           # log in as test user
-          sign_in :user, manager
+          sign_in(manager, scope: :user)
         end
         it 'should load the essence without agreeing to terms' do
           # admin doesn't need to agree

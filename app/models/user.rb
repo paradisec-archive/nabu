@@ -90,10 +90,11 @@ class User < ApplicationRecord
 
   # Set random password for contacts
   before_validation do
-    return unless self.contact_only?
-    password = Devise.friendly_token.first(12)
-    self.password = password
-    self.password_confirmation = password
+    if self.contact_only?
+      password = Devise.friendly_token.first(12)
+      self.password = password
+      self.password_confirmation = password
+    end
   end
 
   def self.sortable_columns
