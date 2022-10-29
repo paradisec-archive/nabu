@@ -22,7 +22,7 @@
   - if params[:per_page]
     = hidden_field_tag :per_page, params[:per_page]
 
-  .twoup-1
+  .twoup-1.column.span-12
     %fieldset
       %legend Collection details
 
@@ -112,7 +112,7 @@
             = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
 
 
-  .twoup-2
+  .twoup-2.column.span-12.last
     %fieldset
       %legend Map Search
       %table.form

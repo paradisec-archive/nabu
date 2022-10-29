@@ -2,7 +2,7 @@ body.bp {
   font-family: normal Verdana, Tahoma, sans-serif;
 
   a {
-    color: $grey;
+    color: #20538D;
     text-decoration: none;
   }
   a:hover, a:focus {
@@ -38,16 +38,20 @@ body.bp {
   }
 
   #header {
+    margin-right: 1.042%;
     padding-bottom: 10px;
     .name {
       font-size: 4em;
     }
+    display: inline;
     .auth {
       font-size: 16px;
       padding-top: 10px;
       .inner {
         float: right;
       }
+      display: inline;
+      margin-right:0 !important;
     }
   }
 
@@ -57,7 +61,30 @@ body.bp {
     width: 100%;
     background: #617798;
     #menu {
-      @include horizontal-list(0px);
+
+      margin: 0;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+
+
+      li {
+        list-style-image : none;
+        list-style-type  : none;
+        margin-left: 0;
+
+        white-space: nowrap;
+        display: inline;
+        float: left;
+        padding: {
+          left: 0px;
+          right: 0px;
+        }
+        &:first-child, &.first { padding-left: 0; }
+        &:last-child { padding-right: 0; }
+        &.last { padding-right: 0; }
+      }
+
       font-size: 18px;
       height: 36px;
       li {
@@ -69,7 +96,7 @@ body.bp {
           display: block;
           height: 34px;
           background: #617798;
-          border: solid 1px $grey;
+          border: solid 1px #20538D;
           color: white;
           padding: 0 80px 0 40px;
           &:hover, &:focus {
@@ -79,7 +106,7 @@ body.bp {
             box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
           }
           &.active {
-            background: $grey;
+            background: #20538D;
           }
         }
       }
@@ -364,7 +391,7 @@ body.bp {
     margin: 0;
     padding: 0 16px;
     background: #617798;
-    border: solid 1px $grey;
+    border: solid 1px #20538D;
     font-size: 14px;
     color: #FFFFFF;
     border-radius: 5px;

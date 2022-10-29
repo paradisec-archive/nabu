@@ -61,7 +61,6 @@ gem 'graphql'
 gem "graphiql-rails"
 
 # Views
-gem 'compass-rails'
 gem 'haml-rails'
 gem 'to-csv', :require => 'to_csv'
 gem 'kaminari'

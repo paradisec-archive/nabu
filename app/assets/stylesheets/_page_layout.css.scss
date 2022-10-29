@@ -1,32 +1,17 @@
 
 // Page layout can be done using mixins applied to your semantic classes and IDs:
 body.bp {
-  #container {
-    @include container;
-  }
-  #header, #nav, #footer, #flash, #admin-messages {
-    @include column($blueprint-grid-columns);
-  }
   #content {
-    @include column($blueprint-grid-columns);
     overflow: visible;
-  }
-
-  #header {
-    .logo { @include column(4); }
-    .name { @include column(12); }
-    .auth { @include column(8, last); }
   }
 }
 
 .twoup-1 {
-  @include column(12);
   // needs to be "visible" to avoid cutting off 'select2' dropdowns
   overflow: visible;
 }
 
 .twoup-2 {
-  @include column(12, last);
   overflow: visible;
 }
 

@@ -8,13 +8,6 @@ if [ "$?" != "0" ]; then
   exit 1
 fi
 
-bundle exec rake sunspot:solr:start
-
-if [ "$?" != "0" ]; then
-  echo 'Failed to start Solr!'
-  exit 1
-fi
-
 # clean up any stale pids
 rm /app/tmp/pids/server.pid &> /dev/null
 

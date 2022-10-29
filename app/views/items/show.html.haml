@@ -18,7 +18,7 @@
 
 .clear{:style => "padding-top: 7px"}
 
-.twoup-1
+.twoup-1.column.span-12
   %fieldset
     %legend Item details
     - if can? :manage, @item
@@ -144,7 +144,7 @@
         %th Cite as
         %td= @item.citation.html_safe
 
-.twoup-2
+.twoup-2.column.span-12.last
 
   %fieldset
     %legend{style: 'width: 100%;'}

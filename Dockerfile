@@ -48,4 +48,3 @@ VOLUME /app
 WORKDIR /app
 
 CMD ./entrypoint.sh
-

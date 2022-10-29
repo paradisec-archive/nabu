@@ -1,7 +1,7 @@
 
 %h1 Depositor Item Report Request
 
-.twoup-1
+.twoup-1.column.span-12
   - if flash[:send_result] > 0
     %p
       A report has been sent to
@@ -23,4 +23,4 @@
           = text_field_tag :date_to, params[:date_to], :class => 'dateinput short', :value => nil
           = submit_tag 'Send Report'
 
-.twoup-2
+.twoup-2.column.span-12.last

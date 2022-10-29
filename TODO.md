@@ -16,7 +16,6 @@
 # Upgrades
 
 ## 4.0.0
-* We will need to drop compass at some stage
 * Did dropping libv8 and rubyravr break anything
 * Check upgrade guides for
   * activeadmin 0.6.3 -> 1.0.0.pre5
@@ -67,7 +66,6 @@
 * paper_trail 7 to 10
 
 # 5.0
-* compas 0 -> 1
 * does puma replace unicorn?
 * Can we move paper_trail to ApplicationRecord?
 * update deprecation 7.3 Halting Callback Chains via throw(:abort)

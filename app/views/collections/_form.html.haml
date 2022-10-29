@@ -4,7 +4,7 @@
 
 .clear
 
-.twoup-1
+  .twoup-1.column.span-12
   %fieldset
     %legend Collection details
     .right
@@ -142,7 +142,7 @@
             = f.check_box :bulk_edit_append_access_narrative
 
 
-.twoup-2
+.twoup-2.column.span-12.last
   - if !@collection.new_record?
     = render :partial => 'items'
 
