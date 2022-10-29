@@ -13,5 +13,5 @@ common: &common
 development:
   <<: *common
 
-text:
+test:
   <<: *common

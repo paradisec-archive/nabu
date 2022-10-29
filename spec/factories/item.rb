@@ -4,7 +4,7 @@ FactoryBot.define do
     title { 'Title of item' }
     description { 'The awesome item' }
     region { 'East Africa' }
-    collector
+    collector { create(:user) }
     university
     operator
     north_limit { '24.625' }

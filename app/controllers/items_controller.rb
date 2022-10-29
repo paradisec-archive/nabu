@@ -172,7 +172,7 @@ class ItemsController < ApplicationController
   end
 
   def create
-    @item.assign_attributes(item_params[:item])
+    @item.assign_attributes(item_params)
 
     if @item.save
       flash[:notice] = 'Item was successfully created.'

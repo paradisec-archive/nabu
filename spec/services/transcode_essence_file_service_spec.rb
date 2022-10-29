@@ -119,7 +119,7 @@ describe TranscodeEssenceFileService do
       end
 
       it 'has a mimetype of video/webm' do
-        pending unless File.exist?('public/system/nabu-archive/LD1/v0435/LD1-v0435-A.mpg')
+        # pending unless File.exist?('public/system/nabu-archive/LD1/v0435/LD1-v0435-A.mpg')
         # Multiple expects in an `it` because it takes too long to run.
         expect(created_essence_object.filename).to eq('LD1-v0435-A.webm')
         expect(created_essence_object.mimetype).to eq('video/webm')
@@ -145,7 +145,7 @@ describe TranscodeEssenceFileService do
       end
 
       it 'has a mimetype of video/webm' do
-        pending unless File.exist?('public/system/nabu-archive/RD1/013/RD1-013-Blaro_11.mov')
+        # pending unless File.exist?('public/system/nabu-archive/RD1/013/RD1-013-Blaro_11.mov')
         # Multiple expects in an `it` because it takes too long to run.
         expect(created_essence_object.filename).to eq('RD1-013-Blaro_11.webm')
         expect(created_essence_object.mimetype).to eq('video/webm')
@@ -171,7 +171,7 @@ describe TranscodeEssenceFileService do
       end
 
       it 'has a mimetype of video/webm' do
-        pending unless File.exist?('public/system/nabu-archive/NT5/StringBand/NT5-StringBand-006.dv')
+        # pending unless File.exist?('public/system/nabu-archive/NT5/StringBand/NT5-StringBand-006.dv')
         # Multiple expects in an `it` because it takes too long to run.
         expect(created_essence_object.filename).to eq('NT5-StringBand-006.webm')
         expect(created_essence_object.mimetype).to eq('video/webm')

@@ -27,7 +27,7 @@
               %table
                 - @search.facet(:language_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
                   - language = row.instance
-                  - params_with_facet = params.merge(:language_code => language.code)
+                  - params_with_facet = params.permit!.merge(:language_code => language.code)
                   %tr
                     %td
                       = link_to language.name, params_with_facet
@@ -39,7 +39,7 @@
               %table
                 - @search.facet(:country_ids).rows.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
                   - country = row.instance
-                  - params_with_facet = params.merge(:country_code => country.code)
+                  - params_with_facet = params.permit!.merge(:country_code => country.code)
                   %tr
                     %td
                       = link_to country.name, params_with_facet
@@ -51,7 +51,7 @@
               %table
                 - @search.facet(:collector_id).rows.sort {|a,b| a.instance.sortname <=> b.instance.sortname }.each do |row|
                   - collector = row.instance
-                  - params_with_facet = params.merge(:collector_id => collector.id)
+                  - params_with_facet = params.permit!.merge(:collector_id => collector.id)
                   %tr
                     %td
                       = link_to collector.name, params_with_facet

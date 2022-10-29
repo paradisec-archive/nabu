@@ -348,6 +348,10 @@ module Nabu
     def parse
       # Can't parse anything
     end
+
+    def valid?
+      false
+    end
   end
 
   class Version1NabuSpreadsheet < NabuSpreadsheet

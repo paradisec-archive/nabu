@@ -72,6 +72,7 @@
 * 7.11 ActionController::Parameters No Longer Inherits from HashWithIndifferentAccess
 * Do we need the paper_trail association tracking gem
 * sunspot_rails upgrade to latest redo the configs 
+* permit! used for search is bad
 
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue

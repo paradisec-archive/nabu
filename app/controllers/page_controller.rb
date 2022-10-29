@@ -30,7 +30,7 @@ class PageController < ApplicationController
     @comments_left = Item.where(:collector_id => current_user).map(&:comments).flatten
     @num_comments_left = @comments_left.count
 
-    item_counts = Item.count(:group => :collection_id)
+    item_counts = Item.group(:collection_id).count
     @coordinates = @collections.map{|c| c.center_coordinate(item_counts)}.compact
     @north_limit = @coordinates.map{|c| c[:lat]}.max
     @south_limit = @coordinates.map{|c| c[:lat]}.min
