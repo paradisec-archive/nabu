@@ -13,7 +13,9 @@
 !/log/.keep
 !/tmp/.keep
 
-# Ignore Byebug command history file.
+/node_modules
+/yarn-error.log
+
 .byebug_history
 
 ##################
@@ -36,3 +38,4 @@ rerun.txt
 db/legacy/
 public/system/
 vendor/bundle
+config/config.yml

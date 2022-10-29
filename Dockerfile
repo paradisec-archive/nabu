@@ -2,9 +2,9 @@
 # Rails container for Nabu application
 # - uses volumes for bundler and gem cache
 # - uses entrypoint script to handle bundling and starting Solr
-# =============================================================== 
+# ===============================================================
 
-FROM ruby:2.4
+FROM ruby:2.5
 
 ENV BUNDLE_PATH /bundler
 ENV BUNDLE_HOME /gems

@@ -8,7 +8,7 @@ common: &common
   datacite_base_url:
   datacite_user:
   datacite_pass:
-  google_maps_url:
+  google_maps_url: https://maps.googleapis.com/maps/api/js?key=API_KEY
 
 development:
   <<: *common

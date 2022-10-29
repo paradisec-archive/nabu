@@ -74,6 +74,9 @@
 * sunspot_rails upgrade to latest redo the configs 
 * permit! used for search is bad
 
+# 5.1
+Do we need to drop jquery?
+
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Move capctha secrets our of git
