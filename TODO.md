@@ -76,6 +76,11 @@
 # 5.1
 Do we need to drop jquery?
 
+# 5.2
+* formtastic 3 -> 4
+* paper_tril  10 -> 12
+
+
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Move capctha secrets our of git
