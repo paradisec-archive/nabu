@@ -45,7 +45,7 @@ class User < ApplicationRecord
          :confirmable, :lockable
 
   # Optionally a user has transferred their rights to another one, e.g. then deceased.
-  belongs_to :rights_transferred_to, :class_name => 'User'
+  belongs_to :rights_transferred_to, :class_name => 'User', :optional => true
 
   validates :first_name, :presence => true
   validates :email, :presence => true, :unless => proc { |user| user.contact_only? }

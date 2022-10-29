@@ -12,4 +12,7 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :view
 
   config.include DeviseFeatureMacros #, :type => :feature
+
+  include Warden::Test::Helpers
+  Warden.test_mode!
 end

@@ -6,3 +6,7 @@ Capybara.register_driver :apparition do |app|
 end
 
 Capybara.javascript_driver = :apparition
+
+RSpec.configure do |config|
+  config.include Capybara::DSL
+end
