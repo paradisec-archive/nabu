@@ -11,6 +11,10 @@
 ## Post Rollout
 * Check all dates in collections that should have a value have one
 
+# Security
+* the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
+* Move capctha secrets our of git
+& Had to add lots of optional => true, are they really or should we fix the tests?
 
 
 # Upgrades
@@ -79,10 +83,8 @@ Do we need to drop jquery?
 # 5.2
 * formtastic 3 -> 4
 * paper_tril  10 -> 12
+* rubucop-grqapl
+* credential.yml.enc and master.key and delete secrets.yml??
 
 
-# Security
-* the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
-* Move capctha secrets our of git
-& Had to add lots of optional => true, are they really or should we fix the tests?
 

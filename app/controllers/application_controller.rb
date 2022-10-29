@@ -1,6 +1,4 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery with: :exception
-
   before_action :make_action_mailer_use_request_host
   before_action :set_timezone
   before_action :set_access_headers

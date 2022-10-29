@@ -18,6 +18,7 @@
     = javascript_include_tag APP_CONFIG[:google_maps_url]
 
     = csrf_meta_tags
+    = csp_meta_tag
     - analytical.identify(current_user.id, :email => current_user.email) if current_user
     = raw analytical.head_append_javascript
 

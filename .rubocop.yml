@@ -6,5 +6,8 @@ require:
 AllCops:
   NewCops: enable
 
-  TargetRubyVersion: 2.4
-  TargetRailsVersion: 5.0
+  TargetRubyVersion: 2.5
+  TargetRailsVersion: 5.2
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

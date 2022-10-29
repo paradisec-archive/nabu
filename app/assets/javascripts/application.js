@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require rails-ujs
+//= require activestorage
 //= require turbolinks
 // TODO: Should we use this => =require_tree .
 //
