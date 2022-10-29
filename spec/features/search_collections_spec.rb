@@ -1,4 +1,5 @@
-require 'spec_helper'
+require 'rails_helper'
+
 describe 'Collection Search', search: true do
   let!(:country1) {create(:country)}
   let!(:country2) {create(:country)}

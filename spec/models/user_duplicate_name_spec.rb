@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe User do
   let!(:duplicate_user) {create(:user, first_name: 'Joe', last_name: 'Bloggs')}

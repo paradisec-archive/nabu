@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 # This test suite generates some random strings as output, as a result of the `before_validation` block of `User`.
 # It may be possible to eliminate it, but there's the risk of something going wrong as a result.

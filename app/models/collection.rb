@@ -38,10 +38,10 @@ class Collection < ApplicationRecord
   nilify_blanks
 
   belongs_to :collector, :class_name => "User"
-  belongs_to :operator, :class_name => "User"
-  belongs_to :university
-  belongs_to :field_of_research
-  belongs_to :access_condition
+  belongs_to :operator, :class_name => "User", :optional => true
+  belongs_to :university, :optional => true
+  belongs_to :field_of_research, :optional => true
+  belongs_to :access_condition, :optional => true
 
   has_many :grants
   accepts_nested_attributes_for :grants, allow_destroy: true

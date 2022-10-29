@@ -41,7 +41,7 @@
 #  doi                     :string(255)
 #
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe Item do
   let(:item) { build(:item, doi: doi) }

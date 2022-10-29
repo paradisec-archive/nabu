@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe ItemsController, type: :controller do
   let(:user) {create(:user)}
@@ -65,14 +65,6 @@ describe ItemsController, type: :controller do
     end
 
     context 'when creating an item' do
-      it 'should attempt to create the archive directory' do
-        #expect the interaction but don't try to create anything
-        # FIXME: JF commit 36d9b0efd1d964187f51f9f3e9038f765cad272d removed this, is it needed?
-        # controller.should_receive(:save_item_catalog_file).and_return(nil)
-        post :create, params: { collection_id: collection.identifier, item: {collector_id: user.id, identifier: '321', title: 'title goes here', description: 'foo'} }
-        expect(response).to redirect_to(params.merge(id: '321', action: :show))
-        expect(flash[:notice]).to_not be_nil
-      end
       context 'that is invalid' do
         it 'should fail and show create page' do
           post :create, params: { collection_id: collection.identifier, item: {title: 'title goes here'} }

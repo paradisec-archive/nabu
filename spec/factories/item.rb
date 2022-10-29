@@ -6,7 +6,7 @@ FactoryBot.define do
     region { 'East Africa' }
     collector { create(:user) }
     university
-    operator
+    operator { create(:operator) }
     north_limit { '24.625' }
     south_limit { '23.99' }
     west_limit { '121.122' }

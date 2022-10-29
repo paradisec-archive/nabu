@@ -18,7 +18,7 @@
 #  derived_files_generated :boolean
 #
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe Essence do
   let(:essence) { create(:sound_essence, doi: doi) }

@@ -51,10 +51,10 @@ class Item < ApplicationRecord
 
   belongs_to :collection
   belongs_to :collector, :class_name => 'User'
-  belongs_to :operator, :class_name => 'User'
-  belongs_to :university
-  belongs_to :access_condition
-  belongs_to :discourse_type
+  belongs_to :operator, :class_name => 'User', :optional => true
+  belongs_to :university, :optional => true
+  belongs_to :access_condition, :optional => true
+  belongs_to :discourse_type, :optional => true
 
   has_many :item_countries, :dependent => :destroy
   has_many :countries, :through => :item_countries, :validate => true

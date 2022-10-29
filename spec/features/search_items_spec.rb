@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Item Search', search: true do
   describe 'Solr searching of items' do
