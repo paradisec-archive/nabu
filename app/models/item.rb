@@ -86,7 +86,7 @@ class Item < ApplicationRecord
   # require presence of these three fields.
   validates :identifier,
             :presence => true,
-            :uniqueness => {:scope => %i[collection_id identifier]},
+            :uniqueness => {:case_sensitive => false, :scope => %i[collection_id identifier]},
             :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
   validates_length_of :identifier, :within => 2..30
   validates :title, :presence => true

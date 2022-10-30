@@ -100,7 +100,7 @@ describe Nabu::NabuSpreadsheet do
       end
 
       it 'is parsed by Version1NabuSpreadsheet' do
-        expect(nabu_spreadsheet).to be_a(Nabu::Version1NabuSpreadsheet)
+        expect(nabu_spreadsheet).to be_a(Nabu::NabuSpreadsheet::Version1NabuSpreadsheet)
       end
     end
 
@@ -123,7 +123,7 @@ describe Nabu::NabuSpreadsheet do
       end
 
       it 'is parsed by Version2NabuSpreadsheet' do
-        expect(nabu_spreadsheet).to be_a(Nabu::Version2NabuSpreadsheet)
+        expect(nabu_spreadsheet).to be_a(Nabu::NabuSpreadsheet::Version2NabuSpreadsheet)
       end
     end
 
@@ -146,7 +146,7 @@ describe Nabu::NabuSpreadsheet do
       end
 
       it 'is parsed by Version3NabuSpreadsheet' do
-        expect(nabu_spreadsheet).to be_a(Nabu::Version3NabuSpreadsheet)
+        expect(nabu_spreadsheet).to be_a(Nabu::NabuSpreadsheet::Version3NabuSpreadsheet)
       end
     end
   end

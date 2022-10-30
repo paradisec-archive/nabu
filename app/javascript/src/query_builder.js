@@ -1,4 +1,3 @@
-
 var logicSelect = '<select name="clause[0][logic]"><option value="AND">AND</option><option value="OR">OR</option><option value="NOT">NOT</option></select>';
 $(document).ready(function() {
     $('button.add:not(:last)').remove();

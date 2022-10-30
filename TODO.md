@@ -92,4 +92,8 @@ Do we need to drop jquery?
 * Can we get rid of all the monkeypatches?
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
-
+* All the JS will br broken as we moved to webpack
+* active admin css do we need any of the includes?
+* ditch jquery??
+MOOOOOOO bring back asctive_admin stylesheet
+Need to get rid of apparition - using git version to make it work

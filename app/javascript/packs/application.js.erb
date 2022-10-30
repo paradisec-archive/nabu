@@ -1,0 +1,38 @@
+// This file is automatically compiled by Webpack, along with any other files
+// present in this directory. You're encouraged to place your actual application logic in
+// a relevant structure within app/javascript and only use these pack files to reference
+// that code so it'll be compiled.
+
+require("@rails/ujs").start()
+require("turbolinks").start()
+require("@rails/activestorage").start()
+require("channels")
+
+// Uncomment to copy all static images under ../images to the output folder and reference
+// them with the image_pack_tag helper in views
+// or the `imagePath` JavaScript helper below.
+//
+// const images = require.context('../images', true)
+// const imagePath = (name) => images(name, true)
+
+// Vendor Stuff
+console.debug('MOO', jQuery);
+jQuery = require('jquery');
+window.jQuery = require('jquery');
+console.debug('Cow', jQuery);
+require('../../../vendor/assets/javascripts/jquery-query');
+require('../../../vendor/assets/javascripts/select2');
+require('../../../vendor/assets/javascripts/markerclusterer');
+
+<% helpers = ActionController::Base.helpers %>
+const calendarImagePath = "<%= helpers.asset_path('calendar.png') %>"
+
+require('../src/select2_setup');
+require('../src/datepicker');
+require('../src/maps');
+require('../src/sortable');
+require('../src/remove_empty_fields');
+require('../src/add_university');
+require('../src/copy_language');
+require('../src/items_and_collections');
+require('../src/dynamic_grant_identifiers');

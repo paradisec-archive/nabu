@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/twalpole/apparition.git
+  revision: ca86be4d54af835d531dbcd2b86e7b2c77f85f34
+  specs:
+    apparition (0.6.0)
+      capybara (~> 3.13, < 4)
+      websocket-driver (>= 0.6.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -78,9 +86,6 @@ GEM
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
     ansi (1.5.0)
-    apparition (0.6.0)
-      capybara (~> 3.13, < 4)
-      websocket-driver (>= 0.6.5)
     arbre (1.5.0)
       activesupport (>= 3.0.0, < 7.1)
       ruby2_keywords (>= 0.0.2, < 1.0)
@@ -512,7 +517,7 @@ DEPENDENCIES
   activerecord-session_store
   analytical
   annotate
-  apparition
+  apparition!
   better_errors
   binding_of_caller
   bootsnap (>= 1.4.2)
@@ -589,4 +594,4 @@ RUBY VERSION
    ruby 2.6.10p210
 
 BUNDLED WITH
-   1.17.3
+   1.17.2

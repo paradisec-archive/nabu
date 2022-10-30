@@ -63,7 +63,7 @@ class Collection < ApplicationRecord
   has_many :admins, :through => :collection_admins, :validate => true, :source => :user
 
   # require presence of these three fields
-  validates :identifier, :presence => true, :uniqueness => true,
+  validates :identifier, :presence => true, :uniqueness => { case_sensitive: false },
             :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
   validates :title, :presence => true
   validates :collector_id, :presence => true

@@ -13,25 +13,25 @@
  * TODO: Should we be using *= require_tree .
  *= require jquery-ui/jquery-ui-1.8.16.redmond.css
  *= require select2
+ *
+ *= require blueprint/screen
+ *= require blueprint/plugins/liquid
+ *= require blueprint/plugins/fancy-type/screen
+
+ *= require _page_layout
+ *= require _layout_style
+ *
  *= require_self
 */
 
 @charset "UTF-8";
 /*!  Force output of above line by adding a unicode character: ♫ */
 
-@import 'bootstrap-sprockets';
-@import 'bootstrap/variables';
-@import 'bootstrap/mixins';
-@import 'bootstrap/type';
-@import 'bootstrap/glyphicons';
+/* FIXME: we moeved to webpack */
+/* @import 'bootstrap-sprockets'; */
+/* @import 'bootstrap/variables'; */
+/* @import 'bootstrap/mixins'; */
+/* @import 'bootstrap/type'; */
+/* @import 'bootstrap/glyphicons'; */
 
-// Import all the default blueprint modules so that we can access their mixins.
-@import 'blueprint/screen';
 
-// We want a full size liquid grid
-@import 'blueprint/plugins/liquid';
-@import 'blueprint/plugins/fancy-type/screen';
-
-@import 'page_layout';
-
-@import 'layout_style';

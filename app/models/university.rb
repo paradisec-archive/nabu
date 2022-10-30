@@ -12,7 +12,7 @@
 class University < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true, :uniqueness => true
+  validates :name, :presence => true, :uniqueness => { case_sensitive: false }
 
   has_many :collections, :dependent => :restrict_with_exception
   has_many :items, :dependent => :restrict_with_exception

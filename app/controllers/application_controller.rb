@@ -1,15 +1,10 @@
 class ApplicationController < ActionController::Base
-  before_action :make_action_mailer_use_request_host
   before_action :set_timezone
   before_action :set_access_headers
 
   analytical :modules => [:google]
 
   private
-  def make_action_mailer_use_request_host
-    ActionMailer::Base.default_url_options[:host] = request.host_with_port
-  end
-
   rescue_from CanCan::AccessDenied do |exception|
     # If it's a JSON request, give a 40x rather than redirecting them
     case

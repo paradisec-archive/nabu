@@ -154,7 +154,7 @@ group :development do
 end
 
 group :test do
-  gem 'apparition'
+  gem 'apparition', github: 'twalpole/apparition'
   gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'email_spec'
