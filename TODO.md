@@ -88,4 +88,9 @@ Do we need to drop jquery?
 
 # 6.0
 * Should we be using image_processing?
+* paper_trail 12 -> 13
+* javascripts directory moved??
+* Can we get rid of all the monkeypatches?
+* There dont' seem to be any graphql tests???
+* grpahql schema do we want all the nulls that were included in the upgrade
 

@@ -1,4 +1,4 @@
-require 'nabu/exsite9'
+require 'nabu/ex_site9'
 require 'nabu/nabu_spreadsheet'
 
 class CollectionsController < ApplicationController

@@ -40,6 +40,7 @@ RUN apt-get install -y \
   npm
 
 RUN gem install bundler
+RUN npm install --global yarn
 
 # Chrome for headless testing
 RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb

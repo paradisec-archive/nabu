@@ -1,8 +1,7 @@
-Types::FieldOfResearchType = GraphQL::ObjectType.define do
-  name 'FieldOfResearch'
+class Types::FieldOfResearchType < Types::BaseObject
 
-  field :id, !types.ID
-  field :identifier, !types.String
-  field :name, !types.String
-  field :collections, types[Types::CollectionType]
+  field :id, ID, null: false
+  field :identifier, String, null: false
+  field :name, String, null: false
+  field :collections, [Types::CollectionType, null: true], null: true
 end

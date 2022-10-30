@@ -20,7 +20,6 @@ module Nabu
     end
 
     def valid?
-puts collection.inspect
       @errors.empty? && @collection.valid?
     end
 

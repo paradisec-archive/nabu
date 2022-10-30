@@ -1,15 +1,14 @@
-Types::LanguageType = GraphQL::ObjectType.define do
-  name 'Language'
+class Types::LanguageType < Types::BaseObject
 
-  field :id, !types.ID
-  field :code, !types.String
-  field :name, !types.String
-  field :retired, types.Boolean
-  field :archive_link, types.String, property: :language_archive_link
-  field :countries, types[Types::CountryType]
-  field :items_for_content, types[Types::ItemType]
-  field :items_for_language, types[Types::ItemType]
+  field :id, ID, null: false
+  field :code, String, null: false
+  field :name, String, null: false
+  field :retired, Boolean, null: true
+  field :archive_link, String, method: :language_archive_link, null: true
+  field :countries, [Types::CountryType, null: true], null: true
+  field :items_for_content, [Types::ItemType, null: true], null: true
+  field :items_for_language, [Types::ItemType, null: true], null: true
 
   # TODO: this should be loaded through Item relationships instead
-  field :collection, types[Types::CollectionType]
+  field :collection, [Types::CollectionType, null: true], null: true
 end

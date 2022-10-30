@@ -1,19 +1,18 @@
-Types::EssenceType = GraphQL::ObjectType.define do
-  name 'Essence'
+class Types::EssenceType < Types::BaseObject
 
-  field :id, !types.ID
-  field :item, Types::ItemType
-  field :collection, Types::CollectionType
-  field :filename, types.String
-  field :mimetype, types.String
-  field :bitrate, types.Int
-  field :samplerate, types.Int
-  field :size, types.Int
-  field :duration, types.Float
-  field :channels, types.Int
-  field :fps, types.Int
-  field :doi, types.String
-  field :doi_xml, types.String, property: :to_doi_xml
-  field :citation, types.String
-  field :permalink, !types.String, property: :full_path
+  field :id, ID, null: false
+  field :item, Types::ItemType, null: true
+  field :collection, Types::CollectionType, null: true
+  field :filename, String, null: true
+  field :mimetype, String, null: true
+  field :bitrate, Integer, null: true
+  field :samplerate, Integer, null: true
+  field :size, Integer, null: true
+  field :duration, Float, null: true
+  field :channels, Integer, null: true
+  field :fps, Integer, null: true
+  field :doi, String, null: true
+  field :doi_xml, String, method: :to_doi_xml, null: true
+  field :citation, String, null: true
+  field :permalink, String, method: :full_path, null: false
 end

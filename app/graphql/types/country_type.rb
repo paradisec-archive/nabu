@@ -1,9 +1,8 @@
-Types::CountryType = GraphQL::ObjectType.define do
-  name 'Country'
+class Types::CountryType < Types::BaseObject
 
-  field :id, !types.ID
-  field :code, !types.String
-  field :name, !types.String
-  field :languages, types[Types::LanguageType]
-  field :boundaries, types[Types::BoundaryType], property: :latlon_boundary
+  field :id, ID, null: false
+  field :code, String, null: false
+  field :name, String, null: false
+  field :languages, [Types::LanguageType, null: true], null: true
+  field :boundaries, [Types::BoundaryType, null: true], method: :latlon_boundary, null: true
 end

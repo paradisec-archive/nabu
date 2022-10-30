@@ -1,10 +1,9 @@
-Types::UniversityType = GraphQL::ObjectType.define do
-  name 'University'
+class Types::UniversityType < Types::BaseObject
 
-  field :id, !types.ID
-  field :name, !types.String
-  field :party_identifier, types.String
+  field :id, ID, null: false
+  field :name, String, null: false
+  field :party_identifier, String, null: true
 
-  field :items, types[Types::ItemType]
-  field :collections, types[Types::CollectionType]
+  field :items, [Types::ItemType, null: true], null: true
+  field :collections, [Types::CollectionType, null: true], null: true
 end

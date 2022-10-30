@@ -1,7 +1,6 @@
-Types::DiscourseTypeType = GraphQL::ObjectType.define do
-  name 'DiscourseType'
+class Types::DiscourseTypeType < Types::BaseObject
 
-  field :id, !types.ID
-  field :name, !types.String
-  field :itesm, types[Types::ItemType]
+  field :id, ID, null: false
+  field :name, String, null: false
+  field :itesm, [Types::ItemType, null: true], null: true
 end

@@ -17,8 +17,11 @@
 /storage/*
 !/storage/.keep
 
+/public/packs
+/public/packs-test
 /node_modules
 /yarn-error.log
+.yarn-integrity
 
 /public/assets
 .byebug_history

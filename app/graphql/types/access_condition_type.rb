@@ -1,7 +1,6 @@
-Types::AccessConditionType = GraphQL::ObjectType.define do
-  name 'AccessCondition'
+class Types::AccessConditionType < Types::BaseObject
 
-  field :name, types.String
-  field :items, types[Types::ItemType]
-  field :collections, types[Types::CollectionType]
+  field :name, String, null: true
+  field :items, [Types::ItemType, null: true], null: true
+  field :collections, [Types::CollectionType, null: true], null: true
 end

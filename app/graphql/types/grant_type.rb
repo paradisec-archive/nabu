@@ -1,8 +1,7 @@
-Types::GrantType = GraphQL::ObjectType.define do
-  name 'Grant'
+class Types::GrantType < Types::BaseObject
 
-  field :id, !types.ID
-  field :identifier, types.String, property: :grant_identifier
-  field :funding_body, Types::FundingBodyType
-  field :colleciton, Types::CollectionType
+  field :id, ID, null: false
+  field :identifier, String, method: :grant_identifier, null: true
+  field :funding_body, Types::FundingBodyType, null: true
+  field :colleciton, Types::CollectionType, null: true
 end

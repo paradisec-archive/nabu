@@ -1,6 +1,5 @@
-Types::DataCategoryType = GraphQL::ObjectType.define do
-  name 'DataCategory'
-  field :id, !types.ID
-  field :name, !types.String
-  field :items, types[Types::ItemType]
+class Types::DataCategoryType < Types::BaseObject
+  field :id, ID, null: false
+  field :name, String, null: false
+  field :items, [Types::ItemType, null: true], null: true
 end

@@ -1,8 +1,7 @@
-Types::BoundaryType = GraphQL::ObjectType.define do
-  name 'Boundary'
+class Types::BoundaryType < Types::BaseObject
 
-  field :north_limit, !types.Float
-  field :south_limit, !types.Float
-  field :west_limit, !types.Float
-  field :east_limit, !types.Float
+  field :north_limit, Float, null: false
+  field :south_limit, Float, null: false
+  field :west_limit, Float, null: false
+  field :east_limit, Float, null: false
 end

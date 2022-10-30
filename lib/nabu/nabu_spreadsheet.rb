@@ -335,123 +335,123 @@ module Nabu
         (discourse_type_column + base_range.begin)..(discourse_type_column + base_range.end)
       end
     end
-  end
 
-  class NullNabuSpreadsheet < NabuSpreadsheet
-    def initialize(book = nil)
-      @notices = []
-      @errors = ['ERROR File is neither XLS nor XLSX']
-      @items = []
-      super
-    end
-
-    def parse
-      # Can't parse anything
-    end
-
-    def valid?
-      false
-    end
-  end
-
-  class Version1NabuSpreadsheet < NabuSpreadsheet
-    def parse_coll_id
-      @book.row(4)[1].to_s
-    end
-
-    def parse_collection_title
-      @book.row(5)[1]
-    end
-
-    def parse_collection_description
-      @book.row(6)[1]
-    end
-
-    def parse_user_names
-      name = @book.row(7)[1]
-      unless name
-        @errors << "Got no name for collector"
-        return nil
+    class NullNabuSpreadsheet < NabuSpreadsheet
+      def initialize(book = nil)
+        @notices = []
+        @errors = ['ERROR File is neither XLS nor XLSX']
+        @items = []
+        # super
       end
 
-      first_name, last_name = name.split(',').map(&:strip)
-
-      last_name = nil if last_name == ''
-      [first_name, last_name]
-    end
-
-    def item_start_row
-      13
-    end
-  end
-
-  class Version2NabuSpreadsheet < NabuSpreadsheet
-    def parse_coll_id
-      @book.row(6)[1].to_s
-    end
-
-    def parse_collection_title
-      @book.row(7)[1]
-    end
-
-    def parse_collection_description
-      @book.row(8)[1]
-    end
-
-    def parse_user_names
-      first_name = @book.row(9)[1]
-      last_name = @book.row(10)[1]
-
-      unless first_name
-        @errors << "Got no name for collector"
-        return nil
+      def parse
+        # Can't parse anything
       end
 
-      last_name = nil if last_name == ''
-      [first_name, last_name]
+      def valid?
+        false
+      end
     end
 
-    def item_start_row
-      16
-    end
-  end
-
-  class Version3NabuSpreadsheet < NabuSpreadsheet
-    def parse_coll_id
-      @book.row(6)[1].to_s
-    end
-
-    def parse_collection_title
-      @book.row(7)[1]
-    end
-
-    def parse_collection_description
-      @book.row(8)[1]
-    end
-
-    def parse_user_names
-      first_name = @book.row(9)[1]
-      last_name = @book.row(10)[1]
-
-      unless first_name
-        @errors << "Got no name for collector"
-        return nil
+    class Version1NabuSpreadsheet < NabuSpreadsheet
+      def parse_coll_id
+        @book.row(4)[1].to_s
       end
 
-      last_name = nil if last_name == ''
-      [first_name, last_name]
+      def parse_collection_title
+        @book.row(5)[1]
+      end
+
+      def parse_collection_description
+        @book.row(6)[1]
+      end
+
+      def parse_user_names
+        name = @book.row(7)[1]
+        unless name
+          @errors << "Got no name for collector"
+          return nil
+        end
+
+        first_name, last_name = name.split(',').map(&:strip)
+
+        last_name = nil if last_name == ''
+        [first_name, last_name]
+      end
+
+      def item_start_row
+        13
+      end
     end
 
-    def item_start_row
-      16
+    class Version2NabuSpreadsheet < NabuSpreadsheet
+      def parse_coll_id
+        @book.row(6)[1].to_s
+      end
+
+      def parse_collection_title
+        @book.row(7)[1]
+      end
+
+      def parse_collection_description
+        @book.row(8)[1]
+      end
+
+      def parse_user_names
+        first_name = @book.row(9)[1]
+        last_name = @book.row(10)[1]
+
+        unless first_name
+          @errors << "Got no name for collector"
+          return nil
+        end
+
+        last_name = nil if last_name == ''
+        [first_name, last_name]
+      end
+
+      def item_start_row
+        16
+      end
     end
 
-    def data_types_column
-      10
-    end
+    class Version3NabuSpreadsheet < NabuSpreadsheet
+      def parse_coll_id
+        @book.row(6)[1].to_s
+      end
 
-    def discourse_type_column
-      11
+      def parse_collection_title
+        @book.row(7)[1]
+      end
+
+      def parse_collection_description
+        @book.row(8)[1]
+      end
+
+      def parse_user_names
+        first_name = @book.row(9)[1]
+        last_name = @book.row(10)[1]
+
+        unless first_name
+          @errors << "Got no name for collector"
+          return nil
+        end
+
+        last_name = nil if last_name == ''
+        [first_name, last_name]
+      end
+
+      def item_start_row
+        16
+      end
+
+      def data_types_column
+        10
+      end
+
+      def discourse_type_column
+        11
+      end
     end
   end
 end

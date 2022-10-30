@@ -1,7 +1,6 @@
-Types::ItemResultType = GraphQL::ObjectType.define do
-  name 'ItemResult'
+class Types::ItemResultType < Types::BaseObject
 
-  field :total, !types.Int
-  field :next_page, types.Int
-  field :results, !types[Types::ItemType]
+  field :total, Integer, null: false
+  field :next_page, Integer, null: true
+  field :results, [Types::ItemType, null: true], null: false
 end

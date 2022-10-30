@@ -1,10 +1,9 @@
-Types::PersonType = GraphQL::ObjectType.define do
-  name 'Person'
+class Types::PersonType < Types::BaseObject
 
-  field :id, !types.ID
-  field :first_name, types.String
-  field :last_name, types.String
-  field :name, types.String
-  field :country, types.String
-  field :collected_items, Types::ItemType, property: :owned_items
+  field :id, ID, null: false
+  field :first_name, String, null: true
+  field :last_name, String, null: true
+  field :name, String, null: true
+  field :country, String, null: true
+  field :collected_items, Types::ItemType, method: :owned_items, null: true
 end

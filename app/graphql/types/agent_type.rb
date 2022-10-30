@@ -1,7 +1,6 @@
-Types::AgentType = GraphQL::ObjectType.define do
-  name 'Agent'
+class Types::AgentType < Types::BaseObject
 
-  field :role_name, types.String
-  field :user_name, types.String
-  field :user, Types::PersonType
+  field :role_name, String, null: true
+  field :user_name, String, null: true
+  field :user, Types::PersonType, null: true
 end

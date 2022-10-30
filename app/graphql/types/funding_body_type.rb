@@ -1,9 +1,8 @@
-Types::FundingBodyType = GraphQL::ObjectType.define do
-  name 'FundingBody'
+class Types::FundingBodyType < Types::BaseObject
 
-  field :id, !types.ID
-  field :name, !types.String
-  field :key_prefix, types.String
-  field :grants, types[Types::GrantType]
-  field :funded_collections, types[Types::CollectionType], property: :collections
+  field :id, ID, null: false
+  field :name, String, null: false
+  field :key_prefix, String, null: true
+  field :grants, [Types::GrantType, null: true], null: true
+  field :funded_collections, [Types::CollectionType, null: true], method: :collections, null: true
 end

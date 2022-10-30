@@ -1,42 +1,41 @@
-Types::CollectionType = GraphQL::ObjectType.define do
-  name 'Collection'
+class Types::CollectionType < Types::BaseObject
 
-  field :id, !types.ID
-  field :identifier, !types.String
-  field :title, !types.String
-  field :description, types.String
-  field :collector, Types::PersonType
-  field :operator, Types::PersonType
-  field :university, Types::UniversityType
-  field :field_of_research, Types::FieldOfResearchType
-  field :grants, types[Types::GrantType]
-  field :subject_languages, types[Types::LanguageType] do
-    resolve -> (obj, args, ctx) {
-      obj.subject_languages.uniq
-    }
+  field :id, ID, null: false
+  field :identifier, String, null: false
+  field :title, String, null: false
+  field :description, String, null: true
+  field :collector, Types::PersonType, null: true
+  field :operator, Types::PersonType, null: true
+  field :university, Types::UniversityType, null: true
+  field :field_of_research, Types::FieldOfResearchType, null: true
+  field :grants, [Types::GrantType, null: true], null: true
+  field :subject_languages, [Types::LanguageType, null: true], null: true
+
+  def subject_languages
+    object.subject_languages.uniq
   end
-  field :content_languages, types[Types::LanguageType] do
-    resolve -> (obj, args, ctx) {
-      obj.content_languages.uniq
-    }
+  field :content_languages, [Types::LanguageType, null: true], null: true
+
+  def content_languages
+    object.content_languages.uniq
   end
-  field :countries, types[Types::CountryType] do
-    resolve -> (obj, args, ctx) {
-      obj.item_countries.uniq
-    }
+  field :countries, [Types::CountryType, null: true], null: true
+
+  def countries
+    object.item_countries.uniq
   end
-  field :access_class, types.String
-  field :access_narrative, types.String
-  field :region, types.String
-  field :metadata_source, types.String
-  field :orthographic_notes, types.String
-  field :media, types.String
-  field :comments, types.String
-  field :complete, types.Boolean
-  field :tape_location, types.Boolean
-  field :boundaries, Types::BoundaryType
-  field :doi, types.String
-  field :doi_xml, types.String, property: :to_doi_xml
-  field :citation, types.String
-  field :permalink, !types.String, property: :full_path
+  field :access_class, String, null: true
+  field :access_narrative, String, null: true
+  field :region, String, null: true
+  field :metadata_source, String, null: true
+  field :orthographic_notes, String, null: true
+  field :media, String, null: true
+  field :comments, String, null: true
+  field :complete, Boolean, null: true
+  field :tape_location, Boolean, null: true
+  field :boundaries, Types::BoundaryType, null: true
+  field :doi, String, null: true
+  field :doi_xml, String, method: :to_doi_xml, null: true
+  field :citation, String, null: true
+  field :permalink, String, method: :full_path, null: false
 end
