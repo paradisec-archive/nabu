@@ -10,15 +10,14 @@
 
     = raw analytical.head_prepend_javascript
     %title= @page_title || 'Nabu'
-    = stylesheet_link_tag :screen, :media => 'screen, projection'
-    = stylesheet_link_tag :print,  :media => 'print'
-    /[if lt IE 8]
-      = stylesheet_link_tag :ie, :media => 'screen, projection'
-    = javascript_include_tag :application
-    = javascript_include_tag APP_CONFIG[:google_maps_url]
-
     = csrf_meta_tags
     = csp_meta_tag
+
+    = stylesheet_link_tag :application, :media => 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag :application, 'data-turbolinks-track': 'reload'
+
+    = javascript_include_tag APP_CONFIG[:google_maps_url]
+
     - analytical.identify(current_user.id, :email => current_user.email) if current_user
     = raw analytical.head_append_javascript
 
