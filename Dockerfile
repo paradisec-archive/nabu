@@ -4,7 +4,7 @@
 # - uses entrypoint script to handle bundling and starting Solr
 # ===============================================================
 
-FROM ruby:2.5
+FROM ruby:2.6
 
 ENV BUNDLE_PATH /bundler
 ENV BUNDLE_HOME /gems
@@ -36,9 +36,10 @@ RUN apt-get install -y \
   nodejs \
   libmagic-dev \
   openjdk-11-jre \
-  wget
+  wget \
+  npm
 
-RUN gem install bundler -v 1.17.3
+RUN gem install bundler
 
 # Chrome for headless testing
 RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb

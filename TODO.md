@@ -86,5 +86,6 @@ Do we need to drop jquery?
 * rubucop-grqapl
 * credential.yml.enc and master.key and delete secrets.yml??
 
-
+# 6.0
+* Should we be using image_processing?
 
