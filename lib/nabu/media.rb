@@ -1,8 +1,9 @@
 require 'filemagic'
 require 'json'
-require 'exceptions'
 
 module Nabu
+  class FileNotFound < StandardError; end
+
   class Media
     FM = FileMagic.mime
     def initialize(file)

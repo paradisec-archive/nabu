@@ -1,1 +1,0 @@
-class FileNotFound < StandardError; end

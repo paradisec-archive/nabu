@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'spec_helper'
 
 describe TranscodeEssenceFileService do
   let(:transcode_essence_file_service) do

@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 class DownloadsReportService
   def initialize(date_from, date_to, user)
     @date_from = transform_date(date_from) || (Date.today - 1.year)

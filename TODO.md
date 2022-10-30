@@ -60,7 +60,6 @@
 ## 4.1
 * Upgrades
   * devise 3.5 -> 4.8
-  * graphql 1.7 -> 2.0
   * kaminar 0.17 -> 1.2
 * layouts turbolinks stuff
 * Move secrets.yml to ENV in production
