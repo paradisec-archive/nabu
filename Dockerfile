@@ -4,7 +4,7 @@
 # - uses entrypoint script to handle bundling and starting Solr
 # ===============================================================
 
-FROM ruby:2.6
+FROM ruby:3.0
 
 ENV BUNDLE_PATH /bundler
 ENV BUNDLE_HOME /gems
