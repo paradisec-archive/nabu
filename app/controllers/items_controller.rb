@@ -76,7 +76,7 @@ class ItemsController < ApplicationController
       format.html
       format.xml do
         if params[:xml_type]
-          render :template => "items/show.#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
+          render :template => "items/show_#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
         else
           render :template => "items/show", formats: [:xml], handlers: [:haml]
         end
