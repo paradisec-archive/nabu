@@ -8,6 +8,9 @@
       f=d.getElementsByTagName("script")[0];s.src="//d37gvrvc0wt4s1.cloudfront.net/js/1/rollbar.min.js";s.async=!0;
       f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load",i,!1);}else{w.attachEvent("onload",i);}})(window,document);
 
+    :javascript
+      const calendarImagePath = "#{asset_path('calendar.png')}";
+
     = raw analytical.head_prepend_javascript
     %title= @page_title || 'Nabu'
     %meta{ :name => 'viewport', :content => 'width=device-width,initial-scale=1' }
