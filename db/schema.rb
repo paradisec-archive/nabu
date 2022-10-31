@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2017_09_04_034643) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_31_075607) do
   create_table "access_conditions", id: :integer, charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
