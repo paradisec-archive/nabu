@@ -2,36 +2,21 @@
  * This is a manifest file that'll be compiled into application.css, which will include all the files
  * listed below.
  *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
  * vendor/assets/stylesheets directory can be referenced here using a relative path.
  *
  * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
- * TODO: Should we be using *= require_tree .
  *= require jquery-ui/jquery-ui-1.8.16.redmond.css
  *= require select2
  *
  *= require blueprint/screen
  *= require blueprint/plugins/liquid
  *= require blueprint/plugins/fancy-type/screen
-
- *= require _page_layout
- *= require _layout_style
  *
+ *= require_tree .
  *= require_self
-*/
-
-@charset "UTF-8";
-/*!  Force output of above line by adding a unicode character: ♫ */
-
-/* FIXME: we moeved to webpack */
-/* @import 'bootstrap-sprockets'; */
-/* @import 'bootstrap/variables'; */
-/* @import 'bootstrap/mixins'; */
-/* @import 'bootstrap/type'; */
-/* @import 'bootstrap/glyphicons'; */
-
-
+ */

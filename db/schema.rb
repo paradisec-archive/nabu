@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20170904034643) do
+ActiveRecord::Schema[6.1].define(:version => 20170904034643) do
 
   create_table "access_conditions", :force => true do |t|
     t.string   "name"

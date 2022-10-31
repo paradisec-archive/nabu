@@ -97,3 +97,4 @@ Do we need to drop jquery?
 * ditch jquery??
 MOOOOOOO bring back asctive_admin stylesheet
 Need to get rid of apparition - using git version to make it work
+* Do we need to add bootstrap back?
