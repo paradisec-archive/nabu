@@ -18,9 +18,9 @@ This application has been configured with *guard*, it will ensure
 
 ``` bash
 bundle install
-bundle exec spring rake db:create
-bundle exec spring rake db:schema:load
-RAILS_ENV=test bundle exec spring rake db:schema:load
+bundle exec rake db:create
+bundle exec rake db:schema:load
+RAILS_ENV=test bundle exec rake db:schema:load
 bundle exec guard
 ```
 
@@ -54,7 +54,7 @@ Run the below from the home directory on the server.
 ssh deploy@catalog.paradisec.org.au "mysqldump -u root nabu | gzip > nabu.sql.gz"
 scp deploy@catalog.paradisec.org.au:nabu.sql.gz .
 gzip -dc nabu.sql.gz | mysql -u root nabu_devel
-spring rake sunspot:reindex
+rake sunspot:reindex
 ```
 
 ## Production Tasks

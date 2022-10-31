@@ -461,9 +461,6 @@ GEM
     shellany (0.0.1)
     spreadsheet (1.3.0)
       ruby-ole
-    spring (4.1.0)
-    spring-commands-rspec (1.0.4)
-      spring (>= 0.9.1)
     sprockets (4.1.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -589,7 +586,6 @@ DEPENDENCIES
   rubocop-rspec
   ruby-filemagic
   selenium-webdriver
-  spring-commands-rspec
   sprockets-rails
   stimulus-rails
   streamio-ffmpeg

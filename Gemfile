@@ -144,8 +144,6 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "thin"
 
-  gem "spring-commands-rspec"
-
   gem "pry"
   gem "pry-byebug"
   gem "pry-rails"
