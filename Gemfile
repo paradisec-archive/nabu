@@ -75,14 +75,29 @@ end
 # Our stuff
 ###################
 
+# Views
+gem "haml-rails", "~> 2.0" # We use HAML for templates instead of erb
+gem "kaminari"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Databases
 gem "graphql"
 gem "graphiql-rails"
 
 # Views
-gem "haml-rails"
 gem "to-csv", :require => "to_csv"
-gem "kaminari"
 gem "oai"
 gem "analytical"
 

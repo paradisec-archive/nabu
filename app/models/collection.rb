@@ -334,6 +334,7 @@ class Collection < ApplicationRecord
   end
 
   # OAI-MPH mappings for RIF-CS
+  # TODO: should this be in a view of some sort, could we use HAML?
   def to_rif
     xml = ::Builder::XmlMarkup.new
     xml.registryObjects OAI::Provider::Metadata::Rif.instance.header_specification do

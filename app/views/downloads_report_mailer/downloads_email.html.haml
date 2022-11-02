@@ -1,0 +1,23 @@
+%h2 Depositors Downloads Report
+
+%p
+  %b Date From: #{@date_from.strftime('%e %b %Y')}
+%p
+  %b Date To: #{@date_to.strftime('%e %b %Y')}
+
+%table>
+  %tbody
+    %tr
+    %th>Downloaded At
+    %th>Country
+    %th>Collection Title
+    %th>Item Title
+    %th>File Name
+
+  - @results.each do |result|
+    %tr
+      %td= result["created_at"].strftime('%e %b %Y')
+      %td= result["country"]
+      %td= result["collection_title"]
+      %td= result["item_title"]
+      %td= result["filename"]

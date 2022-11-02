@@ -27,7 +27,7 @@ class CsvDownloader
 
     filename = "nabu_items_#{Date.today}.csv"
     path = "#{Rails.root}/tmp/#{filename}"
-    
+
     CSV.open(path, 'wb') do |csv|
       search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       # if the user requested all results, iterate over the remaining pages
@@ -40,12 +40,12 @@ class CsvDownloader
         search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       end
     end
-    
-    total = @params[:export_all] ? search.total : (@params[:per_page] || 10) 
-    
+
+    total = @params[:export_all] ? search.total : (@params[:per_page] || 10)
+
     generation_end = DateTime.now
     Rails.logger.info {"#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds"}
-    
+
     if @current_user.email.present?
       CsvDownloadMailer.csv_download_email(
         @current_user.email,
@@ -57,12 +57,12 @@ class CsvDownloader
         path
       ).deliver
     end
-    
+
   end
-  
+
   def stream(orig_search)
     filename = "nabu_items_#{Date.today}.csv"
-    
+
     search = orig_search
 
     # use enumerator to customise streaming the response
@@ -80,9 +80,9 @@ class CsvDownloader
         search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       end
     }
-    
+
     return filename, streamed_csv
-  
+
   end
-  
+
 end

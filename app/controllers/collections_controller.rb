@@ -392,4 +392,4 @@ class CollectionsController < ApplicationController
         :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids,
       )
   end
-end :
+end

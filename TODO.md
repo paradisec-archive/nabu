@@ -1,26 +1,13 @@
 # TODO
 
-## General
-* Display video, audio image etc in essence page
-
-## Milestones
-* Help pages (CMS?)
-* CSV Metadata Import Implementation for Collection and Items
-* Reporting Web Service Implementation for Workflow Monitoring, notifications
-
-## Post Rollout
-* Check all dates in collections that should have a value have one
-
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Move capctha secrets our of git
 & Had to add lots of optional => true, are they really or should we fix the tests?
 
-
 # Upgrades
 
 ## 4.0.0
-* Did dropping libv8 and rubyravr break anything
 * Check upgrade guides for
   * activeadmin 0.6.3 -> 1.0.0.pre5
   * cancancan 1.13.1 -> 3.14.0
