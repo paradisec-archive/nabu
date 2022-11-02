@@ -84,10 +84,7 @@ gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this
 # Analytics and instrumentation
 gem "analytical"
 gem "rollbar"
-
-
-
-
+gem "newrelic_rpm"
 
 
 
@@ -124,9 +121,6 @@ gem "ruby-filemagic"
 gem "capistrano", "~> 2"
 gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
-
-# Logging
-gem "newrelic_rpm"
 
 # Misc
 gem "progress_bar"
