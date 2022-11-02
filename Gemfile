@@ -76,8 +76,11 @@ end
 ###################
 
 # Views
+gem "analytical"
 gem "haml-rails", "~> 2.0" # We use HAML for templates instead of erb
 gem "kaminari"
+gem "oai"
+gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this and implement ourselves. Only used by collections, items already has a custom implementation
 
 
 
@@ -95,11 +98,6 @@ gem "kaminari"
 # Databases
 gem "graphql"
 gem "graphiql-rails"
-
-# Views
-gem "to-csv", :require => "to_csv"
-gem "oai"
-gem "analytical"
 
 # Admin
 gem "country-select"

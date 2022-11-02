@@ -7,6 +7,13 @@
 
 # Upgrades
 
+## Stuff to replace
+* Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
+* Move to_rif in collections controller to a haml template
+* Write OAI tests and get rid of the monkey patch once we have data to test with
+* CHeck out lib/oai_provider is this more monkeypatching?
+* DItch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
+
 ## 4.0.0
 * Check upgrade guides for
   * activeadmin 0.6.3 -> 1.0.0.pre5
