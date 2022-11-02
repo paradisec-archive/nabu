@@ -39,6 +39,7 @@ class CollectionsController < ApplicationController
       end
       paginate :page => params[:page], :per_page => params[:per_page]
     end
+    @params = search_params
 
     respond_to do |format|
       format.html
@@ -367,6 +368,14 @@ class CollectionsController < ApplicationController
     end
   end
 
+
+  def search_params
+    params.permit(
+      :search, :page, :per_page, :sort, :direction,
+      :language_code, :country_code, :collector_id
+    )
+  end
+
   def collection_params
     params.require(:collection)
       .permit(
@@ -383,4 +392,4 @@ class CollectionsController < ApplicationController
         :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids,
       )
   end
-end
+end :

@@ -100,3 +100,4 @@ Need to get rid of apparition - using git version to make it work
 * Do we need to add bootstrap back?
 * Do something with analytical gem
 *Move the stuff in vnedor js to using npm
+* Add everything needed to search_params

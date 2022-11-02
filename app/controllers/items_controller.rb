@@ -15,6 +15,7 @@ class ItemsController < ApplicationController
     end
 
     @search = ItemSearchService.build_solr_search(params, current_user)
+    @params = search_params
     session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
 
     @page_title = 'Nabu - Item Search'
@@ -389,6 +390,13 @@ class ItemsController < ApplicationController
     associated_resource.where(id: ids).map do |resource|
       { id: resource.id, text: resource.name }
     end if ids.present?
+  end
+
+  def search_params
+    params.permit(
+      :search, :page, :per_page, :sort, :direction,
+      :language_code, :country_code, :collector_id
+    )
   end
 
   def item_params
