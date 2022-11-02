@@ -13,6 +13,7 @@
 * Write OAI tests and get rid of the monkey patch once we have data to test with
 * CHeck out lib/oai_provider is this more monkeypatching?
 * DItch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
+* Swithc rollbar to using an environemtn variable for deploy. Also update the docs to reflect this
 
 ## 4.0.0
 * Check upgrade guides for

@@ -76,12 +76,14 @@ end
 ###################
 
 # Views
-gem "analytical"
 gem "haml-rails", "~> 2.0" # We use HAML for templates instead of erb
 gem "kaminari"
 gem "oai"
 gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this and implement ourselves. Only used by collections, items already has a custom implementation
 
+# Analytics and instrumentation
+gem "analytical"
+gem "rollbar"
 
 
 
@@ -124,7 +126,6 @@ gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
 
 # Logging
-gem "rollbar"
 gem "newrelic_rpm"
 
 # Misc
