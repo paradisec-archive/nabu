@@ -45,9 +45,7 @@ describe ItemsController, type: :controller do
 
   context 'when logged in' do
     before do
-      @request.env['devise.mapping'] = Devise.mappings[:user]
-      # log in as test user
-    sign_in(user, scope: :user)
+      sign_in(user, scope: :user)
     end
     context 'when viewing' do
       context 'a private item' do

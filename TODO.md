@@ -18,13 +18,13 @@
 * MOve to recaptcha v3
 * Rotate the recaptcha keys as they used to be in github
 * Should we use authenticate_users on dashboard or should cancan just do it?
+* Check production DB: can we drop password_salt on users
 
 ## 4.0.0
 * Check upgrade guides for
   * activeadmin 0.6.3 -> 1.0.0.pre5
   * cancancan 1.13.1 -> 3.14.0
   * capitrano 2 -> 3
-  * devise 2 -> 3
   * formatastic 2 -> 3
   * haml 4-> 5
   * haml_rail 0.4 -> 1
@@ -58,8 +58,6 @@
 
 ## 4.1
 * Upgrades
-  * devise 3.5 -> 4.8
-  * kaminar 0.17 -> 1.2
 * layouts turbolinks stuff
 * Move secrets.yml to ENV in production
 

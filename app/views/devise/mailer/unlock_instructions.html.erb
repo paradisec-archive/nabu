@@ -1,14 +1,7 @@
 <p>Hello <%= @resource.name %>!</p>
 
-<p>Your PARADISEC account has been locked due to an excessive amount of unsuccessful sign in attempts.</p>
+<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
 
 <p>Click the link below to unlock your account:</p>
 
-<p><%= link_to 'Unlock my account', unlock_url(@resource, :unlock_token => @resource.unlock_token) %></p>
-
-<p>If you are unable to click on the link, copy and paste this into your browser:</p>
-
-<p><%= unlock_url(@resource, :unlock_token => @resource.unlock_token) %></p>
-
-<p>===</p>
-<p><%= link_to 'PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures)', 'http://catalog.paradisec.org.au/'%></p>
+<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>

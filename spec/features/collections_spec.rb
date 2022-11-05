@@ -17,7 +17,7 @@ describe 'Collections' do
     end
 
     it 'should succeed as user' do
-      login admin_user
+      sign_in admin_user
       visit dashboard_path
       page.should have_content('Add new collection')
       click_on 'Add new collection'
@@ -26,7 +26,7 @@ describe 'Collections' do
 
     it 'create collection', :js => true do
       pending 'INVESTIGATE 2016-05-09: Failing on development machines'
-      login admin_user
+      sign_in admin_user
       visit new_collection_path
       fill_in 'Collection ID', :with => 'AAA'
       fill_in 'collection_title', :with => 'Alexander Adelaar Indonesia/Selaako Collection'

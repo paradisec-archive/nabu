@@ -40,9 +40,12 @@ class User < ApplicationRecord
   # Users may not want paper_trail storing a history of their account information, so don't have has_paper_trail
 
   nilify_blanks
+
+  # Include default devise modules. Others available are:
+  # :omniauthable, :timeoutable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable,
-         :confirmable, :lockable
+         :recoverable, :rememberable, :validatable,
+         :confirmable, :lockable, :trackable
 
   # Optionally a user has transferred their rights to another one, e.g. then deceased.
   belongs_to :rights_transferred_to, :class_name => 'User', :optional => true
