@@ -41,6 +41,9 @@
 /solr/default/data
 /solr/pids
 
+# dotenv
+.env
+
 .ruby-version
 .ruby-gemset
 .idea/

@@ -75,19 +75,19 @@ end
 # Our stuff
 ###################
 
+# Needs to be as early as possible to do it's job
+gem 'dotenv-rails', groups: [:development, :test] # Load env variables in dev
+
 # Views
 gem "haml-rails", "~> 2.0" # We use HAML for templates instead of erb
-gem "kaminari"
-gem "oai"
+gem "kaminari" # Pagination
+gem "oai" # OAI-PMH
 gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this and implement ourselves. Only used by collections, items already has a custom implementation
 
 # Analytics and instrumentation
-gem "analytical"
-gem "rollbar"
-gem "newrelic_rpm"
-
-
-
+gem "analytical" # Add google analytics TODO: outdated replace with something newer
+gem "rollbar" # Error reporting
+gem "newrelic_rpm" # Performance monitoring
 
 
 
@@ -146,6 +146,8 @@ gem "daemons"
 gem "activerecord-session_store"
 
 group :development, :test do
+  gem 'dotenv-rails'
+
   gem "test-unit"
   gem "turn", :require => false
   gem "rspec-rails"
