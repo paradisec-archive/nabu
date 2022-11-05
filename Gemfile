@@ -96,6 +96,7 @@ gem "recaptcha" # Avoid fake registrations
 
 # Database improvements
 gem "nilify_blanks" # Convert empty strings to NULL in the DB where possible
+gem "paper_trail" # Keep an audit trail of all the changes
 
 # Background processing
 gem "delayed_job_active_record" # Delay jobs and queue them in the database
@@ -130,7 +131,6 @@ gem "capistrano-rbenv", "~> 1"
 
 # Misc
 gem "progress_bar"
-gem "paper_trail"
 gem "roo"
 # Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
 gem "roo-xls"

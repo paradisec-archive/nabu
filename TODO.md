@@ -5,7 +5,7 @@
 * Move capctha secrets our of git
 & Had to add lots of optional => true, are they really or should we fix the tests?
 
-# Upgrades
+# General NOtes
 
 ## Stuff to replace
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
@@ -21,6 +21,10 @@
 * Check production DB: can we drop password_salt on users
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
 * Should we use active job and let it use delayed_job
+* DB is all latin1 can we move to utf8mb4
+* SHoudl we add has_paper_trail to party_identifier
+*set set_paper_trail_whodunnit - check live db to see if it's empty for users
+* Move enabling paper trail to base model and then disable on users specifically
 
 ## 4.0.0
 * Check upgrade guides for
