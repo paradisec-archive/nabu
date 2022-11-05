@@ -31,11 +31,3 @@
 
 en:
   hello: "Hello world"
-
-  # CanCan
-  unauthorized:
-    manage:
-      all: "Not authorized to %{action} %{subject}."
-      user: "Not allowed to manage other user accounts."
-    create:
-      all: "You need to sign in or sign up before continuing."

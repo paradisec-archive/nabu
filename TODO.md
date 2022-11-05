@@ -23,7 +23,6 @@
 ## 4.0.0
 * Check upgrade guides for
   * activeadmin 0.6.3 -> 1.0.0.pre5
-  * cancancan 1.13.1 -> 3.14.0
   * capitrano 2 -> 3
   * formatastic 2 -> 3
   * haml 4-> 5
@@ -49,7 +48,6 @@
 * config/developement.rb: do we need to set unloadable constants
 * config/production.rb: should we use sass insteadof uglifier?
 * config/production.rb: Do we need to add precompile assets or can SASS/turbolinks take care of it for us
-* Can the cancan locale be put in their own file
 * application.rb the nabu paths are also in production why duplicated?
 * Why is google crawling disabled
 * Rakefile : should grapql be here or in tasks directory

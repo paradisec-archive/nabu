@@ -91,6 +91,7 @@ gem "newrelic_rpm" # Performance monitoring
 
 # AAA
 gem "devise" # Authentication
+gem "cancancan" # Authorisation
 gem "recaptcha" # Avoid fake registrations
 
 
@@ -105,9 +106,6 @@ gem "graphiql-rails"
 gem "country-select"
 gem "activeadmin"
 gem "bootstrap-sass"
-
-# Authentications
-gem "cancancan"
 
 # Database improvements
 gem "rails_or"
