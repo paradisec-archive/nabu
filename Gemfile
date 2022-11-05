@@ -97,6 +97,15 @@ gem "recaptcha" # Avoid fake registrations
 # Database improvements
 gem "nilify_blanks" # Convert empty strings to NULL in the DB where possible
 
+# Background processing
+gem "delayed_job_active_record" # Delay jobs and queue them in the database
+gem "daemons" # Needed by delayed_job
+
+
+
+
+
+
 
 
 # Databases
@@ -135,9 +144,6 @@ gem "rmagick"
 # Scheduling
 gem "whenever", :require => false
 
-# Background processing
-gem "delayed_job_active_record"
-gem "daemons"
 
 # TODO: We should probably move to cookie sessions
 gem "activerecord-session_store"

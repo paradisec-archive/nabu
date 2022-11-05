@@ -20,6 +20,7 @@
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * Check production DB: can we drop password_salt on users
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
+* Should we use active job and let it use delayed_job
 
 ## 4.0.0
 * Check upgrade guides for
