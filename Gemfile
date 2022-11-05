@@ -94,7 +94,8 @@ gem "devise" # Authentication
 gem "cancancan" # Authorisation
 gem "recaptcha" # Avoid fake registrations
 
-
+# Database improvements
+gem "nilify_blanks" # Convert empty strings to NULL in the DB where possible
 
 
 
@@ -106,10 +107,6 @@ gem "graphiql-rails"
 gem "country-select"
 gem "activeadmin"
 gem "bootstrap-sass"
-
-# Database improvements
-gem "rails_or"
-gem "nilify_blanks"
 
 # Search
 gem "sunspot_rails"
