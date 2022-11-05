@@ -89,6 +89,9 @@ gem "analytical" # Add google analytics TODO: outdated replace with something ne
 gem "rollbar" # Error reporting
 gem "newrelic_rpm" # Performance monitoring
 
+# AAA
+gem "devise" # Authentication
+gem "recaptcha" # Avoid fake registrations
 
 
 
@@ -104,7 +107,6 @@ gem "activeadmin"
 gem "bootstrap-sass"
 
 # Authentications
-gem "devise"
 gem "cancancan"
 
 # Database improvements

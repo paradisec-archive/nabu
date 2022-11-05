@@ -1,16 +1,19 @@
 class RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
+  prepend_before_action :check_captcha, only: [:create]
 
-  def create
-    uri = URI.parse("https://www.google.com/recaptcha/api/siteverify")
-    response = Net::HTTP.post_form(uri, 'secret' => "6LctF0kaAAAAAMJ9vKkJE6QFvDMepSSJMOJRXzeL", 'response' => params['g-recaptcha-response'])
+  private
 
-    if !JSON.parse(response.body)['success']
-      build_resource
-      resource.errors.add :base, "reCAPTCHA verification failed"
-      respond_with resource
-    else
-      super
+  def check_captcha
+    return if verify_recaptcha
+
+    self.resource = resource_class.new sign_up_params
+    resource.validate
+    set_minimum_password_length
+
+    respond_with_navigational(resource) do
+      flash.discard(:recaptcha_error)
+      render :new
     end
   end
 

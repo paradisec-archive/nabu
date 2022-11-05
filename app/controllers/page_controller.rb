@@ -7,8 +7,9 @@ class PageController < ApplicationController
   end
 
   def dashboard
-    @page_title = "Nabu - Dashboard"
     authenticate_user!
+
+    @page_title = "Nabu - Dashboard"
     @name = current_user.name
 
     collections = Collection.where('collector_id = :user_id OR operator_id = :user_id', :user_id => current_user.id)
