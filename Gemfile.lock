@@ -572,7 +572,6 @@ DEPENDENCIES
   puma (~> 5.0)
   rails (~> 7.0.4)
   rails-controller-testing
-  rake
   rb-fsevent
   rb-inotify
   recaptcha

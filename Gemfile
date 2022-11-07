@@ -136,11 +136,6 @@ gem "capistrano", "~> 2"
 gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
 
-# Misc
-gem "rake"
-
-# Scheduling
-
 
 # TODO: We should probably move to cookie sessions
 gem "activerecord-session_store"
