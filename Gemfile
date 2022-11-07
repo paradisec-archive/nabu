@@ -131,7 +131,6 @@ gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
 
 # Misc
-gem "progress_bar"
 gem "roo"
 # Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
 gem "roo-xls"
