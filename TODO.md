@@ -27,6 +27,8 @@
 * Move enabling paper trail to base model and then disable on users specifically
 * streamio-ffmpeg replace with something more modern
 * ditch timeliness - overkill and outdated
+* Test CSRF on graphql
+* fix link_to :delete
 
 ## 4.0.0
 * Check upgrade guides for

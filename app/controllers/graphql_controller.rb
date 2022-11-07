@@ -1,22 +1,34 @@
 class GraphqlController < ApplicationController
+  # If accessing from outside this domain, nullify the session
+  # This allows for outside API access while preventing CSRF attacks,
+  # but you'll have to authenticate your user separately
+  # protect_from_forgery with: :null_session
+
   # avoid getting 401'd for not having a CSRF token
   skip_before_action :verify_authenticity_token, :only => [:execute]
 
-  def execute
-    # since this is a JSON request, don't use authorize! which will try and redirect to login page
+  before_action :check_auth
+
+  # since this is a JSON request, don't use authorize! which will try and redirect to login page
+  def check_auth
     unless can? :graphql, Item
       render status: 401, json: {error: 'Must be logged in to query Nabu'}
       return
     end
+  end
 
-    variables = ensure_hash(params[:variables])
+  def execute
+    variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      current_user: current_user
+      current_user: current_user,
     }
     result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
     render json: result
+  rescue StandardError => e
+    raise e unless Rails.env.development?
+    handle_error_in_development(e)
   end
 
   def schema
@@ -25,21 +37,28 @@ class GraphqlController < ApplicationController
 
   private
 
-  # Handle form data, JSON body, or a blank value
-  def ensure_hash(ambiguous_param)
-    case ambiguous_param
+  # Handle variables in form data, JSON body, or a blank value
+  def prepare_variables(variables_param)
+    case variables_param
     when String
-      if ambiguous_param.present?
-        ensure_hash(JSON.parse(ambiguous_param))
+      if variables_param.present?
+        JSON.parse(variables_param) || {}
       else
         {}
       end
-    when Hash, ActiveSupport::HashWithIndifferentAccess
-      ambiguous_param
+    when Hash, ActionController::Parameters
+      variables_param
     when nil
       {}
     else
-      raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
+      raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
+  end
+
+  def handle_error_in_development(e)
+    logger.error e.message
+    logger.error e.backtrace.join("\n")
+
+    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
   end
 end

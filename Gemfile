@@ -104,6 +104,8 @@ gem "daemons" # Needed by delayed_job
 
 # Frameworks
 gem "activeadmin"
+gem "graphql"
+gem "graphiql-rails"
 
 # Other
 gem "roo" # Spreadsheet interface
@@ -119,8 +121,6 @@ gem "whenever", :require => false # scheduling
 
 
 # Databases
-gem "graphql"
-gem "graphiql-rails"
 
 # Admin
 gem "country-select"
@@ -128,8 +128,6 @@ gem "bootstrap-sass"
 
 # Search
 gem "sunspot_rails"
-
-# Media Detection
 
 # Deployment
 gem "capistrano", "~> 2"
