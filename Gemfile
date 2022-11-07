@@ -149,8 +149,6 @@ gem "whenever", :require => false
 gem "activerecord-session_store"
 
 group :development, :test do
-  gem 'dotenv-rails'
-
   gem "test-unit"
   gem "turn", :require => false
   gem "rspec-rails"
