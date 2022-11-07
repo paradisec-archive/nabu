@@ -17,6 +17,10 @@
  *= require blueprint/plugins/liquid
  *= require blueprint/plugins/fancy-type/screen
  *
- *= require_tree .
+ *  REMOVE require_tree . // We don't require tree so we can have per controller stylesheets
+ *
+ *= require  _layout_style
+ *= require  _page_layout
+ *
  *= require_self
  */

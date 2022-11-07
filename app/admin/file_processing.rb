@@ -14,7 +14,7 @@ ActiveAdmin.register_page "File Processing" do
             link_to item.identifier, [collection, item]
           end
           column :title
-          default_actions
+          actions
         end
       end
     end
@@ -34,7 +34,7 @@ ActiveAdmin.register_page "File Processing" do
           column :channels
           column :fps
           column :bitrate
-          default_actions
+          actions
         end
       end
     end

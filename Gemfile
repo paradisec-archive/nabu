@@ -102,6 +102,8 @@ gem "paper_trail" # Keep an audit trail of all the changes
 gem "delayed_job_active_record" # Delay jobs and queue them in the database
 gem "daemons" # Needed by delayed_job
 
+# Frameworks
+gem "activeadmin"
 
 
 
@@ -115,7 +117,6 @@ gem "graphiql-rails"
 
 # Admin
 gem "country-select"
-gem "activeadmin"
 gem "bootstrap-sass"
 
 # Search

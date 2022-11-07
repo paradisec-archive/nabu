@@ -33,7 +33,7 @@ ActiveAdmin.register User do
     end
 
     ['10', '50', "all #{count}"].each do |n|
-      para link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+      para link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
     end
   end
 

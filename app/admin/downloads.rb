@@ -1,7 +1,7 @@
 ActiveAdmin.register Download do
   sidebar :paginate, :only => :index  do
     ['10', '50', "all #{Download.count}"].each do |n|
-      para link_to "Show #{n}", params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+      para link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
     end
   end
 
@@ -41,7 +41,7 @@ ActiveAdmin.register Download do
       end
     end
     column :created_at
-    default_actions
+    actions
   end
 
   # show page
