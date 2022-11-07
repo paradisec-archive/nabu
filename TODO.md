@@ -25,8 +25,8 @@
 * SHoudl we add has_paper_trail to party_identifier
 *set set_paper_trail_whodunnit - check live db to see if it's empty for users
 * Move enabling paper trail to base model and then disable on users specifically
-* ActiveAdmin
-  * javascript includes
+* streamio-ffmpeg replace with something more modern
+* ditch timeliness - overkill and outdated
 
 ## 4.0.0
 * Check upgrade guides for

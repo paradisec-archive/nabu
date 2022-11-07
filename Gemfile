@@ -105,7 +105,14 @@ gem "daemons" # Needed by delayed_job
 # Frameworks
 gem "activeadmin"
 
-
+# Other
+gem "roo" # Spreadsheet interface
+gem "roo-xls" # Add excel support to roo
+gem "ruby-filemagic" # Detect file types
+gem "streamio-ffmpeg" # ffmpeg interface
+gem "rmagick" # Image processing
+gem "timeliness" # Date parsing
+gem "whenever", :require => false # scheduling
 
 
 
@@ -123,7 +130,6 @@ gem "bootstrap-sass"
 gem "sunspot_rails"
 
 # Media Detection
-gem "ruby-filemagic"
 
 # Deployment
 gem "capistrano", "~> 2"
@@ -131,18 +137,9 @@ gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
 
 # Misc
-gem "roo"
-# Unpublished version used for ability to use StringIO. https://github.com/roo-rb/roo-xls/pull/7
-gem "roo-xls"
-gem "streamio-ffmpeg"
 gem "rake"
-gem "timeliness"
-
-# Image processing
-gem "rmagick"
 
 # Scheduling
-gem "whenever", :require => false
 
 
 # TODO: We should probably move to cookie sessions
