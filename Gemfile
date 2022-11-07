@@ -136,10 +136,6 @@ gem "capistrano", "~> 2"
 gem "capistrano-unicorn"
 gem "capistrano-rbenv", "~> 1"
 
-
-# TODO: We should probably move to cookie sessions
-gem "activerecord-session_store"
-
 group :development, :test do
   gem "test-unit"
   gem "turn", :require => false

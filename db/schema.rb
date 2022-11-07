@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_31_075607) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_07_111509) do
   create_table "access_conditions", id: :integer, charset: "latin1", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -337,15 +337,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_075607) do
     t.string "identifier", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-  end
-
-  create_table "sessions", id: :integer, charset: "latin1", force: :cascade do |t|
-    t.string "session_id", null: false
-    t.text "data", size: :medium
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["session_id"], name: "index_sessions_on_session_id"
-    t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
   create_table "universities", id: :integer, charset: "latin1", force: :cascade do |t|
