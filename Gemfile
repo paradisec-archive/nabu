@@ -120,10 +120,7 @@ gem "whenever", :require => false # scheduling
 
 
 
-# Databases
-
 # Admin
-gem "country-select"
 gem "bootstrap-sass"
 
 # Search
