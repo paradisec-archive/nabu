@@ -51,9 +51,9 @@ append :linked_files, 'config/database.yml', 'config/secrets.yml'
 set :migration_role, :app
 
 # Rollbar
-set :rollbar_token, ENV['ROLLBAR_POST_SERVER_ITEM_ACCESS_TOKEN']
-set :rollbar_env, Proc.new { fetch :stage }
-set :rollbar_role, Proc.new { :app }
+set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
+# set :rollbar_env, Proc.new { fetch :stage }
+# set :rollbar_role, Proc.new { :app }
 
 # namespace :deploy do
 #   task :shared_config_symlink, :except => { :no_release => true } do
