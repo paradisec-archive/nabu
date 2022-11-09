@@ -1,12 +1,23 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: downloads
+# Table name: `downloads`
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
-#  essence_id :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
+# **`essence_id`**  | `integer`          |
+# **`user_id`**     | `integer`          |
+#
+# ### Indexes
+#
+# * `index_downloads_on_essence_id`:
+#     * **`essence_id`**
+# * `index_downloads_on_user_id`:
+#     * **`user_id`**
 #
 
 class Download < ApplicationRecord

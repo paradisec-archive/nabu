@@ -1,10 +1,20 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: item_countries
+# Table name: `item_countries`
 #
-#  id         :integer          not null, primary key
-#  item_id    :integer          not null
-#  country_id :integer          not null
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`country_id`**  | `integer`          | `not null`
+# **`item_id`**     | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_item_countries_on_item_id_and_country_id` (_unique_):
+#     * **`item_id`**
+#     * **`country_id`**
 #
 
 class ItemCountry < ApplicationRecord

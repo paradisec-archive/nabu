@@ -1,3 +1,24 @@
+# ## Schema Information
+#
+# Table name: `downloads`
+#
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
+# **`essence_id`**  | `integer`          |
+# **`user_id`**     | `integer`          |
+#
+# ### Indexes
+#
+# * `index_downloads_on_essence_id`:
+#     * **`essence_id`**
+# * `index_downloads_on_user_id`:
+#     * **`user_id`**
+#
 ActiveAdmin.register Download do
   sidebar :paginate, :only => :index  do
     ['10', '50', "all #{Download.count}"].each do |n|

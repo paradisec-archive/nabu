@@ -1,10 +1,21 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: item_data_types
+# Table name: `item_data_types`
 #
-#  id           :integer          not null, primary key
-#  item_id      :integer          not null
-#  data_type_id :integer          not null
+# ### Columns
+#
+# Name                | Type               | Attributes
+# ------------------- | ------------------ | ---------------------------
+# **`id`**            | `integer`          | `not null, primary key`
+# **`data_type_id`**  | `integer`          | `not null`
+# **`item_id`**       | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_item_data_types_on_data_type_id`:
+#     * **`data_type_id`**
+# * `index_item_data_types_on_item_id`:
+#     * **`item_id`**
 #
 
 class ItemDataType < ApplicationRecord

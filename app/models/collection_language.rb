@@ -1,10 +1,20 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: collection_languages
+# Table name: `collection_languages`
 #
-#  id            :integer          not null, primary key
-#  collection_id :integer
-#  language_id   :integer
+# ### Columns
+#
+# Name                 | Type               | Attributes
+# -------------------- | ------------------ | ---------------------------
+# **`id`**             | `integer`          | `not null, primary key`
+# **`collection_id`**  | `integer`          |
+# **`language_id`**    | `integer`          |
+#
+# ### Indexes
+#
+# * `index_collection_languages_on_collection_id_and_language_id` (_unique_):
+#     * **`collection_id`**
+#     * **`language_id`**
 #
 
 class CollectionLanguage < ApplicationRecord

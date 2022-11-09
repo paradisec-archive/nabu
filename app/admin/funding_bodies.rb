@@ -1,3 +1,17 @@
+# ## Schema Information
+#
+# Table name: `funding_bodies`
+#
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`key_prefix`**  | `string(255)`      |
+# **`name`**        | `string(255)`      | `not null`
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
+#
 ActiveAdmin.register FundingBody do
   menu :parent => "Other Entities"
   config.sort_order = "name_asc"

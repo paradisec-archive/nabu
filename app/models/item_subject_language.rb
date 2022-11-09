@@ -1,10 +1,20 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: item_subject_languages
+# Table name: `item_subject_languages`
 #
-#  id          :integer          not null, primary key
-#  item_id     :integer          not null
-#  language_id :integer          not null
+# ### Columns
+#
+# Name               | Type               | Attributes
+# ------------------ | ------------------ | ---------------------------
+# **`id`**           | `integer`          | `not null, primary key`
+# **`item_id`**      | `integer`          | `not null`
+# **`language_id`**  | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_item_subject_languages_on_item_id_and_language_id` (_unique_):
+#     * **`item_id`**
+#     * **`language_id`**
 #
 
 class ItemSubjectLanguage < ApplicationRecord

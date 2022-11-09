@@ -126,26 +126,9 @@ gem "capistrano-rails", require: false, group: :development
 gem "capistrano-rbenv", require: false, group: :development
 gem "capistrano3-puma", require: false, group: :development
 
-
-
-
-
-
 group :development, :test do
-  gem "test-unit"
-  gem "turn", :require => false
   gem "rspec-rails"
   gem "rails-controller-testing"
-  gem "thin"
-
-  gem "pry"
-  gem "pry-byebug"
-  gem "pry-rails"
-
-  gem "letter_opener"
-
-  gem "rb-inotify", :require => RUBY_PLATFORM.include?("linux") ? "rb-inotify" : false
-  gem "rb-fsevent", :require => RUBY_PLATFORM.include?("darwin") ? "rb-fsevent" : false
 end
 
 group :development do
@@ -154,19 +137,18 @@ group :development do
   gem "guard-rails", :require => false
   gem "guard-rspec", :require => false
 
-  gem "annotate"
-  gem "binding_of_caller"
-  gem "better_errors"
+
+  gem "letter_opener" # Open emails in browser during development
+  gem "annotate" # Annotate models with schema
   gem "traceroute" # Helps find unused routes and controller actions
+
   gem "rubocop-rails", :require => false
   gem "rubocop-rake", :require => false
   gem "rubocop-rspec", :require => false
 end
 
 group :test do
-  gem "apparition", github: "twalpole/apparition"
+  gem "apparition", github: "twalpole/apparition" # Headless chrome
   gem "factory_bot_rails"
   gem "database_cleaner"
-  gem "email_spec"
-  gem "launchy"
 end

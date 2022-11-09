@@ -1,15 +1,24 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: languages
+# Table name: `languages`
 #
-#  id          :integer          not null, primary key
-#  code        :string(255)
-#  name        :string(255)
-#  retired     :boolean
-#  north_limit :float
-#  south_limit :float
-#  west_limit  :float
-#  east_limit  :float
+# ### Columns
+#
+# Name               | Type               | Attributes
+# ------------------ | ------------------ | ---------------------------
+# **`id`**           | `integer`          | `not null, primary key`
+# **`code`**         | `string(255)`      |
+# **`east_limit`**   | `float(24)`        |
+# **`name`**         | `string(255)`      |
+# **`north_limit`**  | `float(24)`        |
+# **`retired`**      | `boolean`          |
+# **`south_limit`**  | `float(24)`        |
+# **`west_limit`**   | `float(24)`        |
+#
+# ### Indexes
+#
+# * `index_languages_on_code` (_unique_):
+#     * **`code`**
 #
 
 class Language < ApplicationRecord

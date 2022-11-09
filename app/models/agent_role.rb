@@ -1,9 +1,13 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: agent_roles
+# Table name: `agent_roles`
 #
-#  id   :integer          not null, primary key
-#  name :string(255)      not null
+# ### Columns
+#
+# Name        | Type               | Attributes
+# ----------- | ------------------ | ---------------------------
+# **`id`**    | `integer`          | `not null, primary key`
+# **`name`**  | `string(255)`      | `not null`
 #
 
 class AgentRole < ApplicationRecord

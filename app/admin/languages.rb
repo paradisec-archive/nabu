@@ -1,3 +1,25 @@
+# ## Schema Information
+#
+# Table name: `languages`
+#
+# ### Columns
+#
+# Name               | Type               | Attributes
+# ------------------ | ------------------ | ---------------------------
+# **`id`**           | `integer`          | `not null, primary key`
+# **`code`**         | `string(255)`      |
+# **`east_limit`**   | `float(24)`        |
+# **`name`**         | `string(255)`      |
+# **`north_limit`**  | `float(24)`        |
+# **`retired`**      | `boolean`          |
+# **`south_limit`**  | `float(24)`        |
+# **`west_limit`**   | `float(24)`        |
+#
+# ### Indexes
+#
+# * `index_languages_on_code` (_unique_):
+#     * **`code`**
+#
 ActiveAdmin.register Language do
   menu :parent => "Other Entities"
   config.sort_order = "name_asc"

@@ -1,15 +1,27 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: comments
+# Table name: `comments`
 #
-#  id               :integer          not null, primary key
-#  owner_id         :integer          not null
-#  commentable_id   :integer          not null
-#  commentable_type :string(255)      not null
-#  body             :text             default(""), not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  status           :string(255)
+# ### Columns
+#
+# Name                    | Type               | Attributes
+# ----------------------- | ------------------ | ---------------------------
+# **`id`**                | `integer`          | `not null, primary key`
+# **`body`**              | `text(65535)`      | `not null`
+# **`commentable_type`**  | `string(255)`      | `not null`
+# **`status`**            | `string(255)`      |
+# **`created_at`**        | `datetime`         | `not null`
+# **`updated_at`**        | `datetime`         | `not null`
+# **`commentable_id`**    | `integer`          | `not null`
+# **`owner_id`**          | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_comments_on_commentable_id_and_commentable_type`:
+#     * **`commentable_id`**
+#     * **`commentable_type`**
+# * `index_comments_on_owner_id`:
+#     * **`owner_id`**
 #
 
 class Comment < ApplicationRecord

@@ -1,12 +1,16 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: funding_bodies
+# Table name: `funding_bodies`
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)      not null
-#  key_prefix :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`key_prefix`**  | `string(255)`      |
+# **`name`**        | `string(255)`      | `not null`
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
 #
 
 class FundingBody < ApplicationRecord

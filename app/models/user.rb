@@ -1,39 +1,57 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: users
+# Table name: `users`
 #
-#  id                       :integer          not null, primary key
-#  email                    :string(255)
-#  encrypted_password       :string(255)      default(""), not null
-#  reset_password_token     :string(255)
-#  reset_password_sent_at   :datetime
-#  remember_created_at      :datetime
-#  sign_in_count            :integer          default(0)
-#  current_sign_in_at       :datetime
-#  last_sign_in_at          :datetime
-#  current_sign_in_ip       :string(255)
-#  last_sign_in_ip          :string(255)
-#  password_salt            :string(255)
-#  confirmation_token       :string(255)
-#  confirmed_at             :datetime
-#  confirmation_sent_at     :datetime
-#  unconfirmed_email        :string(255)
-#  failed_attempts          :integer          default(0)
-#  unlock_token             :string(255)
-#  locked_at                :datetime
-#  first_name               :string(255)      not null
-#  last_name                :string(255)
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  admin                    :boolean          default(FALSE), not null
-#  address                  :string(255)
-#  address2                 :string(255)
-#  country                  :string(255)
-#  phone                    :string(255)
-#  contact_only             :boolean          default(FALSE)
-#  rights_transferred_to_id :integer
-#  rights_transfer_reason   :string(255)
-#  party_identifier         :string(255)
+# ### Columns
+#
+# Name                            | Type               | Attributes
+# ------------------------------- | ------------------ | ---------------------------
+# **`id`**                        | `integer`          | `not null, primary key`
+# **`address`**                   | `string(255)`      |
+# **`address2`**                  | `string(255)`      |
+# **`admin`**                     | `boolean`          | `default(FALSE), not null`
+# **`collector`**                 | `boolean`          | `default(FALSE), not null`
+# **`confirmation_sent_at`**      | `datetime`         |
+# **`confirmation_token`**        | `string(255)`      |
+# **`confirmed_at`**              | `datetime`         |
+# **`contact_only`**              | `boolean`          | `default(FALSE)`
+# **`country`**                   | `string(255)`      |
+# **`current_sign_in_at`**        | `datetime`         |
+# **`current_sign_in_ip`**        | `string(255)`      |
+# **`email`**                     | `string(255)`      |
+# **`encrypted_password`**        | `string(255)`      | `default(""), not null`
+# **`failed_attempts`**           | `integer`          | `default(0)`
+# **`first_name`**                | `string(255)`      | `not null`
+# **`last_name`**                 | `string(255)`      |
+# **`last_sign_in_at`**           | `datetime`         |
+# **`last_sign_in_ip`**           | `string(255)`      |
+# **`locked_at`**                 | `datetime`         |
+# **`party_identifier`**          | `string(255)`      |
+# **`password_salt`**             | `string(255)`      |
+# **`phone`**                     | `string(255)`      |
+# **`remember_created_at`**       | `datetime`         |
+# **`reset_password_sent_at`**    | `datetime`         |
+# **`reset_password_token`**      | `string(255)`      |
+# **`rights_transfer_reason`**    | `string(255)`      |
+# **`sign_in_count`**             | `integer`          | `default(0)`
+# **`unconfirmed_email`**         | `string(255)`      |
+# **`unlock_token`**              | `string(255)`      |
+# **`created_at`**                | `datetime`         | `not null`
+# **`updated_at`**                | `datetime`         | `not null`
+# **`rights_transferred_to_id`**  | `integer`          |
+#
+# ### Indexes
+#
+# * `index_users_on_confirmation_token` (_unique_):
+#     * **`confirmation_token`**
+# * `index_users_on_email` (_unique_):
+#     * **`email`**
+# * `index_users_on_reset_password_token` (_unique_):
+#     * **`reset_password_token`**
+# * `index_users_on_rights_transferred_to_id`:
+#     * **`rights_transferred_to_id`**
+# * `index_users_on_unlock_token` (_unique_):
+#     * **`unlock_token`**
 #
 
 class User < ApplicationRecord

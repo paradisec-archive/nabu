@@ -1,33 +1,52 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: collections
+# Table name: `collections`
 #
-#  id                    :integer          not null, primary key
-#  identifier            :string(255)      not null
-#  title                 :string(255)      not null
-#  description           :text             default(""), not null
-#  collector_id          :integer          not null
-#  operator_id           :integer
-#  university_id         :integer
-#  field_of_research_id  :integer
-#  region                :string(255)
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  access_condition_id   :integer
-#  access_narrative      :text
-#  metadata_source       :string(255)
-#  orthographic_notes    :string(255)
-#  media                 :string(255)
-#  comments              :text
-#  complete              :boolean
-#  private               :boolean
-#  tape_location         :string(255)
-#  deposit_form_received :boolean
-#  north_limit           :float
-#  south_limit           :float
-#  west_limit            :float
-#  east_limit            :float
-#  doi                   :string(255)
+# ### Columns
+#
+# Name                         | Type               | Attributes
+# ---------------------------- | ------------------ | ---------------------------
+# **`id`**                     | `integer`          | `not null, primary key`
+# **`access_narrative`**       | `text(65535)`      |
+# **`comments`**               | `text(65535)`      |
+# **`complete`**               | `boolean`          |
+# **`deposit_form_received`**  | `boolean`          |
+# **`description`**            | `text(65535)`      | `not null`
+# **`doi`**                    | `string(255)`      |
+# **`east_limit`**             | `float(24)`        |
+# **`identifier`**             | `string(255)`      | `not null`
+# **`media`**                  | `string(255)`      |
+# **`metadata_source`**        | `string(255)`      |
+# **`north_limit`**            | `float(24)`        |
+# **`orthographic_notes`**     | `string(255)`      |
+# **`private`**                | `boolean`          |
+# **`region`**                 | `string(255)`      |
+# **`south_limit`**            | `float(24)`        |
+# **`tape_location`**          | `string(255)`      |
+# **`title`**                  | `string(255)`      | `not null`
+# **`west_limit`**             | `float(24)`        |
+# **`created_at`**             | `datetime`         | `not null`
+# **`updated_at`**             | `datetime`         | `not null`
+# **`access_condition_id`**    | `integer`          |
+# **`collector_id`**           | `integer`          | `not null`
+# **`field_of_research_id`**   | `integer`          |
+# **`operator_id`**            | `integer`          |
+# **`university_id`**          | `integer`          |
+#
+# ### Indexes
+#
+# * `index_collections_on_access_condition_id`:
+#     * **`access_condition_id`**
+# * `index_collections_on_collector_id`:
+#     * **`collector_id`**
+# * `index_collections_on_field_of_research_id`:
+#     * **`field_of_research_id`**
+# * `index_collections_on_identifier` (_unique_):
+#     * **`identifier`**
+# * `index_collections_on_operator_id`:
+#     * **`operator_id`**
+# * `index_collections_on_university_id`:
+#     * **`university_id`**
 #
 
 class Collection < ApplicationRecord

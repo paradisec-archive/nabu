@@ -1,9 +1,18 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: discourse_types
+# Table name: `discourse_types`
 #
-#  id   :integer          not null, primary key
-#  name :string(255)      not null
+# ### Columns
+#
+# Name        | Type               | Attributes
+# ----------- | ------------------ | ---------------------------
+# **`id`**    | `integer`          | `not null, primary key`
+# **`name`**  | `string(255)`      | `not null`
+#
+# ### Indexes
+#
+# * `index_discourse_types_on_name` (_unique_):
+#     * **`name`**
 #
 
 class DiscourseType < ApplicationRecord

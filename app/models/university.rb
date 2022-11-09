@@ -1,12 +1,16 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: universities
+# Table name: `universities`
 #
-#  id               :integer          not null, primary key
-#  name             :string(255)
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  party_identifier :string(255)
+# ### Columns
+#
+# Name                    | Type               | Attributes
+# ----------------------- | ------------------ | ---------------------------
+# **`id`**                | `integer`          | `not null, primary key`
+# **`name`**              | `string(255)`      |
+# **`party_identifier`**  | `string(255)`      |
+# **`created_at`**        | `datetime`         | `not null`
+# **`updated_at`**        | `datetime`         | `not null`
 #
 
 class University < ApplicationRecord

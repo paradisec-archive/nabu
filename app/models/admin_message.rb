@@ -1,13 +1,17 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: admin_messages
+# Table name: `admin_messages`
 #
-#  id         :integer          not null, primary key
-#  message    :text             default(""), not null
-#  start_at   :datetime         not null
-#  finish_at  :datetime         not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`finish_at`**   | `datetime`         | `not null`
+# **`message`**     | `text(65535)`      | `not null`
+# **`start_at`**    | `datetime`         | `not null`
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
 #
 
 class AdminMessage < ApplicationRecord

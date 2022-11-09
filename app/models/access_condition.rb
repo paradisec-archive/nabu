@@ -1,11 +1,15 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: access_conditions
+# Table name: `access_conditions`
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+# ### Columns
+#
+# Name              | Type               | Attributes
+# ----------------- | ------------------ | ---------------------------
+# **`id`**          | `integer`          | `not null, primary key`
+# **`name`**        | `string(255)`      |
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
 #
 
 class AccessCondition < ApplicationRecord

@@ -1,44 +1,67 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: items
+# Table name: `items`
 #
-#  id                      :integer          not null, primary key
-#  collection_id           :integer          not null
-#  identifier              :string(255)      not null
-#  private                 :boolean
-#  title                   :string(255)      not null
-#  url                     :string(255)
-#  collector_id            :integer          not null
-#  university_id           :integer
-#  operator_id             :integer
-#  description             :text             default(""), not null
-#  originated_on           :date
-#  language                :string(255)
-#  dialect                 :string(255)
-#  region                  :string(255)
-#  discourse_type_id       :integer
-#  access_condition_id     :integer
-#  access_narrative        :text
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  metadata_exportable     :boolean
-#  born_digital            :boolean
-#  tapes_returned          :boolean
-#  original_media          :text
-#  received_on             :datetime
-#  digitised_on            :datetime
-#  ingest_notes            :text
-#  metadata_imported_on    :datetime
-#  metadata_exported_on    :datetime
-#  tracking                :text
-#  admin_comment           :text
-#  external                :boolean          default(FALSE)
-#  originated_on_narrative :text
-#  north_limit             :float
-#  south_limit             :float
-#  west_limit              :float
-#  east_limit              :float
-#  doi                     :string(255)
+# ### Columns
+#
+# Name                           | Type               | Attributes
+# ------------------------------ | ------------------ | ---------------------------
+# **`id`**                       | `integer`          | `not null, primary key`
+# **`access_narrative`**         | `text(65535)`      |
+# **`admin_comment`**            | `text(65535)`      |
+# **`born_digital`**             | `boolean`          |
+# **`description`**              | `text(65535)`      | `not null`
+# **`dialect`**                  | `string(255)`      |
+# **`digitised_on`**             | `datetime`         |
+# **`doi`**                      | `string(255)`      |
+# **`east_limit`**               | `float(24)`        |
+# **`essences_count`**           | `integer`          |
+# **`external`**                 | `boolean`          | `default(FALSE)`
+# **`identifier`**               | `string(255)`      | `not null`
+# **`ingest_notes`**             | `text(65535)`      |
+# **`language`**                 | `string(255)`      |
+# **`metadata_exportable`**      | `boolean`          |
+# **`metadata_exported_on`**     | `datetime`         |
+# **`metadata_imported_on`**     | `datetime`         |
+# **`north_limit`**              | `float(24)`        |
+# **`original_media`**           | `text(65535)`      |
+# **`originated_on`**            | `date`             |
+# **`originated_on_narrative`**  | `text(65535)`      |
+# **`private`**                  | `boolean`          |
+# **`received_on`**              | `datetime`         |
+# **`region`**                   | `string(255)`      |
+# **`south_limit`**              | `float(24)`        |
+# **`tapes_returned`**           | `boolean`          |
+# **`title`**                    | `string(255)`      | `not null`
+# **`tracking`**                 | `text(65535)`      |
+# **`url`**                      | `string(255)`      |
+# **`west_limit`**               | `float(24)`        |
+# **`created_at`**               | `datetime`         | `not null`
+# **`updated_at`**               | `datetime`         | `not null`
+# **`access_condition_id`**      | `integer`          |
+# **`collection_id`**            | `integer`          | `not null`
+# **`collector_id`**             | `integer`          | `not null`
+# **`discourse_type_id`**        | `integer`          |
+# **`operator_id`**              | `integer`          |
+# **`university_id`**            | `integer`          |
+#
+# ### Indexes
+#
+# * `index_items_on_access_condition_id`:
+#     * **`access_condition_id`**
+# * `index_items_on_collection_id`:
+#     * **`collection_id`**
+# * `index_items_on_collector_id`:
+#     * **`collector_id`**
+# * `index_items_on_discourse_type_id`:
+#     * **`discourse_type_id`**
+# * `index_items_on_identifier_and_collection_id` (_unique_):
+#     * **`identifier`**
+#     * **`collection_id`**
+# * `index_items_on_operator_id`:
+#     * **`operator_id`**
+# * `index_items_on_university_id`:
+#     * **`university_id`**
 #
 
 require 'rails_helper'

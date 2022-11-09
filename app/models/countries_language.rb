@@ -1,10 +1,20 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: countries_languages
+# Table name: `countries_languages`
 #
-#  id          :integer          not null, primary key
-#  country_id  :integer          not null
-#  language_id :integer          not null
+# ### Columns
+#
+# Name               | Type               | Attributes
+# ------------------ | ------------------ | ---------------------------
+# **`id`**           | `integer`          | `not null, primary key`
+# **`country_id`**   | `integer`          | `not null`
+# **`language_id`**  | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_countries_languages_on_country_id_and_language_id` (_unique_):
+#     * **`country_id`**
+#     * **`language_id`**
 #
 
 class CountriesLanguage < ApplicationRecord

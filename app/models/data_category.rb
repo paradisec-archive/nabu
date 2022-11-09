@@ -1,9 +1,18 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: data_categories
+# Table name: `data_categories`
 #
-#  id   :integer          not null, primary key
-#  name :string(255)
+# ### Columns
+#
+# Name        | Type               | Attributes
+# ----------- | ------------------ | ---------------------------
+# **`id`**    | `integer`          | `not null, primary key`
+# **`name`**  | `string(255)`      |
+#
+# ### Indexes
+#
+# * `index_data_categories_on_name` (_unique_):
+#     * **`name`**
 #
 
 class DataCategory < ApplicationRecord

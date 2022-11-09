@@ -1,11 +1,25 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: grants
+# Table name: `grants`
 #
-#  id               :integer          not null, primary key
-#  collection_id    :integer
-#  grant_identifier :string(255)
-#  funding_body_id  :integer
+# ### Columns
+#
+# Name                    | Type               | Attributes
+# ----------------------- | ------------------ | ---------------------------
+# **`id`**                | `integer`          | `not null, primary key`
+# **`grant_identifier`**  | `string(255)`      |
+# **`collection_id`**     | `integer`          |
+# **`funding_body_id`**   | `integer`          |
+#
+# ### Indexes
+#
+# * `index_grants_on_collection_id`:
+#     * **`collection_id`**
+# * `index_grants_on_collection_id_and_funding_body_id`:
+#     * **`collection_id`**
+#     * **`funding_body_id`**
+# * `index_grants_on_funding_body_id`:
+#     * **`funding_body_id`**
 #
 
 class Grant < ApplicationRecord

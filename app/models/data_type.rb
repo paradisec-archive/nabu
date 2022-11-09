@@ -1,9 +1,13 @@
-# == Schema Information
+# ## Schema Information
 #
-# Table name: data_types
+# Table name: `data_types`
 #
-#  id   :integer          not null, primary key
-#  name :string(255)      not null
+# ### Columns
+#
+# Name        | Type               | Attributes
+# ----------- | ------------------ | ---------------------------
+# **`id`**    | `integer`          | `not null, primary key`
+# **`name`**  | `string(255)`      | `not null`
 #
 
 class DataType < ApplicationRecord

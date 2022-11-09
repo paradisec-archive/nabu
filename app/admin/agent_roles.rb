@@ -1,3 +1,14 @@
+# ## Schema Information
+#
+# Table name: `agent_roles`
+#
+# ### Columns
+#
+# Name        | Type               | Attributes
+# ----------- | ------------------ | ---------------------------
+# **`id`**    | `integer`          | `not null, primary key`
+# **`name`**  | `string(255)`      | `not null`
+#
 ActiveAdmin.register AgentRole do
   menu :parent => "Other Entities"
   config.sort_order = "name_asc"
