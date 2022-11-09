@@ -29,56 +29,21 @@
 * ditch timeliness - overkill and outdated
 * Test CSRF on graphql
 * fix link_to :delete
-
-## 4.0.0
-* Check upgrade guides for
-  * capitrano 2 -> 3
-  * formatastic 2 -> 3
-  * oai 0.3 -> 1.1
-  * sunspot 1 -> 2
-  * rspec_rails
-* autoprefixer-rails was deprected. Use Node.js’s Autoprefixer with PostCSS instead.
-* Do we need patch on form_for or does it work it out?
 * Should versions_controller exist?
 * Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
-* Check if vendor/assets are being pulled in properly. Maybe even move away from vendoring, can't we use gems?
 * turbolinks in layout
-* config/developement.rb: do we need to set autoload paths
-* config/developement.rb: do we need to set unloadable constants
-* application.rb the nabu paths are also in production why duplicated?
 * Why is google crawling disabled
-* Rakefile : should grapql be here or in tasks directory
-* https://relishapp.com/rspec/rspec-rails/v/3-9/docs/upgrade
-
-## 4.1
-* Upgrades
 * layouts turbolinks stuff
 * Move secrets.yml to ENV in production
-
-# 5.0
 * Can we move paper_trail to ApplicationRecord?
-* update deprecation 7.3 Halting Callback Chains via throw(:abort)
-* sunspot_rails upgrade to latest redo the configs 
 * permit! used for search is bad
-
-# 5.1
-Do we need to drop jquery?
-
-# 5.2
-* formtastic 3 -> 4
-* rubucop-grqapl
+* Do we need to drop jquery?
 * credential.yml.enc and master.key and delete secrets.yml??
-
-# 6.0
 * Should we be using image_processing?
 * Can we get rid of all the monkeypatches?
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
-* All the JS will br broken as we moved to webpack
-* ditch jquery??
-Need to get rid of apparition - using git version to make it work
-* Do we need to add bootstrap back?
+* Need to get rid of apparition - using git version to make it work
 * Do something with analytical gem
-*Move the stuff in vnedor js to using npm
 * Add everything needed to search_params

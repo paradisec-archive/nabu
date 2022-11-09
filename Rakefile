@@ -2,8 +2,5 @@
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
 require_relative "config/application"
-require 'graphql/rake_task'
 
 Rails.application.load_tasks
-
-GraphQL::RakeTask.new(schema_name: 'NabuSchema', idl_outfile: 'nabu.graphql')

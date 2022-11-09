@@ -23,6 +23,9 @@ module Nabu
     # Out Stuff
     ###################
 
+    ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
+    ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
+
     # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
 
     # This is the base directory to store the essence files in.

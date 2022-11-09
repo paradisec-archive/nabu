@@ -72,10 +72,6 @@ Rails.application.configure do
   # Our Stuff
   ########################
 
-  # Add extra autoload paths during development
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
-
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
   config.hosts << 'pepe.local'

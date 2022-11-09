@@ -106,10 +106,6 @@ Rails.application.configure do
     "/srv/nabu/manual_uploads/"
   ]
 
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'controllers', 'concerns')
-
   config.scan_directory = '/srv/nabu/scan_directory/'
   config.write_id3 = '/srv/nabu/id3_export/'
   config.write_imp = '/srv/nabu/xml_export/'

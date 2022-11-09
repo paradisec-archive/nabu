@@ -65,8 +65,4 @@ Rails.application.configure do
   config.active_job.queue_adapter = :inline
 
   config.action_mailer.default_url_options = { :host => 'example.com' }
-
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
-  ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'controllers', 'concerns')
 end
