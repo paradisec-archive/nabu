@@ -54,5 +54,5 @@ production: &production
   # username: nabu
   password: <%= ENV['NABU_DATABASE_PASSWORD'] %>
 
-uat:
+staging:
   <<: *production

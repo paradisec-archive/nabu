@@ -107,6 +107,9 @@ gem "activeadmin"
 gem "graphql"
 gem "graphiql-rails"
 
+# Search
+gem "sunspot_rails"
+
 # Other
 gem "roo" # Spreadsheet interface
 gem "roo-xls" # Add excel support to roo
@@ -116,19 +119,17 @@ gem "rmagick" # Image processing
 gem "timeliness" # Date parsing
 gem "whenever", :require => false # scheduling
 
-
-
-
-
-
-
-# Search
-gem "sunspot_rails"
-
 # Deployment
-gem "capistrano", "~> 2"
-gem "capistrano-unicorn"
-gem "capistrano-rbenv", "~> 1"
+gem "capistrano", require: false, group: :development
+gem "capistrano-bundler", require: false, group: :development
+gem "capistrano-rails", require: false, group: :development
+gem "capistrano-rbenv", require: false, group: :development
+gem "capistrano3-puma", require: false, group: :development
+
+
+
+
+
 
 group :development, :test do
   gem "test-unit"

@@ -71,12 +71,6 @@ GEM
     activerecord (7.0.4)
       activemodel (= 7.0.4)
       activesupport (= 7.0.4)
-    activerecord-session_store (2.0.0)
-      actionpack (>= 5.2.4.1)
-      activerecord (>= 5.2.4.1)
-      multi_json (~> 1.11, >= 1.11.2)
-      rack (>= 2.0.8, < 3)
-      railties (>= 5.2.4.1)
     activestorage (7.0.4)
       actionpack (= 7.0.4)
       activejob (= 7.0.4)
@@ -91,6 +85,8 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    airbrussh (1.4.1)
+      sshkit (>= 1.6.1, != 1.7.0)
     analytical (3.0.12)
     annotate (3.2.0)
       activerecord (>= 3.2, < 8.0)
@@ -100,8 +96,6 @@ GEM
       activesupport (>= 3.0.0, < 7.1)
       ruby2_keywords (>= 0.0.2, < 1.0)
     ast (2.4.2)
-    autoprefixer-rails (10.4.7.0)
-      execjs (~> 2)
     bcrypt (3.1.18)
     better_errors (2.9.1)
       coderay (>= 1.0.0)
@@ -112,25 +106,26 @@ GEM
       debug_inspector (>= 0.0.1)
     bootsnap (1.13.0)
       msgpack (~> 1.2)
-    bootstrap-sass (3.4.1)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
     builder (3.2.4)
     byebug (11.1.3)
     cancancan (3.4.0)
-    capistrano (2.15.9)
-      highline
-      net-scp (>= 1.0.0)
-      net-sftp (>= 2.0.0)
-      net-ssh (>= 2.0.14)
-      net-ssh-gateway (>= 1.1.0)
-    capistrano-platform-resources (0.1.3)
-      capistrano (< 3)
-    capistrano-rbenv (1.0.5)
-      capistrano (< 3)
-      capistrano-platform-resources (>= 0.1.3)
-    capistrano-unicorn (0.2.0)
-      capistrano (< 3.0)
+    capistrano (3.17.1)
+      airbrussh (>= 1.0.0)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 1.9.0)
+    capistrano-bundler (2.1.0)
+      capistrano (~> 3.1)
+    capistrano-rails (1.6.2)
+      capistrano (~> 3.1)
+      capistrano-bundler (>= 1.1, < 3)
+    capistrano-rbenv (2.2.0)
+      capistrano (~> 3.1)
+      sshkit (~> 1.3)
+    capistrano3-puma (5.2.0)
+      capistrano (~> 3.7)
+      capistrano-bundler
+      puma (>= 4.0, < 6.0)
     capybara (3.38.0)
       addressable
       matrix
@@ -144,7 +139,6 @@ GEM
     chronic (0.10.2)
     coderay (1.1.3)
     concurrent-ruby (1.1.10)
-    country-select (1.2.1)
     crass (1.0.6)
     daemons (1.4.1)
     database_cleaner (2.0.1)
@@ -179,7 +173,6 @@ GEM
       mail (~> 2.7)
     erubi (1.11.0)
     eventmachine (1.2.7)
-    execjs (2.8.1)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.2.0)
@@ -219,7 +212,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    haml (6.0.8)
+    haml (6.0.9)
       temple (>= 0.8.2)
       thor
       tilt
@@ -231,7 +224,6 @@ GEM
     has_scope (0.8.0)
       actionpack (>= 5.2)
       activesupport (>= 5.2)
-    highline (2.0.3)
     htmlentities (4.3.4)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
@@ -297,13 +289,9 @@ GEM
       timeout
     net-scp (4.0.0)
       net-ssh (>= 2.6.5, < 8.0.0)
-    net-sftp (4.0.0)
-      net-ssh (>= 5.0.0, < 8.0.0)
     net-smtp (0.3.3)
       net-protocol
     net-ssh (7.0.1)
-    net-ssh-gateway (2.0.0)
-      net-ssh (>= 4.0.0)
     newrelic_rpm (8.12.0)
     nilify_blanks (1.4.0)
       activerecord (>= 4.0.0)
@@ -451,8 +439,6 @@ GEM
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
-    sassc (2.4.0)
-      ffi (~> 1.9)
     selenium-webdriver (4.6.1)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -468,6 +454,9 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    sshkit (1.21.3)
+      net-scp (>= 1.1.2)
+      net-ssh (>= 2.8.0)
     stimulus-rails (1.1.1)
       railties (>= 6.0.0)
     streamio-ffmpeg (3.0.2)
@@ -521,27 +510,26 @@ GEM
       chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.5)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   activeadmin
-  activerecord-session_store
   analytical
   annotate
   apparition!
   better_errors
   binding_of_caller
   bootsnap
-  bootstrap-sass
   cancancan
-  capistrano (~> 2)
-  capistrano-rbenv (~> 1)
-  capistrano-unicorn
+  capistrano
+  capistrano-bundler
+  capistrano-rails
+  capistrano-rbenv
+  capistrano3-puma
   capybara
-  country-select
   daemons
   database_cleaner
   debug
