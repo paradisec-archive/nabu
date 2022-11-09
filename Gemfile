@@ -120,8 +120,7 @@ gem "whenever", :require => false # scheduling
 
 
 
-# Admin
-gem "bootstrap-sass"
+
 
 # Search
 gem "sunspot_rails"
