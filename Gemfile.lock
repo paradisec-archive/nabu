@@ -158,10 +158,6 @@ GEM
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
       railties (>= 3.2)
-    email_spec (2.2.1)
-      htmlentities (~> 4.3.3)
-      launchy (~> 2.1)
-      mail (~> 2.7)
     erubi (1.11.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
@@ -214,7 +210,6 @@ GEM
     has_scope (0.8.0)
       actionpack (>= 5.2)
       activesupport (>= 5.2)
-    htmlentities (4.3.4)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     importmap-rails (1.1.5)
@@ -423,6 +418,14 @@ GEM
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     selenium-webdriver (4.6.1)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -510,7 +513,6 @@ DEPENDENCIES
   delayed_job_active_record
   devise
   dotenv-rails
-  email_spec
   factory_bot_rails
   graphiql-rails
   graphql
@@ -540,6 +542,7 @@ DEPENDENCIES
   rubocop-rake
   rubocop-rspec
   ruby-filemagic
+  sassc-rails
   selenium-webdriver
   sprockets-rails
   stimulus-rails
