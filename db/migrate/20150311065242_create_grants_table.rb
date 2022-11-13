@@ -1,4 +1,4 @@
-class CreateGrantsTable < ActiveRecord::Migration
+class CreateGrantsTable < ActiveRecord::Migration[4.2]
   def up
     create_table :grants do |t|
       t.belongs_to :collection, index: true

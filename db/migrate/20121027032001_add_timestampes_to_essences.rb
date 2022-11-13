@@ -1,4 +1,4 @@
-class AddTimestampesToEssences < ActiveRecord::Migration
+class AddTimestampesToEssences < ActiveRecord::Migration[4.2]
   def change
     change_table :essences do |t|
       t.timestamps

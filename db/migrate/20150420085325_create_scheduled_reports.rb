@@ -1,4 +1,4 @@
-class CreateScheduledReports < ActiveRecord::Migration
+class CreateScheduledReports < ActiveRecord::Migration[4.2]
   def up
     create_table :scheduled_reports do |t|
       t.integer :collection_id, null: false

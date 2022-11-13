@@ -9,9 +9,16 @@
 # **`id`**          | `integer`          | `not null, primary key`
 # **`identifier`**  | `string(255)`      | `not null`
 # **`party_type`**  | `integer`          | `not null`
-# **`created_at`**  | `datetime`         | `not null`
-# **`updated_at`**  | `datetime`         | `not null`
+# **`created_at`**  | `datetime`         |
+# **`updated_at`**  | `datetime`         |
 # **`user_id`**     | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_party_identifiers_on_party_type`:
+#     * **`party_type`**
+# * `index_party_identifiers_on_user_id`:
+#     * **`user_id`**
 #
 class PartyIdentifier < ApplicationRecord
   TYPES = [:NLA, :ORCID]

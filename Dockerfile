@@ -49,4 +49,4 @@ RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
 VOLUME /app
 WORKDIR /app
 
-CMD ./entrypoint.sh
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]

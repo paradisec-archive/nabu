@@ -1,4 +1,4 @@
-class AddAccessToCollection < ActiveRecord::Migration
+class AddAccessToCollection < ActiveRecord::Migration[4.2]
   def change
     change_table :collections do |t|
       t.belongs_to :access_condition

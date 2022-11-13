@@ -1,4 +1,4 @@
-class CreateItemDataTypes < ActiveRecord::Migration
+class CreateItemDataTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :item_data_types do |t|
       t.references :item, null: false

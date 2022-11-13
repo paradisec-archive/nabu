@@ -36,8 +36,8 @@
 # **`tracking`**                 | `text(65535)`      |
 # **`url`**                      | `string(255)`      |
 # **`west_limit`**               | `float(24)`        |
-# **`created_at`**               | `datetime`         | `not null`
-# **`updated_at`**               | `datetime`         | `not null`
+# **`created_at`**               | `datetime`         |
+# **`updated_at`**               | `datetime`         |
 # **`access_condition_id`**      | `integer`          |
 # **`collection_id`**            | `integer`          | `not null`
 # **`collector_id`**             | `integer`          | `not null`

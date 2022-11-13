@@ -1,6 +1,6 @@
-class CreateItems < ActiveRecord::Migration
+class CreateItems < ActiveRecord::Migration[4.2]
   def change
-    create_table :items do |t|
+    create_table :items, charset: "latin1" do |t|
       t.belongs_to :collection,  :null => false
       t.string     :identifier,  :null => false
       t.boolean    :private
@@ -63,7 +63,7 @@ class CreateItems < ActiveRecord::Migration
       t.string :name, :null => false
     end
 
-    create_table :discourse_types do |t|
+    create_table :discourse_types, charset: "latin1" do |t|
       t.string :name,   :null => false
     end
     add_index :discourse_types, :name, :unique => true

@@ -1,2 +1,3 @@
 = javascript_importmap_tags 'active_admin_importmap'
-= javascript_include_tag APP_CONFIG[:google_maps_url]
+- if Rails.env.production?
+  = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'

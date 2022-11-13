@@ -1,4 +1,4 @@
-class AddArchiveInfoToItems < ActiveRecord::Migration
+class AddArchiveInfoToItems < ActiveRecord::Migration[4.2]
   def change
     change_table :items do |t|
       t.boolean  :metadata_exportable

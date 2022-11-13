@@ -1,4 +1,4 @@
-class CreateDataTypes < ActiveRecord::Migration
+class CreateDataTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :data_types do |t|
       t.string :name, null: false, index: true

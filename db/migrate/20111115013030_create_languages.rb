@@ -1,6 +1,6 @@
-class CreateLanguages < ActiveRecord::Migration
+class CreateLanguages < ActiveRecord::Migration[4.2]
   def change
-    create_table :languages do |t|
+    create_table :languages, charset: "latin1" do |t|
       t.string :code
       t.string :name
     end

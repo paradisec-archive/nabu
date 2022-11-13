@@ -1,4 +1,4 @@
-class CreateCountryLatlonBoundary < ActiveRecord::Migration
+class CreateCountryLatlonBoundary < ActiveRecord::Migration[4.2]
   def change
     create_table :latlon_boundaries do |t|
       t.belongs_to :country,   :null => false

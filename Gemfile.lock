@@ -533,6 +533,7 @@ DEPENDENCIES
   rails (~> 7.0.4)
   rails-controller-testing
   recaptcha
+  rexml
   rmagick
   rollbar
   roo

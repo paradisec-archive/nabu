@@ -1,4 +1,4 @@
-class AddGrantsToCollections < ActiveRecord::Migration
+class AddGrantsToCollections < ActiveRecord::Migration[4.2]
   def change
 
     create_table :funding_bodies do |t|

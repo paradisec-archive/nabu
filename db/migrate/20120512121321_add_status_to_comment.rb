@@ -1,4 +1,4 @@
-class AddStatusToComment < ActiveRecord::Migration
+class AddStatusToComment < ActiveRecord::Migration[4.2]
   def change
     change_table :comments do |t|
       t.string :status

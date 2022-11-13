@@ -1,4 +1,4 @@
-class AddFieldsToUser < ActiveRecord::Migration
+class AddFieldsToUser < ActiveRecord::Migration[4.2]
   def change
     change_table :users do |t|
       t.string :address

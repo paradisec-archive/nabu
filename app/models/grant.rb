@@ -15,11 +15,10 @@
 #
 # * `index_grants_on_collection_id`:
 #     * **`collection_id`**
-# * `index_grants_on_collection_id_and_funding_body_id`:
-#     * **`collection_id`**
-#     * **`funding_body_id`**
 # * `index_grants_on_funding_body_id`:
 #     * **`funding_body_id`**
+# * `index_grants_on_grant_identifier`:
+#     * **`grant_identifier`**
 #
 
 class Grant < ApplicationRecord

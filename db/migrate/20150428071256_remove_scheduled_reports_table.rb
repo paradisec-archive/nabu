@@ -1,4 +1,4 @@
-class RemoveScheduledReportsTable < ActiveRecord::Migration
+class RemoveScheduledReportsTable < ActiveRecord::Migration[4.2]
   def up
     drop_table :scheduled_reports
   end

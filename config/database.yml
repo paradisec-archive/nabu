@@ -51,8 +51,9 @@ test:
 production: &production
   <<: *default
   database: nabu
-  # username: nabu
+  username: nabu
   password: <%= ENV['NABU_DATABASE_PASSWORD'] %>
+  host: <%= ENV['NABU_DATABASE_HOSTNAME'] %>
 
 staging:
   <<: *production

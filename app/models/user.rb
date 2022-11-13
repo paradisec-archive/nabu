@@ -36,8 +36,8 @@
 # **`sign_in_count`**             | `integer`          | `default(0)`
 # **`unconfirmed_email`**         | `string(255)`      |
 # **`unlock_token`**              | `string(255)`      |
-# **`created_at`**                | `datetime`         | `not null`
-# **`updated_at`**                | `datetime`         | `not null`
+# **`created_at`**                | `datetime`         |
+# **`updated_at`**                | `datetime`         |
 # **`rights_transferred_to_id`**  | `integer`          |
 #
 # ### Indexes

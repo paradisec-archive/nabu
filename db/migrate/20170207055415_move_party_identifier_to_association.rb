@@ -1,4 +1,4 @@
-class MovePartyIdentifierToAssociation < ActiveRecord::Migration
+class MovePartyIdentifierToAssociation < ActiveRecord::Migration[4.2]
   def up
     existing_identifiers = User.select([:id, :party_identifier])
                                .reject{|a| a.party_identifier.nil?}

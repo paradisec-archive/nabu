@@ -1,9 +1,6 @@
-class AddMissingIndexes < ActiveRecord::Migration
+class AddMissingIndexes < ActiveRecord::Migration[4.2]
   def change
-    add_index :collections, :access_condition_id
-    add_index :grants, :collection_id
-    add_index :grants, :funding_body_id
-    add_index :grants, [:collection_id, :funding_body_id]
+#    add_index :collections, :access_condition_id
     add_index :users, :rights_transferred_to_id
     add_index :items, :collector_id
     add_index :items, :operator_id

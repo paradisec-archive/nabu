@@ -1,6 +1,6 @@
-class AddCountryTable < ActiveRecord::Migration
+class AddCountryTable < ActiveRecord::Migration[4.2]
   def change
-    create_table :countries do |t|
+    create_table :countries, charset: "latin1" do |t|
       t.string :code
       t.string :name
     end

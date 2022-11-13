@@ -1,4 +1,4 @@
-class UseNorthSouthForGeo < ActiveRecord::Migration
+class UseNorthSouthForGeo < ActiveRecord::Migration[4.2]
   def change
     change_table :collections do |t|
       t.float :north_limit

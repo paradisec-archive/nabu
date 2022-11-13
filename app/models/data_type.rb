@@ -9,6 +9,11 @@
 # **`id`**    | `integer`          | `not null, primary key`
 # **`name`**  | `string(255)`      | `not null`
 #
+# ### Indexes
+#
+# * `index_data_types_on_name`:
+#     * **`name`**
+#
 
 class DataType < ApplicationRecord
   has_paper_trail

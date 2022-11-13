@@ -1,28 +1,62 @@
 # Nabu Catalog
 
-## TEMP
-
-docker-compose build
-alias nabu="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu"
-alias nabu_test="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app -e RAILS_ENV=test nabu_nabu"
-
-
 ## Setting up your dev environment
 
-This application has been configured with *guard*, it will ensure
+This application has been configured around docker-compose
 
+```bash
+# Build the base image
+docker-compose build
+
+# Bring up all the containers
+docker-compose up
+```
+
+This brings up the following containers
+* app - the rails app
+* search - Solr instance for search (dev + test)
+* db - mysql data base (dev + test)
 * Tests are run
-* Solr is running for dev and test
-* Development web server is started
-* All of the above is restarted when you edit files
+
+You should set the following alias to exec commands easily inside the container
+
+```bash
+alias nabu="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu"
+alias nabu_test="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app -e RAILS_ENV=test nabu_nabu"
+```
+
+You can then easily run all the standard commands by prefixing with ***nabu***
 
 ``` bash
-bundle install
-bundle exec rake db:create
-bundle exec rake db:schema:load
-RAILS_ENV=test bundle exec rake db:schema:load
-bundle exec guard
+nabu bundle install
+nabu bundle exec rake db:create
+nabu bundle exec rake db:schema:load
+nabu_test bundle exec rake db:schema:load
+nabu bundle exec guard # Test runner
 ```
+
+
+## Production
+
+The application is designed to be deployed using an AWS code pipeline deployment into containers using CKD
+
+To bootstrap a new account
+
+```bash
+# Setup an AWS account and credentials as per your preferred method and set the environment to use it
+AWS_PROFILE=nabu
+REGION=ap-southeast-2
+ACCOUNT=$(aws sts get-caller-identity | jq -r .Account)
+cdk bootstrap aws://$ACCOUNT/$REGION
+```
+
+```bash
+task=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep DbMigrate)
+cluster=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
+aws ecs run-task --cluster $cluster --task-definition $task
+```
+
+
 
 ## Deployment
 We are using Capistrano for deployment.

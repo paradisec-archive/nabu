@@ -1,4 +1,4 @@
-class CreateItemUsers < ActiveRecord::Migration
+class CreateItemUsers < ActiveRecord::Migration[4.2]
   def change
     create_table :item_users do |t|
       t.belongs_to :item,   :null => false

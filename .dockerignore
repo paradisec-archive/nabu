@@ -1,0 +1,13 @@
+/**
+!/app
+!/bin
+!/config
+!/db
+!/lib
+!/public
+!/vendor
+/vendor/bundle
+!/Gemfile*
+!/config.ru
+!/nabu.graphql
+!/Rakefile

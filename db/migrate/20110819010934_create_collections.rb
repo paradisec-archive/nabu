@@ -1,6 +1,6 @@
-class CreateCollections < ActiveRecord::Migration
+class CreateCollections < ActiveRecord::Migration[4.2]
   def change
-    create_table :collections do |t|
+    create_table :collections, charset: "latin1" do |t|
       t.string     :identifier, :null => false
       t.string     :title, :null => false
       t.text       :description, :null => false

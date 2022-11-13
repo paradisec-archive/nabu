@@ -1,4 +1,4 @@
-class ChangeScheduledForOnCollections < ActiveRecord::Migration
+class ChangeScheduledForOnCollections < ActiveRecord::Migration[4.2]
   def up
     change_column :scheduled_reports, :scheduled_for, :string, null: false
   end

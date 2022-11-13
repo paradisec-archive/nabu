@@ -1,4 +1,4 @@
-class CreateEssences < ActiveRecord::Migration
+class CreateEssences < ActiveRecord::Migration[4.2]
   def change
     create_table :essences do |t|
       t.belongs_to :item

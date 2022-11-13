@@ -1,4 +1,4 @@
-class CreatePartyIdentifiers < ActiveRecord::Migration
+class CreatePartyIdentifiers < ActiveRecord::Migration[4.2]
   def change
     create_table :party_identifiers do |t|
       t.references :user, null: false, index: true

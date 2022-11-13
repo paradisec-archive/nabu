@@ -1,4 +1,4 @@
-class AppendEssencesCounterCache < ActiveRecord::Migration
+class AppendEssencesCounterCache < ActiveRecord::Migration[4.2]
   def up
     Item.pluck(:id).each do |id|
       Item.reset_counters(id, :essences)

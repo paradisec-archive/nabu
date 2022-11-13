@@ -1,4 +1,4 @@
-class AddLatLongToLanguage < ActiveRecord::Migration
+class AddLatLongToLanguage < ActiveRecord::Migration[4.2]
   def change
     change_table :languages do |t|
       t.float :north_limit

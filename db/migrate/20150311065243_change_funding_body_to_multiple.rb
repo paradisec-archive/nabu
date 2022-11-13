@@ -1,4 +1,4 @@
-class ChangeFundingBodyToMultiple < ActiveRecord::Migration
+class ChangeFundingBodyToMultiple < ActiveRecord::Migration[4.2]
   def up
     Collection.class_eval do
       belongs_to :old_funding_body, class_name: 'FundingBody', foreign_key: 'funding_body_id'

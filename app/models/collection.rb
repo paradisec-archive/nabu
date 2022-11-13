@@ -25,8 +25,8 @@
 # **`tape_location`**          | `string(255)`      |
 # **`title`**                  | `string(255)`      | `not null`
 # **`west_limit`**             | `float(24)`        |
-# **`created_at`**             | `datetime`         | `not null`
-# **`updated_at`**             | `datetime`         | `not null`
+# **`created_at`**             | `datetime`         |
+# **`updated_at`**             | `datetime`         |
 # **`access_condition_id`**    | `integer`          |
 # **`collector_id`**           | `integer`          | `not null`
 # **`field_of_research_id`**   | `integer`          |
