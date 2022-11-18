@@ -16,13 +16,12 @@ This brings up the following containers
 * app - the rails app
 * search - Solr instance for search (dev + test)
 * db - mysql data base (dev + test)
-* Tests are run
 
 You should set the following alias to exec commands easily inside the container
 
 ```bash
-alias nabu="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app nabu_nabu"
-alias nabu_test="docker run -it --rm  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -w /app -e RAILS_ENV=test nabu_nabu"
+alias nabu="docker-compose exec app"
+alias nabu_test="docker-compose exec -e RAILS_ENV=test app"
 ```
 
 You can then easily run all the standard commands by prefixing with ***nabu***

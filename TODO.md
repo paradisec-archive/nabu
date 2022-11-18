@@ -1,5 +1,7 @@
 # TODO
 
+* Add storage to NABU so we don't lose anything when containers die
+
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Move capctha secrets our of git
@@ -22,7 +24,7 @@
 * Should we use active job and let it use delayed_job
 * DB is all latin1 can we move to utf8mb4
 * SHoudl we add has_paper_trail to party_identifier
-*set set_paper_trail_whodunnit - check live db to see if it's empty for users
+* set set_paper_trail_whodunnit - check live db to see if it's empty for users
 * Move enabling paper trail to base model and then disable on users specifically
 * streamio-ffmpeg replace with something more modern
 * ditch timeliness - overkill and outdated

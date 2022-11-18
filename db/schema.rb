@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_07_111509) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_18_214208) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil
@@ -347,7 +347,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_07_111509) do
     t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.string "password_salt"
     t.string "confirmation_token"
     t.datetime "confirmed_at", precision: nil
     t.datetime "confirmation_sent_at", precision: nil
