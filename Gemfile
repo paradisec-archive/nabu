@@ -88,7 +88,6 @@ gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this
 # Analytics and instrumentation
 gem "analytical" # Add google analytics TODO: outdated replace with something newer
 gem "rollbar" # Error reporting
-gem "newrelic_rpm" # Performance monitoring
 
 # AAA
 gem "devise" # Authentication

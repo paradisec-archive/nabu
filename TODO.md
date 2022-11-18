@@ -11,10 +11,9 @@
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Write OAI tests and get rid of the monkey patch once we have data to test with
-* CHeck out lib/oai_provider is this more monkeypatching?
-* DItch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
-* Swithc rollbar to using an environemtn variable for deploy. Also update the docs to reflect this
-* Is newrelic being used? Do we need it and rollbar? Check the ENV variable is set in production and how we do this
+* Check out lib/oai_provider is this more monkeypatching?
+* Ditch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
+* Switch rollbar to using an env variable for deploy. Also update the docs to reflect this
 * MOve to recaptcha v3
 * Rotate the recaptcha keys as they used to be in github
 * Should we use authenticate_users on dashboard or should cancan just do it?

@@ -277,7 +277,6 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     net-ssh (7.0.1)
-    newrelic_rpm (8.12.0)
     nilify_blanks (1.4.0)
       activerecord (>= 4.0.0)
       activesupport (>= 4.0.0)
@@ -525,7 +524,6 @@ DEPENDENCIES
   kaminari
   letter_opener
   mysql2 (~> 0.5)
-  newrelic_rpm
   nilify_blanks
   oai
   paper_trail
