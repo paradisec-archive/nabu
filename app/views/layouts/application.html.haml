@@ -1,5 +1,5 @@
 !!! html5
-%html
+%html{ 'data-turbo' => 'false' }
   %head
     :javascript
       const calendarImagePath = "#{asset_path('calendar.png')}";
@@ -7,6 +7,8 @@
     = raw analytical.head_prepend_javascript
     %title= @page_title || 'Nabu'
     %meta{ :name => 'viewport', :content => 'width=device-width,initial-scale=1' }
+    %meta{ :name => 'turbo-visit-control', :content => 'reload' }
+
     = csrf_meta_tags
     = csp_meta_tag
 
