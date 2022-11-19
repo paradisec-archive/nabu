@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+export AWS_OUTPUT="json"
+
+TASK_NAME=$1
+
+if [ -z "$TASK_NAME" ]; then
+  TASKS=$(aws ecs list-task-definitions \
+    | jq -r '.taskDefinitionArns | .[]' \
+    | sed 's/.*task-definition\/StageCdkStack//;s/Definition.*//')
+
+  echo "Please specify a task to run"
+  echo Select from $TASKS
+  exit 1
+fi
+
+echo "Getting task..."
+TASK=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep $TASK_NAME | tail -1)
+
+echo "Getting cluster..."
+CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
+
+echo "Getting security group..."
+APP_SG=$(aws ec2 describe-security-groups \
+  | jq -r '.SecurityGroups | .[] | select(.GroupName | test("StageCdkStack-AppServiceSecurityGroup")) | .GroupId')
+
+echo "Finding VPC..."
+VPC_ID=$(aws ec2 describe-vpcs \
+  --query 'Vpcs[?Tags[?Value == `StageCdkStack`]]' \
+  | jq -r '.[0].VpcId')
+
+echo "Finding Subnet..."
+SUBNET_ID=$(aws ec2 describe-instances \
+  | jq -r '.Reservations | .[] | .Instances | .[] | select(.Tags != null) | select(.Tags | .[] | .Value | test("tageCdkStack-ClusterEcsAsgA")) | .SubnetId' \
+  | tail -1)
+
+echo "Running task..."
+aws ecs run-task \
+  --cluster $CLUSTER \
+  --task-definition $TASK \
+  --network-configuration '{ "awsvpcConfiguration": { "subnets": ["'$SUBNET_ID'"], "securityGroups": ["'$APP_SG'"] } }'

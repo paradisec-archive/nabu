@@ -51,8 +51,9 @@ cdk bootstrap aws://$ACCOUNT/$REGION
 ```
 
 ```bash
-task=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep DbMigrate)
-cluster=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
+taskName=DbMigrate|Reindex
+task=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep $taskName); echo $task
+cluster=$(aws ecs list-clusters | jq -r '.clusterArns | .[]'); echo $cluster
 aws ecs run-task --cluster $cluster --task-definition $task
 ```
 

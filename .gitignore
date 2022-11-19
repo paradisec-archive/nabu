@@ -39,6 +39,7 @@
 /solr/test/data
 /solr/development/data
 /solr/default/data
+/solr/production/data
 /solr/pids
 
 # dotenv

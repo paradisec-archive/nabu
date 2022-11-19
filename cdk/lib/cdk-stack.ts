@@ -82,12 +82,38 @@ export class CdkStack extends cdk.Stack {
 
     cluster.addCapacity('EcsAsg', {
       minCapacity: 1,
-      instanceType: new ec2.InstanceType('t3.medium'),
+      instanceType: new ec2.InstanceType('c5a.large'),
       associatePublicIpAddress: true,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC,
       },
       // machineImage: new ecs.BottleRocketImage(),
+    });
+
+    //////////////////////////
+    // Search
+    //////////////////////////
+
+    const searchTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SearchTaskDefinition', {
+      networkMode: ecs.NetworkMode.AWS_VPC,
+    });
+
+    const searchImage = ecs.ContainerImage.fromAsset('..', { file: 'docker/search.Dockerfile' });
+
+    searchTaskDefinition.addContainer('SearchContainer', {
+      memoryLimitMiB: 512,
+      image: searchImage,
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SearchContainer' }),
+    });
+
+    const searchService = new ecs.Ec2Service(this, 'SearchService', {
+      cluster,
+      taskDefinition: searchTaskDefinition,
+      cloudMapOptions: {
+        name: 'search',
+        cloudMapNamespace: dnsNamespace,
+        dnsRecordType: servicediscovery.DnsRecordType.A,
+      },
     });
 
     //////////////////////////
@@ -97,11 +123,11 @@ export class CdkStack extends cdk.Stack {
     const appTaskDefinition = new ecs.Ec2TaskDefinition(this, 'AppTaskDefinition', {
       networkMode: ecs.NetworkMode.AWS_VPC, // NOTE: We need t use A records for service discovery and that us only supported in AWS_VPC mode
     });
-    const appImage = ecs.ContainerImage.fromAsset('..', { file: 'production.Dockerfile' });
+    const appImage = ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' });
 
     const appArgs = {
       image: appImage,
-      memoryLimitMiB: 1024,
+      memoryLimitMiB: 512,
       environment: {
         RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
         SOLR_URL: 'http://search.nabu:8983/solr/production',
@@ -123,6 +149,7 @@ export class CdkStack extends cdk.Stack {
       taskDefinition: appTaskDefinition,
     });
     appService.connections.allowToDefaultPort(db);
+    appService.connections.allowTo(searchService, new ec2.Port({ fromPort: 8983, toPort: 8983, protocol: ec2.Protocol.TCP, stringRepresentation: 'Solr 8983'  }));
 
     const appLb = new elbv2.ApplicationLoadBalancer(this, 'AppLoadBalancer', {
       vpc,
@@ -143,38 +170,22 @@ export class CdkStack extends cdk.Stack {
       }
     });
 
-    //////////////////////////
-    // Search
-    //////////////////////////
-
-    const searchTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SearchTaskDefinition', {
-      networkMode: ecs.NetworkMode.AWS_VPC,
-    });
-
-    searchTaskDefinition.addContainer('SearchContainer', {
-      memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRegistry('solr:7.7.2'),
-      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SearchContainer' }),
-    });
-
-    const searchService = new ecs.Ec2Service(this, 'SearchService', {
-      cluster,
-      taskDefinition: searchTaskDefinition,
-      cloudMapOptions: {
-        name: 'search',
-        cloudMapNamespace: dnsNamespace,
-        dnsRecordType: servicediscovery.DnsRecordType.A,
-      },
-    });
 
     //////////////////////////
     // Utility Tasks
     //////////////////////////
 
-    const dbMigrateDefinition = new ecs.Ec2TaskDefinition(this, 'DbMigrateDefinition');
+    const dbMigrateDefinition = new ecs.Ec2TaskDefinition(this, 'DbMigrateDefinition', { networkMode: ecs.NetworkMode.AWS_VPC });
     dbMigrateDefinition.addContainer('DbMigrateContainer', {
       command: ['bin/rails', 'db:migrate'],
       logging: new ecs.AwsLogDriver({ streamPrefix: 'DbMigrate' }),
+      ...appArgs,
+    });
+
+    const reindexDefinition = new ecs.Ec2TaskDefinition(this, 'ReindexDefinition', { networkMode: ecs.NetworkMode.AWS_VPC });
+    reindexDefinition.addContainer('ReIndexContainer', {
+      command: ['bin/rails', 'sunspot:reindex'],
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'SunspotReindex' }),
       ...appArgs,
     });
 

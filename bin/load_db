@@ -57,6 +57,18 @@ RULE_ID=$(aws ec2 authorize-security-group-ingress \
   --source-group "${SG_ID}" \
   | jq -r .SecurityGroupRules[0].SecurityGroupRuleId)
 
+echo "Finding Search Securityy Group..."
+SEARCH_SG=$(aws ec2 describe-security-groups \
+  | jq -r '.SecurityGroups | .[] | select(.GroupName | test("StageCdkStack-SearchServiceSecurityGroup")) | .GroupId')
+
+echo "Updating Search Security Group..."
+SEARCH_RULE_ID=$(aws ec2 authorize-security-group-ingress \
+  --group-id "${SEARCH_SG}" \
+  --protocol tcp \
+  --port 8983 \
+  --source-group "${SG_ID}" \
+  | jq -r .SecurityGroupRules[0].SecurityGroupRuleId)
+
 
 echo "Creating EC2 Instance..."
 INSTANCE_ID=$(aws ec2 run-instances \
@@ -110,6 +122,11 @@ aws ec2 revoke-security-group-ingress \
   --group-id "${RDS_SG}" \
   --security-group-rule-ids "${RULE_ID}"
 
+aws ec2 revoke-security-group-ingress \
+  --group-id "${SEARCH_SG}" \
+  --security-group-rule-ids "${SEARCH_RULE_ID}"
+
+
 ssh-add -d "${KEYNAME}.pem"
 
 rm "${KEYNAME}.pem"
@@ -122,4 +139,3 @@ aws ec2 wait instance-terminated \
 
 aws ec2 delete-security-group \
   --group-id "${SG_ID}"
-
