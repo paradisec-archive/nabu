@@ -13,8 +13,7 @@
     = stylesheet_link_tag 'application', 'data-turbo-track': 'reload'
     = javascript_importmap_tags
 
-    - if Rails.env.production?
-      = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'
+    = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'
 
     - analytical.identify(current_user.id, :email => current_user.email) if current_user
     = raw analytical.head_append_javascript
