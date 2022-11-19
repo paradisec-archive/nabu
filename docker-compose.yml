@@ -30,7 +30,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 
   search:
-    image: solr:7.7.2
+    image: solr:8
     ports:
       - '8983:8983'
     volumes:
