@@ -2,15 +2,11 @@
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
-
-
-
+* Why is google crawling disabled
 
 
 
 # Security
-
-* the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Had to add lots of optional => true, are they really or should we fix the tests?
 
 # General NOtes
@@ -23,7 +19,6 @@
 * Check out lib/oai_provider is this more monkeypatching?
 * Ditch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
 * Should we use authenticate_users on dashboard or should cancan just do it?
-* Check production DB: can we drop password_salt on users
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
 * Should we use active job and let it use delayed_job
 * DB is all latin1 can we move to utf8mb4
@@ -34,17 +29,13 @@
 * ditch timeliness - overkill and outdated
 * Test CSRF on graphql
 * fix link_to :delete
-* Should versions_controller exist?
 * Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
 * turbolinks in layout
-* Why is google crawling disabled
 * layouts turbolinks stuff
-* Move secrets.yml to ENV in production
 * Can we move paper_trail to ApplicationRecord?
 * permit! used for search is bad
 * Do we need to drop jquery?
-* credential.yml.enc and master.key and delete secrets.yml??
 * Should we be using image_processing?
 * Can we get rid of all the monkeypatches?
 * There dont' seem to be any graphql tests???
