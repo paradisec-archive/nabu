@@ -108,7 +108,7 @@ describe EssencesController, type: :controller do
       # it 'should make a record' do
       #   controller.stub!(:render)
       #   File.stub(:exist?) { true }
-      #   controller.should_receive(:send_file)
+      #   expect(controller).to receive(:send_file)
       #
       #   expect{ get :download, params }.to change{ Download.count }.by(1)
       #   expect(Download.last.user).to eq(user)

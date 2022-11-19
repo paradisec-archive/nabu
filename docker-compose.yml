@@ -16,8 +16,6 @@ services:
     volumes:
       - .:/app
       - ./vendor/bundle:/bundler
-    environment:
-      RAILS_ENV: development
 
   db:
     image: mysql:5.5

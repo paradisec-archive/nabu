@@ -7,7 +7,7 @@
 #        @team = Factory :team
 #        select2_ajax @team.name, :from => "Select a Team", :minlength => 4
 #        click_button "Join"
-#        page.should have_content "You are now on '#{@team.name}'."
+#        expect(page).to have_content "You are now on '#{@team.name}'."
 #    end
 
 module CapybaraExt

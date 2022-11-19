@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe EssenceDestructionService do
   let(:essence) { build(:sound_essence, filename: 'this_file_should_definitely_not_exist') }
@@ -6,7 +6,7 @@ describe EssenceDestructionService do
   context 'when essence file is present on the server' do
     before do
       #so there are no surprise directory deletions from the service tests
-      FileUtils.stub(:rm).and_return nil
+      allow(FileUtils).to receive(:rm).and_return(nil)
     end
 
     it 'should proceed without errors' do
@@ -20,7 +20,7 @@ describe EssenceDestructionService do
   context 'when essence file is not present on the server' do
     before do
       #so there are no surprise directory deletions from the service tests
-      FileUtils.stub(:rm).and_raise StandardError.new("No such file or directory @ unlink_internal - #{essence.path}")
+      allow(FileUtils).to receive(:rm).and_raise StandardError.new("No such file or directory @ unlink_internal - #{essence.path}")
     end
 
     it 'should proceed with errors' do

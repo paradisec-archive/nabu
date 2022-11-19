@@ -75,7 +75,7 @@ describe TranscodeEssenceFileService do
     end
 
     it 'does not try to create an input movie object' do
-      FFMPEG::Movie.should_not_receive(:new)
+      expect(FFMPEG::Movie).not_to receive(:new)
       transcode_essence_file_service.run
     end
   end

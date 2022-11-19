@@ -10,7 +10,7 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        printed_output.should include('Checked 1 essence checksum in 1 file. 1 passed | 0 failed')
+        expect(printed_output).to include('Checked 1 essence checksum in 1 file. 1 passed | 0 failed')
       end
     end
   end
@@ -24,9 +24,9 @@ describe ChecksumAnalyserService do
           ])
         end
 
-        printed_output.should include('Checked 3 essence checksums in 1 file. 1 passed | 2 failed')
-        printed_output.should include('AA3-001-G.wav: FAILED')
-        printed_output.should include('AA3-001-X.wav: FAILED')
+        expect(printed_output).to include('Checked 3 essence checksums in 1 file. 1 passed | 2 failed')
+        expect(printed_output).to include('AA3-001-G.wav: FAILED')
+        expect(printed_output).to include('AA3-001-X.wav: FAILED')
       end
     end
   end

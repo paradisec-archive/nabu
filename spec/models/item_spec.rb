@@ -75,7 +75,7 @@ describe Item do
   #     let(:doi) { 'something' }
   #
   #     it 'uses DOI, not URI' do
-  #       item.should_receive(:doi) { doi }.twice
+  #       expect(item).to receive(:doi) { doi }.twice
   #       item.citation
   #     end
   #   end
@@ -84,8 +84,8 @@ describe Item do
   #     let(:doi) { nil }
   #
   #     it 'uses URI' do
-  #       item.should_receive(:doi) { doi }.once
-  #       item.should_receive(:full_path) { '' }
+  #       expect(item).to receive(:doi) { doi }.once
+  #       expect(item).to receive(:full_path) { '' }
   #       item.citation
   #     end
   #   end

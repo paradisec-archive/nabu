@@ -147,7 +147,6 @@ group :development do
 end
 
 group :test do
-  gem "apparition", github: "twalpole/apparition" # Headless chrome
   gem "factory_bot_rails"
   gem "database_cleaner"
 end

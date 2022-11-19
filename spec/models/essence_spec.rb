@@ -37,7 +37,7 @@ describe Essence do
       let(:doi) { 'something' }
 
       it 'uses DOI, not URI' do
-        essence.should_receive(:doi) { doi }.twice
+        expect(essence).to receive(:doi) { doi }.twice
         essence.citation
       end
 
@@ -50,8 +50,8 @@ describe Essence do
       let(:doi) { nil }
 
       it 'uses URI' do
-        essence.should_receive(:doi) { doi }.once
-        essence.should_receive(:full_path) { '' }
+        expect(essence).to receive(:doi) { doi }.once
+        expect(essence).to receive(:full_path) { '' }
         essence.citation
       end
 

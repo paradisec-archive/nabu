@@ -8,14 +8,14 @@ describe UserMergerService do
   context 'when merging a user' do
     context ' with itself' do
       it 'should not perform any actions' do
-        Item.should_not_receive(:update_all)
-        Item.should_not_receive(:update_all)
-        ItemUser.should_not_receive(:update_all)
-        ItemAdmin.should_not_receive(:update_all)
-        ItemAgent.should_not_receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(ItemUser).not_to receive(:update_all)
+        expect(ItemAdmin).not_to receive(:update_all)
+        expect(ItemAgent).not_to receive(:update_all)
 
-        user.should_not_receive(:destroy)
-        user.should_not_receive(:save)
+        expect(user).not_to receive(:destroy)
+        expect(user).not_to receive(:save)
 
         UserMergerService.new(user, [user]).call
       end
@@ -23,28 +23,28 @@ describe UserMergerService do
 
     context 'with empty array' do
       it 'should not perform any actions' do
-        Item.should_not_receive(:update_all)
-        Item.should_not_receive(:update_all)
-        ItemUser.should_not_receive(:update_all)
-        ItemAdmin.should_not_receive(:update_all)
-        ItemAgent.should_not_receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(ItemUser).not_to receive(:update_all)
+        expect(ItemAdmin).not_to receive(:update_all)
+        expect(ItemAgent).not_to receive(:update_all)
 
-        user.should_not_receive(:destroy)
-        user.should_not_receive(:save)
+        expect(user).not_to receive(:destroy)
+        expect(user).not_to receive(:save)
 
         UserMergerService.new(user, []).call
       end
     end
     context 'with nil' do
       it 'should not perform any actions' do
-        Item.should_not_receive(:update_all)
-        Item.should_not_receive(:update_all)
-        ItemUser.should_not_receive(:update_all)
-        ItemAdmin.should_not_receive(:update_all)
-        ItemAgent.should_not_receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(Item).not_to receive(:update_all)
+        expect(ItemUser).not_to receive(:update_all)
+        expect(ItemAdmin).not_to receive(:update_all)
+        expect(ItemAgent).not_to receive(:update_all)
 
-        user.should_not_receive(:destroy)
-        user.should_not_receive(:save)
+        expect(user).not_to receive(:destroy)
+        expect(user).not_to receive(:save)
 
         UserMergerService.new(user, nil).call
       end
@@ -53,17 +53,17 @@ describe UserMergerService do
     context 'with other users' do
       context 'including the primary user' do
         it 'should only merge other users, not the primary' do
-          Item.should_receive(:update_all).with({collector_id: user.id}, {collector_id: duplicate_ids})
-          Item.should_receive(:update_all).with({operator_id: user.id}, {operator_id: duplicate_ids})
-          ItemUser.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
-          ItemAdmin.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
-          ItemAgent.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(Item).to receive(:update_all).with({collector_id: user.id}, {collector_id: duplicate_ids})
+          expect(Item).to receive(:update_all).with({operator_id: user.id}, {operator_id: duplicate_ids})
+          expect(ItemUser).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(ItemAdmin).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(ItemAgent).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
 
-          user.should_not_receive(:destroy)
-          user.should_receive(:save)
+          expect(user).not_to receive(:destroy)
+          expect(user).to receive(:save)
 
           duplicates.each do |dup|
-            dup.should_receive(:destroy)
+            expect(dup).to receive(:destroy)
           end
 
           UserMergerService.new(user, [user] + duplicates).call
@@ -71,17 +71,17 @@ describe UserMergerService do
       end
       context 'not including the primary user' do
         it 'should merge other users' do
-          Item.should_receive(:update_all).with({collector_id: user.id}, {collector_id: duplicate_ids})
-          Item.should_receive(:update_all).with({operator_id: user.id}, {operator_id: duplicate_ids})
-          ItemUser.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
-          ItemAdmin.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
-          ItemAgent.should_receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(Item).to receive(:update_all).with({collector_id: user.id}, {collector_id: duplicate_ids})
+          expect(Item).to receive(:update_all).with({operator_id: user.id}, {operator_id: duplicate_ids})
+          expect(ItemUser).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(ItemAdmin).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
+          expect(ItemAgent).to receive(:update_all).with({user_id: user.id}, {user_id: duplicate_ids})
 
-          user.should_not_receive(:destroy)
-          user.should_receive(:save)
+          expect(user).not_to receive(:destroy)
+          expect(user).to receive(:save)
 
           duplicates.each do |dup|
-            dup.should_receive(:destroy)
+            expect(dup).to receive(:destroy)
           end
 
           UserMergerService.new(user, duplicates).call

@@ -1,12 +1,12 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe ItemDestructionService do
   before do
-    EssenceDestructionService.stub(:destroy).and_return({error: 'test fail'})
+    allow(EssenceDestructionService).to receive(:destroy).and_return({error: 'test fail'})
 
     #so there are no surprise directory deletions from the service tests
-    FileUtils.stub(:rm_f).and_return nil
-    FileUtils.stub(:rmdir).and_return nil
+    allow(FileUtils).to receive(:rm_f).and_return(nil)
+    allow(FileUtils).to receive(:rmdir).and_return(nil)
   end
 
   context 'when item has no files' do
@@ -51,7 +51,7 @@ describe ItemDestructionService do
 
     context 'when essence files are present on the server' do
       before do
-        EssenceDestructionService.stub(:destroy).and_return({notice: 'test success'})
+        allow(EssenceDestructionService).to receive(:destroy).and_return({notice: 'test success'})
       end
       it 'should proceed without errors when attempting to delete files' do
         response = ItemDestructionService.destroy(item_with_files)
