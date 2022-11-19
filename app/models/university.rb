@@ -9,8 +9,8 @@
 # **`id`**                | `integer`          | `not null, primary key`
 # **`name`**              | `string(255)`      |
 # **`party_identifier`**  | `string(255)`      |
-# **`created_at`**        | `datetime`         |
-# **`updated_at`**        | `datetime`         |
+# **`created_at`**        | `datetime`         | `not null`
+# **`updated_at`**        | `datetime`         | `not null`
 #
 
 class University < ApplicationRecord

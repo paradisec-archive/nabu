@@ -10,8 +10,8 @@
 # **`finish_at`**   | `datetime`         | `not null`
 # **`message`**     | `text(65535)`      | `not null`
 # **`start_at`**    | `datetime`         | `not null`
-# **`created_at`**  | `datetime`         |
-# **`updated_at`**  | `datetime`         |
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
 #
 
 class AdminMessage < ApplicationRecord

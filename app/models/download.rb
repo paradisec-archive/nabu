@@ -7,8 +7,8 @@
 # Name              | Type               | Attributes
 # ----------------- | ------------------ | ---------------------------
 # **`id`**          | `integer`          | `not null, primary key`
-# **`created_at`**  | `datetime`         |
-# **`updated_at`**  | `datetime`         |
+# **`created_at`**  | `datetime`         | `not null`
+# **`updated_at`**  | `datetime`         | `not null`
 # **`essence_id`**  | `integer`          |
 # **`user_id`**     | `integer`          |
 #

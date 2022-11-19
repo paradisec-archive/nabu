@@ -10,8 +10,8 @@
 # **`body`**              | `text(65535)`      | `not null`
 # **`commentable_type`**  | `string(255)`      | `not null`
 # **`status`**            | `string(255)`      |
-# **`created_at`**        | `datetime`         |
-# **`updated_at`**        | `datetime`         |
+# **`created_at`**        | `datetime`         | `not null`
+# **`updated_at`**        | `datetime`         | `not null`
 # **`commentable_id`**    | `integer`          | `not null`
 # **`owner_id`**          | `integer`          | `not null`
 #
