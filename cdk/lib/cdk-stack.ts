@@ -11,6 +11,7 @@ import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { SecretValue } from 'aws-cdk-lib';
 
 type Params = {
   domainName: string,
@@ -120,7 +121,15 @@ export class CdkStack extends cdk.Stack {
     //////////////////////////
     // Secrets
     //////////////////////////
-    const recaptchaSecret = new secretsmanager.Secret(this, 'RecaptchaSecret');
+    const appSecrets = new secretsmanager.Secret(this, 'AppSecrets', {
+      secretObjectValue: {
+        recaptcha_site_key: SecretValue.unsafePlainText('secret'),
+        recaptcha_secret_key: SecretValue.unsafePlainText('secret'),
+        rollbar_access_token: SecretValue.unsafePlainText('secret'),
+        rollbar_js_access_token: SecretValue.unsafePlainText('secret'),
+        secret_key_base: SecretValue.unsafePlainText('secret'),
+      },
+    });
 
     //////////////////////////
     // App
@@ -136,13 +145,17 @@ export class CdkStack extends cdk.Stack {
       memoryLimitMiB: 512,
       environment: {
         RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
-        SOLR_URL: 'http://search.nabu:8983/solr/production',
+        RAILS_ENV: 'staging',
+        SOLR_URL: 'http://search.nabu:8983/solr/staging',
       },
       secrets: {
         NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
         NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'host'),
-        RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(recaptchaSecret, 'site_key'),
-        RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(recaptchaSecret, 'secret_key'),
+        RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_site_key'),
+        RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_secret_key'),
+        ROLLBAR_ACCESS_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'rollbar_access_token'),
+        ROLLBAR_JS_ACCESS_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'rollbar_js_access_token'),
+        SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(appSecrets, 'secret_key_base'),
       },
     }
 
@@ -157,7 +170,7 @@ export class CdkStack extends cdk.Stack {
       taskDefinition: appTaskDefinition,
     });
     appService.connections.allowToDefaultPort(db);
-    appService.connections.allowTo(searchService, new ec2.Port({ fromPort: 8983, toPort: 8983, protocol: ec2.Protocol.TCP, stringRepresentation: 'Solr 8983'  }));
+    appService.connections.allowTo(searchService, new ec2.Port({ fromPort: 8983, toPort: 8983, protocol: ec2.Protocol.TCP, stringRepresentation: 'Solr 8983' }));
 
     const appLb = new elbv2.ApplicationLoadBalancer(this, 'AppLoadBalancer', {
       vpc,
