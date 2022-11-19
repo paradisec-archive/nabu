@@ -9,6 +9,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 
 type Params = {
@@ -117,6 +118,11 @@ export class CdkStack extends cdk.Stack {
     });
 
     //////////////////////////
+    // Secrets
+    //////////////////////////
+    const recaptchaSecret = new secretsmanager.Secret(this, 'RecaptchaSecret');
+
+    //////////////////////////
     // App
     //////////////////////////
 
@@ -135,6 +141,8 @@ export class CdkStack extends cdk.Stack {
       secrets: {
         NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
         NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'host'),
+        RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(recaptchaSecret, 'site_key'),
+        RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(recaptchaSecret, 'secret_key'),
       },
     }
 

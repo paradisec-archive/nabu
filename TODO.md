@@ -1,24 +1,27 @@
 # TODO
 
-* Add storage to NABU so we don't lose anything when containers die
+## Need Nick
+* Rotate the recaptcha keys and switch to v3
+
+
+
+
 
 
 # Security
+
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
-* Move capctha secrets our of git
 * Had to add lots of optional => true, are they really or should we fix the tests?
 
 # General NOtes
 
 ## Stuff to replace
+* Add storage to NABU so we don't lose anything when containers die
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Write OAI tests and get rid of the monkey patch once we have data to test with
 * Check out lib/oai_provider is this more monkeypatching?
 * Ditch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
-* Switch rollbar to using an env variable for deploy. Also update the docs to reflect this
-* MOve to recaptcha v3
-* Rotate the recaptcha keys as they used to be in github
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * Check production DB: can we drop password_salt on users
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?

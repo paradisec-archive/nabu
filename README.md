@@ -211,20 +211,10 @@ Feed for a single collection:
   * http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2
 
 
-## Setup Rollbar
+## Setup Secrets
 
-You need to configure the rollbar API key to capture exceptions.
+```bash
+aws secretsmanager list-secrets
 
-The first method is creating a file in the shared directory, which will be
-symlinked by cap.
-
-``` bash
-echo ROLLBAR_API_KEY > /srv/www/nabu/shared/config/rollbar.txt
-```
-
-Alternatively you can pass it in as an environment variable at server start up,
-for example.
-
-``` bash
-rails server ROLLBAR_ACCESS_TOKEN=ROLLBAR_API_KEY
+aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key\":\"***\", \"secret_key\":\"***\"}"
 ```
