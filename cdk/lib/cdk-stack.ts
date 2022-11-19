@@ -104,7 +104,7 @@ export class CdkStack extends cdk.Stack {
       memoryLimitMiB: 1024,
       environment: {
         RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
-        SOLR_URL: 'http://search:8983/solr/production',
+        SOLR_URL: 'http://search.nabu:8983/solr/production',
       },
       secrets: {
         NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
