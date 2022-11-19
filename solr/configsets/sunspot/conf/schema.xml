@@ -62,20 +62,17 @@
     <fieldType name="text_pre" class="solr.TextField" omitNorms="false">
       <analyzer type="index">
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.NGramFilterFactory" minGramSize="1" maxGramSize="200" />
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
     <fieldType name="text" class="solr.TextField" omitNorms="false">
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
@@ -101,7 +98,6 @@
     <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" omitNorms="true">
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.StandardFilterFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>

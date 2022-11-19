@@ -34,8 +34,7 @@ services:
     ports:
       - '8983:8983'
     volumes:
-      - ./solr:/opt/solr/server/solr
-      - search-data:/opt/solr/server/solr/mycores
+      - ./solr:/var/solr/data
     restart:
       unless-stopped
 
