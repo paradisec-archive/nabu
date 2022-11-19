@@ -22,6 +22,7 @@ You should set the following alias to exec commands easily inside the container
 ```bash
 alias nabu="docker-compose exec app"
 alias nabu_test="docker-compose exec -e RAILS_ENV=test app"
+alias nabu_run="docker-compose run  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler app"
 ```
 
 You can then easily run all the standard commands by prefixing with ***nabu***
@@ -31,7 +32,7 @@ nabu bundle install
 nabu bundle exec rake db:create
 nabu bundle exec rake db:schema:load
 nabu_test bundle exec rake db:schema:load
-nabu bundle exec guard # Test runner
+nabu_run bundle exec guard # Test runner
 ```
 
 

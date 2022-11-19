@@ -27,10 +27,10 @@
 #   files.each { |file| watch(helper.real_path(file)) }
 # end
 
-guard 'rails' do
-  watch('Gemfile.lock')
-  watch(%r{^(config|lib)/.*})
-end
+# guard 'rails' do
+#   watch('Gemfile.lock')
+#   watch(%r{^(config|lib)/.*})
+# end
 
 
 # Note: The cmd option is now required due to the increasing number of ways
