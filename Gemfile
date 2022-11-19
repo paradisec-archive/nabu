@@ -109,6 +109,7 @@ gem "graphiql-rails"
 
 # Search
 gem "sunspot_rails"
+gem "progress_bar" # progress bar for indexing
 
 # Other
 gem "roo" # Spreadsheet interface

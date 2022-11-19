@@ -5,7 +5,7 @@
 # Security
 * the secret_token is in git!! Anyone could decode the cookies, check if this is a real security issue
 * Move capctha secrets our of git
-& Had to add lots of optional => true, are they really or should we fix the tests?
+* Had to add lots of optional => true, are they really or should we fix the tests?
 
 # General NOtes
 
