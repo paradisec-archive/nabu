@@ -2,8 +2,6 @@ class ApplicationController < ActionController::Base
   before_action :set_timezone
   before_action :set_access_headers
 
-  analytical :modules => [:google]
-
   private
   rescue_from CanCan::AccessDenied do |exception|
     # If it's a JSON request, give a 40x rather than redirecting them

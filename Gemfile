@@ -86,7 +86,6 @@ gem "rexml" # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
 gem "to-csv", :name => "to_csv" # TODO: This is no longer supported, remove this and implement ourselves. Only used by collections, items already has a custom implementation
 
 # Analytics and instrumentation
-gem "analytical" # Add google analytics TODO: outdated replace with something newer
 gem "rollbar" # Error reporting
 
 # AAA

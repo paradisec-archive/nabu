@@ -4,8 +4,6 @@
 * Rotate the recaptcha keys and switch to v3
 * Why is google crawling disabled
 
-
-
 # Security
 * Had to add lots of optional => true, are they really or should we fix the tests?
 
@@ -17,7 +15,6 @@
 * Move to_rif in collections controller to a haml template
 * Write OAI tests and get rid of the monkey patch once we have data to test with
 * Check out lib/oai_provider is this more monkeypatching?
-* Ditch analytical gem once we can find out which google analytics is being used https://dev.to/tylerlwsmith/using-google-analyticss-gtagjs-with-turbolinks-5coa
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
 * Should we use active job and let it use delayed_job
@@ -31,8 +28,6 @@
 * fix link_to :delete
 * Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
-* turbolinks in layout
-* layouts turbolinks stuff
 * Can we move paper_trail to ApplicationRecord?
 * permit! used for search is bad
 * Do we need to drop jquery?
@@ -40,6 +35,4 @@
 * Can we get rid of all the monkeypatches?
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
-* Need to get rid of apparition - using git version to make it work
-* Do something with analytical gem
 * Add everything needed to search_params

@@ -1,10 +1,18 @@
 !!! html5
 %html{ 'data-turbo' => 'false' }
   %head
+    - if Rails.env.production?
+      = javascript_include_tag 'https://www.googletagmanager.com/gtag/js?id=UA-36256674-1', :async => true
+      :javascript
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-36256674-1');
+
     :javascript
       const calendarImagePath = "#{asset_path('calendar.png')}";
 
-    = raw analytical.head_prepend_javascript
     %title= @page_title || 'Nabu'
     %meta{ :name => 'viewport', :content => 'width=device-width,initial-scale=1' }
     %meta{ :name => 'turbo-visit-control', :content => 'reload' }
@@ -17,14 +25,9 @@
 
     = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'
 
-    - analytical.identify(current_user.id, :email => current_user.email) if current_user
-    = raw analytical.head_append_javascript
-
     = yield :page_scripts
 
   %body.bp
-    = raw analytical.body_prepend_javascript
-
     #container.container
       #header.column.span-24.last
         .logo.column.span-4= link_to image_tag('paradisec.jpg', :height => 100), 'http://paradisec.org.au'
@@ -70,5 +73,3 @@
           - if admin_user_signed_in?
             |
             = link_to 'Admin', admin_dashboard_path
-
-    = raw analytical.body_append_javascript
