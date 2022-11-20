@@ -67,8 +67,8 @@ ENV RAILS_ENV="${RAILS_ENV}" \
     PATH="${PATH}:/home/ruby/.local/bin" \
     USER="ruby"
 
-COPY --chown=ruby:ruby --from=assets /app/public /public
 COPY --chown=ruby:ruby . .
+COPY --chown=ruby:ruby --from=assets /app/public/assets ./public/assets
 
 COPY --chown=ruby:ruby vendor/assets ./vendor/
 
