@@ -1,7 +1,9 @@
-$(document).ready(() => {
+import {setup_select2} from 'custom/select2_setup';
+
+$(function () {
 
   // Add more fields to form
-  $('form').on('click', '.add_fields', (event) => {
+  $('form').on('click', '.add_fields', function (event) {
     const time = new Date().getTime()
     const regexp = new RegExp($(this).data('id'), 'g')
 
@@ -13,17 +15,17 @@ $(document).ready(() => {
 
 
   // Set up select2 elements
-  $(".select2").each(() => {
+  $(".select2").each(function() {
     setup_select2(this); // eslint-disable-line no-undef
   });
 
   // Fix _ids hidden fields for select2
-  $('form').submit(() => {
+  $('form').on('submit', function () {
     const form = $(this)
-    form.find('input[type=hidden].select2').each(() => {
+    form.find('input[type=hidden].select2').each(function () {
       if ($(this).attr('name').match(/_ids]$/) && $(this).val() != '') {
         const ids = $(this).val().split(/,/);
-        ids.forEach((id) => {
+        ids.forEach(function (id) {
           form.append($('<input type=hidden name="' + $(this).attr('name') + '[]" value="' + id + '" />'));
           $(this).remove();
         });

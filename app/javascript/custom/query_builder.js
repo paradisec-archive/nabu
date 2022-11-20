@@ -1,5 +1,8 @@
+import { setup_select2 } from 'setup_select';
+
 var logicSelect = '<select name="clause[0][logic]"><option value="AND">AND</option><option value="OR">OR</option><option value="NOT">NOT</option></select>';
-$(document).ready(function() {
+
+$(function () {
     $('button.add:not(:last)').remove();
     var addButton = $('button.add:last').clone();
     $(document).on('click', 'button.remove', function() {

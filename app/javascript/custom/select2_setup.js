@@ -1,4 +1,4 @@
-const setup_select2 = (element, noinit=false) => { // eslint-disable-line no-unused-vars
+export const setup_select2 = (element, noinit=false) => { // eslint-disable-line no-unused-vars
   const options = {};
   if ($(element).data('required')) {
     options['allowClear'] = false;

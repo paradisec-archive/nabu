@@ -21,7 +21,7 @@ const removeChildGrantIds = (event) => { // eslint-disable-line no-unused-vars
   // const $childGrants = $($childGrantContainer).find('div.grant-id');
 
   if ($($childGrantContainer).find('input[name="collection[grants_attributes][][id]"]').length > 0) {
-    $($childGrantContainer).find('input[name="collection[grants_attributes][][id]"]').each(() => {
+    $($childGrantContainer).find('input[name="collection[grants_attributes][][id]"]').each(function () {
       const $gidInput = $(this).clone();
       $gidInput.prop('type', 'hidden');
       const $gidDestroy = $gidInput.clone();

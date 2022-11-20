@@ -1,10 +1,15 @@
 .panel_contents
   %div.split-panel.right
     = form_tag merge_admin_user_path, method: :get do |ff|
-      :coffee
-          $(document).ready ->
-            $(".select2").each ->
-              setup_select2(this)
+      :javascript
+        import {setup_select2} from 'custom/select2_setup';
+
+        $(function() {
+          $(".select2").each(function() {
+            setup_select2(this)
+           );
+        });
+
       %label Add specific users:
       %input{type: :hidden, name: 'first_name', value: @primary_user.first_name}
       %input{type: :hidden, name: 'last_name', value: @primary_user.last_name}

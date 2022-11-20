@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(function () {
   const datePickerOptions = {
     dateFormat:      'dd MM yy',
     buttonImageOnly: true,

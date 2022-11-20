@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(function () {
   if (typeof google == 'object') {
     const set_map_bounds_from_ajax = (path, ids) => {
       let north_limit = null;
@@ -66,31 +66,31 @@ $(document).ready(() => {
       $('.no-map-match-message').text('')
     };
 
-    $('#set-map-from-country').click(() => {
+    $('#set-map-from-country').on('click', function () {
       const country_ids = $('.country').val().split(/,/);
       set_map_bounds_from_ajax('/countries/', country_ids);
     });
 
-    $('#set-map-from-language').click(() => {
+    $('#set-map-from-language').on('click', function () {
       const language_ids = $('.language').val().split(/,/)
       set_map_bounds_from_ajax('/languages/', language_ids);
     });
 
-    $('.map').bind('update_map', () => {
-      const north_limit = $('.north_limit').val() || $(this).data('north-limit') || 80;
-      const south_limit = $('.south_limit').val() || $(this).data('south-limit') || -80;
-      const east_limit = $('.east_limit').val() || $(this).data('east-limit') || -40;
-      const west_limit = $('.west_limit').val() || $(this).data('west-limit') || -20;
-      const editable = $(this).data('editable') == true;
+    $('.map').bind('update_map', (event) => {
+      const north_limit = $('.north_limit').val() || $(event.currentTarget).data('north-limit') || 80;
+      const south_limit = $('.south_limit').val() || $(event.currentTarget).data('south-limit') || -80;
+      const east_limit = $('.east_limit').val() || $(event.currentTarget).data('east-limit') || -40;
+      const west_limit = $('.west_limit').val() || $(event.currentTarget).data('west-limit') || -20;
+      const editable = $(event.currentTarget).data('editable') == true;
 
       const sw  = new google.maps.LatLng(south_limit, west_limit); // eslint-disable-line no-undef
       const ne  = new google.maps.LatLng(north_limit, east_limit); // eslint-disable-line no-undef
       const bounds = new google.maps.LatLngBounds(sw, ne); // eslint-disable-line no-undef
 
-      const map = $(this).data('map');
+      const map = $(event.currentTarget).data('map');
       map.fitBounds(bounds);
 
-      let rect = $(this).data('rect');
+      let rect = $(event.currentTarget).data('rect');
       if (rect) {
         rect.setBounds(bounds)
       } else {
@@ -99,7 +99,7 @@ $(document).ready(() => {
           editable: editable,
           map: map
         });
-        $(this).data('rect', rect);
+        $(event.currentTarget).data('rect', rect);
       }
 
       google.maps.event.addListener(rect, 'bounds_changed', () => { // eslint-disable-line no-undef
@@ -149,10 +149,10 @@ $(document).ready(() => {
       const map = new google.maps.Map(element, options); // eslint-disable-line no-undef
       $(element).data('map', map);
 
-      const north_limit = $(this).data('north-limit');
-      const south_limit = $(this).data('south-limit');
-      const east_limit = $(this).data('east-limit');
-      const west_limit = $(this).data('west-limit');
+      const north_limit = $(element).data('north-limit');
+      const south_limit = $(element).data('south-limit');
+      const east_limit = $(element).data('east-limit');
+      const west_limit = $(element).data('west-limit');
       if (north_limit) {
         const sw  = new google.maps.LatLng(south_limit, west_limit); // eslint-disable-line no-undef
         const ne  = new google.maps.LatLng(north_limit, east_limit); // eslint-disable-line no-undef
@@ -186,8 +186,8 @@ $(document).ready(() => {
         });
         marker.info = new google.maps.InfoWindow({ content: content }); // eslint-disable-line no-undef
 
-        google.maps.event.addListener(marker, 'click', () => { // eslint-disable-line no-undef
-          this.info.open(map, this)
+        google.maps.event.addListener(marker, 'click', (el) => { // eslint-disable-line no-undef
+          el.currentTarget.info.open(map, el.currentTarget)
         });
 
         clusterer.addMarker(marker);

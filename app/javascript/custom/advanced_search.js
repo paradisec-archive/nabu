@@ -1,16 +1,16 @@
-$(document).ready(() => {
+$(function () {
   const existingExclusions = $('#existing_exclusions');
   const hiddenExclusions = $('.exclusions');
 
-  $('.drawer-toggle').click(() => {
+  $('.drawer-toggle').on('click', function () {
     $('.drawer').toggleClass('closed');
     $('.drawer-toggle').toggleClass('hidden');
     return false;
   });
 
-  $('[name="exclude[]"]').click(() => {
+  $('[name="exclude[]"]').on('click', function () {
     let ids = [];
-    $('[name="exclude[]"]:checked').each(() => {
+    $('[name="exclude[]"]:checked').each(function () {
       ids.push($(this).val());
     });
 
@@ -26,7 +26,7 @@ $(document).ready(() => {
     hiddenExclusions.val(ids)
   });
 
-  $('#update_exclusions').click(() => {
+  $('#update_exclusions').on('click', function () {
     $('.drawer:not(.closed) form').submit();
     return false;
   });

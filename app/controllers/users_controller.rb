@@ -6,7 +6,12 @@ class UsersController < ApplicationController
   def index
     @users = @users.order('first_name, last_name')
     match = "%#{params[:q]}%"
-    @users = @users.where{ (first_name =~ match) | (last_name =~ match)  | (address =~ match) | (address2 =~ match) | (country =~ match) | (email =~ match)}
+    @users = @users.where(User.arel_table[:first_name].matches(match))
+      .or(@users.where(User.arel_table[:last_name].matches(match)))
+      .or(@users.where(User.arel_table[:address].matches(match)))
+      .or(@users.where(User.arel_table[:address2].matches(match)))
+      .or(@users.where(User.arel_table[:country].matches(match)))
+      .or(@users.where(User.arel_table[:email].matches(match)))
 
     respond_to do |format|
       format.html

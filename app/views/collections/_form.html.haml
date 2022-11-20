@@ -1,6 +1,6 @@
 :javascript
-  window.$fbRowTemplate = "#{ render partial: 'collections/grants/funding_body_entry', locals: {fb_label: nil, fb_id: nil, fb_grants: nil } }";
-  window.$giRowTemplate = "#{ render partial: 'collections/grants/grant_identifier_entry', locals: {grant: nil, fb_id: nil } }";
+  window.$fbRowTemplate = "#{ render(partial: 'collections/grants/funding_body_entry', locals: {fb_label: nil, fb_id: nil, fb_grants: nil }).squish }";
+  window.$giRowTemplate = "#{ render(partial: 'collections/grants/grant_identifier_entry', locals: {grant: nil, fb_id: nil }).squish }";
 
 .clear
 
