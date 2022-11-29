@@ -1,5 +1,7 @@
 - content_for :page_scripts do
-  = javascript_pack_tag('advanced_search')
+  %script{:type => 'module'}
+    :plain
+      import  'custom/advanced_search'
 
 %h1 Advanced Search Items
 
@@ -7,7 +9,7 @@
   = link_to 'Basic Search', search_items_path
 .clear
 
-- if params.length > 2
+- if params.to_unsafe_h.size > 2
   %p== #{@search.total_count rescue @search.total} search results
 
   = render partial: 'search_results', locals: {show_exclusions: true}
@@ -17,7 +19,8 @@
 
   -if can? :bulk_edit, Item
     .right
-      = link_to 'Bulk edit results', bulk_update_items_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+      = link_to 'Bulk edit results', bulk_update_items_path(params.permit!.delete_if {|p| ['action', 'controller'].include? p } )
+
 = hidden_field_tag(:existing_exclusions, params[:exclusions], id: 'existing_exclusions')
 
 %a.drawer-toggle.drawer-qb{href:'#', class: params[:clause].present? ? '' : 'hidden'} Switch to Classic mode

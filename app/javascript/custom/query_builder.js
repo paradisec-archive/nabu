@@ -1,4 +1,4 @@
-import { setup_select2 } from 'setup_select';
+import { setup_select2 } from 'custom/select2_setup';
 
 var logicSelect = '<select name="clause[0][logic]"><option value="AND">AND</option><option value="OR">OR</option><option value="NOT">NOT</option></select>';
 

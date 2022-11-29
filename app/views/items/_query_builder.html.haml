@@ -91,4 +91,7 @@
   var dataTypesPath = "#{data_types_path}";
   var dataCategoriesPath = "#{data_categories_path}";
   var mimeTypesPath = "#{list_mimetypes_path}";
-= javascript_pack_tag('query_builder')
+
+%script{:type => 'module'}
+  :plain
+    import 'custom/query_builder'

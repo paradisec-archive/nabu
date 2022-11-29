@@ -10,7 +10,7 @@
 # General NOtes
 
 ## Stuff to replace
-* Fix the packs directory
+* Do away with config.yml
 * Add storage to NABU so we don't lose anything when containers die
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template

@@ -39,9 +39,11 @@
   %p.bold There were NO results for your search.
 
 %div
-  -['10','50','100',"all #{@search.respond_to?(:total) ? @search.total : @search.total_count}"].each do |n|
-    = link_to "Show #{n}", @params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+  - if @params
+    -['10','50','100',"all #{@search.respond_to?(:total) ? @search.total : @search.total_count}"].each do |n|
+      = link_to "Show #{n}", @params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+
   - if show_exclusions
     .right
       %button#update_exclusions{style: 'display: none;'} Exclude
-      = link_to 'Clear Exclusions', @params.merge(exclusions: []) if params[:exclusions].present?
+      = link_to 'Clear Exclusions', @params.permit!.merge(exclusions: []) if params[:exclusions].present?

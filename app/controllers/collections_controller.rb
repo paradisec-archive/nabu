@@ -55,7 +55,11 @@ class CollectionsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Search Collections'
-    @search = build_advanced_search(collection_params)
+    if params.to_unsafe_h.size > 2
+      @search = build_advanced_search(collection_params)
+    else
+      @search = build_advanced_search({})
+    end
     respond_to do |format|
       format.html
       if can? :search_csv, Collection
