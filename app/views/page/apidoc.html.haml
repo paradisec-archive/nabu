@@ -3,11 +3,11 @@
 .page-box
   %p
     The PARADISEC catalog exposes a number of APIs for harvesting the public data of the site. PARADISEC makes use of
-    = link_to 'OAI-PMH', 'http://www.openarchives.org/pmh/'
+    = link_to 'OAI-PMH', 'https://www.openarchives.org/pmh/'
     for its harvesting APIs.
   %p
     The public data is also available through a
-    = link_to 'GraphQL API', 'http://graphql.org/'
+    = link_to 'GraphQL API', 'https://graphql.org/'
     \.
 
 %h2 Harvesting Collections
@@ -15,20 +15,16 @@
 .page-box
 
   %h3
-    = link_to 'RIF-CS', 'https://www.ands.org.au/online-services/rif-cs-schema'
+    = link_to 'RIF-CS', 'https://documentation.ardc.edu.au/display/DOC/Content+Providers+Guide'
 
   %p
     A RIF-CS feed is available at
-    = link_to 'http://catalog.paradisec.org.au/oai/collection', 'http://catalog.paradisec.org.au/oai/collection'
+    = link_to 'https://catalog.paradisec.org.au/oai/collection', 'https://catalog.paradisec.org.au/oai/collection'
 
   %p
     For example, you can get a feed of all publicly available collections of PARADISEC:
     %br
     = link_to 'http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif', 'http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif'
-
-  %p
-    About RIF-CS:
-    = link_to 'https://documentation.ands.org.au/display/DOC/Content+Providers+Guide', 'https://documentation.ands.org.au/display/DOC/Content+Providers+Guide'
 
 %h2 Harvesting Items
 
@@ -49,7 +45,7 @@
   %p
     Or you can get all the details of a single item of PARADISEC like this:
     %br
-    = link_to 'http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac', 'http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac'
+    = link_to 'https://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac', 'https://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac'
     %br
     Just replace the item identifier with the identifier that you are after to get its metadata.
 
@@ -61,14 +57,14 @@
 
 .page-box
   %h3
-    = link_to 'GraphQL', 'http://graphql.org/'
+    = link_to 'GraphQL', 'https://graphql.org/'
 
   %p
     GraphQL is a query language that allows API consumers to customise the response based on what data is interesting to them.
 
   %p
     Our GraphQL API is available at:
-    = link_to 'http://catalog.paradisec.org.au/graphiql', 'http://catalog.paradisec.org.au/graphiql'
+    = link_to 'https://catalog.paradisec.org.au/graphiql', 'https://catalog.paradisec.org.au/graphiql'
 
   %p
     A very simple search for an item based on its identifier would look like this:
@@ -90,11 +86,11 @@
 
   %p
     You can start exploring our GraphQL API by using the in-browser GraphiQL query editor available at:
-    = link_to 'http://catalog.paradisec.org.au/graphiql', 'http://catalog.paradisec.org.au/graphiql'
+    = link_to 'https://catalog.paradisec.org.au/graphiql', 'https://catalog.paradisec.org.au/graphiql'
   %p
     The GraphiQL editor is already pre-loaded with a more complex example query.
     You can view the full definition of available attributes by clicking on 'Docs' in the GraphiQL editor.
   
   %p
     For technical consumers, our GraphQL schema definition is available at:
-    = link_to 'http://catalog.paradisec.org.au/paradisec.graphql', 'http://catalog.paradisec.org.au/paradisec.graphql'
+    = link_to 'https://catalog.paradisec.org.au/paradisec.graphql', 'https://catalog.paradisec.org.au/paradisec.graphql'
