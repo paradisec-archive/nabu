@@ -168,6 +168,7 @@ export class CdkStack extends cdk.Stack {
     const appService = new ecs.Ec2Service(this, 'AppService', {
       cluster,
       taskDefinition: appTaskDefinition,
+      enableExecuteCommand: true,
     });
     appService.connections.allowToDefaultPort(db);
     appService.connections.allowTo(searchService, new ec2.Port({ fromPort: 8983, toPort: 8983, protocol: ec2.Protocol.TCP, stringRepresentation: 'Solr 8983' }));
