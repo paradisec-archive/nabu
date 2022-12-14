@@ -222,7 +222,11 @@ aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key
 ## Server Setup
 ```bash
 # Ubuntu 22.04
-apt-get install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
+# Ruby deps
+apt install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
+# gem deps
+apt install libmagic-dev libmagickwand-dev libmysqlclient-dev
+
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'eval "$(~/.rbenv/bin/rbenv init - bash)"' >> ~/.bashrc
 eval "$(~/.rbenv/bin/rbenv init - bash)"

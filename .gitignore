@@ -55,4 +55,3 @@ rerun.txt
 db/legacy/
 public/system/
 vendor/bundle
-config/config.yml

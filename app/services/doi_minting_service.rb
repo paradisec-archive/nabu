@@ -4,10 +4,10 @@ require 'net/http'
 class DoiMintingService
 
   def initialize
-    @base_url = APP_CONFIG[:datacite_base_url]
-    @prefix = APP_CONFIG[:doi_prefix]
-    @user = APP_CONFIG[:datacite_user]
-    @pass = APP_CONFIG[:datacite_pass]
+    @base_url = ENV['DATACITE_BASE_URL']
+    @prefix = ENV['DOI_PREFIX']
+    @user = ENV['DATACITE_USER']
+    @pass = ENV['DATACITE_PASS']
   end
 
   def mint_doi(doiable)
