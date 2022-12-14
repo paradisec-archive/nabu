@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.1.3"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4"
@@ -120,6 +120,8 @@ gem "whenever", :require => false # scheduling
 
 # Deployment
 gem "capistrano", require: false, group: :development
+gem "bcrypt_pbkdf", require: false, group: :development
+gem "ed25519", require: false, group: :development
 gem "capistrano-bundler", require: false, group: :development
 gem "capistrano-rails", require: false, group: :development
 gem "capistrano-rbenv", require: false, group: :development

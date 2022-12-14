@@ -22,13 +22,13 @@ You should set the following alias to exec commands easily inside the container
 ```bash
 alias nabu="docker-compose exec app"
 alias nabu_test="docker-compose exec -e RAILS_ENV=test app"
-alias nabu_run="docker-compose run  -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler app"
+alias nabu_run="docker-compose run -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -e SSH_AUTH_SOCK=/tmp/ssh.sock -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" app"
 ```
 
 You can then easily run all the standard commands by prefixing with ***nabu***
 
 ``` bash
-nabu bundle install
+nabu_run bundle install
 nabu bundle exec rake db:create
 nabu bundle exec rake db:schema:load
 nabu_test bundle exec rake db:schema:load
@@ -218,3 +218,15 @@ aws secretsmanager list-secrets
 
 aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key\":\"***\", \"secret_key\":\"***\"}"
 ```
+
+## Server Setup
+```bash
+# Ubuntu 22.04
+apt-get install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+echo 'eval "$(~/.rbenv/bin/rbenv init - bash)"' >> ~/.bashrc
+eval "$(~/.rbenv/bin/rbenv init - bash)"
+git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+rbenv install 3.1.3
+rbenv global 3.1.3
+
