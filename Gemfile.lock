@@ -423,6 +423,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    sd_notify (0.1.1)
     selenium-webdriver (4.6.1)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -539,6 +540,7 @@ DEPENDENCIES
   rubocop-rspec
   ruby-filemagic
   sassc-rails
+  sd_notify
   selenium-webdriver
   sprockets-rails
   stimulus-rails

@@ -40,6 +40,8 @@ set :deploy_to, -> { "/srv/www/#{fetch :application}" }
 
 # puma
 set :puma_systemctl_user, fetch(:user)
+set :puma_enable_socket_service, true
+set :puma_bind, "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 
 # Rails
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets'
