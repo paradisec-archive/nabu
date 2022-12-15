@@ -47,4 +47,4 @@ plugin :tmp_restart
 #state_path "/srv/www/nabu/shared/tmp/pids/puma.state"
 #stdout_redirect '/srv/www/nabu/shared/log/puma_access.log', '/srv/www/nabu/shared/log/puma_error.log', true
 
-bind 'unix://tmp/sockets/puma.sock'
+bind 'unix:///srv/www/nabu/shared/tmp/sockets/nabu-puma.sock'
