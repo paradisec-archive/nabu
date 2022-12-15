@@ -42,3 +42,4 @@ install_plugin Capistrano::Puma  # Default puma tasks
 install_plugin Capistrano::Puma::Systemd
 
 require 'rollbar/capistrano3'
+

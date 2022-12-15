@@ -125,7 +125,7 @@ gem "ed25519", require: false, group: :development
 gem "capistrano-bundler", require: false, group: :development
 gem "capistrano-rails", require: false, group: :development
 gem "capistrano-rbenv", require: false, group: :development
-gem "capistrano3-puma", require: false, group: :development
+gem "capistrano3-puma", '6.0.0.beta.1', require: false, group: :development
 
 group :development, :test do
   gem "rspec-rails"

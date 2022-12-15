@@ -22,7 +22,6 @@ You should set the following alias to exec commands easily inside the container
 ```bash
 alias nabu="docker-compose exec app"
 alias nabu_test="docker-compose exec -e RAILS_ENV=test app"
-alias nabu_run="docker-compose run -v "$PWD":/app -v "$PWD"/vendor/bundle:/bundler -e SSH_AUTH_SOCK=/tmp/ssh.sock -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" app"
 ```
 
 You can then easily run all the standard commands by prefixing with ***nabu***
@@ -238,4 +237,7 @@ rbenv global 3.1.3
 sudo mysql -u root
 CREATE USER 'nabu'@'localhost';
 ALTER USER 'nabu'@'localhost' IDENTIFIED BY 'GENERATE A PW';
+GRANT ALL PRIVILEGES ON nabu.* TO 'nabu'@'localhost';
+
+nabu_run bundle exec cap staging puma:install
 ```

@@ -38,30 +38,19 @@ set :deploy_to, -> { "/srv/www/#{fetch :application}" }
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
 
-# rbenv
-# set :rbenv_type, :user # or :system, or :fullstaq (for Fullstaq Ruby), depends on your rbenv setup
-# set :rbenv_ruby, File.read('.ruby-version').strip
-
-# Bundler
-append :linked_dirs, '.bundle'
+# puma
+set :puma_systemctl_user, fetch(:user)
 
 # Rails
-append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads'
-append :linked_files, 'config/database.yml', 'config/secrets.yml'
-set :migration_role, :app
+append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets'
+
+# dotenv
+append :linked_files, '.env'
 
 # Rollbar
 set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
-# set :rollbar_env, Proc.new { fetch :stage }
-# set :rollbar_role, Proc.new { :app }
-
-# namespace :deploy do
-#   task :shared_config_symlink, :except => { :no_release => true } do
-#     run "ln -nfs #{shared_path}/config #{release_path}/config/shared"
-#     run "ln -nfs #{shared_path}/config/config.yml #{release_path}/config/config.yml"
-#   end
-#   after 'deploy:create_symlink', 'deploy:shared_config_symlink'
-# end
+set :rollbar_env, Proc.new { fetch :stage }
+set :rollbar_role, Proc.new { :app }
 
 # namespace :sunspot do
 #   task :setup, :except => { :no_release => true } do
