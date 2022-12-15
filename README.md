@@ -225,7 +225,7 @@ aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key
 # Ruby deps
 apt install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
 # gem deps
-apt install libmagic-dev libmagickwand-dev libmysqlclient-dev
+apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'eval "$(~/.rbenv/bin/rbenv init - bash)"' >> ~/.bashrc
@@ -234,3 +234,8 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 rbenv install 3.1.3
 rbenv global 3.1.3
 
+# Setup the DB
+sudo mysql -u root
+CREATE USER 'nabu'@'localhost';
+ALTER USER 'nabu'@'localhost' IDENTIFIED BY 'GENERATE A PW';
+```
