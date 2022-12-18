@@ -224,7 +224,7 @@ aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key
 # Ruby deps
 apt install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
 # gem deps
-apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev
+apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev nginx
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'eval "$(~/.rbenv/bin/rbenv init - bash)"' >> ~/.bashrc
@@ -240,4 +240,5 @@ ALTER USER 'nabu'@'localhost' IDENTIFIED BY 'GENERATE A PW';
 GRANT ALL PRIVILEGES ON nabu.* TO 'nabu'@'localhost';
 
 nabu_run bundle exec cap staging puma:install
+nabu_run bundle exec cap staging puma:generate_nginx_config_locally; scp nginx.conf server:
 ```
