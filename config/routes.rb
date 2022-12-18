@@ -90,4 +90,8 @@ Rails.application.routes.draw do
     get 'item' => 'oai#item'
     get 'collection' => 'oai#collection'
   end
+
+  authenticated :user, -> user { user.admin? } do
+    mount Delayed::Web::Engine, at: '/jobs'
+  end
 end

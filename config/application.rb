@@ -57,6 +57,8 @@ module Nabu
     config.write_id3 = "#{Rails.root}/public/system/ID3Import/"
 
     config.viewer_url = '/viewer'
+
+    config.assets.precompile << 'delayed/web/application.css'
   end
 end
 

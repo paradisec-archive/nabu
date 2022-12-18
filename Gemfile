@@ -104,6 +104,7 @@ gem "daemons" # Needed by delayed_job
 gem "activeadmin"
 gem "graphql"
 gem "graphiql-rails"
+gem "delayed-web"
 
 # Search
 gem "sunspot_rails"
