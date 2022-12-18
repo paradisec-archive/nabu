@@ -43,5 +43,6 @@ install_plugin Capistrano::Puma  # Default puma tasks
 install_plugin Capistrano::Puma::Systemd
 install_plugin Capistrano::Puma::Nginx
 
-
 require 'rollbar/capistrano3'
+
+require 'capistrano/delayed-job'

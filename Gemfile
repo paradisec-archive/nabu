@@ -127,6 +127,7 @@ gem "capistrano-bundler", require: false, group: :development
 gem "capistrano-rails", require: false, group: :development
 gem "capistrano-rbenv", require: false, group: :development
 gem "capistrano3-puma", '6.0.0.beta.1', require: false, group: :development
+gem 'capistrano3-delayed-job', require: false, group: :development
 gem "sd_notify" # Needed by capstrano3-puma
 
 group :development, :test do
