@@ -45,4 +45,3 @@ install_plugin Capistrano::Puma::Nginx
 
 
 require 'rollbar/capistrano3'
-

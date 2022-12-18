@@ -245,4 +245,7 @@ nabu_run bundle exec cap staging puma:install
 nabu_run bundle exec cap staging puma:generate_nginx_config_locally; scp nginx.conf server:
 
 certbot
+sudo apt install default-jdk -y
+# https://www.vultr.com/docs/install-apache-solr-on-ubuntu-20-04/
+/etc/default/solr.in.sh set SOLR_HOME to /srv/www/nabu/current/solr
 ```
