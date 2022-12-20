@@ -16,7 +16,7 @@ class ItemsController < ApplicationController
 
     @search = ItemSearchService.build_solr_search(params, current_user)
     @params = search_params
-    session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
+    store_results!
 
     @page_title = 'Nabu - Item Search'
     respond_to do |format|
@@ -367,11 +367,11 @@ class ItemsController < ApplicationController
     if params[:clause].present?
       @search = build_query(params)
       @items = @search
-      session[:result_ids] = @search.map(&:full_identifier)
+      store_results!
     else
       @search = ItemSearchService.build_advanced_search(params, current_user)
       @items = @search.hits.map(&:result)
-      session[:result_ids] = @search.hits.map{|h|h.stored(:full_identifier)}
+      store_results!
     end
   end
 
@@ -397,6 +397,12 @@ class ItemsController < ApplicationController
       :search, :page, :per_page, :sort, :direction,
       :language_code, :country_code, :collector_id
     )
+  end
+
+  def store_results!
+    keys = @search.hits.map(&:primary_key)
+    text = Base64.encode64(ActiveSupport::Gzip.compress(keys.join(',')))
+    session[:result_ids] = text
   end
 
   def item_params
