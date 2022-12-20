@@ -325,6 +325,6 @@
     .clear
 
   %p
-    = link_to 'Export CSV (visible results)', advanced_search_items_path(:format => :csv, :params => params) if can? :search_csv, Item
+    = link_to 'Export CSV (visible results)', advanced_search_items_path(:format => :csv, :params => params.permit!) if can? :search_csv, Item
   %p
     = link_to 'Export CSV (all results)', advanced_search_items_path(:format => :csv, :params => params.permit!.merge(:per_page => 500, :page => 1, :export_all => true)) if can? :search_csv, Item
