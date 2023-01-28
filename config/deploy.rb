@@ -38,6 +38,9 @@ set :deploy_to, -> { "/srv/www/#{fetch :application}" }
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
 
+# Ruby
+set :rbenv_ruby, '3.1.3'
+
 # puma
 set :puma_systemctl_user, fetch(:user)
 set :puma_enable_socket_service, true
