@@ -4,7 +4,7 @@ require 'nabu/media'
 # For an individual transformation, see ImageTransformerService.
 class BatchImageTransformerService
   def self.run(batch_size, verbose, dry_run)
-    batch_image_transformer_service = new(batch_size, verbos, dry_rune)
+    batch_image_transformer_service = new(batch_size, verbose, dry_run)
     batch_image_transformer_service.run
   end
 
