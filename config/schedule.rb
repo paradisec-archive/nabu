@@ -19,7 +19,7 @@
 
 # Learn more: http://github.com/javan/whenever
 
-job_type :nabu_rake,  "cd :path && if [ ! -f shared/pids/disable_cron ]; then :environment_variable=:environment flock --nonblock --verbose shared/locks/:lock.lock :bundle_command rake :task DRY_RUN=true --silent :output; fi"
+job_type :nabu_rake,  "cd :path && if [ ! -f tmp/pids/disable_cron ]; then :environment_variable=:environment flock --nonblock --verbose tmp/locks/:lock.lock :bundle_command rake :task DRY_RUN=true --silent :output; fi"
 
 every 1.day, :at => '12:00 am' do
   nabu_rake "archive:export_metadata VERBOSE=true", lock: 'archive_export_metadata'
