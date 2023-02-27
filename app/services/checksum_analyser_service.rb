@@ -83,7 +83,7 @@ class ChecksumAnalyserService
     self.check_checksums_for_files(file_array, true)
   end
 
-  def self.check_in_batches(batch_size = 10)
+  def self.check_in_batches(batch_size = 10, dry_run = false)
 
     # calculate the set of collections to run in this batch
     last_run = last_run_collection
@@ -99,7 +99,11 @@ class ChecksumAnalyserService
     file_array = find_checksum_files_by_collection("{#{batch.join(',')}}/**")
 
     # update checkpoint file
-    File.write(checkpoint_file, batch.last)
+    if @dry_run
+      puts "DRY RUN: not updating checkpoint file"
+    else
+      File.write(checkpoint_file, batch.last)
+    end
 
     self.check_checksums_for_files(file_array, true)
   end

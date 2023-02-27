@@ -3,15 +3,16 @@ require 'nabu/media'
 # Batch transformation of images.
 # For an individual transformation, see ImageTransformerService.
 class BatchImageTransformerService
-  def self.run(batch_size, verbose)
-    batch_image_transformer_service = new(batch_size, verbose)
+  def self.run(batch_size, verbose, dry_run)
+    batch_image_transformer_service = new(batch_size, verbos, dry_rune)
     batch_image_transformer_service.run
   end
 
-  def initialize(batch_size, verbose)
+  def initialize(batch_size, verbose, dry_run)
     @batch_size = batch_size
     @image_files = find_image_files
     @verbose = verbose
+    @dry_run = dry_run
   end
 
   def find_image_files
@@ -27,7 +28,11 @@ class BatchImageTransformerService
       begin
         media = Nabu::Media.new image_file.path
         image_transformer = ImageTransformerService.new(media, file, item, image_file, extension)
-        image_transformer.perform_conversions
+        if @dry_run
+          puts "Would transform #{file} for item #{item.id}"
+        else
+          image_transformer.perform_conversions
+        end
       rescue => e
         puts "WARNING: file #{file} skipped - error transforming image [#{e.message}]" if @verbose
         puts " >> #{e.backtrace}"

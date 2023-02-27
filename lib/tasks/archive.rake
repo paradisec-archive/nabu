@@ -336,24 +336,28 @@ namespace :archive do
   desc 'Update essence metadata of existing files in the archive'
   task :update_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    dry_run = ENV['DRY_RUN'] ? true : false
+
     # Default to not forcing an update of metadata
     force_update = (ENV['FORCE'] == 'true')
     ignore_update_file_prefixes = (ENV['IGNORE_UPDATE_FILE_PREFIX'] || '').split(':')
 
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
-    UpdateFilesService.run(archive, ignore_update_file_prefixes, force_update, verbose)
+
+    UpdateFilesService.run(archive, ignore_update_file_prefixes, force_update, verbose, dry_run)
   end
 
 
   desc 'Create all missing PDSC_ADMIN files'
   task :admin_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    dry_run = ENV['DRY_RUN'] ? true : false
 
     # find essence files in Nabu::Application.config.archive_directory
     archive = Nabu::Application.config.archive_directory
 
-    AdminFilesService.run(verbose, archive)
+    AdminFilesService.run(verbose, archive, dry_run)
   end
 
   desc 'Delete collection with all items'
@@ -393,34 +397,39 @@ namespace :archive do
 
   desc "Mint DOIs for objects that don't have one"
   task :mint_dois => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
     batch_size = Integer(ENV['MINT_DOIS_BATCH_SIZE'] || 100)
-    BatchDoiMintingService.run(batch_size)
+    BatchDoiMintingService.run(batch_size, dry_run)
   end
 
   desc "Perform image transformations for all image essences"
   task :transform_images => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
     batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
     verbose = true
-    BatchImageTransformerService.run(batch_size, verbose)
+    BatchImageTransformerService.run(batch_size, verbose, dry_run)
   end
 
   desc "Update catalog details of items"
   task :update_item_catalogs => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
     offline_template = OfflineTemplate.new
-    BatchItemCatalogService.run(offline_template)
+    BatchItemCatalogService.run(offline_template, dry_run)
   end
 
   desc "Transcode essence files into required formats"
   task :transcode_essence_files => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
     batch_size = Integer(ENV['TRANSCODE_ESSENCE_FILES_BATCH_SIZE'] || 100)
-    BatchTranscodeEssenceFileService.run(batch_size)
+    BatchTranscodeEssenceFileService.run(batch_size, dry_run)
   end
 
   desc "Generate noisevis files"
   task :noisevis_files => :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
     archive = Nabu::Application.config.archive_directory
     verbose = true
-    NoisevisFilesService.run(archive, verbose)
+    NoisevisFilesService.run(archive, verbose, dry_run)
   end
 
   # HELPERS

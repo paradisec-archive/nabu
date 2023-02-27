@@ -5,9 +5,10 @@ class NoisevisFilesService
     noisevis_files_service.run
   end
 
-  def initialize(archive, verbose)
+  def initialize(archive, verbose, dry_run)
     @archive = archive
     @verbose = verbose
+    @dry_run = dry_run
   end
 
   def run
@@ -42,7 +43,12 @@ class NoisevisFilesService
         end
 
         begin
-          result = system("noisevis -json true -i #{directory}/#{file} -o #{directory}/#{spectrum_filename}")
+          if @dry_run
+            puts "DRY_RUN: Would run noisevis on #{file}"
+            result = true
+          else
+            result = system("noisevis -json true -i #{directory}/#{file} -o #{directory}/#{spectrum_filename}")
+          end
         rescue
           puts "ERROR: unable to process file #{file} - skipping"
           next
@@ -55,7 +61,11 @@ class NoisevisFilesService
 
         # Need to change json filename
         begin
-          FileUtils.mv("#{directory}/#{spectrum_filename}.json", "#{directory}/#{json_filename}")
+          if @dry_run
+            puts "DRY_RUN: would rename #{directory}/#{spectrum_filename}.json to #{directory}/#{json_filename}"
+          else
+            FileUtils.mv("#{directory}/#{spectrum_filename}.json", "#{directory}/#{json_filename}")
+          end
         rescue
           puts "ERROR: file #{file} skipped - not able to rename JSON file" if @verbose
           next

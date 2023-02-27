@@ -1,12 +1,13 @@
 # Batch transcoding of essence files
 class BatchTranscodeEssenceFileService
-  def self.run(batch_size)
-    batch_transcode_essence_file_service = new(batch_size)
+  def self.run(batch_size, dry_run)
+    batch_transcode_essence_file_service = new(batch_size, dry_run)
     batch_transcode_essence_file_service.run
   end
 
-  def initialize(batch_size)
+  def initialize(batch_size, dry_run)
     @batch_size = batch_size
+    @dry_run = dry_run
     @essence_transcode_count = 0
   end
 
@@ -19,7 +20,11 @@ class BatchTranscodeEssenceFileService
 
   def process_item(item)
     transcode_essence_file_service = TranscodeEssenceFileService.new(item)
-    transcode_essence_file_service.run
-    @essence_transcode_count += transcode_essence_file_service.essence_transcode_count
+    if @dry_run
+      puts "Would transcode #{item.id}"
+    else
+      transcode_essence_file_service.run
+      @essence_transcode_count += transcode_essence_file_service.essence_transcode_count
+    end
   end
 end

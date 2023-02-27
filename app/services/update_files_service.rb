@@ -1,16 +1,17 @@
 # Service to implement the archive:update_files task
 # FIXME: Uses the globally defined methods `directories`, `parse_file_name`, `import_metadata`, and `generate_derived_files` from archive.rake.
 class UpdateFilesService
-  def self.run(archive, ignore_update_file_prefixes, force_update, verbose)
-    update_files_service = new(archive, ignore_update_file_prefixes, force_update, verbose)
+  def self.run(archive, ignore_update_file_prefixes, force_update, verbose, dry_run)
+    update_files_service = new(archive, ignore_update_file_prefixes, force_update, verbose, dry_run)
     update_files_service.run
   end
 
-  def initialize(archive, ignore_update_file_prefixes, force_update, verbose)
+  def initialize(archive, ignore_update_file_prefixes, force_update, verbose, dry_run)
     @archive = archive
     @ignore_update_file_prefixes = ignore_update_file_prefixes
     @force_update = force_update
     @verbose = verbose
+    @dry_run = dry_run
   end
 
   def run
@@ -39,7 +40,11 @@ class UpdateFilesService
         # skip PDSC_ADMIN and rename CAT & df files
         next if basename.split('-').last == "PDSC_ADMIN"
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          if @dry_run
+            puts "DRY_RUN: renaming file #{file} to #{basename}-PDSC_ADMIN.#{extension}"
+          else
+            FileUtils.mv(directory + "/" + file, directory + "/" + basename + "-PDSC_ADMIN." + extension)
+          end
           next
         end
 
@@ -50,7 +55,11 @@ class UpdateFilesService
 
         # extract media metadata from file
         begin
-          import_metadata(directory, file, item, extension, @force_update)
+          if @dry_run
+            puts "DRY_RUN: importing metadata for file #{file}"
+          else
+            import_metadata(directory, file, item, extension, @force_update)
+          end
         rescue => e
           puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if @verbose
           puts " >> #{e.backtrace}"
@@ -61,7 +70,11 @@ class UpdateFilesService
         full_file_path = directory + "/" + file
         essence = Essence.where(:item_id => item, :filename => file).first
         media = Nabu::Media.new full_file_path
-        generate_derived_files(full_file_path, item, essence, extension, media)
+        if @dry_run
+          puts "DRY_RUN: generating derived files for file #{file}"
+        else
+          generate_derived_files(full_file_path, item, essence, extension, media)
+        end
       end
     end
     puts "===" if @verbose

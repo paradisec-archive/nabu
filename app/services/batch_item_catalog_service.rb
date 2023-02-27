@@ -1,11 +1,12 @@
 class BatchItemCatalogService
-  def self.run(offline_template)
-    batch_item_catalog_service = new(offline_template)
+  def self.run(offline_template, dry_run)
+    batch_item_catalog_service = new(offline_template, dry_run)
     batch_item_catalog_service.run
   end
 
-  def initialize(offline_template)
+  def initialize(offline_template, dry_run)
     @offline_template = offline_template
+    @dry_run = dry_run
   end
 
   def run
@@ -15,6 +16,10 @@ class BatchItemCatalogService
   end
 
   def process_item(item)
-    ItemCatalogService.new(item).delay.save_file
+    if @dry_run
+      puts "Would generate catalog file for item #{item.id}"
+    else
+      ItemCatalogService.new(item).delay.save_file
+    end
   end
 end

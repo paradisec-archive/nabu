@@ -38,12 +38,12 @@ every 1.day, :at => '2:00 am' do
   nabu_rake "archive:mint_dois MINT_DOIS_BATCH_SIZE=500", lock: 'archive_mint_dois', output: 'log/doi_minting.log'
 end
 
-every 1.day, :at => '2:30 am' do
-  nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
-end
-
 every 1.day, :at => '12:04 am' do
   nabu_rake "archive:transform_images IMAGE_TRANSFORMER_BATCH_SIZE=2500", lock: 'archive_transform_images'
+end
+
+every 1.day, :at => '2:30 am' do
+  nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
 end
 
 # jonog - perform daily database backups of the database and archive weekly backups for the rest of the month

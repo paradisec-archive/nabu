@@ -1,14 +1,15 @@
 # Service to implement the archive:admin_files task
 # FIXME: Uses the globally defined method `directories` from archive.rake, and ItemOfflineTemplate.
 class AdminFilesService
-  def self.run(verbose, archive)
-    admin_files_service = new(verbose, archive)
+  def self.run(verbose, archive, dry_run)
+    admin_files_service = new(verbose, archive, dry_run)
     admin_files_service.run
   end
 
-  def initialize(verbose, archive)
+  def initialize(verbose, archive, dry_run)
     @verbose = verbose
     @archive = archive
+    @dry_run = dry_run
   end
 
   def run
@@ -41,8 +42,12 @@ class AdminFilesService
       template = ItemOfflineTemplate.new
       template.item = item
       data = template.render_to_string :template => "items/show.xml.haml"
-      File.open(file, 'w') {|f| f.write(data)}
-      puts "created #{file}"
+      if @dry_run
+        puts "DRY_RUN: would create #{file}"
+      else
+        File.open(file, 'w') {|f| f.write(data)}
+        puts "created #{file}"
+      end
     end
     puts "===" if @verbose
     puts "Check and create PDSC_ADMIN Files finished." if @verbose

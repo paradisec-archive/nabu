@@ -3,14 +3,21 @@ require 'net/http'
 
 class DoiMintingService
 
-  def initialize
+  def initialize(dry_run)
     @base_url = ENV['DATACITE_BASE_URL']
     @prefix = ENV['DOI_PREFIX']
     @user = ENV['DATACITE_USER']
     @pass = ENV['DATACITE_PASS']
+    @dry_run = dry_run
   end
 
   def mint_doi(doiable)
+    if @dry_run
+      puts "DRY_RUN: DOI minting for #{doiable.id}"
+
+      return true
+    end
+
     response = post_to_mds :metadata, doiable.to_doi_xml
 
     if response.code == "201"
