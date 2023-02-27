@@ -47,7 +47,7 @@ set :puma_enable_socket_service, true
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/#{fetch(:application)}-puma.sock"
 
 # Rails
-append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets'
+append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'tmp/locks'
 
 # dotenv
 append :linked_files, '.env'
