@@ -37,7 +37,7 @@ nabu_run bundle exec guard # Test runner
 
 ## Production
 
-The application is designed to be deployed using an AWS code pipeline deployment into containers using CKD
+The application is designed to be deployed using an AWS code pipeline deployment into containers using CDK
 
 To bootstrap a new account
 
@@ -62,8 +62,8 @@ aws ecs run-task --cluster $cluster --task-definition $task
 We are using Capistrano for deployment.
 
 ``` bash
-cap deploy
-cap production deploy
+nabu_run bundle exec cap staging deploy --dry-run
+nabu_run bundle exec cap staging deploy
 ```
 
 Note about deployment: if you see a 'Permission denied(publickey)' error, try running `ssh-add -k` in terminal

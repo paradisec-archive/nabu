@@ -131,6 +131,8 @@ namespace :archive do
   desc 'Import files into the archive'
   task :import_files => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    dry_run = ENV['DRY_RUN'] ? true : false
+
     # Always update metadata, unlike the update_files task
     force_update = true
 
@@ -139,12 +141,12 @@ namespace :archive do
 
     dir_list.each do |upload_directory|
       next unless File.directory?(upload_directory)
+
       dir_contents = Dir.entries(upload_directory)
 
       # for each essence file, find its collection & item
       # by matching the pattern
       # "#{collection_id}-#{item_id}-xxx.xxx"
-
       files_array = dir_contents.select {|file| File.file?("#{upload_directory}/#{file}") }
       next unless files_array.any?
 
@@ -210,7 +212,11 @@ namespace :archive do
         # move old style CAT and df files to the new naming scheme
         if basename.split('-').last == "CAT" || basename.split('-').last == "df"
           begin
-            FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
+            if dry_run
+              puts "DRY_RUN: file #{file} would be renamed to #{basename + "-PDSC_ADMIN." + extension} within upload folder"
+            else
+              FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
+            end
           rescue
             puts "ERROR: file #{file} skipped - not able to rename within upload folder" if verbose
             next
@@ -230,7 +236,11 @@ namespace :archive do
           # extract media metadata from file
           puts "INFO: Inspecting file #{file}..."
           begin
-            success = import_metadata(upload_directory, file, item, extension, force_update)
+            if dry_run
+              puts "DRY_RUN: file #{file} would be imported into Nabu"
+            else
+              success = import_metadata(upload_directory, file, item, extension, force_update)
+            end
           rescue => e
             puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
             puts " >> #{e.backtrace}"
@@ -247,7 +257,11 @@ namespace :archive do
           begin
             destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
 
-            FileUtils.mkdir_p(destination_path)
+            if dry_run
+              puts "DRY_RUN: file #{file} would be copied into archive at #{destination_path}"
+            else
+              FileUtils.mkdir_p(destination_path)
+            end
           rescue
             puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
             next
@@ -256,7 +270,11 @@ namespace :archive do
           # Uncommon errors 3.
           # Action: Leave as-is.
           begin
-            FileUtils.cp(upload_directory + file, destination_path + file)
+            if dry_run
+              puts "DRY_RUN: file #{file} would be copied into archive at #{destination_path}"
+            else
+              FileUtils.cp(upload_directory + file, destination_path + file)
+            end
           rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
 
@@ -274,7 +292,11 @@ namespace :archive do
           end
 
           begin
-            FileUtils.cp(upload_directory + file, rejected_directory + file)
+            if dry_run
+              puts "DRY_RUN: file #{file} would be copied into rejected file folder at #{rejected_directory}"
+            else
+              FileUtils.cp(upload_directory + file, rejected_directory + file)
+            end
           rescue
             puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
 
@@ -286,7 +308,11 @@ namespace :archive do
 
         # if everything went well, meaning it was either moved into the archive, or moved to the rejected folder,
         # remove file from original directory
-        FileUtils.rm(upload_directory + file)
+        if dry_run
+          puts "DRY_RUN: file #{file} would be removed from upload folder"
+        else
+          FileUtils.rm(upload_directory + file)
+        end
 
         # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
         # so don't worry about success value.
@@ -295,7 +321,11 @@ namespace :archive do
           full_file_path = destination_path + "/" + file
           essence = Essence.where(:item_id => item, :filename => file).first
           media = Nabu::Media.new full_file_path
-          generate_derived_files(full_file_path, item, essence, extension, media)
+          if dry_run
+            puts "DRY_RUN: thumbnails for file #{file} would be generated"
+          else
+            generate_derived_files(full_file_path, item, essence, extension, media)
+          end
         end
 
         puts "...done"
