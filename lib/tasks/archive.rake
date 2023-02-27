@@ -36,10 +36,10 @@ end
 # # No need for a keyword for announcing a particular action is about to start,
 # # or has just finished
 namespace :archive do
-
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
     verbose = ENV['VERBOSE'] ? true : false
+    dry_run = ENV['DRY_RUN'] ? true : false
 
     # scan for WAV files .wav and create .imp.xml & id3.xml
     dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
@@ -91,9 +91,13 @@ namespace :archive do
         data_imp = template.render_to_string :template => "items/show.imp.xml"
         data_id3 = template.render_to_string :template => "items/show.id3.xml"
 
-        File.open(metadata_filename_imp, 'w') {|f| f.write(data_imp)}
-        File.open(metadata_filename_id3, 'w') {|f| f.write(data_id3)}
-        puts "SUCCESS: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n created for #{file}"
+        if dry_run
+          puts "DRY_RUN: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n would be created for #{file}"
+        else
+          File.open(metadata_filename_imp, 'w') {|f| f.write(data_imp)}
+          File.open(metadata_filename_id3, 'w') {|f| f.write(data_id3)}
+          puts "SUCCESS: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n created for #{file}"
+        end
       else
         rejected_directory = Nabu::Application.config.scan_directory + "Rejected/"
         unless File.directory?(rejected_directory)
@@ -102,7 +106,11 @@ namespace :archive do
         end
 
         begin
-          FileUtils.cp(Nabu::Application.config.scan_directory + file, rejected_directory + file)
+          if dry_run
+            puts "DRY_RUN: file #{file} would be copied into rejected file folder at #{rejected_directory}"
+          else
+            FileUtils.cp(Nabu::Application.config.scan_directory + file, rejected_directory + file)
+          end
         rescue
           puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
           next
@@ -110,7 +118,11 @@ namespace :archive do
 
         puts "INFO: file #{file} copied into rejected file folder at #{rejected_directory}"
         # Only delete in the failure scenario, not in the success scenario
-        FileUtils.rm(Nabu::Application.config.scan_directory + file)
+        if dry_run
+          puts "DRY_RUN: file #{file} would be deleted from #{Nabu::Application.config.scan_directory}"
+        else
+          FileUtils.rm(Nabu::Application.config.scan_directory + file)
+        end
       end
     end
   end
