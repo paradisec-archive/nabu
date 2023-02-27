@@ -37,3 +37,8 @@
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
 * Add everything needed to search_params
+
+# CRON
+ROtate logs
+have export_data,import_files use rake args for verbose
+mysql backup

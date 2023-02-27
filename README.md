@@ -249,3 +249,11 @@ sudo apt install default-jdk -y
 # https://www.vultr.com/docs/install-apache-solr-on-ubuntu-20-04/
 /etc/default/solr.in.sh set SOLR_HOME to /srv/www/nabu/current/solr
 ```
+
+## Cron Jobs
+
+There are a number of cronjobs that need to be running for the catalog to operate correctly
+
+capistrano will automatically create the cronjobs usning whenever.
+
+They are defined in config/schedule.rb
