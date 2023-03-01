@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 docker-compose run \
+  --rm \
   -v "$PWD":/app \
   -v "$PWD"/vendor/bundle:/bundler \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \

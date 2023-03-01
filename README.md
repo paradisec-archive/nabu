@@ -85,9 +85,9 @@ Run the below from the home directory on the server.
 ## Importing a production database into your development environment
 
 ``` bash
-ssh deploy@catalog.paradisec.org.au "mysqldump -u root nabu | gzip > nabu.sql.gz"
-scp deploy@catalog.paradisec.org.au:nabu.sql.gz .
-gzip -dc nabu.sql.gz | mysql -u root nabu_devel
+ssh deploy@catalog.paradisec.org.au "mysqldump -u root nabu | bzip2 > nabu.sql.gz"
+scp deploy@catalog.paradisec.org.au:nabu.sql.bz2 .
+bzip2 -dc nabu.bz2 | mysql -h 127.0.0.1 -u root nabu_devel
 rake sunspot:reindex
 ```
 

@@ -14,8 +14,8 @@ class ItemsController < ApplicationController
       return
     end
 
-    @search = ItemSearchService.build_solr_search(params, current_user)
-    @params = search_params
+    @search = ItemSearchService.build_solr_search(basic_search_params, current_user)
+    @params = basic_search_params
     store_results!
 
     @page_title = 'Nabu - Item Search'
@@ -334,7 +334,7 @@ class ItemsController < ApplicationController
   end
 
   def stream_csv(search_type)
-    downloader = CsvDownloader.new(search_type, params, current_user)
+    downloader = CsvDownloader.new(search_type, basic_search_params, current_user)
     export_all = params[:export_all] || false
     per_page = (params[:per_page] || 10).to_i
 
@@ -344,9 +344,11 @@ class ItemsController < ApplicationController
     if @search.total <= 5000 || (!export_all && per_page <= 5000)
       filename, body = downloader.stream(@search)
 
-      self.response.headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
-      self.response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
-      self.response.headers['Last-Modified'] = Time.now.ctime.to_s
+      headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
+      headers['Content-Disposition'] = "attachment; filename=#{filename}"
+      headers['Last-Modified'] = Time.now.ctime.to_s
+
+      response.status = 200
 
       self.response_body = Enumerator.new &body
       return
@@ -392,17 +394,21 @@ class ItemsController < ApplicationController
     end if ids.present?
   end
 
-  def search_params
-    params.permit(
-      :search, :page, :per_page, :sort, :direction,
-      :language_code, :country_code, :collector_id
-    )
-  end
 
   def store_results!
     keys = @search.hits.map(&:primary_key)
     text = Base64.encode64(ActiveSupport::Gzip.compress(keys.join(',')))
     session[:result_ids] = text
+  end
+
+  def basic_search_params
+    params.permit(
+      :format,
+
+      :search, :page, :per_page, :sort, :direction,
+      :language_code, :country_code, :collector_id,
+      :export_all
+    )
   end
 
   def item_params

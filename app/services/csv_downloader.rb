@@ -28,7 +28,7 @@ class CsvDownloader
     filename = "nabu_items_#{Date.today}.csv"
     path = "#{Rails.root}/tmp/#{filename}"
 
-    CSV.open(path, 'wb') do |csv|
+    CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
       search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       # if the user requested all results, iterate over the remaining pages
       while @params[:export_all] && search.results.next_page
@@ -68,15 +68,16 @@ class CsvDownloader
     # use enumerator to customise streaming the response
     streamed_csv = ->(output) {
       # wrap the IO output so that CSV pushes writes directly into it
-      csv = CSV.new(output, CSV_OPTIONS)
+      csv = CSV.new(output, **CSV_OPTIONS)
       search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
-        # if the user requested all results, iterate over the remaining pages
-        while @params[:export_all] && search.results.next_page
+
+      # if the user requested all results, iterate over the remaining pages
+      while @params[:export_all] && search.results.next_page
         search = if @search_type == :basic
-                   ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
-                 else
-                   ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
-                 end
+          ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
+        else
+          ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
+        end
         search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
       end
     }

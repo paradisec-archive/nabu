@@ -19,10 +19,6 @@ class OfflineTemplate < AbstractController::Base
   def current_user
     @current_user ||= User.admins.first
   end
-
-  #def params
-  #  {}
-  #end
 end
 
 class ItemOfflineTemplate < OfflineTemplate
