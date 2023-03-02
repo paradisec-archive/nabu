@@ -14,8 +14,9 @@ class ItemsController < ApplicationController
       return
     end
 
-    @search = ItemSearchService.build_solr_search(basic_search_params, current_user)
-    @params = basic_search_params
+    search_params = params[:export_all] ? basic_search_params.merge(:per_page => 500, :start_page => 1) : basic_search_params
+    @search = ItemSearchService.build_solr_search(search_params, current_user)
+    @params = search_params
     store_results!
 
     @page_title = 'Nabu - Item Search'
@@ -31,7 +32,8 @@ class ItemsController < ApplicationController
 
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
-    build_advanced_search(params)
+    search_params = params[:export_all] ? params.merge(:per_page => 500, :start_page => 1) : params
+    build_advanced_search(search_params)
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -336,7 +338,7 @@ class ItemsController < ApplicationController
   def stream_csv(search_type)
     downloader = CsvDownloader.new(search_type, basic_search_params, current_user)
     export_all = params[:export_all] || false
-    per_page = (params[:per_page] || 10).to_i
+    per_page = export_all ? 500 : (params[:per_page] || 10).to_i
 
     #TODO: fix CSV stream for builder method
 
@@ -396,7 +398,7 @@ class ItemsController < ApplicationController
 
 
   def store_results!
-    keys = @search.hits.map(&:primary_key)
+    keys = params[:clause].present? ? @search.map(&:id) : @search.hits.map(&:primary_key)
     text = Base64.encode64(ActiveSupport::Gzip.compress(keys.join(',')))
     session[:result_ids] = text
   end
