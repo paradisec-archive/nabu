@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 
-git co staging
+git co production
 git merge --ff-only main
 git push
 git co main
-nabu_run bundle exec cap staging deploy
+nabu_run bundle exec cap production deploy

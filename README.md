@@ -62,8 +62,8 @@ aws ecs run-task --cluster $cluster --task-definition $task
 We are using Capistrano for deployment.
 
 ``` bash
-nabu_run bundle exec cap staging deploy --dry-run
-nabu_run bundle exec cap staging deploy
+nabu_run bundle exec cap production deploy --dry-run
+nabu_run bundle exec cap production deploy
 ```
 
 Note about deployment: if you see a 'Permission denied(publickey)' error, try running `ssh-add -k` in terminal
@@ -241,8 +241,8 @@ CREATE USER 'nabu'@'localhost';
 ALTER USER 'nabu'@'localhost' IDENTIFIED BY 'GENERATE A PW';
 GRANT ALL PRIVILEGES ON nabu.* TO 'nabu'@'localhost';
 
-nabu_run bundle exec cap staging puma:install
-nabu_run bundle exec cap staging puma:generate_nginx_config_locally; scp nginx.conf server:
+nabu_run bundle exec cap production puma:install
+nabu_run bundle exec cap production puma:generate_nginx_config_locally; scp nginx.conf server:
 
 certbot
 sudo apt install default-jdk -y

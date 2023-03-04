@@ -1,3 +1,7 @@
+server "syd-paradisec-prod.intersect.org.au", user: "deploy", roles: %w{app db web}
+
+set :branch, 'production'
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
