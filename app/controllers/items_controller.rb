@@ -357,7 +357,6 @@ class ItemsController < ApplicationController
     end
 
     # otherwise use delayed_job to email a CSV
-
     downloader.delay.email
 
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
