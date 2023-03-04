@@ -21,7 +21,7 @@ class BulkUpdateItemsService
           item.send("#{k}=", item.send(k) - v)
         end
 
-        if item.update_attributes(@updates.merge(appending))
+        if item.update(@updates.merge(appending))
           ItemCatalogService.new(item).save_file
         else
           @failed_items << item

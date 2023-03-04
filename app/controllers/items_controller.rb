@@ -227,7 +227,7 @@ class ItemsController < ApplicationController
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
-    if @item.update_attributes(params[:item])
+    if @item.update(item_params)
       # update xml file of the item
       save_item_catalog_file(@item)
 
@@ -256,7 +256,7 @@ class ItemsController < ApplicationController
                            .pluck(:id)
     BulkUpdateItemsService.new(item_ids: accessible_items,
                                current_user_email: current_user.try(:email),
-                               updates: params[:item]).delay.update_items
+                               updates: item_params).delay.update_items
 
     flash[:notice] = "Items will be updated shortly, you'll be notified once it's completed"
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"

@@ -50,14 +50,14 @@ class UsersController < ApplicationController
     end
 
     if current_password and (@user.valid_password?(current_password) or current_user.admin?)
-      result = @user.update_attributes(params[:user], :as => current_user.admin? ? :admin : nil)
+      result = @user.update(params[:user], :as => current_user.admin? ? :admin : nil)
     elsif not current_password.blank?
       @user.attributes = params[:user]
       @user.valid?
       @user.errors.add(:current_password, current_password.blank? ? :blank : :invalid)
       result = false
     else
-      result = @user.update_attributes(params[:user], :as => current_user.admin? ? :admin : nil)
+      result = @user.update(params[:user], :as => current_user.admin? ? :admin : nil)
     end
 
     if result

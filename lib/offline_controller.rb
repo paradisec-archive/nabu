@@ -10,6 +10,10 @@ class OfflineController < ActionController::Base
     super()
   end
 
+  def request
+    ActionDispatch::Request.new({})
+  end
+
   def current_user
     @current_user ||= User.admins.first
   end

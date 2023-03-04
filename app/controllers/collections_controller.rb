@@ -132,7 +132,7 @@ class CollectionsController < ApplicationController
   end
 
   def update
-    if @collection.update_attributes(params[:collection])
+    if @collection.update(collection_params)
       flash[:notice] = 'Collection was successfully updated.'
       redirect_to @collection
     else
@@ -154,12 +154,13 @@ class CollectionsController < ApplicationController
 
   def bulk_update
     @collections = Collection.accessible_by(current_ability).where :id => params[:collection_ids].split(' ')
+    @params = search_params
 
     params[:collection].delete_if {|k, v| v.blank?}
 
     # Collect the fields we are appending to
     appendable = {}
-    params[:collection].each_pair do |k, v|
+    @params.each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
         appendable[$1] = params[:collection].delete $1 if v == "1"
         params[:collection].delete k
@@ -170,12 +171,12 @@ class CollectionsController < ApplicationController
     @collections.each do |collection|
       appendable.each_pair do |k, v|
         if collection.public_send(k).nil?
-          params[:collection][k.to_sym] = v unless v.blank?
+          @params[k.to_sym] = v unless v.blank?
         else
-          params[:collection][k.to_sym] = collection.public_send(k) + v unless v.blank?
+          @params[k.to_sym] = collection.public_send(k) + v unless v.blank?
         end
       end
-      unless collection.update_attributes(params[:collection])
+      unless collection.update(params[:collection])
         invalid_record = true
         @collection = collection
         break
@@ -183,8 +184,8 @@ class CollectionsController < ApplicationController
     end
 
     appendable.each_pair do |k, v|
-      params[:collection][k.to_sym] = nil
-      params[:collection]["bulk_edit_append_#{k}"] = v
+      @params[k.to_sym] = nil
+      @params["bulk_edit_append_#{k}"] = v
     end
 
     if invalid_record
