@@ -40,5 +40,4 @@
 
 # CRON
 ROtate logs
-have export_data,import_files use rake args for verbose
 mysql backup

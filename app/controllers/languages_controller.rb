@@ -12,6 +12,8 @@ class LanguagesController < ApplicationController
       @languages = @languages.where(:countries_languages => {:country_id => country_ids})
     end
 
+    @languages = @languages.to_a
+
     # These are fake languages which we always want in the list
     @languages << Language.find_by_code('mul')
     @languages << Language.find_by_code('und')
