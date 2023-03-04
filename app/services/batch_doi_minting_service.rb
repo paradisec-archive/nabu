@@ -30,10 +30,12 @@ class BatchDoiMintingService
   end
 
   def run
+    puts "Start Minting: #{Time.now}"
     @unminted_objects.each do |unminted_object|
       next unless public_object?(unminted_object)
       @doi_minting_service.mint_doi(unminted_object)
     end
+    puts "Finished Minting: #{Time.now}"
   end
 
   # This is the canonical source of information on whether an object is public, as far as BatchDoiMintingService
