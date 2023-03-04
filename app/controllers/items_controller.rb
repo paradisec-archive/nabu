@@ -33,6 +33,7 @@ class ItemsController < ApplicationController
   def advanced_search
     @page_title = 'Nabu - Advanced Item Search'
     search_params = params[:export_all] ? params.merge(:per_page => 500, :start_page => 1) : params
+    @params = search_params
     build_advanced_search(search_params)
     respond_to do |format|
       format.html
@@ -244,6 +245,7 @@ class ItemsController < ApplicationController
     @item = Item.new
     @item.collection = Collection.new
     @page_title = 'Nabu - Items Bulk Update'
+    @params = params
 
     build_advanced_search(params)
     build_deletable_params(@item, @items)
@@ -251,6 +253,8 @@ class ItemsController < ApplicationController
 
 
   def bulk_update
+    @params = params
+
     accessible_items = Item.accessible_by(current_ability)
                            .where(id: params[:item_ids].split(' '))
                            .pluck(:id)
