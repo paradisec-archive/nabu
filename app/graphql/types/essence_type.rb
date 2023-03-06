@@ -12,7 +12,7 @@ class Types::EssenceType < Types::BaseObject
   field :channels, Integer, null: true
   field :fps, Integer, null: true
   field :doi, String, null: true
-  field :doi_xml, String, method: :to_doi_xml, null: true
+  field :doi_xml, String, method: :to_doi_xml, null: true, camelize: false
   field :citation, String, null: true
   field :permalink, String, method: :full_path, null: false
 end
