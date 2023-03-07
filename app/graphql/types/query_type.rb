@@ -10,32 +10,32 @@ module Types
     field :items, Types::ItemResultType, null: true do
       argument :limit, Integer, default_value: 10, required: false
       argument :page, Integer, default_value: 1, required: false
-      # argument :sort_order, String, default_value: :full_identifier, required: false
+      # argument :sort_order, String, default_value: :full_identifier, required: false, camelize: false
       argument :title, String, required: false
       argument :identifier, String, required: false
-      argument :full_identifier, String, required: false
-      argument :collection_identifier, String, required: false
-      argument :collector_name, String, required: false
-      argument :university_name, String, required: false
-      argument :operator_name, String, required: false
-      argument :discourse_type_name, String, required: false
+      argument :full_identifier, String, required: false, camelize: false
+      argument :collection_identifier, String, required: false, camelize: false
+      argument :collector_name, String, required: false, camelize: false
+      argument :university_name, String, required: false, camelize: false
+      argument :operator_name, String, required: false, camelize: false
+      argument :discourse_type_name, String, required: false, camelize: false
       argument :description, String, required: false
       argument :language, String, required: false
       argument :dialect, String, required: false
       argument :region, String, required: false
-      argument :access_narrative, String, required: false
+      argument :access_narrative, String, required: false, camelize: false
       argument :tracking, String, required: false
-      argument :ingest_notes, String, required: false
-      argument :born_digital, Boolean, required: false
-      argument :originated_on, String, required: false
-      argument :essences_count, Integer, required: false
+      argument :ingest_notes, String, required: false, camelize: false
+      argument :born_digital, Boolean, required: false, camelize: false
+      argument :originated_on, String, required: false, camelize: false
+      argument :essences_count, Integer, required: false, camelize: false
       argument :id, ID, required: false
-      argument :access_class, String, required: false
-      argument :access_condition_name, String, required: false
-      argument :original_media, String, required: false
-      argument :received_on, String, required: false
-      argument :digitised_on, String, required: false
-      argument :originated_on_narrative, String, required: false
+      argument :access_class, String, required: false, camelize: false
+      argument :access_condition_name, String, required: false, camelize: false
+      argument :original_media, String, required: false, camelize: false
+      argument :received_on, String, required: false, camelize: false
+      argument :digitised_on, String, required: false, camelize: false
+      argument :originated_on_narrative, String, required: false, camelize: false
       argument :doi, String, required: false
       argument :private, Boolean, required: false
     end
