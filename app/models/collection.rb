@@ -78,8 +78,8 @@ class Collection < ApplicationRecord
   has_many :countries, :through => :collection_countries, :validate => true
   has_many :item_countries, through: :items, source: :countries
 
-  has_many :collection_admins, :dependent => :destroy
-  has_many :admins, :through => :collection_admins, :validate => true, :source => :user
+  has_many :collection_admins, :dependent => :destroy, :autosave => true
+  has_many :admins, :through => :collection_admins, :validate => true, :source => :user, :autosave => true
 
   # require presence of these three fields
   validates :identifier, :presence => true, :uniqueness => { case_sensitive: false },

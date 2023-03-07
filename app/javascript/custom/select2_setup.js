@@ -1,5 +1,6 @@
 export const setup_select2 = (element, noinit=false) => { // eslint-disable-line no-unused-vars
   const options = {};
+
   if ($(element).data('required')) {
     options['allowClear'] = false;
   } else {
@@ -11,7 +12,7 @@ export const setup_select2 = (element, noinit=false) => { // eslint-disable-line
   if ($(element).data('multiple')) {
     options['multiple'] = true;
     let val = $(element).val();
-    val = val.replace(/[\][]/g, '');
+    val = val.replace(/ /g, ',');
     $(element).val(val);
   }
 

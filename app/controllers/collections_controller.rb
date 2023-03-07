@@ -389,13 +389,17 @@ class CollectionsController < ApplicationController
         :north_limit, :south_limit, :west_limit, :east_limit,
         :collector_id, :operator_id, :university_id, :field_of_research_id,
         :grants_attributes,
-        :language_ids, :country_ids, :admin_ids,
         :access_condition_id,
         :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
         :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
         :bulk_edit_append_orthographic_notes, :bulk_edit_append_media, :bulk_edit_append_comments,
         :bulk_edit_append_tape_location, # :bulk_edit_append_grant_identifier,
         :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids,
+
+        :complete, :private, :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
+        :deposit_form_received, :tape_location,
+
+        language_ids: [], country_ids: [], admin_ids: []
       )
   end
 end
