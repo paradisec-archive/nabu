@@ -67,3 +67,14 @@ namespace :sunspot do
     end
   end
 end
+
+namespace :viewer do
+  desc 'Create a symlink to the viewer'
+  task :create_symlink do
+    on roles(:app) do
+      execute "ln -s /srv/viewer/current #{release_path}/public/viewer"
+    end
+  end
+end
+
+after 'deploy:publishing', 'viewer:create_symlink'
