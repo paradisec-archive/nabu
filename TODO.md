@@ -41,3 +41,5 @@
 # CRON
 ROtate logs
 mysql backup
+
+paper-trail can we move to JSON serialzer
