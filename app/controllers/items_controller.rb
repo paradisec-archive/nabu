@@ -441,7 +441,10 @@ class ItemsController < ApplicationController
         :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
         :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids,
         :bulk_delete_country_ids, :bulk_delete_subject_language_ids,
-        :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids
+        :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids,
+
+        item_agents_attributes: {},
+        country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [], admin_ids: [], user_ids: []
       )
   end
 end
