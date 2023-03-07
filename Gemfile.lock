@@ -125,6 +125,7 @@ GEM
     chronic (0.10.2)
     coderay (1.1.3)
     concurrent-ruby (1.2.2)
+    country-select (1.2.1)
     crass (1.0.6)
     daemons (1.4.1)
     database_cleaner (2.0.1)
@@ -516,6 +517,7 @@ DEPENDENCIES
   capistrano3-delayed-job
   capistrano3-puma (= 6.0.0.beta.1)
   capybara
+  country-select
   daemons
   database_cleaner
   debug

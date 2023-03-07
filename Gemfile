@@ -102,6 +102,7 @@ gem "daemons" # Needed by delayed_job
 
 # Frameworks
 gem "activeadmin"
+  gem "country-select"
 gem "graphql"
 gem "graphiql-rails"
 gem "delayed-web"
