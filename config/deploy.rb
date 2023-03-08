@@ -76,3 +76,4 @@ after 'deploy:publishing', 'viewer:create_symlink'
 
 # Sentry
 set :sentry_api_token, ENV['SENTRY_API_TOKEN']
+set :sentry_organization, 'nabu-d0'
