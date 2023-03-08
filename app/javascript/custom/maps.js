@@ -115,7 +115,7 @@ $(function () {
 
     $('.map').each((_, element) => {
       const cw = $(element).width();
-      $(element).css({'height': cw + 'px'})
+      $(element).css({'height': cw + 'px', 'max-height': '400px'})
 
       const options = {
         mapTypeId: google.maps.MapTypeId.ROADMAP, // eslint-disable-line no-undef
