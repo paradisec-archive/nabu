@@ -43,3 +43,6 @@ ROtate logs
 mysql backup
 
 paper-trail can we move to JSON serialzer
+
+CHeck monit config
+Ask nick about /src/catalog/webserver_psdc

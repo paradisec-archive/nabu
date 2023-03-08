@@ -2,6 +2,9 @@ server "syd-paradisec-prod.intersect.org.au", user: "deploy", roles: %w{app db w
 
 set :branch, 'production'
 
+before 'deploy:starting', 'sentry:validate_config'
+after 'deploy:published', 'sentry:notice_deployment'
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.

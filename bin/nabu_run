@@ -5,7 +5,6 @@ docker-compose run \
   -v "$PWD":/app \
   -v "$PWD"/vendor/bundle:/bundler \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
-  -e ROLLBAR_ACCESS_TOKEN="$ROLLBAR_ACCESS_TOKEN" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
   app \
   "$@"

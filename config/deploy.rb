@@ -52,11 +52,6 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'tmp/locks'
 # dotenv
 append :linked_files, '.env'
 
-# Rollbar
-set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
-set :rollbar_env, Proc.new { fetch :stage }
-set :rollbar_role, Proc.new { :app }
-
 namespace :sunspot do
   task :reindex do
     on roles(:app) do
@@ -78,3 +73,6 @@ namespace :viewer do
 end
 
 after 'deploy:publishing', 'viewer:create_symlink'
+
+# Sentry
+set :sentry_api_token, ENV['SENTRY_API_TOKEN']

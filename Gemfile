@@ -85,7 +85,8 @@ gem "oai" # OAI-PMH
 gem "rexml" # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
 
 # Analytics and instrumentation
-gem "rollbar" # Error reporting
+gem "sentry-ruby"
+gem "sentry-rails"
 
 # AAA
 gem "devise" # Authentication
@@ -129,6 +130,7 @@ gem "capistrano-rails", require: false, group: :development
 gem "capistrano-rbenv", require: false, group: :development
 gem "capistrano3-puma", '6.0.0.beta.1', require: false, group: :development
 gem 'capistrano3-delayed-job', require: false, group: :development
+gem 'capistrano-sentry', require: false, group: :development
 gem "sd_notify" # Needed by capstrano3-puma
 
 group :development, :test do
