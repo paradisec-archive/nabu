@@ -69,9 +69,12 @@
         %td.empty
         %td.empty
           - if can? :download, @essence
-            %p.delete-warning
-              %strong Large files have to be retrieved and will take a minute or two before they can be downloaded
-            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
+            - if File.exist?(@essence.path)
+              %p.delete-warning
+                %strong Large files have to be retrieved and will take a minute or two before they can be downloaded
+              = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
+            - else
+              %p File is not available for download
           - else
             %p No access rights to download essence.
             %p
