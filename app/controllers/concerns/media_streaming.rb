@@ -33,7 +33,6 @@ module MediaStreaming
           essence.path,
           :filename => essence.filename,
           :type => essence.mimetype,
-          :disposition => "inline",
           :status => status_code,
           :stream =>  'true',
           :buffer_size  =>  4096
