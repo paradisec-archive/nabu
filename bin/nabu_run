@@ -5,6 +5,7 @@ docker-compose run \
   -v "$PWD":/app \
   -v "$PWD"/vendor/bundle:/bundler \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
+  -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
   app \
   "$@"
