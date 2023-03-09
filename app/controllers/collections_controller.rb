@@ -256,14 +256,14 @@ class CollectionsController < ApplicationController
         end
       end
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
-      flash[:notice] += sheet.notices.join("<br/>") unless sheet.notices.empty?
-      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}"
+      flash[:notice] += sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
+      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}".truncate(500) + ' Truncated...'
 
       redirect_to @collection
     else
       @collection = Collection.new unless @collection
-      flash[:notice] = sheet.notices.join("<br/>") unless sheet.notices.empty?
-      flash[:error] = sheet.errors.join("<br/>") unless sheet.errors.empty?
+      flash[:notice] = sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
+      flash[:error] = sheet.errors.join("<br/>").truncate(500) unless sheet.errors.empty?
       render 'new_from_metadata'
     end
   end
