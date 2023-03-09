@@ -197,3 +197,5 @@ const initMap = () => {
     });
   });
 };
+
+window.initMap = initMap;
