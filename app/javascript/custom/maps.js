@@ -186,10 +186,10 @@ const initMap = () => {
       marker.info = new google.maps.InfoWindow({ content: content }); // eslint-disable-line no-undef
 
       google.maps.event.addListener(marker, 'click', (el) => { // eslint-disable-line no-undef
-        console.debug('click');
-        console.debug(el);
-        console.debug(el.currentTarget);
-        console.debug(el.currentTarget.info);
+        console.info('click');
+        console.info(el);
+        console.info(el.currentTarget);
+        console.info(el.currentTarget.info);
         el.currentTarget.info.open(map, el.currentTarget)
       });
 
