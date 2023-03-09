@@ -186,12 +186,7 @@ const initMap = () => {
       marker.info = new google.maps.InfoWindow({ content: content }); // eslint-disable-line no-undef
 
       google.maps.event.addListener(marker, 'click', (el) => { // eslint-disable-line no-undef
-        console.info('click');
-        console.info(el);
-        console.info(el.currentTarget);
-        console.info(marker.info);
-        // el.currentTarget.info.open(map, marker.currentTarget)
-        marker.info.open(map, marker.currentTarget)
+        marker.info.open(map, marker);
       });
 
       clusterer.addMarker(marker);
