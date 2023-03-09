@@ -27,7 +27,6 @@ class Language < ApplicationRecord
   validates :name, :presence => true
   validates :code, :presence => true, :uniqueness => { case_sensitive: false }
 
-  # default_scope -> { includes(:countries) }
   scope :alpha, -> { order(:name) }
 
   def name_with_code
