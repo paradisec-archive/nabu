@@ -1,5 +1,9 @@
 require 'nabu/media'
 
+include ActionView::Helpers::NumberHelper
+require "#{Rails.root}/app/helpers/application_helper"
+include ApplicationHelper
+
 # Coding style for log messages:
 # # Only use SUCCESS if an entire action has been completed successfully, not part of the action
 # # Use INFO for progress through part of an action

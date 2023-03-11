@@ -85,7 +85,7 @@ class ImageTransformerService
         next if File.file? file_path #skip existing files
 
         outfile = image.resize_to_fit(size, size)
-        outfile.write(file_path) { self.quality = 50 }
+        outfile.write(file_path) {|options| options.quality = 50 }
         outfile.destroy!
       end
     end
