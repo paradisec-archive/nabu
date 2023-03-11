@@ -32,8 +32,8 @@ module MediaStreaming
       send_file(
           essence.path,
           :filename => essence.filename,
-          :type => essence.mimetype,
-          :status => status_code,
+          :type => essence.mimetype
+          # :status => status_code,
       )
     # else
     #   send_data(
