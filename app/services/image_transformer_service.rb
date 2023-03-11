@@ -5,13 +5,14 @@ class ImageTransformerService
 
   ADMIN_MASK = 'PDSC_ADMIN'
 
-  def initialize(media, file, item, essence, extension, thumbnail_sizes = [144])
+  def initialize(media, file, item, essence, extension, verbose, thumbnail_sizes = [144])
     @mimetype = media.mimetype
     @file = file
     @item = item
     @extension = extension
     @essence = essence
     @thumbnail_sizes = thumbnail_sizes
+    @verbose = verbose
     # Defer evaluating @image_list and @multipart until `perform_conversions`, the only public method available, is called
   end
 
@@ -29,7 +30,7 @@ class ImageTransformerService
 
     generate_thumbnails @extension, @thumbnail_sizes
 
-    puts 'Store generated files as essences...'
+    puts 'Store generated files as essences...' if @verbose
     all_essences_saved = true
     generated_essences.each do |essence|
       unless essence.save
@@ -58,7 +59,7 @@ class ImageTransformerService
       file_path = create_file_path(extension, format)
       return if File.file? file_path #skip existing files
 
-      @image_list.write(file_path) { self.quality = quality }
+      @image_list.write(file_path) {|options| options.quality = quality }
 
       file_path
     else
@@ -67,7 +68,7 @@ class ImageTransformerService
         page_file_path = create_file_path(extension, format, i+1)
         next if File.file? page_file_path #skip existing files
 
-        image.write(page_file_path) { self.quality = quality }
+        image.write(page_file_path) {|options| options.quality = quality }
         page_file_path
       end
     end
@@ -76,7 +77,7 @@ class ImageTransformerService
   def generate_thumbnails(extension, sizes)
     return unless @mimetype.start_with?('image')
 
-    puts "Generate #{'thumbnail'.pluralize(@image_list.length)}"
+    puts "Generate #{'thumbnail'.pluralize(@image_list.length)}" if @verbose
     # for each image, generate thumbnails of all sizes
     @image_list.to_a.each_with_index do |image, i|
       sizes.each do |size|
@@ -107,7 +108,7 @@ class ImageTransformerService
   end
 
   def convert_tif_to_jpg(generated_essences)
-    puts "Generate #{'JPG'.pluralize(@image_list.length)}"
+    puts "Generate #{'JPG'.pluralize(@image_list.length)}" if @verbose
     jpg_pages = convert_to :jpg, @extension
 
     jpg_pages.each do |page|
@@ -125,7 +126,7 @@ class ImageTransformerService
   end
 
   def generate_pdf(generated_essences)
-    puts 'Generate PDF collection for pages'
+    puts 'Generate PDF collection for pages' if @verbose
 
     #if the input is multipart, also produce a pdf version of the whole thing
     pdf_file = convert_to :pdf, @extension

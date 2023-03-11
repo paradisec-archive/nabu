@@ -46,3 +46,7 @@ paper-trail can we move to JSON serialzer
 
 CHeck monit config
 Ask nick about /src/catalog/webserver_psdc
+
+*transform_images looks like it checks everything and then skips if it exists we should keep track
+
+Should we run some of the crons more regularly

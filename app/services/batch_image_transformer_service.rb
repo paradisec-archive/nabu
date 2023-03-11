@@ -27,15 +27,15 @@ class BatchImageTransformerService
       extension = File.extname(file)
       begin
         media = Nabu::Media.new image_file.path
-        image_transformer = ImageTransformerService.new(media, file, item, image_file, extension)
+        image_transformer = ImageTransformerService.new(media, file, item, image_file, extension, @verbose)
         if @dry_run
           puts "Would transform #{file} for item #{item.id}"
         else
           image_transformer.perform_conversions
         end
       rescue => e
-        puts "WARNING: file #{file} skipped - error transforming image [#{e.message}]" if @verbose
-        puts " >> #{e.backtrace}"
+        puts "    WARNING: file #{file} skipped - error transforming image [#{e.message}]"
+        puts "    >> #{e.backtrace}" if @verbose
         next
       end
     end

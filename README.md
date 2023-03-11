@@ -248,6 +248,11 @@ certbot
 sudo apt install default-jdk -y
 # https://www.vultr.com/docs/install-apache-solr-on-ubuntu-20-04/
 /etc/default/solr.in.sh set SOLR_HOME to /srv/www/nabu/current/solr
+
+#Fix the PDF policy in
+vi /etc/ImageMagick-6/policy.xml
+# COmment out   <policy domain="coder" rights="none" pattern="PDF" />
+
 ```
 
 ## Cron Jobs

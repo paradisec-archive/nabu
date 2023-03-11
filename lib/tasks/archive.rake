@@ -380,9 +380,9 @@ namespace :archive do
 
   desc "Perform image transformations for all image essences"
   task :transform_images => :environment do
-    dry_run = ENV['DRY_RUN'] ? true : false
     batch_size = Integer(ENV['IMAGE_TRANSFORMER_BATCH_SIZE'] || 100)
-    verbose = true
+    dry_run = ENV['DRY_RUN'] ? true : false
+    verbose = ENV['VERBOSE'] ? true : false
     BatchImageTransformerService.run(batch_size, verbose, dry_run)
   end
 
