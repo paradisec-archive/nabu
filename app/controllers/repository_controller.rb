@@ -2,8 +2,6 @@ require 'ostruct'
 require 'nabu/media'
 
 class RepositoryController < ApplicationController
-  include MediaStreaming
-
   def collection
     collection = Collection.find_by_identifier params[:collection_identifier]
     redirect_to collection
@@ -27,7 +25,7 @@ class RepositoryController < ApplicationController
     # if a standard essence file was found, return that as usual
     if essence.present?
       authorize! :read, essence
-      return send_essence(essence)
+      return send_file(essence.path, :filename => essence.filename, :type => essence.mimetype)
 
     # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
     elsif params[:essence_filename].include?('PDSC_ADMIN')
@@ -56,14 +54,7 @@ class RepositoryController < ApplicationController
     if File.file? admin_file_path
       stats = Nabu::Media.new(admin_file_path)
 
-      # use OpenStruct to create a fake essence file, this allows us to reuse the existing send_essence method
-      admin_essence = OpenStruct.new
-      admin_essence.path = admin_file_path
-      admin_essence.size = stats.size
-      admin_essence.filename = essence_filename
-      admin_essence.mimetype = stats.mimetype
-
-      send_essence(admin_essence)
+      return send_file(admin_file_path, :filename => essence_filename, :type => stats.mimetype)
     end
   end
 end

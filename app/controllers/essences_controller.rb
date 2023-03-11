@@ -1,6 +1,4 @@
 class EssencesController < ApplicationController
-  include MediaStreaming
-
   load_and_authorize_resource :collection, :find_by => :identifier, except: [:list_mimetypes]
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, except: [:list_mimetypes]
   load_and_authorize_resource :essence, :through => :item, except: [:list_mimetypes]
@@ -26,11 +24,11 @@ class EssencesController < ApplicationController
       return
     end
     Download.create! :user => current_user, :essence => @essence
-    send_essence(@essence)
+    send_file(@essence.path, :filename => @essence.filename, :type => @essence.mimetype)
   end
 
   def display
-    send_essence(@essence)
+    send_file(@essence.path, :filename => @essence.filename, :type => @essence.mimetype)
   end
 
   def show_terms
