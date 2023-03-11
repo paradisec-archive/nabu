@@ -1,29 +1,4 @@
 require 'nabu/media'
-include ActionView::Helpers::NumberHelper
-
-require "#{Rails.root}/app/helpers/application_helper"
-include ApplicationHelper
-
-
-class OfflineTemplate < AbstractController::Base
-  include AbstractController::Rendering
-  include AbstractController::Helpers
-  #include AbstractController::Layouts
-  include CanCan::ControllerAdditions
-
-  def initialize(*args)
-    super()
-    lookup_context.view_paths = Rails.root.join('app', 'views')
-  end
-
-  def current_user
-    @current_user ||= User.admins.first
-  end
-end
-
-class ItemOfflineTemplate < OfflineTemplate
-  attr_accessor :item
-end
 
 # Coding style for log messages:
 # # Only use SUCCESS if an entire action has been completed successfully, not part of the action
@@ -36,6 +11,9 @@ namespace :archive do
   task :export_metadata => :environment do
     verbose = ENV['VERBOSE'] ? true : false
     dry_run = ENV['DRY_RUN'] ? true : false
+
+    warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap{|i| i.set_user(User.admins.first, scope: :user) }
+    item_renderer = ItemsController.renderer.new('warden' => warden)
 
     # scan for WAV files .wav and create .imp.xml & id3.xml
     dir_contents = Dir.entries(Nabu::Application.config.scan_directory)
@@ -82,10 +60,8 @@ namespace :archive do
       end
 
       if success
-        template = ItemOfflineTemplate.new
-        template.item = item
-        data_imp = template.render_to_string :template => "items/show.imp.xml"
-        data_id3 = template.render_to_string :template => "items/show.id3.xml"
+        data_imp = item_renderer.render("items/show_imp", :formats => [:xml], :assigns => { :item => item })
+        data_id3 = item_renderer.render("items/show_id3", :formats => [:xml], :assigns => { :item => item })
 
         if dry_run
           puts "DRY_RUN: metadata files\n #{metadata_filename_imp},\n #{metadata_filename_id3}\n would be created for #{file}"
