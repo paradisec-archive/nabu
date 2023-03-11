@@ -267,7 +267,6 @@ class ItemsController < ApplicationController
   end
 
   def display
-    p @item_path
     send_file @item.path, :disposition => 'inline', :type => 'text/xml'
   end
 

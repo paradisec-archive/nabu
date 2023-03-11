@@ -28,7 +28,6 @@ module MediaStreaming
     response.header["Accept-Ranges"] =  "bytes"
     response.header["Content-Transfer-Encoding"] = "binary"
 
-    puts @essence.path
     if status_code == 200
       send_file(
           essence.path,
