@@ -98,14 +98,14 @@ class ChecksumAnalyserService
     # find all checksums in these collections
     file_array = find_checksum_files_by_collection("{#{batch.join(',')}}/**")
 
+    self.check_checksums_for_files(file_array, true)
+
     # update checkpoint file
-    if @dry_run
+    if dry_run
       puts "DRY RUN: not updating checkpoint file"
     else
       File.write(checkpoint_file, batch.last)
     end
-
-    self.check_checksums_for_files(file_array, true)
   end
 
   def self.find_checksum_files_by_collection(collection_pattern)
