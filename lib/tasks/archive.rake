@@ -400,14 +400,6 @@ namespace :archive do
     BatchTranscodeEssenceFileService.run(batch_size, dry_run)
   end
 
-  desc "Generate noisevis files"
-  task :noisevis_files => :environment do
-    dry_run = ENV['DRY_RUN'] ? true : false
-    archive = Nabu::Application.config.archive_directory
-    verbose = true
-    NoisevisFilesService.run(archive, verbose, dry_run)
-  end
-
   # HELPERS
 
   def directories(path)
