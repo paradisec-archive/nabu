@@ -300,7 +300,7 @@ namespace :archive do
           if dry_run
             puts "DRY_RUN: thumbnails for file #{file} would be generated"
           else
-            generate_derived_files(full_file_path, item, essence, extension, media)
+            generate_derived_files(full_file_path, item, essence, extension, media, verbose)
           end
         end
 
@@ -525,8 +525,8 @@ namespace :archive do
   end
 
   # this method tries to avoid regenerating any files that already exist
-  def generate_derived_files(full_file_path, item, essence, extension, media)
-    ImageTransformerService.new(media, full_file_path, item, essence, ".#{extension}").perform_conversions
+  def generate_derived_files(full_file_path, item, essence, extension, media, verbose)
+    ImageTransformerService.new(media, full_file_path, item, essence, ".#{extension}", verbose).perform_conversions
   end
 
   def check_checksums(files_array)

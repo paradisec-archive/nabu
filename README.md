@@ -253,6 +253,9 @@ sudo apt install default-jdk -y
 vi /etc/ImageMagick-6/policy.xml
 # COmment out   <policy domain="coder" rights="none" pattern="PDF" />
 
+# COnfigure mysql backups
+sudo apt install automysqlbackup
+vi /etc/default/automysqlbackup
 ```
 
 ## Cron Jobs
