@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   before_action :set_timezone
   before_action :set_access_headers
+  before_action :set_sentry_user
 
   private
   rescue_from CanCan::AccessDenied do |exception|
@@ -20,6 +21,10 @@ class ApplicationController < ActionController::Base
 
   def set_timezone
     Time.zone = current_user.time_zone if current_user
+  end
+
+  def set_sentry_user
+    Sentry.set_user(id: current_user.id, email: current_user.email) if current_user
   end
 
   def sort_column(model)
