@@ -132,11 +132,11 @@ ActiveAdmin.register User do
 
   member_action :do_reset_password, method: :patch do
     @user = resource || User.find(params[:id])
-    @user.assign_attributes(params[:user])
+    @user.assign_attributes(password: params[:user][:password], password_confirmation: params[:user][:password_confirmation])
     if @user.save
-      redirect_to edit_admin_user_path(@user), notice: 'Password was successfully reset'
+      redirect_to admin_user_path(@user), notice: 'Password was successfully reset'
     else
-      redirect_to edit_admin_user_path(@user), alert: "Failed to reset password:\n- #{@user.errors.message.join("\n- ")}"
+      redirect_to reset_password_admin_user_path(@user), alert: "Failed to reset password:\n- #{@user.errors.full_messages.join("\n- ")}"
     end
   end
 
