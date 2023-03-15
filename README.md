@@ -225,7 +225,7 @@ aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key
 apt install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
 # gem deps
 apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev nginx
-apt install certbot python3-certbot-nginx
+apt install certbot python3-certbot-nginx ffmpeg
 
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
