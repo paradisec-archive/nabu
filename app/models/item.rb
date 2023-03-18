@@ -594,6 +594,7 @@ class Item < ApplicationRecord
       xml.tag! 'dcterms:bibliographicCitation', strip_tags(citation)
       xml.tag! 'dc:description', (description + ". Language as given: #{language}")
     end
+
     xml.target!
   end
 

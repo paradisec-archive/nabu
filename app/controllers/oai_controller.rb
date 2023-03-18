@@ -1,23 +1,36 @@
 class OaiController < ApplicationController
   def item
-    # Remove controller and action from the options.  Rails adds them automatically.
-    options = params.delete_if { |k,_v| %w{controller action}.include?(k) }
     provider = ItemProvider.new
-    response =  provider.process_request(options)
 
-    # if this is development or staging, convert the OAI output to use the current host as the originating URL for everything
-    unless request.host == 'catalog.paradisec.org.au'
-      response = response.gsub('catalog.paradisec.org.au', "#{request.host}:#{request.port}")
-    end
+    options = create_options('item')
+    response =  provider.process_request(options)
 
     render :body => response, :content_type => 'text/xml'
   end
 
   def collection
-    # Remove controller and action from the options.  Rails adds them automatically.
-    options = params.reject { |k,_v| %w{controller action}.include?(k) }
     provider = CollectionProvider.new
+
+    options = create_options('collection')
     response =  provider.process_request(options)
+
     render :body => response, :content_type => 'text/xml'
+  end
+
+  private
+  def permitted_params
+    params.permit(:verb, :identifier, :metadataPrefix, :set, :from, :until, :resumptionToken)
+  end
+
+  def create_options(model)
+    params = permitted_params.to_h
+    params.merge!(url: "#{request.protocol}#{request.host}:#{request.port}/oai/#{model}")
+
+
+    # OAI library has a bug
+    token = params.delete('resumptionToken')
+    params.merge!(resumption_token: token) if token
+
+    params
   end
 end

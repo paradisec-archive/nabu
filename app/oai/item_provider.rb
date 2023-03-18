@@ -1,48 +1,15 @@
 require 'oai'
 
-module OAI::Provider::Metadata
-  class Olac < Format
-
-    def initialize
-      @prefix = 'olac'
-      @schema = 'http://www.language-archives.org/OLAC/1.1/olac.xsd'
-      @namespace = 'http://www.language-archives.org/OLAC/1.1/'
-      @element_namespace = 'olac'
-    end
-
-    def header_specification
-      {
-        'xmlns:oai_dc'  => 'http://www.openarchives.org/OAI/2.0/oai_dc/',
-        'xmlns:dc'      => 'http://purl.org/dc/elements/1.1/',
-        'xmlns:xsi'     => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xmlns:dcterms' => 'http://purl.org/dc/terms/',
-        'xmlns:olac'    => 'http://www.language-archives.org/OLAC/1.1/',
-        'xsi:schemaLocation' => %{
-          http://www.openarchives.org/OAI/2.0/oai_dc/
-          http://www.openarchives.org/OAI/2.0/oai_dc.xsd
-          http://purl.org/dc/elements/1.1/
-          http://dublincore.org/schemas/xmls/qdc/2006/01/06/dc.xsd
-          http://purl.org/dc/terms/
-          http://www.language-archives.org/OLAC/1.1/dcterms.xsd
-          http://www.language-archives.org/OLAC/1.1/
-          http://www.language-archives.org/OLAC/1.1/olac.xsd
-        }
-      }
-    end
-
-  end
-end
-OAI::Provider::Base.register_format(OAI::Provider::Metadata::Olac.instance)
-
-class ItemProvider < OAI::Provider::Base
-  repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
+class ItemProvider < ApplicationProvider
   repository_url 'http://catalog.paradisec.org.au/oai/item'
-  record_prefix 'oai:paradisec.org.au'
-  admin_email 'thien@unimelb.edu.au'
   sample_id 'AA1-001'
-  update_granularity OAI::Const::Granularity::HIGH
+
   # FIXME: Doesn't include collection.
-  source_model OAI::Provider::ActiveRecordWrapper.new(::Item.public_items.includes(:essences, :subject_languages, :content_languages, :countries, :access_condition, :collector, item_agents: [:user, :agent_role]), :limit => 100, :timestamp_field => 'items.updated_at')
+  source_model OAI::Provider::ActiveRecordWrapper.new(
+    ::Item.public_items.includes(:essences, :subject_languages, :content_languages, :countries, :access_condition, :collector, :data_categories, item_agents: [:user, :agent_role]),
+    :limit => 100,
+  )
+
   xml = ::Builder::XmlMarkup.new
   xml.tag! 'description' do
     xml.tag! 'olac-archive', 'xmlns' => 'http://www.language-archives.org/OLAC/1.1/olac-archive', 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'type' => 'institutional', 'currentAsOf' => Time.now().strftime('%Y-%m-%d'), 'xsi:schemaLocation' => 'http://www.language-archives.org/OLAC/1.1/olac-archive http://www.language-archives.org/OLAC/1.1/olac-archive.xsd' do
@@ -57,5 +24,6 @@ class ItemProvider < OAI::Provider::Base
       xml.tag! 'access', 'The current focus of PARADISEC is securing endangered materials. Access to the datastore is by password and is currently only available to depositors via the following URL: http://catalog.paradisec.org.au/collections/[CollectionID]/items/[ItemID]. Page images of some fieldnotes can be located online.'
     end
   end
+
   extra_description xml.target!
 end
