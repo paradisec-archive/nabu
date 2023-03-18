@@ -88,7 +88,9 @@ Rails.application.routes.draw do
 
   scope '/oai' do
     get 'item' => 'oai#item'
+    post 'item' => 'oai#item'
     get 'collection' => 'oai#collection'
+    post 'collection' => 'oai#collection'
   end
 
   authenticated :user, -> user { user.admin? } do
