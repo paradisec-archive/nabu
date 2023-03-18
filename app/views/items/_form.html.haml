@@ -204,8 +204,15 @@
             - else
               No role given
             &nbsp;&nbsp;&nbsp;
-            = c.check_box :_destroy
-            Delete
+            - if c.object.id
+              = c.check_box :_destroy
+              Delete
+            - else
+              = f.fields_for :item_agents, c.object, :child_index => c.object_id do |d|
+                = d.hidden_field :user_id
+                = d.hidden_field :agent_role_id
+                = d.check_box :_destroy
+                Delete
             %br
           - ia = ItemAgent.new
           - id = ia.object_id

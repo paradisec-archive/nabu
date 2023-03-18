@@ -2,7 +2,6 @@ class ItemsController < ApplicationController
   include HasReturnToLastSearch
   include ItemQueryBuilder
 
-  before_action :tidy_params, :only => [:create, :update, :bulk_update]
   load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
@@ -45,26 +44,6 @@ class ItemsController < ApplicationController
     end
   end
 
-  def new
-    @page_title = 'Nabu - Add New Item'
-
-    #For creating duplicate items
-    if params[:id]
-      existing = Item.find(params[:id])
-      attributes = existing.attributes.select do |attr, _value|
-        Item.column_names.include?(attr.to_s)
-      end
-
-      @item.assign_attributes(attributes, :without_protection => true)
-
-      # loop through and clone the association contents as well, otherwise it gets emptied out
-      Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
-        existing.public_send(assoc).each { |a| @item.public_send(assoc) << a }
-      end
-    end
-
-  end
-
   def show
     @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
@@ -88,96 +67,30 @@ class ItemsController < ApplicationController
     end
   end
 
-  def data
-    authorize! :read, User # require logged in user
+  def new
+    @page_title = 'Nabu - Add New Item'
 
-    audio_values = {}
-    documents_values = []
-    eaf_values = {}
-    flextext_values = {}
-    images_values = {}
-    ixt_values = {}
-    trs_values = {}
-    video_values = {}
-    @item.essences.each do |essence|
-      essence_filename = essence.filename
-      essence_extension = File.extname(essence_filename)[1..-1]
-      essence_basename = File.basename(essence_filename, "." + essence_extension)
-      repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
-      case essence_extension
-      when "eaf"
-        eaf_values[essence_basename] ||= []
-        eaf_values[essence_basename] << repository_essence_url
-      when "flextext"
-        flextext_values[essence_basename] ||= []
-        flextext_values[essence_basename] << repository_essence_url
-      when "ixt"
-        ixt_values[essence_basename] ||= []
-        ixt_values[essence_basename] << repository_essence_url
-      when "trs"
-        trs_values[essence_basename] ||= []
-        trs_values[essence_basename] << repository_essence_url
-      # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
-      # ENHANCEMENT: Using essence.mimetype would be more robust.
-      # when "mp3", "webm", "ogg", "oga"
-      when "mp3", "ogg", "oga"
-        unless audio_values.key?(essence_basename)
-          spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
-          # Copied from Essence#path and Essence#full_identifier.
-          unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
-            spectrum_url = nil
-          end
-          audio_values[essence_basename] = {
-            "files" => [],
-            "spectrum" => spectrum_url
-          }
-        end
-        audio_values[essence_basename]["files"] << repository_essence_url
-      when "mp4", "webm", "ogg", "ogv", "mov", "webm"
-        video_values[essence_basename] ||= []
-        video_values[essence_basename] << repository_essence_url
-      when "jpg", "jpeg", "png"
-        thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
-
-        # Copied from Essence#path and Essence#full_identifier.
-        unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
-          thumbnail_url = nil
-        end
-
-        # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
-        unless images_values.key?(essence_basename)
-          images_values[essence_basename] = {
-            "originals" => [],
-            "thumbnail" => thumbnail_url
-          }
-        end
-        images_values[essence_basename]["originals"] << repository_essence_url
-      when "pdf"
-        documents_values << repository_essence_url
-      else
-        # Ignore the file
+    #For creating duplicate items
+    if params[:id]
+      existing = Item.find(params[:id])
+      attributes = existing.attributes.select do |attr, _value|
+        Item.column_names.include?(attr.to_s)
       end
-    end
-    response_value = {
-      "audio" => audio_values,
-      "documents" => documents_values,
-      "eaf" => eaf_values,
-      "flextext" => flextext_values,
-      "images" => images_values,
-      "ixt" => ixt_values,
-      "trs" => trs_values,
-      "video" => video_values
-    }
-    respond_to do |format|
-      format.json do
-        render json: response_value
+
+      attributes.delete('id')
+
+      @item = Item.new(attributes)
+
+      # loop through and clone the association contents as well, otherwise it gets emptied out
+      Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
+        existing.public_send(assoc).each { |a| @item.public_send(assoc) << a }
       end
+      @item.item_agents = []
+      existing.item_agents.each { |a|  @item.item_agents << ItemAgent.new(user_id: a.user_id, agent_role_id: a.agent_role_id) }
     end
   end
 
   def create
-    @item.assign_attributes(item_params)
-
     if @item.save
       flash[:notice] = 'Item was successfully created.'
       redirect_to [@collection, @item]
@@ -289,35 +202,123 @@ class ItemsController < ApplicationController
     redirect_to report_sent_items_path, flash: { send_result: @send_result }
   end
 
+  def data
+    authorize! :read, User # require logged in user
+
+    audio_values = {}
+    documents_values = []
+    eaf_values = {}
+    flextext_values = {}
+    images_values = {}
+    ixt_values = {}
+    trs_values = {}
+    video_values = {}
+    @item.essences.each do |essence|
+      essence_filename = essence.filename
+      essence_extension = File.extname(essence_filename)[1..-1]
+      essence_basename = File.basename(essence_filename, "." + essence_extension)
+      repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
+      case essence_extension
+      when "eaf"
+        eaf_values[essence_basename] ||= []
+        eaf_values[essence_basename] << repository_essence_url
+      when "flextext"
+        flextext_values[essence_basename] ||= []
+        flextext_values[essence_basename] << repository_essence_url
+      when "ixt"
+        ixt_values[essence_basename] ||= []
+        ixt_values[essence_basename] << repository_essence_url
+      when "trs"
+        trs_values[essence_basename] ||= []
+        trs_values[essence_basename] << repository_essence_url
+      # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
+      # ENHANCEMENT: Using essence.mimetype would be more robust.
+      # when "mp3", "webm", "ogg", "oga"
+      when "mp3", "ogg", "oga"
+        unless audio_values.key?(essence_basename)
+          spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
+          # Copied from Essence#path and Essence#full_identifier.
+          unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
+            spectrum_url = nil
+          end
+          audio_values[essence_basename] = {
+            "files" => [],
+            "spectrum" => spectrum_url
+          }
+        end
+        audio_values[essence_basename]["files"] << repository_essence_url
+      when "mp4", "webm", "ogg", "ogv", "mov", "webm"
+        video_values[essence_basename] ||= []
+        video_values[essence_basename] << repository_essence_url
+      when "jpg", "jpeg", "png"
+        thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
+
+        # Copied from Essence#path and Essence#full_identifier.
+        unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
+          thumbnail_url = nil
+        end
+
+        # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
+        unless images_values.key?(essence_basename)
+          images_values[essence_basename] = {
+            "originals" => [],
+            "thumbnail" => thumbnail_url
+          }
+        end
+        images_values[essence_basename]["originals"] << repository_essence_url
+      when "pdf"
+        documents_values << repository_essence_url
+      else
+        # Ignore the file
+      end
+    end
+    response_value = {
+      "audio" => audio_values,
+      "documents" => documents_values,
+      "eaf" => eaf_values,
+      "flextext" => flextext_values,
+      "images" => images_values,
+      "ixt" => ixt_values,
+      "trs" => trs_values,
+      "video" => video_values
+    }
+    respond_to do |format|
+      format.json do
+        render json: response_value
+      end
+    end
+  end
+
+
   private
 
-  def tidy_params
-    if params[:item]
-      params[:item][:item_agents_attributes] ||= {}
-      params[:item][:item_agents_attributes].each_pair do |_id, iaa|
+  def tidy_params!(options)
+    if options
+      options[:item_agents_attributes] ||= {}
+      options[:item_agents_attributes].each_pair do |_id, iaa|
         name = iaa['user_id']
         if name =~ /^NEWCONTACT:/
           iaa['user_id'] = create_contact(name)
         end
       end
-      if params[:item][:collector_id] =~ /^NEWCONTACT:/
-        params[:item][:collector_id] = create_contact(params[:item][:collector_id])
+      if options[:collector_id] =~ /^NEWCONTACT:/
+        options[:collector_id] = create_contact(options[:collector_id])
       end
 
-      if params[:existing_id].present?
-        agent_attrs = params[:item].delete(:item_agents_attributes)
+      if options.present?
+        agent_attrs = item_params.delete(:item_agents_attributes)
         new_agents = agent_attrs.select {|_k, v| v[:id].nil? }
-        agent_ids = agent_attrs.reject {|_k, v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|_k, v| v['id'] }
+        agent_ids = agent_attrs.to_h.reject {|_k, v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|_k, v| v['id'] }
 
-        params[:item][:item_agents_attributes] = {}
+        options[:item_agents_attributes] = {}
         i = 0
         ItemAgent.where(id: agent_ids).each do |x|
-          params[:item][:item_agents_attributes][i.to_s] = {user_id: x.user_id, agent_role_id: x.agent_role_id}
+          options[:item_agents_attributes][i.to_s] = {user_id: x.user_id, agent_role_id: x.agent_role_id}
           i += 1
         end
 
         new_agents.each do |_k, v|
-          params[:item][:item_agents_attributes][i.to_s] = {user_id: v['user_id'].to_i, agent_role_id: v['agent_role_id'].to_i}
+          options[:item_agents_attributes][i.to_s] = {user_id: v['user_id'].to_i, agent_role_id: v['agent_role_id'].to_i}
           i += 1
         end
       end
@@ -417,7 +418,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params
+    permitted = params
       .require(:item)
       .permit(
         :identifier, :title, :external, :url, :description, :region, :collection_id,
@@ -446,5 +447,11 @@ class ItemsController < ApplicationController
         item_agents_attributes: {},
         country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [], admin_ids: [], user_ids: []
       )
+
+    if [:create, :update, :bulk_update].include?(params[:action])
+      tidy_params!(permitted)
+    end
+
+    permitted
   end
 end

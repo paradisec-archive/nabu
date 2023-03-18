@@ -142,7 +142,7 @@ class Item < ApplicationRecord
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
-  DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages admins users agents data_categories data_types)
+  DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages admins users data_categories data_types)
 
   paginates_per 10
 
