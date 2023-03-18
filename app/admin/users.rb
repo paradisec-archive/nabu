@@ -75,11 +75,6 @@ ActiveAdmin.register User do
     end
   end
 
-  # allow saving admin-only fields in controller
-  controller do
-    with_role :admin
-  end
-
   # add pagination buttons to index page sidebar
   sidebar :paginate, :only => :index  do
     count = User.count

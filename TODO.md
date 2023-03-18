@@ -14,8 +14,6 @@
 * Add storage to NABU so we don't lose anything when containers die
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
-* Write OAI tests and get rid of the monkey patch once we have data to test with
-* Check out lib/oai_provider is this more monkeypatching?
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
 * Should we use active job and let it use delayed_job
@@ -53,7 +51,7 @@ Should we run some of the crons more regularly
 
 # OAI
 
-Add tests for
+Write tests for
 
 ```
 /oai/item?verb=Identify
