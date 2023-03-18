@@ -14,6 +14,7 @@ module RecordResponseExtensions
     validate_identifier
   #   validate_dates
   #   validate_granularity
+    super
   end
 
   def validate_identifier
