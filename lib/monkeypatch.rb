@@ -12,8 +12,6 @@ module RecordResponseExtensions
 
   def valid?
     validate_identifier
-  #   validate_dates
-  #   validate_granularity
     super
   end
 
@@ -24,40 +22,6 @@ module RecordResponseExtensions
       raise OAI::ArgumentException.new
     end
   end
-
-  # def validate_dates(params)
-  #   if params["from"]
-  #     raise OAI::ArgumentException.new if Timeliness.parse(params["from"]) == nil
-  #   end
-  #
-  #   if params["until"]
-  #     raise OAI::ArgumentException.new if Timeliness.parse(params["until"]) == nil
-  #   end
-  # end
-  #
-  # def validate_granularity(params)
-  #   if params["from"] && params["until"]
-  #     from_parse_result = begin
-  #                          Time.iso8601(params["from"])
-  #                        rescue ArgumentError
-  #                          :parse_failure
-  #                        end
-  #
-  #     from_parse_result = :parsed_correctly if from_parse_result.is_a?(Time)
-  #
-  #     until_parse_result = begin
-  #                          Time.iso8601(params["until"])
-  #                        rescue ArgumentError
-  #                          :parse_failure
-  #                        end
-  #
-  #     until_parse_result = :parsed_correctly if until_parse_result.is_a?(Time)
-  #
-  #     unless from_parse_result == until_parse_result
-  #       raise OAI::ArgumentException.new
-  #     end
-  #   end
-  # end
 end
 
 module OAI::Provider::Response
