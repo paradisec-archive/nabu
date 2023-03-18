@@ -33,6 +33,9 @@
           dsn: "https://511d833c4a954b6b9f54992abe16607c@o4504801902985216.ingest.sentry.io/4504802133213184",
           integrations: [new Sentry.Integrations.BrowserTracing()],
           tracesSampleRate: 1.0,
+          ignoreErrors: [
+            /Module specifier, .application. does not start with/,
+          ],
         });
 
     = yield :page_scripts
