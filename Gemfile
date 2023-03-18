@@ -118,7 +118,6 @@ gem "roo-xls" # Add excel support to roo
 gem "ruby-filemagic" # Detect file types
 gem "streamio-ffmpeg" # ffmpeg interface
 gem "rmagick" # Image processing
-gem "timeliness" # Date parsing
 gem "whenever", :require => false # scheduling
 
 # Deployment

@@ -475,7 +475,6 @@ GEM
     temple (0.10.0)
     thor (1.2.1)
     tilt (2.1.0)
-    timeliness (0.4.5)
     timeout (0.3.2)
     traceroute (0.8.1)
       rails (>= 3.0.0)
@@ -571,7 +570,6 @@ DEPENDENCIES
   stimulus-rails
   streamio-ffmpeg
   sunspot_rails
-  timeliness
   traceroute
   turbo-rails
   web-console
