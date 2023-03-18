@@ -1,4 +1,6 @@
 class OaiController < ApplicationController
+  skip_forgery_protection
+
   def item
     provider = ItemProvider.new
 

@@ -75,6 +75,8 @@ Add tests for
 /oai/collection?verb=GetRecord&identifier=oai:paradisec.org.au:AA1&metadataPrefix=olac
 
 /oai/item?resumptionToken=oai_dc.f%282023-01-17T13%3A00%3A00Z%29.u%282023-02-23T15%3A00%3A30Z%29%3A18640&verb=ListRecords
+
+oai/item?verb=ListIdentifiers&metadataPrefix=oai_dc
 ```
 
 
