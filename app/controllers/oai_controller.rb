@@ -24,8 +24,7 @@ class OaiController < ApplicationController
 
   def create_options(model)
     params = permitted_params.to_h
-    params.merge!(url: "#{request.protocol}#{request.host}:#{request.port}/oai/#{model}")
-
+    params.merge!(url: "#{request.base_url}#{request.path}")
 
     # OAI library has a bug
     token = params.delete('resumptionToken')
