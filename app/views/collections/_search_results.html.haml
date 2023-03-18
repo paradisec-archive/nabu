@@ -18,10 +18,10 @@
         %td= collection.title
         %td= collection.collector.name
         %td
-          - collection.countries.order(:name).each do |country|
+          - collection.countries.sort_by(&:name).each do |country|
             = country.name
         %td
-          - collection.languages.order(:name).each do |language|
+          - collection.languages.sort_by(&:name).each do |language|
             = language.name
         %td= collection.created_at.to_date
         %td= collection.university_name

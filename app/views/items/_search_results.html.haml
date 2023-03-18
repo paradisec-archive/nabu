@@ -22,7 +22,7 @@
         %td= item.collector.name
         %td= item.language
         %td
-          - item.countries.order(:name).each do |country|
+          - item.countries.sort_by(&:name).each do |country|
             = country.name
         %td= item.essences_count
         %td= item.updated_at.to_date
