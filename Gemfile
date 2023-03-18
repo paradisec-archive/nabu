@@ -105,7 +105,7 @@ gem "daemons" # Needed by delayed_job
 gem "activeadmin"
   gem "country-select"
 gem "graphql"
-gem "graphiql-rails"
+gem "graphiql-rails" , "1.8.0" # https://github.com/rmosolgo/graphiql-rails/issues/106
 gem "delayed-web"
 
 # Search

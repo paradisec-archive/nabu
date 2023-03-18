@@ -178,7 +178,7 @@ GEM
     formtastic_i18n (0.7.0)
     globalid (1.1.0)
       activesupport (>= 5.0)
-    graphiql-rails (1.9.0)
+    graphiql-rails (1.8.0)
       railties
       sprockets-rails
     graphql (2.0.19)
@@ -533,7 +533,7 @@ DEPENDENCIES
   dotenv-rails
   ed25519
   factory_bot_rails
-  graphiql-rails
+  graphiql-rails (= 1.8.0)
   graphql
   guard
   guard-rails
