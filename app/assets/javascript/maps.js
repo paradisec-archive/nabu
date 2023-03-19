@@ -141,7 +141,6 @@ const initMap = () => {
       map.fitBounds(bounds);
     }
 
-    const coordinates = element.dataset.coordinates;
     const cluster_options = {
       gridSize: 15,
       maxZoom: 15,
@@ -149,6 +148,8 @@ const initMap = () => {
       minClusterSize: 5
     }
     const clusterer = new markerClusterer.MarkerClusterer(map, [], cluster_options);
+
+    const coordinates = JSON.parse(element.dataset.coordinates || []);
     coordinates.forEach((coord) => {
       const latlng = new google.maps.LatLng(coord.lat, coord.lng);
 
