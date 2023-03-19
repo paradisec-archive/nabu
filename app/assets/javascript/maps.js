@@ -148,7 +148,7 @@ const initMap = () => {
       avgCenter: false,
       minClusterSize: 5
     }
-    const clusterer = new google.maps.MarkerClusterer(map, [], cluster_options);
+    const clusterer = new markerClusterer.MarkerClusterer(map, [], cluster_options);
     coordinates.forEach((coord) => {
       const latlng = new google.maps.LatLng(coord.lat, coord.lng);
 
