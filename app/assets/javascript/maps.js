@@ -141,13 +141,13 @@ const initMap = () => {
       map.fitBounds(bounds);
     }
 
-    const cluster_options = {
-      gridSize: 15,
-      maxZoom: 15,
-      avgCenter: false,
-      minClusterSize: 5
-    }
-    const clusterer = new markerClusterer.MarkerClusterer(map, [], cluster_options);
+    // const cluster_options = {
+    //   gridSize: 15,
+    //   maxZoom: 15,
+    //   avgCenter: false,
+    //   minClusterSize: 5
+    // }
+    const clusterer = new markerClusterer.MarkerClusterer({ map });
 
     const coordinates = JSON.parse(element.dataset.coordinates || []);
     coordinates.forEach((coord) => {
