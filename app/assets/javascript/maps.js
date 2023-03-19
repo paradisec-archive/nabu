@@ -56,7 +56,7 @@ const initMap = () => {
     set_map_bounds_from_ajax('/languages/', language_ids);
   });
 
-  document.querySelector('.map').addEventListener('update_map', (event) => {
+  document.querySelector('.map')?.addEventListener('update_map', (event) => {
     const north_limit = document.querySelector('.north_limit')?.value || event.target.dataset.northLimit || 80;
     const south_limit = document.querySelector('.south_limit')?.value || event.target.dataset.southLimit || -80;
     const east_limit = document.querySelector('.east_limit')?.value || event.target.dataset.eastLimit || -40;
