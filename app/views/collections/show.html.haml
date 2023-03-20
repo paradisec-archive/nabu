@@ -191,10 +191,10 @@
       -if @collection.items.any?
         %p.delete-warning
           %strong This collection contains items! If you choose to delete it they will be deleted too, as well as any content files they contain. This action can not be undone!
-        = link_to 'Delete collection and contents', collection_path(@collection), :method => :delete,
+        = link_to 'Delete collection and contents', collection_path(@collection), :data => { :turbo => true, :turbo_method => :delete }
           :class => 'button', 'data-confirm' => 'Do you really want to delete this collection and all of its items?'
       -else
-        = link_to 'Delete collection', collection_path(@collection), :method => :delete, :class => 'button', 'data-confirm' => 'Do you really want to delete this collection?'
+        = link_to 'Delete collection', collection_path(@collection), :class => 'button', :data => { :turbo => true, :turbo_method => :delete, :turbo_confirm => 'Do you really want to delete this collection?' }
       = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button right'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}

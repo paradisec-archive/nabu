@@ -109,6 +109,6 @@
 
   - if admin_user_signed_in?
     .right
-      = link_to 'Delete essence', collection_item_essence_path(@collection, @item, @essence), :method => :delete, :class => 'button', 'data-confirm' => 'Do you really want to delete this file and its metadata from the archive (no undo possible)?'
+      = link_to 'Delete essence', collection_item_essence_path(@collection, @item, @essence), :data => { :turbo => true, :turbo_method => :delete, :turbo_confirm => 'Do you really want to delete this file and its metadata from the archive (no undo possible)?' }, :class => 'button'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}
