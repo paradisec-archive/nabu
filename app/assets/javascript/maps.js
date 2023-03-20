@@ -61,7 +61,7 @@ const initMap = () => {
     const south_limit = document.querySelector('.south_limit')?.value || event.target.dataset.southLimit || -80;
     const east_limit = document.querySelector('.east_limit')?.value || event.target.dataset.eastLimit || -40;
     const west_limit = document.querySelector('.west_limit')?.value || event.target.dataset.westLimit || -20;
-    const editable = event.target.dataset.editable === true;
+    const editable = event.target.dataset.editable === 'true';
 
     const sw = new google.maps.LatLng(south_limit, west_limit);
     const ne = new google.maps.LatLng(north_limit, east_limit);
