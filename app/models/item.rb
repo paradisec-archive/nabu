@@ -556,8 +556,8 @@ class Item < ApplicationRecord
         xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
       end
 
-      item_data_categories.includes(:data_category).each do |cat|
-        case cat.data_category.name
+      data_categories.each do |data_category|
+        case data_category.name
         when 'historical reconstruction', 'historical_text'
           xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'historical_linguistics'
         when 'language description'
@@ -572,7 +572,7 @@ class Item < ApplicationRecord
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
-          xml.tag! 'dc:subject', cat.data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
+          xml.tag! 'dc:subject', data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
         when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else

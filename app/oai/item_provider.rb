@@ -6,7 +6,7 @@ class ItemProvider < ApplicationProvider
 
   # FIXME: Doesn't include collection.
   source_model OAI::Provider::ActiveRecordWrapper.new(
-    ::Item.public_items.includes(:essences, :subject_languages, :content_languages, :countries, :access_condition, :collector, :data_categories, item_agents: [:user, :agent_role]),
+    ::Item.public_items.includes(:essences, :subject_languages, :content_languages, :countries, :access_condition, :collector, :data_types, :data_categories, :collection, item_agents: [:user, :agent_role]),
     :limit => 100,
   )
 
