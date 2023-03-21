@@ -26,4 +26,10 @@ class ItemProvider < ApplicationProvider
   end
 
   extra_description xml.target!
+
+  class << self
+    def formats
+      @filtered_formats ||= @formats.slice('oai_dc', 'olac')
+    end
+  end
 end
