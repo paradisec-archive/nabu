@@ -18,6 +18,12 @@ class ItemsController < ApplicationController
     @params = search_params
     store_results!
 
+    if params[:page].to_i > @search.results.total_pages
+      redirect_to search_items_path(search_params.merge(:page => 1))
+
+      return
+    end
+
     @page_title = 'Nabu - Item Search'
     respond_to do |format|
       format.html
