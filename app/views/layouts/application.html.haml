@@ -51,7 +51,7 @@
         .auth.column.span-8.last
           .inner
             - if user_signed_in?
-              = link_to current_user.name, current_user
+              = link_to current_user.name, edit_user_registration_path
               |
               = link_to 'Sign out', destroy_user_session_path, :data => { :turbo => true, :turbo_method => :delete }
             - else

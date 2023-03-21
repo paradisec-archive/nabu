@@ -12,6 +12,8 @@
     <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
   <% end %>
 
+  <br />
+
   <div class="field">
     <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
     <%= f.password_field :password, autocomplete: "new-password" %>
@@ -21,23 +23,72 @@
     <% end %>
   </div>
 
+  <br />
+
   <div class="field">
     <%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
+
+  <br />
 
   <div class="field">
     <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
     <%= f.password_field :current_password, autocomplete: "current-password" %>
   </div>
 
+  <br />
+
+  <div class="field">
+    <%= f.label :first_name %><br />
+    <%= f.text_field :first_name %>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <%= f.label :last_name %><br />
+    <%= f.text_field :last_name %>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <%= f.label :address %><br />
+    <%= f.text_field :address %>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <%= f.label :address2, 'Address (Line 2)' %><br />
+    <%= f.text_field :address2 %>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <%= f.label :country %><br />
+    <%= f.text_field :country %>
+  </div>
+
+  <br />
+
+  <div class="field">
+    <%= f.label :phone %><br />
+    <%= f.text_field :phone %>
+  </div>
+
+  <br />
   <div class="actions">
     <%= f.submit "Update" %>
   </div>
 <% end %>
 
+<br />
+
 <h3>Cancel my account</h3>
 
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { :turbo => true, :turbo_method => :delete, :turbo_confirm: "Are you sure?" } %></p>
+<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { :turbo => true, :turbo_method => :delete, :turbo_confirm => "Are you sure?" } %></p>
 
 <%= link_to "Back", :back %>

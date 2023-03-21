@@ -22,12 +22,8 @@ Rails.application.routes.draw do
 
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 
-  resources :users do
-    member do
-      get 'merge'
-      patch 'merge' => 'users#merge'
-    end
-  end
+  get '/users' => 'users#index'
+
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
   resources :data_categories, :only => [:index, :show]
