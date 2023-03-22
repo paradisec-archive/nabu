@@ -1,13 +1,11 @@
 const initMap = () => {
   const set_map_bounds_from_ajax = async (path, ids) => {
-    console.info('set_map_bounds_from_ajax', path, ids);
     const marker_bounds = new google.maps.LatLngBounds();
 
     for (let id of ids) {
       // TOOD: Do we have to set data type as json?
       const response = await fetch(`${path}${id}?location_only=true`);
       const data = await response.json();
-      console.info('data', data);
 
       if (!data || !data['north_limit']) {
         console.info('NO data', data);
@@ -20,16 +18,12 @@ const initMap = () => {
         east_limit,
         west_limit,
       } = data;
-      console.info('north_limit', north_limit);
 
       const sw = new google.maps.LatLng(south_limit, west_limit);
       const ne = new google.maps.LatLng(north_limit, east_limit);
       marker_bounds.extend(sw);
       marker_bounds.extend(ne);
     }
-
-    console.info('marker_bounds', marker_bounds);
-    console.info('marker_bounds', marker_bounds.isEmpty());
 
     if (marker_bounds.isEmpty()) {
       const node = document.querySelector('.no-map-match-message');
