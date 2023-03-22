@@ -1,5 +1,6 @@
 const initMap = () => {
   const set_map_bounds_from_ajax = (path, ids) => {
+    console.debug('set_map_bounds_from_ajax', path, ids);
     const marker_bounds = new google.maps.LatLngBounds();
 
     ids.forEach(async (id) => {
