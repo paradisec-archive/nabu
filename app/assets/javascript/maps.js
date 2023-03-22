@@ -51,12 +51,16 @@ const initMap = () => {
     return false;
   }
 
-  document.querySelector('#set-map-from-country')?.addEventListener('click', function() {
+  document.querySelector('#set-map-from-country')?.addEventListener('click', function(event) {
+    event.preventDefault();
+
     const country_ids = document.querySelector('.country').value.split(/,/);
     set_map_bounds_from_ajax('/countries/', country_ids);
   });
 
-  document.querySelector('#set-map-from-language')?.addEventListener('click', function() {
+  document.querySelector('#set-map-from-language')?.addEventListener('click', function(event) {
+    event.preventDefault();
+
     const language_ids = document.querySelector('.language').value.split(/,/)
     set_map_bounds_from_ajax('/languages/', language_ids);
   });
