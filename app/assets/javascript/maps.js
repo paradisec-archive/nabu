@@ -5,6 +5,7 @@ const initMap = () => {
     ids.forEach(async (id) => {
       // TOOD: Do we have to set data type as json?
       const data = await fetch(`${path}${id}?location_only=true`);
+      console.debug('data', data);
 
       if (!data || !data['north_limit']) {
         console.debug('NO data', data);
@@ -17,6 +18,7 @@ const initMap = () => {
         east_limit,
         west_limit,
       } = data;
+      console.debug('north_limit', north_limit);
 
       const sw = new google.maps.LatLng(south_limit, west_limit);
       const ne = new google.maps.LatLng(north_limit, east_limit);
@@ -26,6 +28,9 @@ const initMap = () => {
 
     const ne = marker_bounds.getNorthEast();
     const sw = marker_bounds.getSouthWest();
+
+    console.debug('marker_bounds', marker_bounds);
+    console.debug('marker_bounds', marker_bounds.isEmpty());
 
     if (marker_bounds.isEmpty()) {
       const node = document.querySelector('.no-map-match-message');
