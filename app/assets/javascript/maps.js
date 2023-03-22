@@ -1,9 +1,9 @@
 const initMap = () => {
-  const set_map_bounds_from_ajax = (path, ids) => {
+  const set_map_bounds_from_ajax = async (path, ids) => {
     console.info('set_map_bounds_from_ajax', path, ids);
     const marker_bounds = new google.maps.LatLngBounds();
 
-    ids.forEach(async (id) => {
+    for (id in ids) {
       // TOOD: Do we have to set data type as json?
       const response = await fetch(`${path}${id}?location_only=true`);
       const data = await response.json();
@@ -26,10 +26,7 @@ const initMap = () => {
       const ne = new google.maps.LatLng(north_limit, east_limit);
       marker_bounds.extend(sw);
       marker_bounds.extend(ne);
-    });
-
-    const ne = marker_bounds.getNorthEast();
-    const sw = marker_bounds.getSouthWest();
+    }
 
     console.info('marker_bounds', marker_bounds);
     console.info('marker_bounds', marker_bounds.isEmpty());
@@ -40,6 +37,9 @@ const initMap = () => {
 
       return;
     }
+
+    const ne = marker_bounds.getNorthEast();
+    const sw = marker_bounds.getSouthWest();
 
     document.querySelector('.north_limit').value = ne.lat();
     document.querySelector('.east_limit').value = ne.lng();
