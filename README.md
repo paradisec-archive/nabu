@@ -265,3 +265,23 @@ There are a number of cronjobs that need to be running for the catalog to operat
 capistrano will automatically create the cronjobs usning whenever.
 
 They are defined in config/schedule.rb
+
+## Upgrades
+
+We should regularly make suer we are running the latest versions of third-party packages
+
+```bash
+# Ruby gems
+nabu_run bundle outdated
+nabu_run bundle update
+
+# npm
+nabu_run bin/importmap audit
+nabu_run bin/importmap outdated
+
+# Sentry
+# https://docs.sentry.io/platforms/javascript/install/cdn/
+vi app/views/layouts/application.html.haml
+
+
+```
