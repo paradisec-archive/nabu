@@ -3,7 +3,7 @@ const initMap = () => {
     console.info('set_map_bounds_from_ajax', path, ids);
     const marker_bounds = new google.maps.LatLngBounds();
 
-    for (id in ids) {
+    for (let id of ids) {
       // TOOD: Do we have to set data type as json?
       const response = await fetch(`${path}${id}?location_only=true`);
       const data = await response.json();
