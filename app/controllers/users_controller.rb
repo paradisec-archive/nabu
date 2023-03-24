@@ -13,11 +13,14 @@ class UsersController < ApplicationController
       .or(@users.where(User.arel_table[:country].matches(match)))
       .or(@users.where(User.arel_table[:email].matches(match)))
 
-    respond_to do |format|
-      format.json do
-        @users = @users.limit(100)
-        render :json => @users.map {|u| {:id => u.id, :name => u.display_label}}
-      end
-    end
+    @users = @users.limit(100)
+
+    render :json => @users.map {|u| {:id => u.id, :name => u.display_label}}
+  end
+
+  def show
+    @user = User.find params[:id]
+
+    render :json => {:id => @user.id, :name => @user.display_label}
   end
 end

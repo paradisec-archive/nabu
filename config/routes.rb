@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   post "versions/:id/revert" => "versions#revert", :as => "revert_version"
 
   get '/users' => 'users#index'
+  get '/users/:id' => 'users#show'
 
   resources :countries, :only => [:index, :show]
   resources :languages, :only => [:index, :show]
