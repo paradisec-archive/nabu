@@ -4,6 +4,11 @@ require 'nabu/media'
 class RepositoryController < ApplicationController
   def collection
     collection = Collection.find_by_identifier params[:collection_identifier]
+
+    if collection.nil?
+      raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}"
+    end
+
     redirect_to collection
   end
 
@@ -11,8 +16,16 @@ class RepositoryController < ApplicationController
     if params[:full_identifier]
       params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split(/-/)
     end
+
     collection = Collection.find_by_identifier params[:collection_identifier]
+    if collection.nil?
+      raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}"
+    end
+
     item = collection.items.find_by_identifier params[:item_identifier]
+    if item.nil?
+      raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}"
+    end
 
     redirect_to [collection, item]
   end
