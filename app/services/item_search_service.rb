@@ -2,7 +2,7 @@ class ItemSearchService
   def self.build_solr_search(params, current_user)
     Item.solr_search(include: [:collection, :collector, :countries]) do
       Rails.logger.info params[:search]
-      fulltext params[:search]
+      fulltext params[:search], :minimum_match => '100%'
 
       facet :content_language_ids, :country_ids
       facet :collector_id, :limit => 100
@@ -21,6 +21,7 @@ class ItemSearchService
       sort_column(Item, params).each do |c|
         order_by c, sort_direction(params)
       end
+
       paginate :page => params[:page], :per_page => params[:per_page]
     end
   end
