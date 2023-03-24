@@ -53,6 +53,9 @@ class ItemsController < ApplicationController
   def show
     @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
+    if params[:files_per_page] == '0'
+      params.delete(:files_per_page)
+    end
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     if params[:sort]
@@ -145,6 +148,9 @@ class ItemsController < ApplicationController
     end
     Rails.logger.info "Start of ItemsController#update for #{@collection.identifier}-#{@item.identifier}"
     @num_files = @item.essences.length
+    if params[:files_per_page] == '0'
+      params.delete(:files_per_page)
+    end
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     if @item.update(item_params)
