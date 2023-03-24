@@ -6,7 +6,7 @@
   %p.comment_who
     = 'by '
     - if can? :manage, comment.owner
-      = link_to comment.owner_name, comment.owner
+      = link_to comment.owner_name, admin_user_path(comment.owner)
     - else
       = comment.owner_name
     == - #{comment.created_at.strftime("on %d/%m/%Y at %I:%M %p")}
