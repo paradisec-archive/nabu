@@ -9,6 +9,10 @@ class CollectionsController < ApplicationController
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
 
   def search
+    if params[:per_page] == '0'
+      params.delete(:per_page)
+    end
+
     @page_title = 'Nabu - Collections'
     if params[:clear]
       params.delete(:search)
@@ -59,6 +63,10 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
+    if params[:per_page] == '0'
+      params.delete(:per_page)
+    end
+
     @page_title = 'Nabu - Advanced Search Collections'
     if params.to_unsafe_h.size > 2
       @search = build_advanced_search(collection_params)

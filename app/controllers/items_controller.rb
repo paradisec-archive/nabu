@@ -13,6 +13,10 @@ class ItemsController < ApplicationController
       return
     end
 
+    if params[:per_page] == '0'
+      params.delete(:per_page)
+    end
+
     search_params = params[:export_all] ? basic_search_params.merge(:per_page => 500, :start_page => 1) : basic_search_params
     @search = ItemSearchService.build_solr_search(search_params, current_user)
     @params = search_params
@@ -36,6 +40,10 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
+    if params[:per_page] == '0'
+      params.delete(:per_page)
+    end
+
     @page_title = 'Nabu - Advanced Item Search'
     search_params = params[:export_all] ? params.merge(:per_page => 500, :start_page => 1) : params
     @params = search_params
