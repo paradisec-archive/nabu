@@ -7,6 +7,10 @@ class ItemsController < ApplicationController
   authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
 
   def search
+    if try_full_identifier_redirect
+      return
+    end
+
     if params[:clear]
       params.delete(:search)
       redirect_to search_items_path
@@ -311,6 +315,25 @@ class ItemsController < ApplicationController
 
 
   private
+  def try_full_identifier_redirect
+    return unless params[:search].present?
+
+    collection_identifier, item_identifier = params[:search].split(/-/)
+
+    return unless collection_identifier.present? && collection_identifier.present?
+
+    collection = Collection.find_by_identifier collection_identifier
+
+    return unless collection
+
+    item = collection.items.find_by_identifier item_identifier
+
+    return unless item
+
+    redirect_to [collection, item]
+
+    true
+  end
 
   def tidy_params!(options)
     if options
