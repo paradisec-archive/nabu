@@ -81,7 +81,6 @@ export const setup_select2 = (element, noinit=false) => { // eslint-disable-line
 
   const createable = $(element).data('createable')
   if (createable) {
-    console.log("Setup Create");
     options['createSearchChoice'] = (term) => {
       return {id: 'NEWCONTACT:'+term, text: term};
     }

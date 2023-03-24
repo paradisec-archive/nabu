@@ -68,6 +68,7 @@ class ItemsController < ApplicationController
     if params[:files_per_page] == '0'
       params.delete(:files_per_page)
     end
+
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     if params[:sort]
