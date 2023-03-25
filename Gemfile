@@ -87,6 +87,7 @@ gem "rexml" # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
 # Analytics and instrumentation
 gem "sentry-ruby"
 gem "sentry-rails"
+gem "sentry-delayed_job"
 
 # AAA
 gem "devise" # Authentication
