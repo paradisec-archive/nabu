@@ -140,6 +140,11 @@
           - @item.item_agents.each do |item_agent|
             == #{item_agent.user.name} : #{item_agent.agent_role.name}
             %br
+
+      %tr
+        %th DOI
+        %td= @item.doi
+
       %tr
         %th Cite as
         %td= @item.citation.html_safe

@@ -74,6 +74,10 @@
         %td= @collection.region
 
       %tr
+        %th DOI
+        %td= @collection.doi
+
+      %tr
         %th Cite as
         %td= sanitize(@collection.citation, tags: %w(i)).html_safe
 
