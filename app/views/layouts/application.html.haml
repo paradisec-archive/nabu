@@ -17,6 +17,8 @@
     %meta{ :name => 'viewport', :content => 'width=device-width,initial-scale=1' }
     %meta{ :name => 'turbo-visit-control', :content => 'reload' }
 
+    = yield :canonical
+
     = csrf_meta_tags
     = csp_meta_tag
 

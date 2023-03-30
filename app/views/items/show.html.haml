@@ -1,3 +1,6 @@
+- content_for :canonical do
+  %link{:rel => 'canonical', :href => collection_item_url(@collection, @item)}
+
 -if session[:search_from]
   .left
     =link_to 'Return To Results', last_search_items_path, :class => 'button'

@@ -1,3 +1,6 @@
+- content_for :canonical do
+  %link{:rel => 'canonical', :href => collection_item_essence_url(@collection, @item, @essence)}
+
 .right
   = link_to 'Previous file', [@collection, @item, @essence.prev_essence], :class => 'button' if @essence.prev_essence
   - if @essence.next_essence

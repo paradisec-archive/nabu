@@ -9,7 +9,7 @@ class RepositoryController < ApplicationController
       raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}"
     end
 
-    redirect_to collection
+    redirect_to collection, status: :moved_permanently
   end
 
   def item
@@ -27,7 +27,7 @@ class RepositoryController < ApplicationController
       raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}"
     end
 
-    redirect_to [collection, item]
+    redirect_to [collection, item], status: :moved_permanently
   end
 
   def essence
