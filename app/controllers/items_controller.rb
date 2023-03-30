@@ -159,7 +159,7 @@ class ItemsController < ApplicationController
       redirect_to [@collection, @item]
       return
     end
-    Rails.logger.info "Start of ItemsController#update for #{@collection.identifier}-#{@item.identifier}"
+
     @num_files = @item.essences.length
     if params[:files_per_page] == '0'
       params.delete(:files_per_page)
@@ -176,7 +176,6 @@ class ItemsController < ApplicationController
       @page_title = 'Nabu - Edit Item'
       render :action => "edit"
     end
-    Rails.logger.info "End of ItemsController#update for #{@collection.identifier}-#{@item.identifier}"
   end
 
   def bulk_edit
@@ -336,35 +335,21 @@ class ItemsController < ApplicationController
     true
   end
 
-  def tidy_params!(options)
+  def tidy_params!
+    options = params[:item]
+
     if options
       options[:item_agents_attributes] ||= {}
       options[:item_agents_attributes].each_pair do |_id, iaa|
         name = iaa['user_id']
         if name =~ /^NEWCONTACT:/
+          p 'NEW'
           iaa['user_id'] = create_contact(name)
         end
       end
+
       if options[:collector_id] =~ /^NEWCONTACT:/
         options[:collector_id] = create_contact(options[:collector_id])
-      end
-
-      if options.present?
-        agent_attrs = item_params.delete(:item_agents_attributes)
-        new_agents = agent_attrs.select {|_k, v| v[:id].nil? }
-        agent_ids = agent_attrs.to_h.reject {|_k, v| v[:id].nil? || v['_destroy'].to_s != '0' }.map {|_k, v| v['id'] }
-
-        options[:item_agents_attributes] = {}
-        i = 0
-        ItemAgent.where(id: agent_ids).each do |x|
-          options[:item_agents_attributes][i.to_s] = {user_id: x.user_id, agent_role_id: x.agent_role_id}
-          i += 1
-        end
-
-        new_agents.each do |_k, v|
-          options[:item_agents_attributes][i.to_s] = {user_id: v['user_id'].to_i, agent_role_id: v['agent_role_id'].to_i}
-          i += 1
-        end
       end
     end
   end
@@ -462,6 +447,10 @@ class ItemsController < ApplicationController
   end
 
   def item_params
+    if %w[create update bulk_update].include?(params[:action])
+      tidy_params!
+    end
+
     permitted = params
       .require(:item)
       .permit(
@@ -491,10 +480,6 @@ class ItemsController < ApplicationController
         item_agents_attributes: {},
         country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [], admin_ids: [], user_ids: []
       )
-
-    if [:create, :update, :bulk_update].include?(params[:action])
-      tidy_params!(permitted)
-    end
 
     permitted
   end

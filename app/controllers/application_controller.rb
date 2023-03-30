@@ -67,7 +67,8 @@ class ApplicationController < ActionController::Base
         :last_name => last_name,
         :password => random_string,
         :password_confirmation => random_string,
-        :contact_only => true}, :as => :contact_only)
+        :contact_only => true
+      })
     end
     contact.id
   end
