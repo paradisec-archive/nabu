@@ -101,12 +101,12 @@ class ItemsController < ApplicationController
 
       attributes.delete('id')
 
-      @item = Item.new(attributes)
-
-      # loop through and clone the association contents as well, otherwise it gets emptied out
-      Item::DUPLICATABLE_ASSOCIATIONS.each do |assoc|
-        existing.public_send(assoc).each { |a| @item.public_send(assoc) << a }
+      associations = %i[country_ids subject_language_ids content_language_ids admin_ids user_ids data_category_ids data_type_ids]
+      associations.each do |association|
+        attributes[association] = existing.public_send(association)
       end
+
+      @item = Item.new(attributes)
       @item.item_agents = []
       existing.item_agents.each { |a|  @item.item_agents << ItemAgent.new(user_id: a.user_id, agent_role_id: a.agent_role_id) }
     end

@@ -5,7 +5,6 @@
       %ul
         - @item.errors.full_messages.each do |msg|
           %li= msg
-  =hidden_field_tag :existing_id, params[:id]
   .right
     = f.submit 'Add Item'
 

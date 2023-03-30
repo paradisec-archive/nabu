@@ -142,8 +142,6 @@ class Item < ApplicationRecord
   delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
   delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
 
-  DUPLICATABLE_ASSOCIATIONS = %w(countries subject_languages content_languages admins users data_categories data_types)
-
   paginates_per 10
 
   after_initialize :prefill
@@ -221,14 +219,14 @@ class Item < ApplicationRecord
     self.south_limit ||= collection.south_limit
     self.west_limit ||= collection.west_limit
     self.east_limit ||= collection.east_limit
-    self.country_ids = collection.country_ids
-    self.subject_language_ids = collection.language_ids
-    self.content_language_ids = collection.language_ids
+    self.country_ids ||= collection.country_ids
+    self.subject_language_ids ||= collection.language_ids
+    self.content_language_ids ||= collection.language_ids
 
     self.access_condition_id ||= collection.access_condition_id
     self.access_narrative ||= collection.access_narrative
     self.private ||= collection.private
-    self.admin_ids = collection.admin_ids
+    self.admin_ids ||= collection.admin_ids
   end
 
   def inherit_details_from_collection(override = false)
