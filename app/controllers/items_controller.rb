@@ -24,7 +24,9 @@ class ItemsController < ApplicationController
     search_params = params[:export_all] ? basic_search_params.merge(:per_page => 500, :start_page => 1) : basic_search_params
     @search = ItemSearchService.build_solr_search(search_params, current_user)
     @params = search_params
-    @result_ids = @search.hits.map(&:result).map(&:full_identifier)
+    if params[:search]
+      @result_ids = @search.hits.map(&:result).map(&:full_identifier)
+    end
 
     if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
       redirect_to search_items_path(search_params.merge(:page => 1))
