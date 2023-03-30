@@ -45,7 +45,7 @@ class CollectionsController < ApplicationController
     end
     @params = search_params
 
-    if params[:page].to_i >= 1 && params[:page].to_i > @search.results.total_pages
+    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
       redirect_to search_collections_path(search_params.merge(:page => 1))
       return
     end
