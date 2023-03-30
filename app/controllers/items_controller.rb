@@ -24,7 +24,7 @@ class ItemsController < ApplicationController
     search_params = params[:export_all] ? basic_search_params.merge(:per_page => 500, :start_page => 1) : basic_search_params
     @search = ItemSearchService.build_solr_search(search_params, current_user)
     @params = search_params
-    store_results!
+    @result_ids = @search.hits.map(&:result).map(&:full_identifier)
 
     if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
       redirect_to search_items_path(search_params.merge(:page => 1))
@@ -404,11 +404,11 @@ class ItemsController < ApplicationController
     if params[:clause].present?
       @search = build_query(params)
       @items = @search
-      store_results!
+      @result_ids = @items.map(&:full_identifier)
     else
       @search = ItemSearchService.build_advanced_search(params, current_user)
       @items = @search.hits.map(&:result)
-      store_results!
+      @result_ids = @items.map(&:full_identifier)
     end
   end
 
@@ -427,13 +427,6 @@ class ItemsController < ApplicationController
     associated_resource.where(id: ids).map do |resource|
       { id: resource.id, text: resource.name }
     end if ids.present?
-  end
-
-
-  def store_results!
-    keys = params[:clause].present? ? @search.map(&:id) : @search.hits.map(&:primary_key)
-    text = Base64.encode64(ActiveSupport::Gzip.compress(keys.join(',')))
-    session[:result_ids] = text
   end
 
   def basic_search_params

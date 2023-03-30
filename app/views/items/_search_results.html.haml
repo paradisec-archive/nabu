@@ -1,3 +1,7 @@
+:javascript
+  const result_ids = ["#{@result_ids.join('","')}"];
+  sessionStorage.setItem('item_result_ids', JSON.stringify(result_ids));
+
 -if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
   = render partial: 'items/pagination', locals: {results: @search}
 

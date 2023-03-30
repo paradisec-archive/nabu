@@ -1,15 +1,11 @@
 - content_for :canonical do
   %link{:rel => 'canonical', :href => collection_item_url(@collection, @item)}
 
--if session[:search_from]
-  .left
-    =link_to 'Return To Results', last_search_items_path, :class => 'button'
+.left
+  =link_to 'Return To Results', last_search_items_path, :class => 'button', :id => 'results_button'
 
 .right
-  - prev_item = NextItemService.find_prev_item(@item, session)
-  - next_item = NextItemService.find_next_item(@item, session)
-
-  = link_to 'Previous item', [prev_item.collection, prev_item], :class => 'button' if prev_item
+  = link_to 'Previous item', '#', :class => 'button next_prev_button', :id => 'prev_button', :data => { 'identifier' => @item.prev_item&.full_identifier }
 
   - if can? :update, @item
     = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'
@@ -17,7 +13,7 @@
   - if can? :update, @item
     = link_to 'Duplicate Item', "/collections/#{@collection.identifier}/items/new?id=#{@item.id}", :class => 'button'
 
-  = link_to 'Next item', [next_item.collection, next_item], :class => 'button' if next_item
+  = link_to 'Next item', '#', :class => 'button next_prev_button', :id => 'next_button',  :data => { 'identifier' => @item.next_item&.full_identifier }
 
 .clear{:style => "padding-top: 7px"}
 

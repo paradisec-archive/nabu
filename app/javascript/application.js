@@ -18,6 +18,7 @@ import 'custom/add_university';
 import 'custom/copy_language';
 import 'custom/items_and_collections';
 import 'custom/dynamic_grant_identifiers';
+import 'custom/item_prev_next';
 
 // window.$ = document.querySelector.bind(document)
 // window.$$ = document.querySelectorAll.bind(document)

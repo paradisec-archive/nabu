@@ -35,6 +35,7 @@
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
 * Add everything needed to search_params
+* The item clause builder should probably use solr and not sql
 
 # CRON
 ROtate logs
