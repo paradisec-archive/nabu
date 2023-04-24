@@ -4,7 +4,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  get '/paradisec.graphql', to: 'graphql#schema'
+  get '/paradisec.graphql', to: 'graphql#schema', as: 'graphql_schema'
 
   mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   post "/graphql", to: "graphql#execute"
@@ -83,7 +83,7 @@ Rails.application.routes.draw do
   end
   resources :universities, :only => :create
 
-  scope '/oai' do
+  scope '/oai', as: 'oai' do
     get 'item' => 'oai#item'
     post 'item' => 'oai#item'
     get 'collection' => 'oai#collection'

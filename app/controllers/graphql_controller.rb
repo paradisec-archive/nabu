@@ -33,7 +33,7 @@ class GraphqlController < ApplicationController
   end
 
   def schema
-    render text: NabuSchema.to_definition, content_type: 'text/plain'
+    render plain: NabuSchema.to_definition
   end
 
   private
