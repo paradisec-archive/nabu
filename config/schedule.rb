@@ -20,6 +20,7 @@
 # Learn more: http://github.com/javan/whenever
 
 job_type :nabu_rake,  "cd :path && if [ ! -f tmp/pids/disable_cron ]; then :environment_variable=:environment flock --nonblock tmp/locks/:lock.lock :bundle_command rake :task --silent :output; fi"
+job_type :nabu,  "cd :path && :environment_variable=:environment :bundle_command :task"
 
 every 1.day, :at => '12:00 am' do
   nabu_rake "archive:export_metadata VERBOSE=true", lock: 'archive_export_metadata'
@@ -44,6 +45,10 @@ end
 
 every 1.day, :at => '2:30 am' do
   nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
+end
+
+every :reboot do
+ nabu "bin/delayed_job -n 5 start"
 end
 
 # jonog - perform daily database backups of the database and archive weekly backups for the rest of the month

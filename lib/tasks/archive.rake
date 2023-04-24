@@ -259,7 +259,7 @@ namespace :archive do
 
           puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
         else # if !success
-          rejected_directory = upload_directory + "Rejected/"
+          rejected_directory = upload_directory + "/Rejected/"
 
           unless File.directory?(rejected_directory)
             puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
