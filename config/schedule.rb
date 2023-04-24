@@ -25,7 +25,7 @@ every 1.day, :at => '12:00 am' do
   nabu_rake "archive:export_metadata VERBOSE=true", lock: 'archive_export_metadata'
 end
 
-every 1.day, :at => '12:00 am' do
+every 1.hour do
   nabu_rake "archive:import_files VERBOSE=true", lock: 'archive_import_files'
 end
 
