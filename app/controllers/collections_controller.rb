@@ -69,7 +69,7 @@ class CollectionsController < ApplicationController
 
     @page_title = 'Nabu - Advanced Search Collections'
     if params.to_unsafe_h.size > 2
-      @search = build_advanced_search(collection_params)
+      @search = build_advanced_search(params)
     else
       @search = build_advanced_search({})
     end
