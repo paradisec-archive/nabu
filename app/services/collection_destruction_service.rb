@@ -1,10 +1,11 @@
 class CollectionDestructionService
   def self.destroy(collection)
     essences = collection.items.map(&:essences).flatten
+    essence_ids = essences.map(&:id)
 
     # use efficient delete since the models don't have any relevant callbacks
-    Essence.delete_all(id: essences.map(&:id))
-    deleted_items_count = Item.delete_all(collection_id: collection.id)
+    Essence.where(id: essence_ids).delete_all
+    deleted_items_count = Item.where(collection_id: collection.id).delete_all
 
     collection.items = [] # force no items
 
@@ -18,7 +19,6 @@ class CollectionDestructionService
       else
         puts "[DELETE] The path [#{directory}] does not refer to a collection directory!"
       end
-  
     rescue => e
       return {
         success: false,

@@ -10,7 +10,6 @@
 # General NOtes
 
 ## Stuff to replace
-* Do away with config.yml
 * Add storage to NABU so we don't lose anything when containers die
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
@@ -48,34 +47,25 @@ Ask nick about /src/catalog/webserver_psdc
 
 *transform_images looks like it checks everything and then skips if it exists we should keep track
 
-Should we run some of the crons more regularly
-
 # OAI
 
 Write tests for
 
 ```
 /oai/item?verb=Identify
-
 /oai/item?verb=ListMetadataFormats
 /oai/item?verb=ListSets # Not Supported
-
 /oai/item?verb=ListRecords&metadataPrefix=olac
 /oai/item?verb=ListRecords&metadataPrefix=oai_dc
-
 /oai/collection?verb=ListRecords&metadataPrefix=olac
 /oai/collection?verb=ListRecords&metadataPrefix=oai_dc
 /oai/collection?verb=ListRecords&metadataPrefix=rif
-
 /oai/item?verb=ListRecords&metadataPrefix=olac&from=2023-02-25
 /oai/item?verb=ListRecords&metadataPrefix=olac&from=1970-01-01T00:00:00Z&until=2000-12-31T23:59:59Z"
-
 /oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac
 /oai/collection?verb=GetRecord&identifier=oai:paradisec.org.au:AA1&metadataPrefix=olac
-
 /oai/item?resumptionToken=oai_dc.f%282023-01-17T13%3A00%3A00Z%29.u%282023-02-23T15%3A00%3A30Z%29%3A18640&verb=ListRecords
-
-oai/item?verb=ListIdentifiers&metadataPrefix=oai_dc
+/oai/item?verb=ListIdentifiers&metadataPrefix=oai_dc
 ```
 
 
