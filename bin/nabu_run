@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker-compose run \
+docker compose run \
   --rm \
   -v "$PWD":/app \
   -v "$PWD"/vendor/bundle:/bundler \
