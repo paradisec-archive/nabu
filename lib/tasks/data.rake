@@ -6,4 +6,10 @@ namespace :data do
 
     ChecksumAnalyserService.check_in_batches(batch_size, dry_run)
   end
+
+  desc 'Validate files on disk in the catalog are in the DB'
+  task :check_ondisk_files => :environment do
+    validator = CatalogDbSyncValidatorService.new
+    validator.run
+  end
 end
