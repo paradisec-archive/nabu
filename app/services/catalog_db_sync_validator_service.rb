@@ -21,7 +21,8 @@ class CatalogDbSyncValidatorService
         next
       end
 
-      process_essences(collection, item, item.essences.to_a)
+      db_essences = item.essences.to_a.each { | essence | essence.filename = essence.filename.downcase }
+      process_essences(collection, item, db_essences)
     end
   end
 
@@ -40,7 +41,7 @@ class CatalogDbSyncValidatorService
         next
       end
 
-      essence = db_essences.find { |i| i.filename == essence_id }
+      essence = db_essences.find { |i| i.filename == essence_id.downcase }
       unless essence
         puts "WARNING: ITEM LEVEL: #{collection.identifier}/#{item.identifier}/#{essence_id} does not exist in the database"
         next

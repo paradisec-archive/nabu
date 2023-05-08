@@ -7,6 +7,26 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
+    field :collection, CollectionType, 'Find a collection by identifier. e.g. NT1' do
+      argument :identifier, ID
+    end
+
+    # Then provide an implementation:
+    def collection(identifier:)
+      Collection.find_by(identifier: identifier)
+    end
+
+    field :item, ItemType, 'Find an item by full identifier. e.g. NT1-009' do
+      argument :full_identifier, ID
+    end
+
+    # Then provide an implementation:
+    def item(full_identifier:)
+      collection_identifier, item_identifier = full_identifier.split('-')
+      collection = Collection.find_by(identifier: collection_identifier)
+      collection.items.find_by(identifier: item_identifier)
+    end
+
     field :items, Types::ItemResultType, null: true do
       argument :limit, Integer, default_value: 10, required: false
       argument :page, Integer, default_value: 1, required: false
@@ -55,6 +75,5 @@ module Types
         results
       )
     end
-
   end
 end

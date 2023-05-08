@@ -93,4 +93,10 @@ Rails.application.routes.draw do
   authenticated :user, -> user { user.admin? } do
     mount Delayed::Web::Engine, at: '/jobs'
   end
+
+  namespace :api do
+    scope :v1 do
+      post '/graphql', to: 'graphql#execute'
+    end
+  end
 end

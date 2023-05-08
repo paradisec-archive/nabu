@@ -1,5 +1,4 @@
 class Types::ItemType < Types::BaseObject
-
   field :id, ID, null: false
   field :identifier, String, null: false
   field :full_identifier, String, null: false, camelize: false
