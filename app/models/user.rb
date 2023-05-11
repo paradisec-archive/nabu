@@ -6,7 +6,7 @@
 #
 # Name                            | Type               | Attributes
 # ------------------------------- | ------------------ | ---------------------------
-# **`id`**                        | `integer`          | `not null, primary key`
+# **`id`**                        | `bigint`           | `not null, primary key`
 # **`address`**                   | `string(255)`      |
 # **`address2`**                  | `string(255)`      |
 # **`admin`**                     | `boolean`          | `default(FALSE), not null`
@@ -22,6 +22,7 @@
 # **`encrypted_password`**        | `string(255)`      | `default(""), not null`
 # **`failed_attempts`**           | `integer`          | `default(0)`
 # **`first_name`**                | `string(255)`      | `not null`
+# **`id_bigint`**                 | `bigint`           | `not null`
 # **`last_name`**                 | `string(255)`      |
 # **`last_sign_in_at`**           | `datetime`         |
 # **`last_sign_in_ip`**           | `string(255)`      |
@@ -91,6 +92,16 @@ class User < ApplicationRecord
   has_many :owned_collections, :class_name => 'Collection', :foreign_key => :collector_id
 
   delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
+
+  has_many :access_grants,
+           class_name: 'Doorkeeper::AccessGrant',
+           foreign_key: :resource_owner_id,
+           dependent: :delete_all
+
+  has_many :access_tokens,
+           class_name: 'Doorkeeper::AccessToken',
+           foreign_key: :resource_owner_id,
+           dependent: :delete_all
 
   # find all users with multiple entries by name
   scope :all_duplicates, -> { distinct.select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1') }

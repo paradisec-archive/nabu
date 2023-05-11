@@ -93,6 +93,7 @@ gem "sentry-delayed_job"
 gem "devise" # Authentication
 gem "cancancan" # Authorisation
 gem "recaptcha" # Avoid fake registrations
+gem "doorkeeper" # API auth/Oauth2
 
 # Database improvements
 gem "nilify_blanks" # Convert empty strings to NULL in the DB where possible

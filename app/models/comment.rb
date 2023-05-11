@@ -7,7 +7,7 @@
 # Name                    | Type               | Attributes
 # ----------------------- | ------------------ | ---------------------------
 # **`id`**                | `integer`          | `not null, primary key`
-# **`body`**              | `text(65535)`      | `not null`
+# **`body`**              | `text(16777215)`   | `not null`
 # **`commentable_type`**  | `string(255)`      | `not null`
 # **`status`**            | `string(255)`      |
 # **`created_at`**        | `datetime`         | `not null`

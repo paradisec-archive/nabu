@@ -7,11 +7,11 @@
 # Name                         | Type               | Attributes
 # ---------------------------- | ------------------ | ---------------------------
 # **`id`**                     | `integer`          | `not null, primary key`
-# **`access_narrative`**       | `text(65535)`      |
-# **`comments`**               | `text(65535)`      |
+# **`access_narrative`**       | `text(16777215)`   |
+# **`comments`**               | `text(16777215)`   |
 # **`complete`**               | `boolean`          |
 # **`deposit_form_received`**  | `boolean`          |
-# **`description`**            | `text(65535)`      | `not null`
+# **`description`**            | `text(16777215)`   | `not null`
 # **`doi`**                    | `string(255)`      |
 # **`east_limit`**             | `float(24)`        |
 # **`identifier`**             | `string(255)`      | `not null`

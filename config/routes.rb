@@ -3,6 +3,7 @@
 
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  use_doorkeeper
 
   get '/paradisec.graphql', to: 'graphql#schema', as: 'graphql_schema'
 
@@ -95,7 +96,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    scope :v1 do
+    namespace :v1 do
       post '/graphql', to: 'graphql#execute'
     end
   end

@@ -18,7 +18,7 @@ services:
       - ./vendor/bundle:/bundler
 
   db:
-    image: mysql:5.5
+    image: mysql:8
     ports:
       - '3306:3306'
     volumes:
