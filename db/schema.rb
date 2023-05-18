@@ -420,7 +420,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.string "rights_transfer_reason"
     t.string "party_identifier"
     t.boolean "collector", default: false, null: false
-    t.bigint "id_bigint", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

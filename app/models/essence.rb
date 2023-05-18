@@ -40,7 +40,7 @@ class Essence < ApplicationRecord
   validates :mimetype, :presence => true
   validates :bitrate, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
   validates :samplerate, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
-  validates :size, :presence => true, :numericality => {:only_integer => true, :greater_than => 0}
+  validates :size, :presence => true, :numericality => {:only_integer => true, :greater_than => 0}, :unless => :allowed_zero_file_size?
   validates :duration, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :channels, :numericality => {:greater_than => 0, :allow_nil => true}
   validates :fps, :numericality => {:only_integer => true, :greater_than => 0, :allow_nil => true}
@@ -48,6 +48,10 @@ class Essence < ApplicationRecord
   # ensure that the item catalog gets updated when essences are added/removed
   after_create :update_catalog_file
   before_destroy :update_catalog_file
+
+  def allowed_zero_file_size?
+    filename =~ /\.(annis)$/
+  end
 
   def type
     types = mimetype.split("/",2)

@@ -30,9 +30,29 @@
 require 'rails_helper'
 
 describe Essence do
-  let(:essence) { create(:sound_essence, doi: doi) }
+  let(:item) { create(:item) }
+
+  describe 'no zero size files' do
+    it 'does allow non-zero size files' do
+      essence = described_class.new(filename: 'item.jpg', size: 100, mimetype: 'image/jpg', item: item)
+      expect(essence).to be_valid
+    end
+
+    it 'does not allow zero size files' do
+      essence = described_class.new(filename: 'item.jpg', size: 0, mimetype: 'image/jpg', item: item)
+      expect(essence).not_to be_valid
+      expect(essence.errors.messages).to include(size: include("must be greater than 0"))
+    end
+
+    it 'does allow zero size files for annis' do
+      essence = described_class.new(filename: 'item.annis', size: 0, mimetype: 'image/jpg', item: item)
+      expect(essence).to be_valid
+    end
+  end
 
   describe '#citation' do
+    let(:essence) { create(:sound_essence, doi: doi) }
+
     context 'DOI exists' do
       let(:doi) { 'something' }
 
