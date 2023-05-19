@@ -133,6 +133,7 @@ gem "capistrano3-puma", '6.0.0.beta.1', require: false, group: :development
 gem 'capistrano3-delayed-job', require: false, group: :development
 gem 'capistrano-sentry', require: false, group: :development
 gem "sd_notify" # Needed by capstrano3-puma
+gem 'curb'
 
 group :development, :test do
   gem "rspec-rails"

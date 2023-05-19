@@ -13,3 +13,6 @@ Style/Documentation:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Metrics/BlockLength:
+  CountAsOne: ['array', 'heredoc', 'method_call']

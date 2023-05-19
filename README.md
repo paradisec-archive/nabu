@@ -117,47 +117,26 @@ cd /srv/www/nabu/current
 RAILS_ENV=production bundle exec rake archive:delete_collection[PA1]
 
 
-# NEW Ethnologue data
+# New Ethnologue data
 
-Download the latest version of the following tables from
+We use the following source locations
+* https://www.ethnologue.com/codes/
+* https://iso639-3.sil.org/code_tables/download_tables
 
-    http://www.ethnologue.com/codes/default.asp#downloading
-
-* CountryCodes.tab
-* LanguageIndex.tab
-
-Copy them into the data directory, overwriting the existing files there.
-
-Run the following rake tasks to import them (in this order):
+Run the following rake task to import everything
 
 ``` bash
-bundle exec rake import:countries
-bundle exec rake import:languages
+bundle exec rake import:ethnologue
 ```
 
-All new countries will be added to the Nabu countries table.
-The new language codes of type "L" will be added to the Nabu language table.
-All mappings of language to countries will also be added to the countries_languages table.
-
-# Retire Ethnologue data
-
-Download the latest version of the retired codes from
-
-    http://www-01.sil.org/iso639-3/download.asp#retiredDownloads
-
-* iso-639-3_Retirements.tab
-
-Copy it into the data directory, overwriting the existing file there.
-
-Run the following rake task to import them:
-
-``` bash
-bundle exec rake import:retired
-```
-
-All existing codes that are retired are marked as such, incl name change.
-Where name changes occurred items in CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage are updated with the replacement language code.
-Where splits happened, a message is printed.
+This will
+* Add new countries and update names
+* Update country names
+* Add new languages and update names (Only Living languages)
+* Add mappings of language to countries
+* All existing languages that are retired are marked as such, incl name change.
+* Where name changes occurred items in CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage are updated with the replacement language code.
+* Where splits happened, a message is printed.
 
 # OAI-PMH
 
