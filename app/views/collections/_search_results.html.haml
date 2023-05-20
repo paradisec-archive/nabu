@@ -37,4 +37,4 @@
 
 %p
   - ['10', '50', '100', "all #{@search.total}"].each do |n|
-    = link_to "Show #{n}", @params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+    = link_to "Show #{n}", @params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : @params[:page]), class: 'button'

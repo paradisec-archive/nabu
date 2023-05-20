@@ -2,90 +2,26 @@ class ItemsController < ApplicationController
   include HasReturnToLastSearch
   include ItemQueryBuilder
 
-  load_and_authorize_resource :collection, :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
-  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
-  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit, :new_report, :send_report, :report_sent]
-
-  def search
-    if try_full_identifier_redirect
-      return
-    end
-
-    if params[:clear]
-      params.delete(:search)
-      redirect_to search_items_path
-      return
-    end
-
-    if params[:per_page] == '0'
-      params.delete(:per_page)
-    end
-
-    search_params = params[:export_all] ? basic_search_params.merge(:per_page => 500, :start_page => 1) : basic_search_params
-    @search = ItemSearchService.build_solr_search(search_params, current_user)
-    @params = search_params
-    if params[:search]
-      @result_ids = @search.hits.map(&:result).map(&:full_identifier)
-    end
-
-    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
-      redirect_to search_items_path(search_params.merge(:page => 1))
-
-      return
-    end
-
-    @page_title = 'Nabu - Item Search'
-    respond_to do |format|
-      format.html
-      if can? :search_csv, Item
-        format.csv do
-          stream_csv(:basic)
-        end
-      end
-    end
-  end
-
-  def advanced_search
-    if params[:per_page] == '0'
-      params.delete(:per_page)
-    end
-
-    @page_title = 'Nabu - Advanced Item Search'
-    search_params = params[:export_all] ? params.merge(:per_page => 500, :start_page => 1) : params
-    @params = search_params
-    build_advanced_search(search_params)
-    respond_to do |format|
-      format.html
-      if can? :search_csv, Item
-        format.csv do
-          stream_csv(:advanced)
-        end
-      end
-    end
-  end
+  load_and_authorize_resource :collection, find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
+  load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
+  authorize_resource only: %i[advanced_search bulk_update bulk_edit new_report send_report report_sent]
 
   def show
+    params.delete(:files_per_page) if params[:files_per_page] == '0'
+
     @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
-    if params[:files_per_page] == '0'
-      params.delete(:files_per_page)
-    end
-
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
-    if params[:sort]
-      @files = @files.order("#{params[:sort]} #{params[:direction]}")
-    else
-      @files = @files.order(:filename)
-    end
+    @files = @files.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :filename)
 
     respond_to do |format|
       format.html
       format.xml do
         if params[:xml_type]
-          render :template => "items/show_#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
+          render template: "items/show_#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
         else
-          render :template => "items/show", formats: [:xml], handlers: [:haml]
+          render template: 'items/show', formats: [:xml], handlers: [:haml]
         end
       end
     end
@@ -94,33 +30,40 @@ class ItemsController < ApplicationController
   def new
     @page_title = 'Nabu - Add New Item'
 
-    #For creating duplicate items
-    if params[:id]
-      existing = Item.find(params[:id])
-      attributes = existing.attributes.select do |attr, _value|
-        Item.column_names.include?(attr.to_s)
-      end
+    return unless params[:id]
 
-      attributes.delete('id')
+    # For creating duplicate items
+    existing = Item.find(params[:id])
+    attributes = existing.attributes.select do |attr, _value|
+      Item.column_names.include?(attr.to_s)
+    end
 
-      associations = %i[country_ids subject_language_ids content_language_ids admin_ids user_ids data_category_ids data_type_ids]
-      associations.each do |association|
-        attributes[association] = existing.public_send(association)
-      end
+    attributes.delete('id')
 
-      @item = Item.new(attributes)
-      @item.item_agents = []
-      existing.item_agents.each { |a|  @item.item_agents << ItemAgent.new(user_id: a.user_id, agent_role_id: a.agent_role_id) }
+    associations = %i[
+      country_ids subject_language_ids content_language_ids
+      admin_ids user_ids data_category_ids data_type_ids
+    ]
+    associations.each do |association|
+      attributes[association] = existing.public_send(association)
+    end
+
+    @item = Item.new(attributes)
+    @item.item_agents = []
+    existing.item_agents.each do |a|
+      @item.item_agents << ItemAgent.new(user_id: a.user_id, agent_role_id: a.agent_role_id)
     end
   end
 
   def create
     if @item.save
       flash[:notice] = 'Item was successfully created.'
+
       redirect_to [@collection, @item]
     else
       @page_title = 'Nabu - Add New Item'
-      render :action => 'new'
+
+      render action: 'new'
     end
   end
 
@@ -136,7 +79,7 @@ class ItemsController < ApplicationController
 
     if response[:success]
       if response[:can_undo]
-        undo_link = view_context.link_to("undo", revert_version_path(@item.versions.last), :method => :post, :class => 'undo')
+        undo_link = view_context.link_to('undo', revert_version_path(@item.versions.last), method: :post, class: 'undo')
         flash[:notice] = flash[:notice] + " (#{undo_link})"
       end
       redirect_to @collection
@@ -157,15 +100,14 @@ class ItemsController < ApplicationController
 
   def update
     if params[:item] && params[:item][:user_ids].is_a?(String) && !params[:item][:user_ids].empty?
-      flash[:alert] = "Error in submitted value for View/Download access users"
+      flash[:alert] = 'Error in submitted value for View/Download access users'
       redirect_to [@collection, @item]
       return
     end
 
+    params.delete(:files_per_page) if params[:files_per_page] == '0'
+
     @num_files = @item.essences.length
-    if params[:files_per_page] == '0'
-      params.delete(:files_per_page)
-    end
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     if @item.update(item_params)
@@ -176,7 +118,54 @@ class ItemsController < ApplicationController
       redirect_to [@collection, @item]
     else
       @page_title = 'Nabu - Edit Item'
-      render :action => "edit"
+      render action: 'edit'
+    end
+  end
+
+  def search
+    return if try_full_identifier_redirect
+
+    params.delete(:per_page) if params[:per_page] == '0'
+
+    search_params = params[:export_all] ? basic_search_params.merge(per_page: 500, start_page: 1) : basic_search_params
+    @search = ItemSearchService.build_solr_search(search_params, current_user)
+
+    @result_ids = @search.hits.map(&:result).map(&:full_identifier) if params[:search]
+
+    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
+      redirect_to search_items_path(search_params.merge(page: 1))
+
+      return
+    end
+
+    @page_title = 'Nabu - Item Search'
+    @params = search_params
+
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Item
+        format.csv do
+          stream_csv(:basic)
+        end
+      end
+    end
+  end
+
+  def advanced_search
+    params.delete(:per_page) if params[:per_page] == '0'
+
+    @page_title = 'Nabu - Advanced Item Search'
+    search_params = params[:export_all] ? params.merge(per_page: 500, start_page: 1) : params
+    @params = advanced_search_params
+
+    build_advanced_search
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Item
+        format.csv do
+          stream_csv(:advanced)
+        end
+      end
     end
   end
 
@@ -184,15 +173,14 @@ class ItemsController < ApplicationController
     @item = Item.new
     @item.collection = Collection.new
     @page_title = 'Nabu - Items Bulk Update'
-    @params = params
+    @params = advanced_search_params
 
-    build_advanced_search(params)
+    build_advanced_search
     build_deletable_params(@item, @items)
   end
 
-
   def bulk_update
-    @params = params
+    @params = advanced_search_params
 
     accessible_items = Item.accessible_by(current_ability)
                            .where(id: params[:item_ids].split(' '))
@@ -206,7 +194,7 @@ class ItemsController < ApplicationController
   end
 
   def display
-    send_file @item.path, :disposition => 'inline', :type => 'text/xml'
+    send_file @item.path, disposition: 'inline', type: 'text/xml'
   end
 
   def new_report
@@ -218,8 +206,8 @@ class ItemsController < ApplicationController
   end
 
   def send_report
-    @date_from = params["date_from"]
-    @date_to = params["date_to"]
+    @date_from = params['date_from']
+    @date_to = params['date_to']
 
     downloads_report_service = DownloadsReportService.new(@date_from, @date_to, current_user)
 
@@ -239,75 +227,70 @@ class ItemsController < ApplicationController
     ixt_values = {}
     trs_values = {}
     video_values = {}
+
     @item.essences.each do |essence|
       essence_filename = essence.filename
-      essence_extension = File.extname(essence_filename)[1..-1]
-      essence_basename = File.basename(essence_filename, "." + essence_extension)
+      essence_extension = File.extname(essence_filename)[1..]
+      essence_basename = File.basename(essence_filename, ".#{essence_extension}")
       repository_essence_url = repository_essence_url(@collection, @item, essence.filename)
+
       case essence_extension
-      when "eaf"
+      when 'eaf'
         eaf_values[essence_basename] ||= []
         eaf_values[essence_basename] << repository_essence_url
-      when "flextext"
+      when 'flextext'
         flextext_values[essence_basename] ||= []
         flextext_values[essence_basename] << repository_essence_url
-      when "ixt"
+      when 'ixt'
         ixt_values[essence_basename] ||= []
         ixt_values[essence_basename] << repository_essence_url
-      when "trs"
+      when 'trs'
         trs_values[essence_basename] ||= []
         trs_values[essence_basename] << repository_essence_url
-      # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
-      # ENHANCEMENT: Using essence.mimetype would be more robust.
-      # when "mp3", "webm", "ogg", "oga"
-      when "mp3", "ogg", "oga"
+        # ASSUMPTION: webm is a video, not an audio, based on email from Nick Thien.
+        # ENHANCEMENT: Using essence.mimetype would be more robust.
+        # when "mp3", "webm", "ogg", "oga"
+      when 'mp3', 'ogg', 'oga'
         unless audio_values.key?(essence_basename)
-          spectrum_url = repository_essence_url.gsub("." + essence_extension, "-spectrum-PDSC_ADMIN.jpg")
-          # Copied from Essence#path and Essence#full_identifier.
-          unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(spectrum_url))
-            spectrum_url = nil
-          end
           audio_values[essence_basename] = {
-            "files" => [],
-            "spectrum" => spectrum_url
+            'files' => [],
           }
         end
-        audio_values[essence_basename]["files"] << repository_essence_url
-      when "mp4", "webm", "ogg", "ogv", "mov", "webm"
+        audio_values[essence_basename]['files'] << repository_essence_url
+      when 'mp4', 'webm', 'ogg', 'ogv', 'mov', 'webm'
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
-      when "jpg", "jpeg", "png"
-        thumbnail_url = repository_essence_url.gsub("." + essence_extension, "-thumb-PDSC_ADMIN.jpg")
+      when 'jpg', 'jpeg', 'png'
+        thumbnail_url = repository_essence_url.gsub(".#{essence_extension}", '-thumb-PDSC_ADMIN.jpg')
 
         # Copied from Essence#path and Essence#full_identifier.
-        unless File.exist?(Nabu::Application.config.archive_directory + essence.item.collection.identifier + '/' + essence.item.identifier + '/' + File.basename(thumbnail_url))
-          thumbnail_url = nil
-        end
+        path = "#{Nabu::Application.config.archive_directory}/#{essence.item.identifier}/#{File.basename(thumbnail_url)}"
+        thumbnail_url = nil unless File.exist?(path)
 
         # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
         unless images_values.key?(essence_basename)
           images_values[essence_basename] = {
-            "originals" => [],
-            "thumbnail" => thumbnail_url
+            'originals' => [],
+            'thumbnail' => thumbnail_url
           }
         end
-        images_values[essence_basename]["originals"] << repository_essence_url
-      when "pdf"
+        images_values[essence_basename]['originals'] << repository_essence_url
+      when 'pdf'
         documents_values << repository_essence_url
-      else
-        # Ignore the file
       end
     end
+
     response_value = {
-      "audio" => audio_values,
-      "documents" => documents_values,
-      "eaf" => eaf_values,
-      "flextext" => flextext_values,
-      "images" => images_values,
-      "ixt" => ixt_values,
-      "trs" => trs_values,
-      "video" => video_values
+      'audio' => audio_values,
+      'documents' => documents_values,
+      'eaf' => eaf_values,
+      'flextext' => flextext_values,
+      'images' => images_values,
+      'ixt' => ixt_values,
+      'trs' => trs_values,
+      'video' => video_values
     }
+        # Ignore the file
     respond_to do |format|
       format.json do
         render json: response_value
@@ -315,20 +298,20 @@ class ItemsController < ApplicationController
     end
   end
 
-
   private
+
   def try_full_identifier_redirect
-    return unless params[:search].present?
+    return if params[:search].blank?
 
     collection_identifier, item_identifier = params[:search].split(/-/)
 
-    return unless collection_identifier.present? && collection_identifier.present?
+    return unless collection_identifier.present? && item_identifier.present?
 
-    collection = Collection.find_by_identifier collection_identifier
+    collection = Collection.find_by(identifier: collection_identifier)
 
     return unless collection
 
-    item = collection.items.find_by_identifier item_identifier
+    item = collection.items.find_by(identifier: item_identifier)
 
     return unless item
 
@@ -340,34 +323,33 @@ class ItemsController < ApplicationController
   def tidy_params!
     options = params[:item]
 
-    if options
-      options[:item_agents_attributes] ||= {}
-      options[:item_agents_attributes].each_pair do |_id, iaa|
-        name = iaa['user_id']
-        if name =~ /^NEWCONTACT:/
-          p 'NEW'
-          iaa['user_id'] = create_contact(name)
-        end
-      end
+    return unless options
 
-      if options[:collector_id] =~ /^NEWCONTACT:/
-        options[:collector_id] = create_contact(options[:collector_id])
+    options[:item_agents_attributes] ||= {}
+    options[:item_agents_attributes].each_pair do |_id, iaa|
+      name = iaa['user_id']
+      if name =~ /^NEWCONTACT:/
+        p 'NEW'
+        iaa['user_id'] = create_contact(name)
       end
     end
+
+    options[:collector_id] = create_contact(options[:collector_id]) if options[:collector_id] =~ /^NEWCONTACT:/
   end
 
   def find_by_full_identifier
     if params[:id]
       collection_identifier, item_identifier = params[:id].split(/-/)
-      @collection = Collection.find_by_identifier collection_identifier
-      @item = @collection.items.find_by_identifier item_identifier
+      @collection = Collection.find_by(identifier: collection_identifier)
+      @item = @collection.items.find_by(identifier: item_identifier)
     elsif params[:collection_id]
-      @collection = Collection.find_by_identifier params[:collection_id]
+      @collection = Collection.find_by(identifier: params[:collection_id])
     end
   end
 
   def save_item_catalog_file(item)
     return if item.nil?
+
     ItemCatalogService.new(item).delay.save_file
   end
 
@@ -384,11 +366,11 @@ class ItemsController < ApplicationController
 
       headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
       headers['Content-Disposition'] = "attachment; filename=#{filename}"
-      headers['Last-Modified'] = Time.now.ctime.to_s
+      headers['Last-Modified'] = Time.now.httpdate
 
       response.status = 200
 
-      self.response_body = Enumerator.new &body
+      self.response_body = Enumerator.new(&body)
       return
     end
 
@@ -396,10 +378,10 @@ class ItemsController < ApplicationController
     downloader.delay.email
 
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
-    redirect_back :fallback_location => root_path
+    redirect_back fallback_location: root_path
   end
 
-  def build_advanced_search(params)
+  def build_advanced_search
     @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
     @fields = @types_for_fields.keys.map(&:to_s).sort
 
@@ -439,6 +421,11 @@ class ItemsController < ApplicationController
       :language_code, :country_code, :collector_id,
       :export_all
     )
+  end
+
+  def advanced_search_params
+    # FIXME: Is this bad?
+    params.except(:controller, :action, :utf8).permit!
   end
 
   def item_params

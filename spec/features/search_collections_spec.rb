@@ -95,7 +95,7 @@ describe 'Collection Search', search: true do
 
           expect(page).to_not have_content(country2.name)
 
-          click_button 'Clear'
+          click_link 'Clear'
 
           expect(page).to have_content(country2.name)
 

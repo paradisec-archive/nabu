@@ -1,8 +1,9 @@
 - content_for :canonical do
   %link{:rel => 'canonical', :href => collection_item_url(@collection, @item)}
 
-.left
-  =link_to 'Return To Results', last_search_items_path, :class => 'button', :id => 'results_button'
+-if session[:search_params]
+  .left
+    =link_to 'Return To Results', session[:search_from].merge(session[:search_params]), :class => 'button'
 
 .right
   = link_to 'Previous item', '#', :class => 'button next_prev_button', :id => 'prev_button', :data => { 'identifier' => @item.prev_item&.full_identifier }

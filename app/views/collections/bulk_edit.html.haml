@@ -1,7 +1,7 @@
 %h1 Collections Bulk Update
 
 .right
-  = link_to 'Advanced Search', advanced_search_collections_path(:params => params.clone.delete_if {|k,v| ['action', 'controller'].include? k})
+  = link_to 'Advanced Search', advanced_search_collections_path(:params => @params)
 .clear
 
 %p== #{@search.total} search results
@@ -17,7 +17,7 @@
           %li= msg
 
   = hidden_field_tag :collection_ids, @search.results.map(&:id)
-  = hidden_field_tag :original_search_params, params.to_a.delete_if {|p| ['action', 'controller'].include? p[0]}.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
+  = hidden_field_tag :original_search_params, @params.to_h.to_a.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
   .right
     = f.submit "Update #{@search.hits.length} Collections", :confirm => "This will update #{@search.hits.length} collections - are you sure?"

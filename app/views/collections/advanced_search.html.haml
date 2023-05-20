@@ -12,7 +12,7 @@
 
   -if can? :bulk_edit, Collection
     .right
-      = link_to 'Bulk edit results', bulk_update_collections_path(params.delete_if {|p| ['action', 'controller'].include? p } )
+      = link_to 'Bulk edit results', bulk_update_collections_path(@params)
 
   .clear
 
@@ -207,7 +207,7 @@
             = check_box_tag :grant_identifier_blank, 1, params[:grant_identifier_blank]
 
     = submit_tag 'Search', :name => nil
-    = submit_tag 'Clear', :name => :clear
+    = link_to 'Clear', advanced_search_collections_path, class: "button"
 
   .clear
 

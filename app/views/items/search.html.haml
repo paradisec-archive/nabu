@@ -8,7 +8,7 @@
         = hidden_field_tag :per_page, params[:per_page]
       = text_field_tag :search, params[:search], {:placeholder => "Please enter search terms to filter items"}
       = submit_tag 'Search', :name => nil
-      = submit_tag 'Clear', :name => :clear
+      = link_to 'Clear', search_items_path, class: "button"
 
     .right
       = link_to 'Advanced Search', advanced_search_items_path if can? :advanced_search, Item

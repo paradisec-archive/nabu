@@ -4,64 +4,25 @@ module HasReturnToLastSearch
   extend ActiveSupport::Concern
 
   included do
-    # store and retrieve search params in session to mimic result set behaviour and allow 'return to last search' action
-    # FIXME: this re-runs the search every time, and may become resource intensive if the datastore gets large
-    # FIXME: may be worth just re-implementing result sets
-    before_action :manage_session_search_params, :only => [:search, :advanced_search]
-  end
-
-  def return_to_last_search
-    if session[:search_from] and session[:search_params]
-      redirect_to session.delete(:search_from).merge(session.delete(:search_params))
-      return # avoid dropping through to fallback redirect
-    end
-    redirect_to controller: params[:controller], action: :search
+    # rubocop:disable Rails/LexicallyScopedActionFilter
+    before_action :manage_session_search_params, only: %i[search advanced_search]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
   end
 
   private
 
-  # utility method to keep the multiple uses of this proc consistent w/ no typos
-  def only_action_params
-    Proc.new { |k, _v| %w(controller action).include?(k) }
-  end
-
-  # People only want to download CSVs once. Don't keep it in the session.
-  def one_off_params
-    Proc.new { |k, _v| %w(format).include?(k) }
-  end
-
-  def should_apply_session_params?
-    # if we're coming to the same page (e.g. visiting basic search with saved basic search)...
-    if session[:search_from] == params.select(&only_action_params)
-      # ... and there are saved params
-      return session[:search_params].present?
-    end
-
-    false
+  def only_search_params
+    proc { |k, _v| %w[controller action format].include?(k) }
   end
 
   # store or retrieve search params to mimic result sets
   def manage_session_search_params
-    # if there are incoming params, ignore the session
-    if (params.keys - %w(action controller utf8)).any?
-      if params[:clear]
-        session.delete(:search_from)
-        session.delete(:search_params)
-      else
-        session[:search_from] = params.select(&only_action_params)
-        session[:search_params] = params.reject(&only_action_params).reject(&one_off_params)
-      end
-    elsif should_apply_session_params?
-      # transfer the flash over from the previous action (otherwise it is lost)
-      if session[:flash]
-        flash[:notice] = session[:flash][:notice]
-        flash[:error] = session[:flash][:error]
-      end
-
-      # otherwise use the session (delete it as you go to avoid infinite loops)
-      redirect_to session.delete(:search_from).merge(session.delete(:search_params))
+    if params&.reject(&only_search_params)&.permit!.to_h.empty?
+      session.delete(:search_from)
+      session.delete(:search_params)
+    else
+      session[:search_from] = params.select(&only_search_params).permit!.to_h
+      session[:search_params] = params.reject(&only_search_params).permit!.to_h
     end
-
-    true
   end
 end

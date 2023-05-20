@@ -4,143 +4,45 @@ require 'nabu/nabu_spreadsheet'
 class CollectionsController < ApplicationController
   include HasReturnToLastSearch
 
-  before_action :tidy_params, :only => [:create, :update, :bulk_update]
-  load_and_authorize_resource :find_by => :identifier, :except => [:return_to_last_search, :search, :advanced_search, :bulk_update, :bulk_edit]
-  authorize_resource :only => [:advanced_search, :bulk_update, :bulk_edit]
+  before_action :tidy_params, only: %i[create update bulk_update]
+  load_and_authorize_resource find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit]
+  authorize_resource only: %i[advanced_search bulk_update bulk_edit]
 
-  def search
-    if params[:per_page] == '0'
-      params.delete(:per_page)
-    end
+  def show
+    @num_items = @collection.items.count
+    @num_items_ready = @collection.items.where.not(digitised_on: nil).count
+    @num_essences = Essence.where(item_id: @collection.items).count
 
-    @page_title = 'Nabu - Collections'
-    if params[:clear]
-      params.delete(:search)
+    @items = @collection.items.includes(:access_condition, :collection).page(params[:items_page]).per(params[:items_per_page])
 
-      redirect_to search_collections_path
-      return
-    end
+    @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier)
 
-    @search = Collection.solr_search(include: [:collector, :countries, :languages, :university]) do
-      fulltext params[:search]
-      facet :language_ids, :country_ids
-      facet :collector_id, :limit => 100
-
-      with(:language_codes, params[:language_code]) if params[:language_code].present?
-      with(:country_codes, params[:country_code]) if params[:country_code].present?
-      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
-
-      unless current_user && current_user.admin?
-        any_of do
-          with(:private, false)
-          with(:admin_ids, current_user.id) if current_user
-          with(:item_admin_ids, current_user.id) if current_user
-          with(:item_user_ids, current_user.id) if current_user
-        end
-      end
-      sort_column(Collection).each do |c|
-        order_by c, sort_direction
-      end
-      paginate :page => params[:page], :per_page => params[:per_page]
-    end
-    @params = search_params
-
-    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
-      redirect_to search_collections_path(search_params.merge(:page => 1))
-      return
-    end
-
-    respond_to do |format|
-      format.html
-      if can? :search_csv, Collection
-        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
-        format.csv do
-          response.headers['Content-Type'] = 'text/csv'
-          response.headers['Content-Disposition'] = "attachment; filename=search.csv"
-        end
-      end
-    end
-  end
-
-  def advanced_search
-    if params[:per_page] == '0'
-      params.delete(:per_page)
-    end
-
-    @page_title = 'Nabu - Advanced Search Collections'
-    if params.to_unsafe_h.size > 2
-      @search = build_advanced_search(params)
-    else
-      @search = build_advanced_search({})
-    end
-    respond_to do |format|
-      format.html
-      if can? :search_csv, Collection
-        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
-        format.csv do
-          response.headers['Content-Type'] = 'text/csv'
-          response.headers['Content-Disposition'] = "attachment; filename=search.csv"
-          render :temaplate => 'collections/search'
-        end
-      end
-    end
+    @page_title = "Nabu - #{@collection.title}"
   end
 
   def new
     @page_title = 'Nabu - Add New Collection'
   end
 
-  def show
-    @num_items = @collection.items.count
-    @num_items_ready = @collection.items.where.not(:digitised_on => nil).count
-    @num_essences = Essence.where(:item_id => @collection.items).count
-
-    @items = @collection.items.includes(:access_condition, :collection).page(params[:items_page]).per(params[:items_per_page])
-
-    if params[:sort]
-      @items = @items.order("#{params[:sort]} #{params[:direction]}")
-    else
-      @items = @items.order(:identifier)
-    end
-    @page_title = "Nabu - #{@collection.title}"
-  end
-
-  def create
-    # Make the depositor an admin
-    unless @collection.admins.include? current_user
-      @collection.admins << current_user
-    end
-
-    if @collection.save
-      flash[:notice] = 'Collection was successfully created.'
-      redirect_to @collection
-    else
-      @page_title = 'Nabu - Add New Collection'
-      render :action => 'new'
-    end
-  end
-
   def edit
-    @page_title = "Nabu - Edit Collection"
+    @page_title = 'Nabu - Edit Collection'
     @num_items = @collection.items.count
 
     @items = @collection.items.includes(:access_condition, :collection).order(:identifier).page(params[:items_page]).per(params[:items_per_page])
   end
 
-  def destroy
-    response = CollectionDestructionService.destroy(@collection)
+  def create
+    # Make the depositor an admin
+    @collection.admins << current_user unless @collection.admins.include? current_user
 
-    flash[:notice] = response[:messages][:notice]
-    flash[:error] = response[:messages][:error]
+    if @collection.save
+      flash[:notice] = 'Collection was successfully created.'
 
-    if response[:success]
-      if response[:can_undo]
-        undo_link = view_context.link_to("undo", revert_version_path(@collection.versions.last), :method => :post, :class => 'undo')
-        flash[:notice] = flash[:notice] + " (#{undo_link})"
-      end
-      redirect_to search_collections_path
-    else
       redirect_to @collection
+    else
+      @page_title = 'Nabu - Add New Collection'
+
+      render action: 'new'
     end
   end
 
@@ -153,43 +55,131 @@ class CollectionsController < ApplicationController
 
       @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
       @page_title = "Nabu - Edit Collection"
-      render :action => "edit"
+
+      render action: 'edit'
+    end
+  end
+
+  def destroy
+    response = CollectionDestructionService.destroy(@collection)
+
+    flash[:notice] = response[:messages][:notice]
+    flash[:error] = response[:messages][:error]
+
+    if response[:success]
+      if response[:can_undo]
+        undo_link = view_context.link_to('undo', revert_version_path(@collection.versions.last), method: :post, class: 'undo')
+        flash[:notice] = flash[:notice] + " (#{undo_link})"
+      end
+      redirect_to search_collections_path
+    else
+      redirect_to @collection
+    end
+  end
+
+  def search
+    params.delete(:per_page) if params[:per_page] == '0'
+
+    @page_title = 'Nabu - Collections'
+    @params = search_params
+
+    @search = Collection.solr_search(include: %i[collector countries languages university]) do
+      fulltext params[:search]
+      facet :language_ids, :country_ids
+      facet :collector_id, limit: 100
+
+      with(:language_codes, params[:language_code]) if params[:language_code].present?
+      with(:country_codes, params[:country_code]) if params[:country_code].present?
+      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
+
+      unless current_user&.admin?
+        any_of do
+          with(:private, false)
+          with(:admin_ids, current_user.id) if current_user
+          with(:item_admin_ids, current_user.id) if current_user
+          with(:item_user_ids, current_user.id) if current_user
+        end
+      end
+      sort_column(Collection).each do |c|
+        order_by c, sort_direction
+      end
+      paginate page: params[:page], per_page: params[:per_page]
+    end
+
+    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
+      redirect_to search_collections_path(search_params.merge(:page => 1))
+      return
+    end
+
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Collection
+        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
+        format.csv do
+          response.headers['Content-Type'] = 'text/csv'
+          response.headers['Content-Disposition'] = 'attachment; filename=search.csv'
+        end
+      end
+    end
+  end
+
+  def advanced_search
+    params.delete(:per_page) if params[:per_page] == '0'
+
+    @page_title = 'Nabu - Advanced Search Collections'
+    @params = advanced_search_params
+
+    @search = build_advanced_search
+
+    respond_to do |format|
+      format.html
+      if can? :search_csv, Collection
+        # This uses attributes that an HTML request doesn't use. Some attributes here ought to be eagerly loaded but aren't.
+        format.csv do
+          response.headers['Content-Type'] = 'text/csv'
+          response.headers['Content-Disposition'] = 'attachment; filename=search.csv'
+          render template: 'collections/search'
+        end
+      end
     end
   end
 
   def bulk_edit
     @page_title = 'Nabu - Collections Bulk Update'
+    @params = advanced_search_params
     @collection = Collection.new
 
-    @search = build_advanced_search(params)
+    @search = build_advanced_search
+
   end
 
-
   def bulk_update
-    @collections = Collection.accessible_by(current_ability).where :id => params[:collection_ids].split(' ')
-    @params = search_params
+    @collections = Collection.accessible_by(current_ability).where(id: params[:collection_ids].split)
 
-    params[:collection].delete_if {|k, v| v.blank?}
+    data = collection_params.to_h
+    data.compact_blank!
 
     # Collect the fields we are appending to
     appendable = {}
-    @params.each_pair do |k, v|
-      if k =~ /^bulk_edit_append_(.*)/
-        appendable[$1] = params[:collection].delete $1 if v == "1"
-        params[:collection].delete k
-      end
+    data.each_pair do |k, v|
+      next unless k =~ /^bulk_edit_append_(.*)/
+
+      sub_field = ::Regexp.last_match(1)
+      appendable[sub_field] = data.delete sub_field if v == '1'
+      data.delete k
     end
 
     invalid_record = false
     @collections.each do |collection|
       appendable.each_pair do |k, v|
         if collection.public_send(k).nil?
-          @params[k.to_sym] = v unless v.blank?
+          data[k.to_sym] = v unless v.blank?
         else
-          @params[k.to_sym] = collection.public_send(k) + v unless v.blank?
+          data[k.to_sym] = collection.public_send(k) + v unless v.blank?
         end
       end
-      unless collection.update(params[:collection])
+
+      unless collection.update(data)
         invalid_record = true
         @collection = collection
         break
@@ -197,14 +187,14 @@ class CollectionsController < ApplicationController
     end
 
     appendable.each_pair do |k, v|
-      @params[k.to_sym] = nil
-      @params["bulk_edit_append_#{k}"] = v
+      data[k.to_sym] = nil
+      data["bulk_edit_append_#{k}"] = v
     end
 
     if invalid_record
       @page_title = 'Nabu - Collections Bulk Update'
       @collection = Collection.new
-      @search = build_advanced_search(params)
+      @search = build_advanced_search
       render :action => 'bulk_edit'
     else
       flash[:notice] = 'Collections were successfully updated.'
@@ -245,11 +235,12 @@ class CollectionsController < ApplicationController
 
   def create_from_spreadsheet
     unless params.key?(:collection)
-      @collection = Collection.new unless @collection
-      flash[:error] = 'No Spreadsheet XLS file submitted'
+      @collection ||= Collection.new
+      flash.now[:error] = 'No Spreadsheet XLS file submitted'
       render 'new_from_metadata'
       return
     end
+
     # get XSL data
     data = params[:collection][:metadata].read
     # parse XML file as Spreadsheet
@@ -262,11 +253,9 @@ class CollectionsController < ApplicationController
       saved_items = 0
       added_items = ""
       sheet.items.each do |item|
-        if item.valid? #just making sure - even though NabuSpreadsheet already check this
-          item.save!
-          saved_items += 1
-          added_items += "#{item.identifier}, "
-        end
+        item.save!
+        saved_items += 1
+        added_items += "#{item.identifier}, "
       end
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
       flash[:notice] += sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
@@ -274,54 +263,51 @@ class CollectionsController < ApplicationController
 
       redirect_to @collection
     else
-      @collection = Collection.new unless @collection
-      flash[:notice] = sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
-      flash[:error] = sheet.errors.join("<br/>").truncate(500) unless sheet.errors.empty?
+      @collection ||= Collection.new
+      flash.now[:notice] = sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
+      flash.now[:error] = sheet.errors.join("<br/>").truncate(500) unless sheet.errors.empty?
       render 'new_from_metadata'
     end
   end
 
   private
+
   def tidy_params
-    if params[:collection]
-      # this is used to allow grants where there is a funding body but no grant id
-      if params[:collection][:grants_attributes]
-        # map the collection identifier to the underlying id
-        collection_id = Collection.where(identifier: params[:id]).pluck(:id).first
-        grants = params[:collection][:grants_attributes]
+    return unless params[:collection]
 
-        if params["funding_body_ids"]
-          funding_body_ids = params["funding_body_ids"]
-        else
-          funding_body_ids = []
-        end
+    # this is used to allow grants where there is a funding body but no grant id
+    if params[:collection][:grants_attributes]
+      # map the collection identifier to the underlying id
+      collection_id = Collection.where(identifier: params[:id]).pick(:id)
+      grants = params[:collection][:grants_attributes]
 
-        fbids = funding_body_ids.reject {|x| grants.collect{|y| y[:funding_body_id]}.include?(x)}
+      funding_body_ids = params['funding_body_ids'] || []
 
-        # for each funding body that doesn't have grant ids, create an empty grant
+      fbids = funding_body_ids.reject { |x| grants.pluck(:funding_body_id).include?(x) }
 
-        params[:collection][:grants_attributes].concat fbids.collect{|x| {'funding_body_id' => x, 'grant_identifier' => nil}}
-        # apply the current collection to every item
-        params[:collection][:grants_attributes].each{ |g| g['collection_id'] = collection_id }
-      end
+      # for each funding body that doesn't have grant ids, create an empty grant
 
-      if params[:collection][:collector_id] =~ /^NEWCONTACT:/
-        params[:collection][:collector_id] = create_contact(params[:collection][:collector_id])
-      end
+      params[:collection][:grants_attributes].concat(fbids.collect { |x| { 'funding_body_id' => x, 'grant_identifier' => nil }})
+      # apply the current collection to every item
+      params[:collection][:grants_attributes].each{ |g| g['collection_id'] = collection_id }
     end
+
+    params[:collection][:collector_id] = create_contact(params[:collection][:collector_id]) if params[:collection][:collector_id] =~ /^NEWCONTACT:/
   end
 
-  def build_advanced_search(params)
-    Collection.solr_search(include: [:collector, :countries, :languages, :university]) do
+  def build_advanced_search
+    Collection.solr_search(include: %i[collector countries languages university]) do
       # Full text search
       Sunspot::Setup.for(Collection).all_text_fields.each do |field|
         next if params[field.name].blank?
-        keywords params[field.name], :fields => [field.name]
+
+        keywords params[field.name], fields: [field.name]
       end
 
       # Exact search
       Sunspot::Setup.for(Collection).fields.each do |field|
         next if params[field.name].blank?
+
         case field.type
         when Sunspot::Type::IntegerType
           with field.name, params[field.name]
@@ -374,19 +360,20 @@ class CollectionsController < ApplicationController
         end
       end
 
-      unless current_user && current_user.admin?
+      unless current_user&.admin?
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
         end
       end
+
       sort_column(Collection).each do |c|
         order_by c, sort_direction
       end
-      paginate :page => params[:page], :per_page => params[:per_page]
+
+      paginate page: params[:page], per_page: params[:per_page]
     end
   end
-
 
   def search_params
     params.permit(
@@ -395,8 +382,14 @@ class CollectionsController < ApplicationController
     )
   end
 
+  def advanced_search_params
+    # FIXME: Is this bad?
+    params.except(:controller, :action, :utf8).permit!
+  end
+
   def collection_params
-    params.require(:collection)
+    params
+      .require(:collection)
       .permit(
         :identifier, :title, :description, :region,
         :north_limit, :south_limit, :west_limit, :east_limit,
