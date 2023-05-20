@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
-  create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2023_05_20_014716) do
+  create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "active_admin_comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "active_admin_comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "resource_id", null: false
     t.string "resource_type", null: false
     t.integer "author_id"
@@ -31,7 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["resource_type", "resource_id"], name: "index_admin_notes_on_resource_type_and_resource_id"
   end
 
-  create_table "admin_messages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "admin_messages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "message", size: :medium, null: false
     t.datetime "start_at", precision: nil, null: false
     t.datetime "finish_at", precision: nil, null: false
@@ -39,11 +39,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "agent_roles", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "agent_roles", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
   end
 
-  create_table "collection_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "collection_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
     t.integer "user_id", null: false
     t.index ["collection_id", "user_id"], name: "index_collection_admins_on_collection_id_and_user_id", unique: true
@@ -51,19 +51,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["user_id"], name: "index_collection_admins_on_user_id"
   end
 
-  create_table "collection_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "collection_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id"
     t.integer "country_id"
     t.index ["collection_id", "country_id"], name: "index_collection_countries_on_collection_id_and_country_id", unique: true
   end
 
-  create_table "collection_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "collection_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id"
     t.integer "language_id"
     t.index ["collection_id", "language_id"], name: "index_collection_languages_on_collection_id_and_language_id", unique: true
   end
 
-  create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "identifier", null: false
     t.string "title", null: false
     t.text "description", size: :medium, null: false
@@ -97,13 +97,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["university_id"], name: "index_collections_on_university_id"
   end
 
-  create_table "collections_funding_bodies", id: false, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "collections_funding_bodies", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
     t.integer "funding_body_id", null: false
     t.index ["collection_id", "funding_body_id"], name: "lookup_by_collection_and_funding_body_index"
   end
 
-  create_table "comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "owner_id", null: false
     t.integer "commentable_id", null: false
     t.string "commentable_type", null: false
@@ -115,29 +115,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["owner_id"], name: "index_comments_on_owner_id"
   end
 
-  create_table "countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "code"
     t.string "name"
     t.index ["code"], name: "index_countries_on_code", unique: true
     t.index ["name"], name: "index_countries_on_name", unique: true
   end
 
-  create_table "countries_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "countries_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "country_id", null: false
     t.integer "language_id", null: false
     t.index ["country_id", "language_id"], name: "index_countries_languages_on_country_id_and_language_id", unique: true
   end
 
-  create_table "data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.index ["name"], name: "index_data_categories_on_name", unique: true
   end
 
-  create_table "data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
   end
 
-  create_table "delayed_jobs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "delayed_jobs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", size: :long, null: false
@@ -152,12 +152,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "discourse_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "discourse_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.index ["name"], name: "index_discourse_types_on_name", unique: true
   end
 
-  create_table "downloads", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "downloads", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "user_id"
     t.integer "essence_id"
     t.datetime "created_at", precision: nil, null: false
@@ -166,14 +166,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
-  create_table "dump_for_nick", id: false, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "dump_for_nick", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "collid", null: false
     t.string "itemid", null: false
     t.text "subject_languages", size: :long
     t.text "content_languages", size: :long
   end
 
-  create_table "essences", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "essences", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id"
     t.string "filename"
     t.string "mimetype"
@@ -190,21 +190,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["item_id"], name: "index_essences_on_item_id"
   end
 
-  create_table "fields_of_research", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "fields_of_research", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "identifier"
     t.string "name"
     t.index ["identifier"], name: "index_fields_of_research_on_identifier", unique: true
     t.index ["name"], name: "index_fields_of_research_on_name", unique: true
   end
 
-  create_table "funding_bodies", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "funding_bodies", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "key_prefix"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "grants", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "grants", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id"
     t.string "grant_identifier"
     t.integer "funding_body_id"
@@ -213,57 +213,57 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["funding_body_id"], name: "index_grants_on_funding_body_id"
   end
 
-  create_table "item_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "user_id", null: false
     t.index ["item_id", "user_id"], name: "index_item_admins_on_item_id_and_user_id", unique: true
   end
 
-  create_table "item_agents", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_agents", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "user_id", null: false
     t.integer "agent_role_id", null: false
     t.index ["item_id", "user_id", "agent_role_id"], name: "index_item_agents_on_item_id_and_user_id_and_agent_role_id", unique: true
   end
 
-  create_table "item_content_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_content_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "language_id", null: false
     t.index ["item_id", "language_id"], name: "index_item_content_languages_on_item_id_and_language_id", unique: true
   end
 
-  create_table "item_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "country_id", null: false
     t.index ["item_id", "country_id"], name: "index_item_countries_on_item_id_and_country_id", unique: true
   end
 
-  create_table "item_data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "data_category_id", null: false
     t.index ["item_id", "data_category_id"], name: "index_item_data_categories_on_item_id_and_data_category_id", unique: true
   end
 
-  create_table "item_data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "data_type_id", null: false
     t.index ["data_type_id"], name: "index_item_data_types_on_data_type_id"
     t.index ["item_id"], name: "index_item_data_types_on_item_id"
   end
 
-  create_table "item_subject_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_subject_languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "language_id", null: false
     t.index ["item_id", "language_id"], name: "index_item_subject_languages_on_item_id_and_language_id", unique: true
   end
 
-  create_table "item_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "item_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
     t.integer "user_id", null: false
     t.index ["item_id", "user_id"], name: "index_item_users_on_item_id_and_user_id", unique: true
   end
 
-  create_table "items", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
+  create_table "items", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
     t.string "identifier", null: false
     t.boolean "private"
@@ -272,29 +272,29 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.integer "collector_id", null: false
     t.integer "university_id"
     t.integer "operator_id"
-    t.text "description", null: false
+    t.text "description", size: :medium, null: false
     t.date "originated_on"
     t.string "language"
     t.string "dialect"
     t.string "region"
     t.integer "discourse_type_id"
     t.integer "access_condition_id"
-    t.text "access_narrative"
+    t.text "access_narrative", size: :medium
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "metadata_exportable"
     t.boolean "born_digital"
     t.boolean "tapes_returned"
-    t.text "original_media"
+    t.text "original_media", size: :medium
     t.datetime "received_on", precision: nil
     t.datetime "digitised_on", precision: nil
-    t.text "ingest_notes"
+    t.text "ingest_notes", size: :medium
     t.datetime "metadata_imported_on", precision: nil
     t.datetime "metadata_exported_on", precision: nil
-    t.text "tracking"
-    t.text "admin_comment"
+    t.text "tracking", size: :medium
+    t.text "admin_comment", size: :medium
     t.boolean "external", default: false
-    t.text "originated_on_narrative"
+    t.text "originated_on_narrative", size: :medium
     t.float "north_limit"
     t.float "south_limit"
     t.float "west_limit"
@@ -310,7 +310,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["university_id"], name: "index_items_on_university_id"
   end
 
-  create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "code"
     t.string "name"
     t.boolean "retired"
@@ -321,7 +321,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["code"], name: "index_languages_on_code", unique: true
   end
 
-  create_table "latlon_boundaries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", options: "/*!50100 TABLESPACE `innodb_system` */ ENGINE=InnoDB", force: :cascade do |t|
+  create_table "latlon_boundaries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "country_id", null: false
     t.decimal "east_limit", precision: 6, scale: 3, null: false
     t.decimal "west_limit", precision: 6, scale: 3, null: false
@@ -331,7 +331,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["country_id"], name: "index_latlon_boundaries_on_country_id"
   end
 
-  create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
     t.string "token", null: false
@@ -345,7 +345,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
-  create_table "oauth_access_tokens", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "oauth_access_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "resource_owner_id"
     t.bigint "application_id", null: false
     t.string "token", null: false
@@ -361,7 +361,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
   end
 
-  create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "uid", null: false
     t.string "secret", null: false
@@ -373,7 +373,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "party_identifiers", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "party_identifiers", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "party_type", null: false
     t.string "identifier", null: false
@@ -381,14 +381,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "universities", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "universities", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "party_identifier"
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -427,15 +427,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_123122) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
-  create_table "versions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+  create_table "versions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
     t.string "whodunnit"
-    t.text "object", size: :medium
+    t.text "object", size: :long
     t.datetime "created_at", precision: nil
-    t.text "object_changes", size: :medium
-    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", length: { item_type: 191 }
+    t.text "object_changes", size: :long
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"

@@ -203,7 +203,7 @@ aws secretsmanager put-secret-value --secret-id ARN --secret-string "{\"site_key
 # Ruby deps
 apt install autoconf bison patch build-essential rustc libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
 # gem deps
-apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev nginx
+apt install libmagic-dev libmagickwand-dev default-mysql-server default-libmysqlclient-dev nginx libcurl4-openssl-dev
 apt install certbot python3-certbot-nginx ffmpeg
 
 

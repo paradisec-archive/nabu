@@ -7,10 +7,10 @@
 # Name                           | Type               | Attributes
 # ------------------------------ | ------------------ | ---------------------------
 # **`id`**                       | `integer`          | `not null, primary key`
-# **`access_narrative`**         | `text(65535)`      |
-# **`admin_comment`**            | `text(65535)`      |
+# **`access_narrative`**         | `text(16777215)`   |
+# **`admin_comment`**            | `text(16777215)`   |
 # **`born_digital`**             | `boolean`          |
-# **`description`**              | `text(65535)`      | `not null`
+# **`description`**              | `text(16777215)`   | `not null`
 # **`dialect`**                  | `string(255)`      |
 # **`digitised_on`**             | `datetime`         |
 # **`doi`**                      | `string(255)`      |
@@ -18,22 +18,22 @@
 # **`essences_count`**           | `integer`          |
 # **`external`**                 | `boolean`          | `default(FALSE)`
 # **`identifier`**               | `string(255)`      | `not null`
-# **`ingest_notes`**             | `text(65535)`      |
+# **`ingest_notes`**             | `text(16777215)`   |
 # **`language`**                 | `string(255)`      |
 # **`metadata_exportable`**      | `boolean`          |
 # **`metadata_exported_on`**     | `datetime`         |
 # **`metadata_imported_on`**     | `datetime`         |
 # **`north_limit`**              | `float(24)`        |
-# **`original_media`**           | `text(65535)`      |
+# **`original_media`**           | `text(16777215)`   |
 # **`originated_on`**            | `date`             |
-# **`originated_on_narrative`**  | `text(65535)`      |
+# **`originated_on_narrative`**  | `text(16777215)`   |
 # **`private`**                  | `boolean`          |
 # **`received_on`**              | `datetime`         |
 # **`region`**                   | `string(255)`      |
 # **`south_limit`**              | `float(24)`        |
 # **`tapes_returned`**           | `boolean`          |
 # **`title`**                    | `string(255)`      | `not null`
-# **`tracking`**                 | `text(65535)`      |
+# **`tracking`**                 | `text(16777215)`   |
 # **`url`**                      | `string(255)`      |
 # **`west_limit`**               | `float(24)`        |
 # **`created_at`**               | `datetime`         | `not null`

@@ -22,7 +22,6 @@
 # **`encrypted_password`**        | `string(255)`      | `default(""), not null`
 # **`failed_attempts`**           | `integer`          | `default(0)`
 # **`first_name`**                | `string(255)`      | `not null`
-# **`id_bigint`**                 | `bigint`           | `not null`
 # **`last_name`**                 | `string(255)`      |
 # **`last_sign_in_at`**           | `datetime`         |
 # **`last_sign_in_ip`**           | `string(255)`      |
