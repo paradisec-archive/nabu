@@ -21,8 +21,7 @@ AMI=$(aws ec2 describe-images \
 
 echo "Finding VPC..."
 VPC_ID=$(aws ec2 describe-vpcs \
-  --query 'Vpcs[?Tags[?Value == `StageCdkStack`]]' \
-  | jq -r '.[0].VpcId')
+  | jq -r '.Vpcs[0].VpcId')
 
 echo "Finding Subnet..."
 SUBNET_ID=$(aws ec2 describe-subnets \
@@ -46,8 +45,7 @@ aws ec2 authorize-security-group-ingress \
 
 echo "Finding RDS Instance..."
 RDS_SG=$(aws rds describe-db-instances \
-  --query 'DBInstances[?TagList[?Value == `StageCdkStack`]]' \
-  | jq -r '.[] | .VpcSecurityGroups[0].VpcSecurityGroupId')
+  | jq -r '.DBInstances[0].VpcSecurityGroups[0].VpcSecurityGroupId')
 
 echo "Updating RDS Security Group..."
 RULE_ID=$(aws ec2 authorize-security-group-ingress \
@@ -57,18 +55,40 @@ RULE_ID=$(aws ec2 authorize-security-group-ingress \
   --source-group "${SG_ID}" \
   | jq -r .SecurityGroupRules[0].SecurityGroupRuleId)
 
-echo "Finding Search Securityy Group..."
-SEARCH_SG=$(aws ec2 describe-security-groups \
-  | jq -r '.SecurityGroups | .[] | select(.GroupName | test("StageCdkStack-SearchServiceSecurityGroup")) | .GroupId')
+echo Creating role and profile...
+# Create a role that will allow systems manager ssh
+aws iam create-role \
+  --role-name "db-upload-delete-me-role" \
+  --assume-role-policy-document '{
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+          "Effect": "Allow",
+          "Principal": {
+              "Service": "ec2.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+          }
+      ]
+      }' \
+  > /dev/null
 
-echo "Updating Search Security Group..."
-SEARCH_RULE_ID=$(aws ec2 authorize-security-group-ingress \
-  --group-id "${SEARCH_SG}" \
-  --protocol tcp \
-  --port 8983 \
-  --source-group "${SG_ID}" \
-  | jq -r .SecurityGroupRules[0].SecurityGroupRuleId)
+# Add SSM access to the role
+aws iam attach-role-policy \
+  --role-name "db-upload-delete-me-role" \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore \
+  > /dev/null
 
+# Create an instance profile
+aws iam create-instance-profile \
+  --instance-profile-name "db-upload-delete-me-profile" \
+  > /dev/null
+
+# Attach role to profile
+aws iam add-role-to-instance-profile \
+   --instance-profile-name "db-upload-delete-me-profile" \
+   --role-name "db-upload-delete-me-role" \
+   > /dev/null
 
 echo "Creating EC2 Instance..."
 INSTANCE_ID=$(aws ec2 run-instances \
@@ -78,29 +98,23 @@ INSTANCE_ID=$(aws ec2 run-instances \
   --key-name "${KEYNAME}" \
   --subnet-id ${SUBNET_ID} \
   --security-group-ids "${SG_ID}" \
+  --iam-instance-profile Name="db-upload-delete-me-profile" \
   | jq -r .Instances[0].InstanceId)
 
 echo "Waiting for EC2 Instance..."
 aws ec2 wait instance-running \
   --instance-ids "${INSTANCE_ID}"
 
-echo "Getting EC2 IP..."
-EC2_IP=$(aws ec2 describe-instances \
-  --instance-ids $INSTANCE_ID \
-  | jq -r  '.Reservations[0].Instances[0].PublicIpAddress')
-
 echo "Installing dependencies..."
-ssh \
-  -o StrictHostKeychecking=no \
-  ubuntu@"${EC2_IP}" \
+ssh ubuntu@$INSTANCE_ID \
   sudo apt install --yes mysql-client bzip2
 
 echo "Get DB secret..."
 DB_SECRET_ID=$(aws secretsmanager list-secrets \
-  | jq -r '.SecretList | .[] | select(.Name | test("StageCdkStackRdsInstance")) | .ARN')
+  | jq -r '.SecretList | .[] | select(.Name | test("RdsInstance")) | .ARN')
 
 DB_SECRET=$(aws secretsmanager get-secret-value \
-  --secret-id "${DB_SECRET}" \
+  --secret-id "${DB_SECRET_ID}" \
   | jq -r .SecretString)
 
 DB_HOSTNAME=$(echo "${DB_SECRET}" | jq -r .host)
@@ -109,10 +123,8 @@ DB_PASSWORD=$(echo "${DB_SECRET}" | jq -r .password)
 DB_NAME=$(echo "${DB_SECRET}" | jq -r .dbname)
 
 echo "Load DB..."
-cat ../nabu-small.sql.bz2 | ssh \
-  -o StrictHostKeychecking=no \
-  ubuntu@"${EC2_IP}" \
-  "bunzip -dc |" mysql -h "${DB_HOSTNAME}" -u "${DB_USERNAME}" -p"${DB_PASSWORD}" "${DB_NAME}"
+scp ../nabu-small-new.sql.bz2 ubuntu@${INSTANCE_ID}:
+ssh ubuntu@${INSTANCE_ID} "bunzip2 -d nabu-small-new.sql.bz2 |" mysql -h "${DB_HOSTNAME}" -u "${DB_USERNAME}" -p"${DB_PASSWORD}" "${DB_NAME}"
 
 echo "Terminating everything"
 aws ec2 terminate-instances \
@@ -121,11 +133,6 @@ aws ec2 terminate-instances \
 aws ec2 revoke-security-group-ingress \
   --group-id "${RDS_SG}" \
   --security-group-rule-ids "${RULE_ID}"
-
-aws ec2 revoke-security-group-ingress \
-  --group-id "${SEARCH_SG}" \
-  --security-group-rule-ids "${SEARCH_RULE_ID}"
-
 
 ssh-add -d "${KEYNAME}.pem"
 
