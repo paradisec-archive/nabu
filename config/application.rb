@@ -63,3 +63,4 @@ module Nabu
 end
 
 require 'monkeypatch'
+require 'monkeypatch/sunspot_srv'

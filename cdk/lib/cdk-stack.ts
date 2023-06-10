@@ -144,7 +144,7 @@ export class CdkStack extends cdk.Stack {
         environment: {
           RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
           RAILS_ENV: railsEnv,
-          SOLR_URL: `http://search.nabu:8983/solr/${railsEnv}`,
+          SOLR_URL: `http+srv://search.nabu/solr/${railsEnv}`,
           SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
           DOI_PREFIX: '10.26278',
           DATACITE_BASE_URL: 'https://mds.datacite.org',
@@ -191,6 +191,7 @@ export class CdkStack extends cdk.Stack {
     });
 
     new ecs.Ec2Service(this, 'SearchService', {
+      serviceName: 'search',
       cluster,
       taskDefinition: searchTaskDefinition,
       cloudMapOptions: {
