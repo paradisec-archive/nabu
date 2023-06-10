@@ -137,7 +137,7 @@ export class CdkStack extends cdk.Stack {
     const app = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'AppService', {
       serviceName: 'app',
       cluster,
-      memoryLimitMiB: 512,
+      memoryLimitMiB: 1024,
       taskImageOptions: {
         image: ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' }),
         containerPort: 3000,
@@ -185,15 +185,20 @@ export class CdkStack extends cdk.Stack {
 
     const searchTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SearchTaskDefinition');
     searchTaskDefinition.addContainer('SearchContainer', {
-      memoryLimitMiB: 512,
+      memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/search.Dockerfile' }),
       portMappings: [{ containerPort: 8983 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SearchService' }),
+      ulimits: [
+        { name: ecs.UlimitName.NOFILE, softLimit: 65536, hardLimit: 65536 * 2 },
+      ],
     });
 
     new ecs.Ec2Service(this, 'SearchService', {
       serviceName: 'search',
       cluster,
       taskDefinition: searchTaskDefinition,
+      enableExecuteCommand: true,
       cloudMapOptions: {
         name: 'search',
         cloudMapNamespace: dnsNamespace,

@@ -11,6 +11,9 @@ version: "3"
 services:
   app:
     build: .
+      - '3000:3000'
+    environment:
+      SOLR_URL: http+srv://nabu.search/moo
     volumes:
       - .:/app
       - ./vendor/bundle:/bundler
