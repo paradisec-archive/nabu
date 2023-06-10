@@ -84,5 +84,66 @@
         ]
       }
     ]
+  },
+  "availability-zones:account=847483222616:region=ap-southeast-2": [
+    "ap-southeast-2a",
+    "ap-southeast-2b",
+    "ap-southeast-2c"
+  ],
+  "vpc-provider:account=847483222616:filter.tag:Name=nabu-dev-temp-vpc:region=ap-southeast-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-02edf39567b873732",
+    "vpcCidrBlock": "10.0.0.0/16",
+    "ownerAccountId": "847483222616",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-01362dc69b5fd69f3",
+            "cidr": "10.0.0.0/20",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-018f79ae8d6975158"
+          },
+          {
+            "subnetId": "subnet-0eb18cb7d8a04ff03",
+            "cidr": "10.0.16.0/20",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-018f79ae8d6975158"
+          },
+          {
+            "subnetId": "subnet-064ddee8c5ee0933e",
+            "cidr": "10.0.32.0/20",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-018f79ae8d6975158"
+          }
+        ]
+      },
+      {
+        "name": "Isolated",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-075c75d47ffa1a832",
+            "cidr": "10.0.128.0/20",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-0afe770ec0f695081"
+          },
+          {
+            "subnetId": "subnet-04fff748a4c862ec0",
+            "cidr": "10.0.144.0/20",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-04fe4d95ea66f7a57"
+          },
+          {
+            "subnetId": "subnet-0fde51fdc495c4e6c",
+            "cidr": "10.0.160.0/20",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-0de5c03103118734c"
+          }
+        ]
+      }
+    ]
   }
 }

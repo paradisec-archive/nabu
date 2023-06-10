@@ -15,7 +15,7 @@ const environments: Environment[] = [
     ...globals,
     env: 'stage',
     railsEnv: 'staging',
-    branchName: 'main',
+    branchNames: ['main', 'aws'],
     account: '847483222616',
     zoneName: 'nabu-stage.paradisec.org.au',
   },
@@ -23,16 +23,16 @@ const environments: Environment[] = [
     ...globals,
     env: 'prod',
     railsEnv: 'production',
-    branchName: 'production',
+    branchNames: ['production'],
     account: '618916419351',
     zoneName: 'nabu-prod.paradisec.org.au',
   },
 ];
 
 const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-const environment = environments.find((env) => env.branchName === branchName);
+const environment = environments.find((env) => env.branchNames.includes(branchName));
 if (!environment) {
-  console.error(`No environment found for branch ${branchName}`);
+  console.error(`ERROR: No environment found in config for git branch ${branchName}`);
   process.exit(1);
 }
 

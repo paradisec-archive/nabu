@@ -3,7 +3,8 @@
 export AWS_OUTPUT="json"
 
 echo "Creating SSH key..."
-KEYNAME="db-upload-key-delete-me-${RANDOM}"
+R=${RANDOM}
+KEYNAME="db-upload-key-delete-me-${R}"
 aws ec2 create-key-pair \
   --key-name "${KEYNAME}" \
   --key-type ed25519 \
@@ -22,26 +23,24 @@ AMI=$(aws ec2 describe-images \
 echo "Finding VPC..."
 VPC_ID=$(aws ec2 describe-vpcs \
   | jq -r '.Vpcs[0].VpcId')
+VPC_ID=vpc-02edf39567b873732
 
 echo "Finding Subnet..."
 SUBNET_ID=$(aws ec2 describe-subnets \
   --filters "Name=vpc-id,Values=${VPC_ID}" \
   | jq -r '.Subnets[0] | .SubnetId')
+SUBNET_ID=subnet-01362dc69b5fd69f3
 
 
 echo "Creating EC2 Security Group..."
-GROUP_NAME="db-upload-group-delete-me-${RANDOM}"
+GROUP_NAME="db-upload-group-delete-me-${R}"
 
 SG_ID=$(aws ec2 create-security-group \
   --vpc-id "${VPC_ID}" \
   --group-name ${GROUP_NAME} \
   --description 'Temp SSH for RDS import - DELETE ME' \
-  | jq -r .GroupId)
-
-MYIP=`curl -s ipinfo.io/ip`
-aws ec2 authorize-security-group-ingress \
-  --group-id "${SG_ID}" \
-  --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges="[{CidrIp=$MYIP/32}]"
+  | jq -r .GroupId) \
+  > /dev/null
 
 echo "Finding RDS Instance..."
 RDS_SG=$(aws rds describe-db-instances \
@@ -56,9 +55,11 @@ RULE_ID=$(aws ec2 authorize-security-group-ingress \
   | jq -r .SecurityGroupRules[0].SecurityGroupRuleId)
 
 echo Creating role and profile...
+PROFILE_NAME="db-upload-delete-me-profile-${R}"
+ROLE_NAME="db-upload-delete-me-role-${R}"
 # Create a role that will allow systems manager ssh
 aws iam create-role \
-  --role-name "db-upload-delete-me-role" \
+  --role-name $ROLE_NAME \
   --assume-role-policy-document '{
       "Version": "2012-10-17",
       "Statement": [
@@ -72,23 +73,27 @@ aws iam create-role \
       ]
       }' \
   > /dev/null
+aws iam wait role-exists --role-name $ROLE_NAME
 
 # Add SSM access to the role
 aws iam attach-role-policy \
-  --role-name "db-upload-delete-me-role" \
+  --role-name $ROLE_NAME \
   --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore \
   > /dev/null
 
 # Create an instance profile
 aws iam create-instance-profile \
-  --instance-profile-name "db-upload-delete-me-profile" \
+  --instance-profile-name $PROFILE_NAME \
   > /dev/null
+aws iam wait instance-profile-exists --instance-profile-name $PROFILE_NAME
 
 # Attach role to profile
 aws iam add-role-to-instance-profile \
-   --instance-profile-name "db-upload-delete-me-profile" \
-   --role-name "db-upload-delete-me-role" \
+   --instance-profile-name $PROFILE_NAME \
+   --role-name $ROLE_NAME \
    > /dev/null
+
+sleep 30
 
 echo "Creating EC2 Instance..."
 INSTANCE_ID=$(aws ec2 run-instances \
@@ -98,8 +103,15 @@ INSTANCE_ID=$(aws ec2 run-instances \
   --key-name "${KEYNAME}" \
   --subnet-id ${SUBNET_ID} \
   --security-group-ids "${SG_ID}" \
-  --iam-instance-profile Name="db-upload-delete-me-profile" \
+  --iam-instance-profile Name="$PROFILE_NAME" \
+  --associate-public-ip-address \
   | jq -r .Instances[0].InstanceId)
+
+echo SLEEPING
+echo SLEEPING
+echo SLEEPING
+echo SLEEPING
+sleep 300
 
 echo "Waiting for EC2 Instance..."
 aws ec2 wait instance-running \
@@ -124,25 +136,41 @@ DB_NAME=$(echo "${DB_SECRET}" | jq -r .dbname)
 
 echo "Load DB..."
 scp ../nabu-small-new.sql.bz2 ubuntu@${INSTANCE_ID}:
-ssh ubuntu@${INSTANCE_ID} "bunzip2 -d nabu-small-new.sql.bz2 |" mysql -h "${DB_HOSTNAME}" -u "${DB_USERNAME}" -p"${DB_PASSWORD}" "${DB_NAME}"
+ssh ubuntu@${INSTANCE_ID} "bzcat nabu-small-new.sql.bz2 |" mysql -h "${DB_HOSTNAME}" -u "${DB_USERNAME}" -p"${DB_PASSWORD}" "${DB_NAME}"
 
 echo "Terminating everything"
-aws ec2 terminate-instances \
-  --instance-ids "${INSTANCE_ID}"
 
+echo Terminate instance...
+aws ec2 terminate-instances \
+  --instance-ids "${INSTANCE_ID}" \
+  > /dev/null
+
+echo "Remove SG rule..."
 aws ec2 revoke-security-group-ingress \
   --group-id "${RDS_SG}" \
   --security-group-rule-ids "${RULE_ID}"
 
+echo "Clean SSH"
 ssh-add -d "${KEYNAME}.pem"
-
 rm "${KEYNAME}.pem"
 
+echo "Delete key pair"
 aws ec2 delete-key-pair \
   --key-name "${KEYNAME}"
 
+echo "Wait for instance term..."
 aws ec2 wait instance-terminated \
   --instance-ids "${INSTANCE_ID}"
 
+echo "Delete SG..."
 aws ec2 delete-security-group \
   --group-id "${SG_ID}"
+
+echo "Delete role and profile..."
+aws iam detach-role-policy \
+  --role-name $ROLE_NAME \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+sleep 10
+aws iam remove-role-from-instance-profile --instance-profile-name $PROFILE_NAME --role-name $ROLE_NAME
+aws iam delete-instance-profile --instance-profile-name $PROFILE_NAME
+aws iam delete-role --role-name $ROLE_NAME
