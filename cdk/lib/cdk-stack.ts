@@ -6,8 +6,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 // import * as ssm from 'aws-cdk-lib/aws-ssm';
 
@@ -34,7 +36,7 @@ export class CdkStack extends cdk.Stack {
       // account,
       // region,
       railsEnv,
-      // env,
+      env,
       zoneName,
     } = environment;
 
@@ -203,6 +205,39 @@ export class CdkStack extends cdk.Stack {
         name: 'search',
         cloudMapNamespace: dnsNamespace,
       },
+    });
+
+    // ////////////////////////
+    // Meta Bucket
+    // ////////////////////////
+    const metaBucket = new s3.Bucket(this, 'MetaBucket', {
+      bucketName: `${appName}-meta-${env}`,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // ////////////////////////
+    // Catalog bucket
+    // ////////////////////////
+
+    const catalogBucket = new s3.Bucket(this, 'CatalogBucket', {
+      bucketName: `${appName}-catalog-${env}`,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      // TODO: Do we want tiering?
+      // intelligentTieringConfigurations: [ ],
+      // TODO: Decide on lifecycle rules
+      // lifecycleRules: [],
+      inventories: [{
+        destination: {
+          bucket: metaBucket,
+          prefix: 'inventories/catalog',
+        },
+        frequency: s3.InventoryFrequency.DAILY,
+        includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
+      }],
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
   }
 }
