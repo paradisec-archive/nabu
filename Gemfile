@@ -122,6 +122,9 @@ gem "streamio-ffmpeg" # ffmpeg interface
 gem "rmagick" # Image processing
 gem "whenever", :require => false # scheduling
 
+# AWS
+gem "aws-sdk-s3"
+
 # Deployment
 gem "capistrano", require: false, group: :development
 gem "bcrypt_pbkdf", require: false, group: :development

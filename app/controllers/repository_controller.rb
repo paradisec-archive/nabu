@@ -38,7 +38,10 @@ class RepositoryController < ApplicationController
     # if a standard essence file was found, return that as usual
     if essence.present?
       authorize! :read, essence
-      return send_file(essence.path, :filename => essence.filename, :type => essence.mimetype)
+      redirect_to helpers.catalog_download(essence.s3_path), allow_other_host: true
+      # return send_file(essence.path, :filename => essence.filename, :type => essence.mimetype)
+
+      return
 
     # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
     elsif params[:essence_filename].include?('PDSC_ADMIN')

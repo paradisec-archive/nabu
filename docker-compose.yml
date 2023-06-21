@@ -13,7 +13,9 @@ services:
     build: .
       - '3000:3000'
     environment:
-      SOLR_URL: http+srv://nabu.search/moo
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
     volumes:
       - .:/app
       - ./vendor/bundle:/bundler

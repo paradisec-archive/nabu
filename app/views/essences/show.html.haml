@@ -72,12 +72,7 @@
         %td.empty
         %td.empty
           - if can? :download, @essence
-            - if File.exist?(@essence.path)
-              %p.delete-warning
-                %strong Large files have to be retrieved and will take a minute or two before they can be downloaded
-              = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
-            - else
-              %p File is not available for download
+            = link_to 'Download', download_collection_item_essence_path(@collection, @item, @essence), download: true
           - else
             %p No access rights to download essence.
             %p
@@ -89,21 +84,15 @@
     %legend Preview
     #media_item
       - if can? :display, @essence
-        - if File.exist?(@essence.path)
-          - case @essence.mimetype
-          - when /^image\/(jpeg|png|gif|tiff|bmp)/
-            = image_tag display_collection_item_essence_path(@collection, @item, @essence)
-          - when /^audio\/(mpeg|ogg|(x-)?wav)/
-            = audio_tag display_collection_item_essence_path(@collection, @item, @essence), controls: true, type: @essence.mimetype
-          - when /^video\/(mp4|mpeg|webm|ogg)/
-            = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
-          - else
-            %i Can't display file preview - unknown file format.
+        - case @essence.mimetype
+        - when /^image\/(jpeg|png|gif|tiff|bmp)/
+          = image_tag display_collection_item_essence_path(@collection, @item, @essence)
+        - when /^audio\/(mpeg|ogg|(x-)?wav)/
+          = audio_tag display_collection_item_essence_path(@collection, @item, @essence), controls: true, type: @essence.mimetype
+        - when /^video\/(mp4|mpeg|webm|ogg)/
+          = video_tag display_collection_item_essence_path(@collection, @item, @essence), :controls => true
         - else
-          %p
-            File is not present on the server. Please contact
-            =link_to 'admin@paradisec.org.au', 'mailto:admin@paradisec.org.au'
-            to report this.
+          %i Can't display file preview - unknown file format.
       - else
         %p No access rights to preview essence.
         %p
