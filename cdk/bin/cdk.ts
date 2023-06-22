@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import { execSync } from 'child_process';
 import * as cdk from 'aws-cdk-lib';
 import { CdkStack } from '../lib/cdk-stack';
+import { CommonStack } from '../lib/common-stack';
 import type { Environment } from '../lib/cdk-stack';
 
 const globals = {
@@ -28,15 +29,20 @@ const environments: Environment[] = [
     zoneName: 'nabu-prod.paradisec.org.au',
   },
 ];
-
-const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-const environment = environments.find((env) => env.branchNames.includes(branchName));
-if (!environment) {
-  console.error(`ERROR: No environment found in config for git branch ${branchName}`);
+const prod = environments.find((env) => env.env === 'prod');
+if (!prod) {
+  console.error('No prod environment found');
   process.exit(1);
 }
 
 const app = new cdk.App();
-new CdkStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
-  env: { account: environment.account, region: environment.region },
+
+environments.forEach((environment) => {
+  new CdkStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
+    env: { account: environment.account, region: environment.region },
+  });
+});
+
+new CommonStack(app, `${prod.appName}-stack-common`, {
+  env: { account: prod.account, region: prod.region },
 });

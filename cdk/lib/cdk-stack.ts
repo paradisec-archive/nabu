@@ -6,9 +6,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as elbv2_target from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 // import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -44,12 +45,9 @@ export class CdkStack extends cdk.Stack {
     // DNS
     // ////////////////////////
 
-    new route53.HostedZone(this, 'HostedZone', {
+    const zone = new route53.PublicHostedZone(this, 'HostedZone', {
       zoneName,
-    });
-
-    const tempZone = new route53.HostedZone(this, 'HostedZoneTemp', {
-      zoneName: 'nabu.inodes.dev',
+      caaAmazon: true,
     });
 
     // Network
@@ -167,10 +165,12 @@ export class CdkStack extends cdk.Stack {
       // LB config
       protocol: elbv2.ApplicationProtocol.HTTPS,
       redirectHTTP: true,
+      publicLoadBalancer: false,
 
       // Auto create a certiifcate
-      domainName: 'catalog.nabu.inodes.dev',
-      domainZone: tempZone,
+      domainName: `catalog.${zoneName}`,
+      domainZone: zone,
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE,
 
       enableExecuteCommand: true,
     });
@@ -207,6 +207,48 @@ export class CdkStack extends cdk.Stack {
       },
     });
 
+
+    // ////////////////////////
+    // Network Load Balancer
+    // ////////////////////////
+
+    const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', {
+      vpc,
+      vpcSubnets: {
+        // subnets: appSubnets,
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      internetFacing: true,
+    });
+
+    const sslListener = nlb.addListener('NLBListener443', {
+      port: 443,
+    });
+    const sslTarget = sslListener.addTargets('NLBTarget443', {
+      port: 443,
+      targets: [new elbv2_target.AlbTarget(app.loadBalancer, 443)],
+    });
+    sslTarget.node.addDependency(app.listener);
+
+    const listener = nlb.addListener('NLBListener', {
+      port: 80,
+    });
+    const target = listener.addTargets('NLBTarget', {
+      port: 80,
+      targets: [new elbv2_target.AlbTarget(app.loadBalancer, 80)],
+    });
+    target.node.addDependency(app.listener);
+
+    // ////////////////////////
+    // DNS
+    // ////////////////////////
+
+    new route53.ARecord(this, 'ARecord', {
+      recordName: 'catalog',
+      zone,
+      target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(nlb)),
+    });
+
     // ////////////////////////
     // Meta Bucket
     // ////////////////////////
@@ -221,7 +263,7 @@ export class CdkStack extends cdk.Stack {
     // Catalog bucket
     // ////////////////////////
 
-    const catalogBucket = new s3.Bucket(this, 'CatalogBucket', {
+    new s3.Bucket(this, 'CatalogBucket', {
       bucketName: `${appName}-catalog-${env}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
