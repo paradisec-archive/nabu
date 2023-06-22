@@ -23,17 +23,12 @@ class EssencesController < ApplicationController
   end
 
   def download
-    unless File.exist?(@essence.path)
-      flash[:error] = 'File not found'
-      redirect_to [@collection, @item, @essence]
-      return
-    end
     Download.create! :user => current_user, :essence => @essence
-    send_file(@essence.path, :filename => @essence.filename, :type => @essence.mimetype)
+    redirect_to helpers.catalog_download(@essence.s3_path), allow_other_host: true
   end
 
   def display
-    send_file(@essence.path, :filename => @essence.filename, :type => @essence.mimetype)
+    redirect_to helpers.catalog_url(@essence.s3_path), allow_other_host: true
   end
 
   def show_terms
