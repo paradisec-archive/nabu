@@ -49,4 +49,6 @@ RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
 VOLUME /app
 WORKDIR /app
 
+RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
+
 CMD ["bin/rails", "server", "-b", "0.0.0.0"]
