@@ -39,7 +39,6 @@ class RepositoryController < ApplicationController
     if essence.present?
       authorize! :read, essence
       redirect_to helpers.catalog_download(essence.s3_path), allow_other_host: true
-      # return send_file(essence.path, :filename => essence.filename, :type => essence.mimetype)
 
       return
 

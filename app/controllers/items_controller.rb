@@ -194,7 +194,7 @@ class ItemsController < ApplicationController
   end
 
   def display
-    send_file @item.path, disposition: 'inline', type: 'text/xml'
+    redirect_to helpers.catalog_url(@item.s3_path), allow_other_host: true
   end
 
   def new_report
