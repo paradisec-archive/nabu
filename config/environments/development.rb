@@ -74,7 +74,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
-  config.hosts << 'pepe.local'
+  config.hosts.clear
   config.web_console.permissions = '192.168.88.0/24'
 
   # Show emails in the browser

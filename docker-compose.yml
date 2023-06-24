@@ -11,11 +11,18 @@ version: "3"
 services:
   app:
     build: .
-    ports:
-      - '3000:3000'
     volumes:
       - .:/app
       - ./vendor/bundle:/bundler
+
+  proxy:
+    image: fsouza/docker-ssl-proxy
+    ports:
+      - '3000:443'
+    environment:
+      DOMAIN: 'nabu'
+      TARGET_PORT: 3000
+      TARGET_HOST: app
 
   db:
     image: mysql:8

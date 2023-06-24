@@ -509,5 +509,26 @@ class Collection < ApplicationRecord
     end
     xml.target!
   end
+
+  def as_geo_json
+    center = center_coordinate({})
+
+    return [] unless center
+
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [center[:lng], center[:lat]]
+      },
+      properties: {
+        id: identifier,
+        name: title,
+        description:,
+        udatestart: created_at.to_i * 1000,
+        udateend: Time.zone.now.to_i * 1000
+      }
+    }
+  end
 end
 # rubocop:enable Metrics/ClassLength

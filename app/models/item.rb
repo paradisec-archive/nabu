@@ -635,4 +635,35 @@ class Item < ApplicationRecord
   def update_catalog_file
     ItemCatalogService.new(self).delay.save_file
   end
+
+  def center_coordinate
+    return [] unless coordinates?
+
+    lng = if east_limit < west_limit
+            180 + ((west_limit + east_limit) / 2)
+          else
+            (west_limit + east_limit) / 2
+          end
+
+    lat = (north_limit + south_limit) / 2
+
+    [lng, lat]
+  end
+
+  def as_geo_json
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: center_coordinate
+      },
+      properties: {
+        id: identifier,
+        name: title,
+        description:,
+        udatestart: created_at.to_i * 1000,
+        udateend: Time.zone.now.to_i * 1000
+      }
+    }
+  end
 end

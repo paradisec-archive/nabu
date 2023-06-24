@@ -9,6 +9,26 @@ class CollectionsController < ApplicationController
   load_and_authorize_resource find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit]
   authorize_resource only: %i[advanced_search bulk_update bulk_edit]
 
+  def index
+    @collections = Collection.where(private: false)
+
+    respond_to do |format|
+      format.geo_json do
+        json = {
+          type: 'FeatureCollection',
+          metadata: {
+            id: 'PARADISEC',
+            name: 'All Collections',
+            description: 'All Collections'
+          },
+          features: @collections.map(&:as_geo_json)
+        }
+
+        render json:
+      end
+    end
+  end
+
   def show
     @num_items = @collection.items.count
     @num_items_ready = @collection.items.where.not(digitised_on: nil).count
@@ -19,6 +39,24 @@ class CollectionsController < ApplicationController
     @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier)
 
     @page_title = "Nabu - #{@collection.title}"
+
+    respond_to do |format|
+      format.geo_json do
+        json = {
+          type: 'FeatureCollection',
+          metadata: {
+            id: @collection.identifier,
+            name: @collection.title,
+            description: @collection.description
+          },
+          features: @collection.items.map(&:as_geo_json)
+        }
+
+        render json:
+      end
+      format.html
+      format.xml
+    end
   end
 
   def new

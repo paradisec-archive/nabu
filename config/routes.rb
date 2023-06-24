@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get '/dashboard' => 'page#dashboard'
   get '/glossary' => 'page#glossary'
   get '/apidoc' => 'page#apidoc'
+  get '/tlcmap' => 'page#tlcmap'
 
   post 'versions/:id/revert' => 'versions#revert', :as => 'revert_version'
 
