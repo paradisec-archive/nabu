@@ -515,6 +515,10 @@ class Collection < ApplicationRecord
 
     return [] unless center
 
+    item = items.first
+    date = items.originated_on.to_time if item.originated_on
+    date ||= created_at
+
     {
       type: 'Feature',
       geometry: {
@@ -525,7 +529,7 @@ class Collection < ApplicationRecord
         id: identifier,
         name: title,
         description:,
-        udatestart: created_at.to_i * 1000,
+        udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
       }
     }

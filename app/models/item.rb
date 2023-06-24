@@ -651,6 +651,9 @@ class Item < ApplicationRecord
   end
 
   def as_geo_json
+    date = originated_on.to_time if originated_on
+    date ||= created_at
+
     {
       type: 'Feature',
       geometry: {
@@ -661,7 +664,7 @@ class Item < ApplicationRecord
         id: identifier,
         name: title,
         description:,
-        udatestart: created_at.to_i * 1000,
+        udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
       }
     }
