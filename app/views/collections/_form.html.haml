@@ -103,7 +103,7 @@
         %th
         %td
           %strong.left
-            - if @collection.has_default_map_boundaries?
+            - if @collection.default_map_boundaries?
               %span.no-map-match-message No matching map data found
             - else
               %span.no-map-match-message

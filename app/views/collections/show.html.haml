@@ -85,7 +85,7 @@
         %td= sanitize(@collection.citation, tags: %w(i)).html_safe
 
       %tr
-        - if !@collection.has_coordinates
+        - if !@collection.coordinates?
           %th Map
           %td.missing No map data given - please add.
         - else

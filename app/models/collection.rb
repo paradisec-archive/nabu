@@ -49,6 +49,7 @@
 #     * **`university_id`**
 #
 
+# rubocop:disable Metrics/ClassLength
 class Collection < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
@@ -56,47 +57,48 @@ class Collection < ApplicationRecord
   has_paper_trail
   nilify_blanks
 
-  belongs_to :collector, :class_name => "User"
-  belongs_to :operator, :class_name => "User", :optional => true
-  belongs_to :university, :optional => true
-  belongs_to :field_of_research, :optional => true
-  belongs_to :access_condition, :optional => true
+  belongs_to :collector, class_name: 'User'
+  belongs_to :operator, class_name: 'User', optional: true
+  belongs_to :university, optional: true
+  belongs_to :field_of_research, optional: true
+  belongs_to :access_condition, optional: true
 
   has_many :grants
   accepts_nested_attributes_for :grants, allow_destroy: true
 
-  has_many :items, :dependent => :restrict_with_exception
+  has_many :items, dependent: :restrict_with_exception
   accepts_nested_attributes_for :items
 
-  has_many :collection_languages, :dependent => :destroy
-  has_many :languages, :through => :collection_languages, :validate => true
+  has_many :collection_languages, dependent: :destroy
+  has_many :languages, through: :collection_languages, validate: true
 
   has_many :subject_languages, through: :items
   has_many :content_languages, through: :items
 
-  has_many :collection_countries, :dependent => :destroy
-  has_many :countries, :through => :collection_countries, :validate => true
+  has_many :collection_countries, dependent: :destroy
+  has_many :countries, through: :collection_countries, validate: true
   has_many :item_countries, through: :items, source: :countries
 
-  has_many :collection_admins, :dependent => :destroy, :autosave => true
-  has_many :admins, :through => :collection_admins, :validate => true, :source => :user, :autosave => true
+  has_many :collection_admins, dependent: :destroy, autosave: true
+  has_many :admins, through: :collection_admins, validate: true, source: :user, autosave: true
 
   # require presence of these three fields
-  validates :identifier, :presence => true, :uniqueness => { case_sensitive: false },
-            :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
-  validates :title, :presence => true
-  validates :collector_id, :presence => true
+  validates :identifier,
+            presence: true,
+            uniqueness: { case_sensitive: false },
+            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" }
+  validates :title, presence: true
 
-  validates :north_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
-  validates :south_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
-  validates :west_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
-  validates :east_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
+  validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
+  validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
+  validates :west_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
+  validates :east_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
 
   bulk = [
     :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
     :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
     :bulk_edit_append_orthographic_notes, :bulk_edit_append_media, :bulk_edit_append_comments,
-    :bulk_edit_append_tape_location,# :bulk_edit_append_grant_identifier,
+    :bulk_edit_append_tape_location, # :bulk_edit_append_grant_identifier,
     :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids
   ]
   attr_reader(*bulk)
@@ -105,79 +107,75 @@ class Collection < ApplicationRecord
 
   paginates_per 10
 
-  delegate :name, :to => :university,        :prefix => true, :allow_nil => true
-  delegate :name, :to => :collector,         :prefix => true, :allow_nil => true
-  delegate :sortname, :to => :collector,     :prefix => true, :allow_nil => true
-  delegate :name, :to => :operator,          :prefix => true, :allow_nil => true
-  delegate :name, :to => :access_condition,  :prefix => true, :allow_nil => true
-  delegate :name, :to => :field_of_research, :prefix => true, :allow_nil => true
+  delegate :name, to: :university,        prefix: true, allow_nil: true
+  delegate :name, to: :collector,         prefix: true, allow_nil: true
+  delegate :sortname, to: :collector,     prefix: true, allow_nil: true
+  delegate :name, to: :operator,          prefix: true, allow_nil: true
+  delegate :name, to: :access_condition,  prefix: true, allow_nil: true
+  delegate :name, to: :field_of_research, prefix: true, allow_nil: true
 
   before_save :check_complete
   before_save :propagate_collector
 
-  def has_default_map_boundaries?
-    if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
-      true
-    else
-      false
-    end
+  def default_map_boundaries?
+    (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
   end
 
   def propagate_collector
-    if collector_id_changed?
-      unless collector_id_was.nil?
-        collector_was = User.find(collector_id_was)
-        # we're removing one collection from the users's 'owned' collections
-        collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
-        collector_was.save
-      end
-      collector.collector = true
-      collector.save
+    return unless collector_id_changed?
+
+    unless collector_id_was.nil?
+      collector_was = User.find(collector_id_was)
+      # we're removing one collection from the users's 'owned' collections
+      collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1).positive?
+      collector_was.save
     end
+
+    collector.collector = true
+    collector.save
   end
 
   def check_complete
-    present = [
-      :identifier, :title, :description, :collector, :university,
-      :north_limit, :south_limit, :east_limit, :west_limit,
-      :field_of_research
+    present = %i[
+      identifier title description collector university
+      north_limit south_limit east_limit west_limit field_of_research
     ]
 
-    length = [
-      :languages, :countries
-    ]
+    length = %i[languages countries]
 
-    if present.all? {|method| self.public_send(method).present? } and length.all? {|method| self.public_send(method).size > 0} and items.any? {|item| item.originated_on.present?}
+    if present.all? { |method| public_send(method).present? } &&
+       length.all? { |method| public_send(method).size.positive? } &&
+       items.any? { |item| item.originated_on.present? }
       self.complete = true
     end
   end
 
   def funding_body_names
-    #FIXME: for csv output - need to escape
-    '"'+"#{grants.collect{|g| g.funding_body.name}.join(', ')}"+'"'
+    # FIXME: for csv output - need to escape
+    "\"#{grants.collect { |g| g.funding_body.name }.join(', ')}\""
   end
 
   def full_grant_identifier(grant)
     if grant.grant_identifier.blank?
-      ""
+      ''
     else
-      "#{grant.funding_body.key_prefix if grant.funding_body}#{grant.grant_identifier}"
+      "#{grant.funding_body&.key_prefix}#{grant.grant_identifier}"
     end
   end
 
   def self.sortable_columns
-    %w{identifier title collector_sortname university_name created_at sort_language sort_country}
+    %w[identifier title collector_sortname university_name created_at sort_language sort_country]
   end
 
   searchable(
     include: [
       :university, :collector, :operator, :field_of_research, :languages, :countries, :admins,
-      items: [:admins, :users]
+      { items: %i[admins users] }
     ]
   ) do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :identifier_textp
+    text :identifier, as: :identifier_textp
     text :identifier2 do
       identifier
     end
@@ -203,22 +201,22 @@ class Collection < ApplicationRecord
     text :tape_location
 
     # Link models for faceting or dropdowns
-    integer :language_ids, :references => Language, :multiple => true
-    integer :collector_id, :references => User
-    integer :operator_id, :references => User
-    integer :country_ids, :references => Country, :multiple => true
-    integer :university_id, :references => University
-    integer :field_of_research_id, :references => FieldOfResearch
-    # integer :funding_body_ids, :references => FundingBody, :multiple => true
-    integer :admin_ids, :references => User, :multiple => true
-    integer :access_condition_id, :references => AccessCondition
+    integer :language_ids, references: Language, multiple: true
+    integer :collector_id, references: User
+    integer :operator_id, references: User
+    integer :country_ids, references: Country, multiple: true
+    integer :university_id, references: University
+    integer :field_of_research_id, references: FieldOfResearch
+    # integer :funding_body_ids, references: FundingBody, multiple: true
+    integer :admin_ids, references: User, multiple: true
+    integer :access_condition_id, references: AccessCondition
 
     # Things we want to sort or use :with on
     integer :id
-    integer :item_admin_ids, :references => User, :multiple => true do
+    integer :item_admin_ids, references: User, multiple: true do
       items.flat_map(&:admin_ids).uniq
     end
-    integer :item_user_ids, :references => User, :multiple => true do
+    integer :item_user_ids, references: User, multiple: true do
       items.flat_map(&:user_ids).uniq
     end
     string :title
@@ -227,16 +225,16 @@ class Collection < ApplicationRecord
     string :collector_name
     string :collector_sortname
     string :region
-    string :languages, :multiple => true do
+    string :languages, multiple: true do
       languages.map(&:name)
     end
-    string :language_codes, :multiple => true do
+    string :language_codes, multiple: true do
       languages.map(&:code)
     end
-    string :countries, :multiple => true do
+    string :countries, multiple: true do
       countries.map(&:name)
     end
-    string :country_codes, :multiple => true do
+    string :country_codes, multiple: true do
       countries.map(&:code)
     end
     string :sort_language do
@@ -256,10 +254,10 @@ class Collection < ApplicationRecord
     time :updated_at
 
     # Things we want to check blankness of
-    blank_fields = [:title, :description, :region, :access_narrative, :metadata_source, :orthographic_notes, :media, :created_at, :updated_at, :comments, :tape_location]
+    blank_fields = %i[title description region access_narrative metadata_source orthographic_notes media created_at updated_at comments tape_location]
     blank_fields.each do |f|
       boolean "#{f}_blank".to_sym do
-        self.public_send(f).blank?
+        public_send(f).blank?
       end
     end
   end
@@ -287,20 +285,15 @@ class Collection < ApplicationRecord
   end
 
   def citation
-    cite = ""
-    if collector
-      cite += "#{collector.name} (collector)"
-    end
+    cite = ''
+    cite += "#{collector.name} (collector)" if collector
     cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
-    cite += '. ' unless cite == ""
+    cite += '. ' unless cite == ''
     cite += "<i>#{title}</i>. "
     cite += "Collection #{identifier} at catalog.paradisec.org.au "
     cite += "[#{access_class.capitalize} Access]. "
-    if doi
-      cite += " https://dx.doi.org/#{doi}"
-    else
-      cite += "#{full_path}"
-    end
+    cite += doi ? " https://dx.doi.org/#{doi}" : full_path
+
     cite
   end
 
@@ -308,28 +301,29 @@ class Collection < ApplicationRecord
     AccessCondition.access_classification(access_condition)
   end
 
-  def has_coordinates
+  def coordinates?
     (north_limit && north_limit != 0) ||
-    (south_limit && south_limit != 0) ||
-    (west_limit && west_limit != 0) ||
-    (east_limit && east_limit != 0)
+      (south_limit && south_limit != 0) ||
+      (west_limit && west_limit != 0) ||
+      (east_limit && east_limit != 0)
   end
 
   def center_coordinate(item_counts)
-    if has_coordinates
-      if east_limit < west_limit
-        long = 180 + (west_limit + east_limit) / 2
-      else
-        long = (west_limit + east_limit) / 2
-      end
-      {
-        :lat => (north_limit + south_limit) / 2,
-        :lng => long,
-        :title => title,
-        :id => identifier,
-        :items => item_counts[id],
-      }
-    end
+    return unless coordinates?
+
+    long = if east_limit < west_limit
+             180 + ((west_limit + east_limit) / 2)
+           else
+             (west_limit + east_limit) / 2
+           end
+
+    {
+      lat: (north_limit + south_limit) / 2,
+      lng: long,
+      title:,
+      id: identifier,
+      items: item_counts[id]
+    }
   end
 
   def csv_countries
@@ -349,7 +343,7 @@ class Collection < ApplicationRecord
   end
 
   def self.map_oai_dc
-    {:language => :oai_language}
+    { language: :oai_language }
   end
 
   # OAI-MPH mappings for RIF-CS
@@ -428,9 +422,7 @@ class Collection < ApplicationRecord
             xml.subject language.code, 'type' => 'iso639-3'
           end
 
-          if field_of_research
-            xml.subject field_of_research.identifier, 'type' => 'anzsrc-for'
-          end
+          xml.subject field_of_research.identifier, 'type' => 'anzsrc-for' if field_of_research
 
           xml.coverage do
             countries.each do |country|
@@ -518,3 +510,4 @@ class Collection < ApplicationRecord
     xml.target!
   end
 end
+# rubocop:enable Metrics/ClassLength

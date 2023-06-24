@@ -98,7 +98,7 @@
         %td= @item.region
 
       %tr
-        - if !@item.has_coordinates
+        - if !@item.coordinates?
           %th Map
           %td.missing No map data given - please add.
         - else

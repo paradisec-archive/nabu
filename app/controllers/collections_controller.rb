@@ -1,6 +1,7 @@
 require 'nabu/ex_site9'
 require 'nabu/nabu_spreadsheet'
 
+# rubocop:disable Metrics/ClassLength
 class CollectionsController < ApplicationController
   include HasReturnToLastSearch
 
@@ -54,7 +55,7 @@ class CollectionsController < ApplicationController
       @num_items = @collection.items.count
 
       @items = @collection.items.order(:identifier).page(params[:items_page]).per(params[:items_per_page])
-      @page_title = "Nabu - Edit Collection"
+      @page_title = 'Nabu - Edit Collection'
 
       render action: 'edit'
     end
@@ -107,7 +108,7 @@ class CollectionsController < ApplicationController
     end
 
     if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
-      redirect_to search_collections_path(search_params.merge(:page => 1))
+      redirect_to search_collections_path(search_params.merge(page: 1))
       return
     end
 
@@ -150,7 +151,6 @@ class CollectionsController < ApplicationController
     @collection = Collection.new
 
     @search = build_advanced_search
-
   end
 
   def bulk_update
@@ -173,17 +173,17 @@ class CollectionsController < ApplicationController
     @collections.each do |collection|
       appendable.each_pair do |k, v|
         if collection.public_send(k).nil?
-          data[k.to_sym] = v unless v.blank?
-        else
-          data[k.to_sym] = collection.public_send(k) + v unless v.blank?
+          data[k.to_sym] = v if v.present?
+        elsif v.present?
+          data[k.to_sym] = collection.public_send(k)
         end
       end
 
-      unless collection.update(data)
-        invalid_record = true
-        @collection = collection
-        break
-      end
+      next if collection.update(data)
+
+      invalid_record = true
+      @collection = collection
+      break
     end
 
     appendable.each_pair do |k, v|
@@ -195,7 +195,7 @@ class CollectionsController < ApplicationController
       @page_title = 'Nabu - Collections Bulk Update'
       @collection = Collection.new
       @search = build_advanced_search
-      render :action => 'bulk_edit'
+      render action: 'bulk_edit'
     else
       flash[:notice] = 'Collections were successfully updated.'
       redirect_to bulk_update_collections_path + "?#{params[:original_search_params]}"
@@ -208,8 +208,8 @@ class CollectionsController < ApplicationController
 
   def create_from_exsite9
     unless params.key?(:collection)
-      @collection = Collection.new unless @collection
-      flash[:error] = 'No ExSite9 file submitted'
+      @collection ||= Collection.new
+      flash.now[:error] = 'No ExSite9 file submitted'
       render 'new_from_metadata'
       return
     end
@@ -222,13 +222,13 @@ class CollectionsController < ApplicationController
     if exsite9.valid?
       @collection = exsite9.collection
       @collection.save!
-      flash[:notice] ||= "SUCCESS: Collection created"
-      flash[:notice] += exsite9.notices.join("<br/>") unless exsite9.notices.blank?
+      flash[:notice] ||= 'SUCCESS: Collection created'
+      flash[:notice] += exsite9.notices.join('<br/>') if exsite9.notices.present?
       redirect_to @collection
     else
-      @collection = Collection.new unless @collection
-      flash[:notice] = exsite9.notices.join("<br/>") unless exsite9.notices.blank?
-      flash[:error] = exsite9.errors.join("<br/>") unless exsite9.errors.blank?
+      @collection ||= Collection.new
+      flash.now[:notice] = exsite9.notices.join('<br/>') if exsite9.notices.present?
+      flash.now[:error] = exsite9.errors.join('<br/>') if exsite9.errors.present?
       render 'new_from_metadata'
     end
   end
@@ -251,21 +251,22 @@ class CollectionsController < ApplicationController
       @collection = sheet.collection
       @collection.save!
       saved_items = 0
-      added_items = ""
+      added_items = ''
       sheet.items.each do |item|
         item.save!
         saved_items += 1
         added_items += "#{item.identifier}, "
       end
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
-      flash[:notice] += sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
-      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}".truncate(500) + ' Truncated...'
+      flash[:notice] += sheet.notices.join('<br/>').truncate(500) unless sheet.notices.empty?
+      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}".truncate(500)
+      flash[:motice] += ' Truncated...'
 
       redirect_to @collection
     else
       @collection ||= Collection.new
-      flash.now[:notice] = sheet.notices.join("<br/>").truncate(500) unless sheet.notices.empty?
-      flash.now[:error] = sheet.errors.join("<br/>").truncate(500) unless sheet.errors.empty?
+      flash.now[:notice] = sheet.notices.join('<br/>').truncate(500) unless sheet.notices.empty?
+      flash.now[:error] = sheet.errors.join('<br/>').truncate(500) unless sheet.errors.empty?
       render 'new_from_metadata'
     end
   end
@@ -287,9 +288,9 @@ class CollectionsController < ApplicationController
 
       # for each funding body that doesn't have grant ids, create an empty grant
 
-      params[:collection][:grants_attributes].concat(fbids.collect { |x| { 'funding_body_id' => x, 'grant_identifier' => nil }})
+      params[:collection][:grants_attributes].concat(fbids.collect { |x| { 'funding_body_id' => x, 'grant_identifier' => nil } })
       # apply the current collection to every item
-      params[:collection][:grants_attributes].each{ |g| g['collection_id'] = collection_id }
+      params[:collection][:grants_attributes].each { |g| g['collection_id'] = collection_id }
     end
 
     params[:collection][:collector_id] = create_contact(params[:collection][:collector_id]) if params[:collection][:collector_id] =~ /^NEWCONTACT:/
@@ -314,9 +315,9 @@ class CollectionsController < ApplicationController
         when Sunspot::Type::BooleanType
           with field.name, params[field.name] =~ /^true|1$/ ? true : false
         when Sunspot::Type::TimeType
-          with(field.name).between (Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day)
+          with(field.name).between(Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day)
         else
-          p "WARNING can't search: #{field.type} #{field.name}"
+          logger.warn "WARNING can't search: #{field.type} #{field.name}"
         end
       end
 
@@ -409,3 +410,4 @@ class CollectionsController < ApplicationController
       )
   end
 end
+# rubocop:enable Metrics/ClassLength

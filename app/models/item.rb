@@ -153,7 +153,7 @@ class Item < ApplicationRecord
 
   scope :public_items, -> { joins(:collection).where(:private => false, :collection => {:private => false}) }
 
-  def has_default_map_boundaries?
+  def default_map_boundaries?
     if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
       true
     else
@@ -442,7 +442,7 @@ class Item < ApplicationRecord
     cite
   end
 
-  def has_coordinates
+  def coordinates?
     (north_limit && north_limit != 0) ||
     (south_limit && south_limit != 0) ||
     (west_limit && west_limit != 0) ||
@@ -547,7 +547,7 @@ class Item < ApplicationRecord
         xml.tag! 'dc:coverage', country.code, 'xsi:type' => 'dcterms:ISO3166'
       end
 
-      if has_coordinates
+      if coordinates?
         location = ""
         location += "northlimit=#{north_limit}; southlimit=#{south_limit}; "
         location += "westlimit=#{west_limit}; eastlimit=#{east_limit}"

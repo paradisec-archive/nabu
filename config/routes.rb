@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   resources :languages, only: %i[index show]
   resources :data_categories, only: %i[index show]
   resources :data_types, only: %i[index show]
-  resources :collections, except: %i[index] do
+  resources :collections do
     collection do
       get 'last_search' => 'collections#return_to_last_search'
       get 'search' => 'collections#search'

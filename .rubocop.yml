@@ -22,3 +22,6 @@ Metrics/AbcSize:
 
 Rails/I18nLocaleTexts:
   Enabled: false
+
+Layout/LineLength:
+  Max: 160
