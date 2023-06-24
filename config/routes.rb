@@ -1,36 +1,35 @@
-# == Route Map
-#
-
+# rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   use_doorkeeper
 
+  # Graphql
   get '/paradisec.graphql', to: 'graphql#schema', as: 'graphql_schema'
+  mount GraphiQL::Rails::Engine, at: '/graphiql', graphql_path: '/graphql'
+  post '/graphql', to: 'graphql#execute'
 
-  mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
-  post "/graphql", to: "graphql#execute"
-
+  # Admin
   ActiveAdmin.routes(self)
 
-  devise_for :users, :controllers => { :registrations => "registrations" }
+  # Auth
+  devise_for :users, controllers: { registrations: 'registrations' }
 
-  root :to => 'page#home'
+  root to: 'page#home'
 
-  get '/contact'   => 'page#contact'
+  get '/contact' => 'page#contact'
   get '/dashboard' => 'page#dashboard'
-  get '/glossary'  => 'page#glossary'
+  get '/glossary' => 'page#glossary'
   get '/apidoc' => 'page#apidoc'
 
-  post "versions/:id/revert" => "versions#revert", :as => "revert_version"
+  post 'versions/:id/revert' => 'versions#revert', :as => 'revert_version'
 
   get '/users' => 'users#index'
   get '/users/:id' => 'users#show'
 
-  resources :countries, :only => [:index, :show]
-  resources :languages, :only => [:index, :show]
-  resources :data_categories, :only => [:index, :show]
-  resources :data_types, :only => [:index, :show]
-  resources :collections, :except => [:index] do
+  resources :countries, only: %i[index show]
+  resources :languages, only: %i[index show]
+  resources :data_categories, only: %i[index show]
+  resources :data_types, only: %i[index show]
+  resources :collections, except: %i[index] do
     collection do
       get 'last_search' => 'collections#return_to_last_search'
       get 'search' => 'collections#search'
@@ -41,13 +40,13 @@ Rails.application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
-    resources :items, :except => [:index] do
+    resources :items, except: %i[index] do
       member do
         get :display
         get :data
         patch :inherit_details
       end
-      resources :essences, :only => [:show, :download, :destroy] do
+      resources :essences, only: %i[show download destroy] do
         member do
           get :download
           get :display
@@ -57,7 +56,7 @@ Rails.application.routes.draw do
       end
     end
   end
-  resources :items, :only => [] do
+  resources :items, only: [] do
     collection do
       get 'last_search' => 'items#return_to_last_search'
       get 'search' => 'items#search'
@@ -72,17 +71,19 @@ Rails.application.routes.draw do
 
   get '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
   get '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
-  get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence', :as => 'repository_essence', :constraints => { :essence_filename => /.*/ }
+  get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence',
+      :as => 'repository_essence',
+      :constraints => { essence_filename: /.*/ }
 
   get '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
 
   get '/essences/mimetypes' => 'essences#list_mimetypes', as: 'list_mimetypes'
 
-  resources :comments, :shallow => true do
+  resources :comments, shallow: true do
     post 'approve' => 'comments#approve', :on => :member
     post 'spam'    => 'comments#spam',    :on => :member
   end
-  resources :universities, :only => :create
+  resources :universities, only: :create
 
   scope '/oai', as: 'oai' do
     get 'item' => 'oai#item'
@@ -91,7 +92,7 @@ Rails.application.routes.draw do
     post 'collection' => 'oai#collection'
   end
 
-  authenticated :user, -> user { user.admin? } do
+  authenticated :user, ->(user) { user.admin? } do
     mount Delayed::Web::Engine, at: '/jobs'
   end
 
@@ -101,3 +102,4 @@ Rails.application.routes.draw do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
