@@ -516,8 +516,12 @@ class Collection < ApplicationRecord
     return [] unless center
 
     item = items.first
-    date = item.originated_on.to_time if item.originated_on
-    date ||= created_at
+    if item
+      date = item.originated_on.to_time if item.originated_on
+      date ||= item.created_at
+    else
+      date = created_at
+    end
 
     {
       type: 'Feature',
