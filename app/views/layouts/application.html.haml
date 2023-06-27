@@ -32,7 +32,7 @@
     - else
       %script{ src: "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_MAPS_API_KEY']}&callback=initMap&v=weekly", defer: true }
 
-    %script{ src: 'https://browser.sentry-cdn.com/7.44.2/bundle.tracing.min.js', integrity: 'sha384-CmO9kmtYvT9SLiSEn7uD4hNHOv+TM8He5Lqk7sh877bE9I7SeTFq/BQ21b2cw1s4', crossorigin: 'anonymous' }
+    %script{ src: 'https://browser.sentry-cdn.com/7.55.2/bundle.tracing.min.js', integrity: 'sha384-u0VnF/CCtmgYR2cShUDrGNHOlH3jdsqBHK+yrIo7uqFygjVXak8CMh+/81vtqNBF', crossorigin: 'anonymous' }
 
     -if Rails.env.production?
       :javascript
