@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { execSync } from 'child_process';
 import * as cdk from 'aws-cdk-lib';
 import { CdkStack } from '../lib/cdk-stack';
+import { NlbStack } from '../lib/nlb-stack';
 import { CommonStack } from '../lib/common-stack';
-import type { Environment } from '../lib/cdk-stack';
+import type { Environment } from '../lib/types';
 
 const globals = {
   appName: 'nabu',
@@ -38,6 +38,10 @@ if (!prod) {
 const app = new cdk.App();
 
 environments.forEach((environment) => {
+  new NlbStack(app, `${environment.appName}-nlbstack-${environment.env}`, environment, {
+    env: { account: environment.account, region: environment.region },
+  });
+
   new CdkStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
     env: { account: environment.account, region: environment.region },
   });

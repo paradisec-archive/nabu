@@ -6,7 +6,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as elbv2_target from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+import * as elbv2_target from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets'; // eslint-disable-line camelcase
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
@@ -18,15 +18,7 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { SecretValue } from 'aws-cdk-lib';
 
-export type Environment = {
-  readonly appName: string,
-  readonly region: string,
-  readonly env: string,
-  readonly railsEnv: string,
-  readonly branchNames: string[],
-  readonly account: string,
-  readonly zoneName: string,
-};
+import { Environment } from './types';
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
