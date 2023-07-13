@@ -530,12 +530,12 @@ class Collection < ApplicationRecord
         coordinates: [center[:lng], center[:lat]]
       },
       properties: {
-        id: identifier,
+        id: full_identifier,
         name: title,
         description:,
         udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
-      }
+      },
     }
   end
 end

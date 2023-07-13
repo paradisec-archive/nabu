@@ -21,6 +21,12 @@ class CollectionsController < ApplicationController
             name: 'All Collections',
             description: 'All Collections'
           },
+          display: {
+            basemapGallery: false,
+            info: {
+              display: 'disabled',
+            }
+          },
           features: @collections.map(&:as_geo_json)
         }
 
@@ -48,6 +54,12 @@ class CollectionsController < ApplicationController
             id: @collection.identifier,
             name: @collection.title,
             description: @collection.description
+          },
+          display: {
+            basemapGallery: false,
+            info: {
+              display: 'disabled',
+            }
           },
           features: @collection.items.map(&:as_geo_json)
         }

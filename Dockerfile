@@ -35,7 +35,7 @@ RUN apt-get install -y \
   libffi-dev \
   nodejs \
   libmagic-dev \
-  openjdk-11-jre \
+  openjdk-17-jre \
   wget \
   npm
 

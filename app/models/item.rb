@@ -661,7 +661,7 @@ class Item < ApplicationRecord
         coordinates: center_coordinate
       },
       properties: {
-        id: identifier,
+        id: full_identifier,
         name: title,
         description:,
         udatestart: date.to_i * 1000,

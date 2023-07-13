@@ -28,8 +28,8 @@ You can then easily run all the standard commands by prefixing with ***nabu***
 
 ``` bash
 nabu_run bundle install
-nabu bundle exec rake db:create
-nabu bundle exec rake db:schema:load
+nabu_run bundle exec rake db:create
+nabu_run bundle exec rake db:schema:load
 nabu_test bundle exec rake db:schema:load
 nabu_run bundle exec guard # Test runner
 ```
