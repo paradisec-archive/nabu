@@ -24,10 +24,10 @@ class CollectionsController < ApplicationController
           display: {
             basemapGallery: false,
             info: {
-              display: 'disabled',
+              display: 'disabled'
             }
           },
-          features: @collections.map(&:as_geo_json)
+          features: @collections.map(&:as_geo_json).compact
         }
 
         render json:

@@ -513,7 +513,7 @@ class Collection < ApplicationRecord
   def as_geo_json
     center = center_coordinate({})
 
-    return [] unless center
+    return nil unless center
 
     item = items.first
     if item
@@ -535,7 +535,7 @@ class Collection < ApplicationRecord
         description:,
         udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
-      },
+      }
     }
   end
 end
