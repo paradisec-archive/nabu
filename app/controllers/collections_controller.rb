@@ -310,7 +310,7 @@ class CollectionsController < ApplicationController
       flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
       flash[:notice] += sheet.notices.join('<br/>').truncate(500) unless sheet.notices.empty?
       flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}".truncate(500)
-      flash[:motice] += ' Truncated...'
+      flash[:notice] += ' Truncated...'
 
       redirect_to @collection
     else
