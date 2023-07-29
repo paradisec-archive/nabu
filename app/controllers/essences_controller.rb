@@ -23,8 +23,12 @@ class EssencesController < ApplicationController
   end
 
   def download
-    Download.create! :user => current_user, :essence => @essence
-    redirect_to helpers.catalog_download(@essence.s3_path), allow_other_host: true
+    Download.create! user: current_user, essence: @essence
+
+    response.headers['X-Accel-Redirect'] = '/proxyist/'
+    response.headers['X-Real-Location'] = "/object/#{@essence.item.full_identifier}/#{@essence.filename}"
+
+    render body: nil
   end
 
   def display

@@ -1,0 +1,43 @@
+upstream proxyist {
+    server proxyist:3000;
+}
+server {
+  server_name catalog.paradisec.org.au;
+
+  client_max_body_size 4G;
+  keepalive_timeout 10;
+
+  error_page 500 502 504 /500.html;
+  error_page 503 @503;
+
+  location / {
+
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+    proxy_redirect off;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header X-Forwarded-Proto http;
+    proxy_pass  http://app:3000;
+    proxy_set_header X-Sendfile-Type X-Accel-Redirect;
+    proxy_set_header X-Accel-Mapping /proxyist/=/proxyist/;
+  }
+
+  location /proxyist/ {
+    internal;
+    set $stored_real_location $upstream_http_x_real_location;
+    proxy_pass http://proxyist$stored_real_location;
+  }
+
+  listen 443 ssl;
+  ssl_certificate     /etc/nginx/certs/cert.pem;
+  ssl_certificate_key /etc/nginx/certs/key.pem;
+}
+
+server {
+  listen 80;
+
+  return 301 https://$host:3443$request_uri;
+}
