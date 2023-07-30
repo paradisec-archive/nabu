@@ -3,6 +3,11 @@ class EssencesController < ApplicationController
   load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, except: [:list_mimetypes]
   load_and_authorize_resource :essence, :through => :item, except: [:list_mimetypes]
 
+  rescue_from CanCan::AccessDenied do
+    flash[:notice] = 'Please Sign Up and Log In to access this file.'
+    redirect_to new_user_session_path
+  end
+
   def show
     @page_title = "Nabu - #{@essence.filename} (#{@essence.item.title})"
     unless can? :manage, @essence
