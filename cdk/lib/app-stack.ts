@@ -20,7 +20,7 @@ import { SecretValue } from 'aws-cdk-lib';
 
 import { Environment } from './types';
 
-export class CdkStack extends cdk.Stack {
+export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CdkStack } from '../lib/cdk-stack';
+import { AppStack } from '../lib/app-stack';
 import { NlbStack } from '../lib/nlb-stack';
 import { CommonStack } from '../lib/common-stack';
 import type { Environment } from '../lib/types';
@@ -42,7 +42,7 @@ environments.forEach((environment) => {
     env: { account: environment.account, region: environment.region },
   });
 
-  new CdkStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
+  new AppStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
     env: { account: environment.account, region: environment.region },
   });
 });
