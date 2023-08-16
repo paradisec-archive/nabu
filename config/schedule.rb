@@ -43,9 +43,10 @@ every 1.day, :at => '12:04 am' do
   nabu_rake "archive:transform_images IMAGE_TRANSFORMER_BATCH_SIZE=2500", lock: 'archive_transform_images'
 end
 
-every 1.day, :at => '2:30 am' do
-  nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
-end
+# No checksums during migration so as not to break the QCIF cache
+# every 1.day, :at => '2:30 am' do
+#   nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
+# end
 
 every :reboot do
  nabu "bin/delayed_job -n 5 start"
