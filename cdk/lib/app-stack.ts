@@ -6,7 +6,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as elbv2_target from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets'; // eslint-disable-line camelcase
+import * as elbv2Target from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets'; // eslint-disable-line camelcase
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
@@ -199,7 +199,6 @@ export class AppStack extends cdk.Stack {
       },
     });
 
-
     // ////////////////////////
     // Network Load Balancer
     // ////////////////////////
@@ -218,7 +217,7 @@ export class AppStack extends cdk.Stack {
     });
     const sslTarget = sslListener.addTargets('NLBTarget443', {
       port: 443,
-      targets: [new elbv2_target.AlbTarget(app.loadBalancer, 443)],
+      targets: [new elbv2Target.AlbTarget(app.loadBalancer, 443)],
     });
     sslTarget.node.addDependency(app.listener);
 
@@ -227,7 +226,7 @@ export class AppStack extends cdk.Stack {
     });
     const target = listener.addTargets('NLBTarget', {
       port: 80,
-      targets: [new elbv2_target.AlbTarget(app.loadBalancer, 80)],
+      targets: [new elbv2Target.AlbTarget(app.loadBalancer, 80)],
     });
     target.node.addDependency(app.listener);
 
