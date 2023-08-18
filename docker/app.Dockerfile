@@ -82,12 +82,10 @@ COPY --chown=ruby:ruby --from=assets /tmp/public/assets public/assets
 
 COPY --chown=ruby:ruby . .
 
-EXPOSE 8000
-
 ENV \
   RAILS_ENV="production"
   # USER="ruby"
  # PATH="${PATH}:/home/ruby/.local/bin" \
 
 
-CMD ["bin/rails", "server", "--log-to-stdout"]
+CMD ["bin/rails", "server", "--log-to-stdout", "--port", "3000"]
