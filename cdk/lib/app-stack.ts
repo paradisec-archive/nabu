@@ -28,7 +28,7 @@ export class AppStack extends cdk.Stack {
     const {
       appName,
       // account,
-      // region,
+      region,
       railsEnv,
       env,
       zoneName,
@@ -290,6 +290,7 @@ export class AppStack extends cdk.Stack {
       portMappings: [{ containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ProxyistService' }),
       environment: {
+        AWS_REGION: region,
         BUCKET_NAME: catalogBucket.bucketName,
       },
     });
