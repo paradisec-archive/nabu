@@ -138,6 +138,7 @@ export class AppStack extends cdk.Stack {
           RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
           RAILS_ENV: railsEnv,
           SOLR_URL: `http+srv://search.nabu/solr/${railsEnv}`,
+          PROXYIST_URL: 'http+srv://proxyist.nabu',
           SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
           DOI_PREFIX: '10.26278',
           DATACITE_BASE_URL: 'https://mds.datacite.org',
@@ -277,5 +278,32 @@ export class AppStack extends cdk.Stack {
     // Create a temp user for the migration
     const tempUser = iam.User.fromUserName(this, 's3TempUser', 's3-migration-temp');
     catalogBucket.grantReadWrite(tempUser);
+
+    // ////////////////////////
+    // Proxyist
+    // ////////////////////////
+
+    const proxyistTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ProxyistTaskDefinition');
+    proxyistTaskDefinition.addContainer('ProxyistContainer', {
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromAsset('..', { file: 'docker/proxyist.Dockerfile' }),
+      portMappings: [{ containerPort: 3000 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ProxyistService' }),
+      environment: {
+        BUCKET_NAME: catalogBucket.bucketName,
+      },
+    });
+    // catalogBucket.grantReadWrite(proxyistTaskDefinition.executionRole!);
+
+    new ecs.Ec2Service(this, 'ProxyistService', {
+      serviceName: 'proxyist',
+      cluster,
+      taskDefinition: proxyistTaskDefinition,
+      enableExecuteCommand: true,
+      cloudMapOptions: {
+        name: 'proxyist',
+        cloudMapNamespace: dnsNamespace,
+      },
+    });
   }
 }

@@ -1,5 +1,6 @@
 require 'resolv'
 require 'sunspot_rails'
+require_relative '../srv_lookup'
 
 # Support SRV records like http+srv://example.com
 module Sunspot
@@ -10,23 +11,9 @@ module Sunspot
       def solr_url
         return unless ENV['SOLR_URL'] || ENV['WEBSOLR_URL']
 
-        temp_url = URI.parse(ENV['SOLR_URL'] || ENV['WEBSOLR_URL'])
-        return temp_url if temp_url.scheme != 'http+srv'
+        url = ENV['SOLR_URL'] || ENV.fetch('WEBSOLR_URL', nil)
 
-        resolv = Resolv::DNS.new
-        srv_records = resolv.getresources(temp_url.hostname, Resolv::DNS::Resource::IN::SRV)
-
-        raise "No SRV records found for #{temp_url}" if srv_records.empty?
-
-        srv = srv_records.first
-
-        temp_url.scheme = 'http'
-        temp_url.hostname = srv.target.to_s
-        temp_url.port = srv.port
-
-        puts "SOLR_URL SVR Lookup: #{ENV['SOLR_URL']} => #{temp_url}"
-
-        temp_url
+        SrvLookup.http(url)
       end
     end
   end

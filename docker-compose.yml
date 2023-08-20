@@ -15,6 +15,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      PROXYIST_URL: http://proxyist:3000
     volumes:
       - .:/app
       - ./vendor/bundle:/bundler

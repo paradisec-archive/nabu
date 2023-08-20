@@ -14,6 +14,7 @@ const s3 = new S3(s3Config);
 
 export default {
   bucket: 'nabu',
+  returnRedirects: true,
   s3,
   transform: (identifier) => {
     if (identifier.includes('/')) {

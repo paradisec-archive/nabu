@@ -59,6 +59,10 @@ module Nabu
     config.viewer_url = '/viewer'
 
     config.assets.precompile << 'delayed/web/application.css'
+
+    ## Proxyist
+    config.proxyist_url = ENV.fetch('PROXYIST_URL')
+    throw 'Must set PROXYIST_URL' unless config.proxyist_url
   end
 end
 
