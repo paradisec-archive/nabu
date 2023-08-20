@@ -51,7 +51,7 @@ COPY lib lib
 COPY vendor/assets vendor/assets
 COPY Rakefile Gemfile Gemfile.lock .
 
-RUN RAILS_ENV=production bundle exec rails assets:precompile
+RUN PROXYIST_URL=dummy RAILS_ENV=production bundle exec rails assets:precompile
 
 ###############################################################################
 #
