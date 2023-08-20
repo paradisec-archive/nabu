@@ -5,6 +5,7 @@ if (!bucketName) {
 
 export default {
   bucket: bucketName,
+  returnRedirects: true,
   transform: (identifier) => {
     if (identifier.includes('/')) {
       throw new Error('Identifer cannot contain "/"');

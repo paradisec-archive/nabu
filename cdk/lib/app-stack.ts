@@ -294,7 +294,7 @@ export class AppStack extends cdk.Stack {
         BUCKET_NAME: catalogBucket.bucketName,
       },
     });
-    // catalogBucket.grantReadWrite(proxyistTaskDefinition.executionRole!);
+    catalogBucket.grantReadWrite(proxyistTaskDefinition.taskRole);
 
     new ecs.Ec2Service(this, 'ProxyistService', {
       serviceName: 'proxyist',

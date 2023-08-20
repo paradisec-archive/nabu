@@ -7,7 +7,6 @@ module Proxyist
   def self.get(path)
     url = SrvLookup.http("#{BASE_URL}#{path}")
     response = Net::HTTP.get_response(url)
-    puts response
 
     raise 'Proxyist is misonfigured, we only support redirects' unless response.is_a?(Net::HTTPRedirection)
 

@@ -16,6 +16,6 @@ module SrvLookup
     temp_url.hostname = srv.target.to_s
     temp_url.port = srv.port
 
-    temp_url
+    URI.parse(temp_url.to_s)
   end
 end
