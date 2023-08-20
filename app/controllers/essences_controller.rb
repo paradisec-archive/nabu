@@ -33,7 +33,9 @@ class EssencesController < ApplicationController
   end
 
   def display
-    redirect_to helpers.catalog_url(@essence.s3_path), allow_other_host: true
+    location = Proxyist.get "/object/#{@essence.item.full_identifier}/#{@essence.filename}"
+
+    redirect_to location, allow_other_host: true
   end
 
   def show_terms
