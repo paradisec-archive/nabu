@@ -7,10 +7,10 @@ BASE_URL = Rails.configuration.proxyist_url
 
 module Net
   class HTTP < Protocol
-    def HTTP.put(url, data, header = nil)
-      start(url.hostname, url.port, :use_ssl => url.scheme == 'https' ) {|http|
+    def self.put(url, data, header = nil)
+      start(url.hostname, url.port, use_ssl: url.scheme == 'https') do |http|
         http.put(url.path, data, header)
-      }
+      end
     end
   end
 end
