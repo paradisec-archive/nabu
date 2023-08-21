@@ -5,16 +5,11 @@ class ItemCatalogService
   end
 
   def save_file
-    data = @template.render_to_string template: 'items/catalog_export', formats: [:xml], handlers: [:haml], locals: {item: @item}
+    data = @template.render_to_string template: 'items/catalog_export', formats: [:xml], handlers: [:haml], locals: { item: @item }
 
-    directory = Nabu::Application.config.archive_directory +
-      "#{@item.collection.identifier}/#{@item.identifier}/"
+    identifier = @item.full_identifier
+    filename = "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml"
 
-    # create all directories in the hierarchy, if required
-    FileUtils.mkdir_p(directory)
-
-    # save file - use extended item template incl. collection details
-    file = directory + "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml"
-    File.open(file, 'w') {|f| f.write(data)}
+    Proxyist.upload_object identifier, filename, data, 'Content-Type' => 'text/xml'
   end
 end

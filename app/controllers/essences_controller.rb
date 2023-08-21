@@ -27,13 +27,13 @@ class EssencesController < ApplicationController
   def download
     Download.create! user: current_user, essence: @essence
 
-    location = Proxyist.get "/object/#{@essence.item.full_identifier}/#{@essence.filename}?disposition=attachment"
+    location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename, download: true)
 
     redirect_to location, allow_other_host: true
   end
 
   def display
-    location = Proxyist.get "/object/#{@essence.item.full_identifier}/#{@essence.filename}"
+    location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename)
 
     redirect_to location, allow_other_host: true
   end
