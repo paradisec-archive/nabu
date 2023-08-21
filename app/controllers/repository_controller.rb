@@ -3,37 +3,31 @@ require 'nabu/media'
 
 class RepositoryController < ApplicationController
   def collection
-    collection = Collection.find_by_identifier params[:collection_identifier]
+    collection = Collection.find_by(identifier: params[:collection_identifier])
 
-    if collection.nil?
-      raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}"
-    end
+    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
 
     redirect_to collection, status: :moved_permanently
   end
 
   def item
-    if params[:full_identifier]
-      params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split(/-/)
-    end
+    params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split('-') if params[:full_identifier]
 
-    collection = Collection.find_by_identifier params[:collection_identifier]
-    if collection.nil?
-      raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}"
-    end
+    collection = Collection.find_by(identifier: params[:collection_identifier])
 
-    item = collection.items.find_by_identifier params[:item_identifier]
-    if item.nil?
-      raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}"
-    end
+    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
+
+    item = collection.items.find_by(identifier: params[:item_identifier])
+
+    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}" if item.nil?
 
     redirect_to [collection, item], status: :moved_permanently
   end
 
   def essence
-    collection = Collection.find_by_identifier params[:collection_identifier]
-    item = collection.items.find_by_identifier params[:item_identifier]
-    essence = item.essences.find_by_filename params[:essence_filename]
+    collection = Collection.find_by(identifier: params[:collection_identifier])
+    item = collection.items.find_by(identifier: params[:item_identifier])
+    essence = item.essences.find_by(filename: params[:essence_filename])
 
     # if a standard essence file was found, return that as usual
     if essence.present?
