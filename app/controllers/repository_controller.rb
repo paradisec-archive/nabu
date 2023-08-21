@@ -44,8 +44,11 @@ class RepositoryController < ApplicationController
 
     # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
     elsif params[:essence_filename].include?('PDSC_ADMIN')
-      admin_essence = send_admin_essence(collection, item, params[:essence_filename])
-      return admin_essence if admin_essence
+      location = admin_essence_location(collection, item, params[:essence_filename])
+
+      redirect_to location, allow_other_host: true if location
+
+      return
     end
 
     raise ActionController::RoutingError, "Repository file not found: #{params[:essence_filename]}"
@@ -55,7 +58,7 @@ class RepositoryController < ApplicationController
 
   # this expects any admin-style files to have a name of the form "<essence identifier part>-<type>-PDSC_ADMIN.<extension>"
   # e.g. AA1-001-essence-file-goes-here-thumb-PDSC_ADMIN.jpg where collection AA1 has item 001 with essence "essence-file-goes-here"
-  def send_admin_essence(collection, item, essence_filename)
+  def admin_essence_location(collection, item, essence_filename)
     item_prefix = "#{collection.identifier}-#{item.identifier}-"
     essence_part = essence_filename.sub(item_prefix, '').sub(/^(.+?)-[^-]+?-PDSC_ADMIN\..+/, '\1')
     essence = item.essences.where('filename LIKE :prefix', prefix: "#{item_prefix}#{essence_part}%").first
@@ -65,11 +68,8 @@ class RepositoryController < ApplicationController
 
     authorize! :read, essence
 
-    admin_file_path = "#{Nabu::Application.config.archive_directory}/#{collection.identifier}/#{item.identifier}/#{essence_filename}"
-    if File.file? admin_file_path
-      stats = Nabu::Media.new(admin_file_path)
+    return unless Proxyist.exists? item.full_identifier, essence_filename
 
-      return send_file(admin_file_path, :filename => essence_filename, :type => stats.mimetype)
-    end
+    Proxyist.get_object(item.full_identifier, essence_filename)
   end
 end

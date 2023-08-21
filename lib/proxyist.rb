@@ -12,13 +12,19 @@ module Net
         http.put(url.path, data, header)
       end
     end
+
+    def self.head(url)
+      start(url.hostname, url.port, use_ssl: url.scheme == 'https') do |http|
+        http.head(url.path)
+      end
+    end
   end
 end
 
 module Proxyist
-  def self.get_object(identifier, filename, _params)
+  def self.get_object(identifier, filename, params = {})
     url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
-    url += '?disposition=attachment' if parms.download
+    url += '?disposition=attachment' if params[:download]
 
     response = Net::HTTP.get_response(url)
 
@@ -31,5 +37,11 @@ module Proxyist
     url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
 
     Net::HTTP.put(url, data, headers)
+  end
+
+  def self.exists?(identifier, filename)
+    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+
+    Net::HTTP.head(url)
   end
 end
