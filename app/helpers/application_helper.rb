@@ -1,5 +1,3 @@
-require 'aws-sdk-s3'
-
 module ApplicationHelper
   def admin_user_signed_in?
     user_signed_in? and current_user.admin?
@@ -49,29 +47,5 @@ module ApplicationHelper
   def admin_messages
     now = DateTime.now
     AdminMessage.where("start_at <= ?", now).where("finish_at >= ?", now)
-  end
-
-  def catalog_download(path)
-    # NOTE: This is all hard coded but will be replace by OCFL soon so we don't care
-    bucket = Rails.env.production? ? 'nabu-catalog-prod' : 'nabu-catalog-stage'
-
-    s3 = Aws::S3::Resource.new(region: 'ap-southeast-2')
-
-    obj = s3.bucket(bucket).object(path)
-
-    filename = path.split('/').last
-
-    obj.presigned_url(:get, expires_in: 3600, response_content_disposition: "attachment; filename=\"#{filename}\"")
-  end
-
-  def catalog_url(path)
-    # NOTE: This is all hard coded but will be replace by OCFL soon so we don't care
-    bucket = Rails.env.production? ? 'nabu-catalog-prod' : 'nabu-catalog-stage'
-
-    s3 = Aws::S3::Resource.new(region: 'ap-southeast-2')
-
-    obj = s3.bucket(bucket).object(path)
-
-    obj.presigned_url(:get, expires_in: 3600)
   end
 end

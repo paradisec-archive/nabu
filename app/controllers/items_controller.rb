@@ -194,7 +194,8 @@ class ItemsController < ApplicationController
   end
 
   def display
-    redirect_to helpers.catalog_url(@item.s3_path), allow_other_host: true
+    location = Proxyist.get_object(@item.full_identifier, "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml")
+    redirect_to location, allow_other_host: true
   end
 
   def new_report
@@ -264,8 +265,8 @@ class ItemsController < ApplicationController
         thumbnail_url = repository_essence_url.gsub(".#{essence_extension}", '-thumb-PDSC_ADMIN.jpg')
 
         # Copied from Essence#path and Essence#full_identifier.
-        path = "#{Nabu::Application.config.archive_directory}/#{essence.item.identifier}/#{File.basename(thumbnail_url)}"
-        thumbnail_url = nil unless File.exist?(path)
+        thumbnail_exists = Proxyist.exists?(essence.item.identifier, File.basename(thumbnail_url))
+        thumbnail_url = nil unless thumbnail_exists
 
         # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
         unless images_values.key?(essence_basename)

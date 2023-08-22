@@ -32,12 +32,12 @@ class RepositoryController < ApplicationController
     # if a standard essence file was found, return that as usual
     if essence.present?
       authorize! :read, essence
-      redirect_to helpers.catalog_download(essence.s3_path), allow_other_host: true
+      location = Proxyist.get_object(essence.item.full_identifier, essence.filename, download: true)
+
+      redirect_to location, allow_other_host: true
 
       return
-
-    # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
-    elsif params[:essence_filename].include?('PDSC_ADMIN')
+    elsif params[:essence_filename].include?('PDSC_ADMIN') # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
       location = admin_essence_location(collection, item, params[:essence_filename])
 
       redirect_to location, allow_other_host: true if location
@@ -64,6 +64,6 @@ class RepositoryController < ApplicationController
 
     return unless Proxyist.exists? item.full_identifier, essence_filename
 
-    Proxyist.get_object(item.full_identifier, essence_filename)
+    Proxyist.get_object(item.full_identifier, essence_filename, download: true)
   end
 end

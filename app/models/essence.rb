@@ -66,12 +66,8 @@ class Essence < ApplicationRecord
     Nabu::Application.config.archive_directory + "#{full_identifier}"
   end
 
-  def s3_path
-    full_identifier
-  end
-
   def full_identifier
-    item.collection.identifier + '/' + item.identifier + '/' + filename
+    "#{item.collection.identifier}/#{item.identifier}/#{filename}"
   end
 
   def next_essence

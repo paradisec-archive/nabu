@@ -192,18 +192,6 @@ class Item < ApplicationRecord
     collection
   end
 
-  def path
-    basepath = Nabu::Application.config.archive_directory + '/' + collection.identifier + '/' + identifier + '/'
-    filename = "#{full_identifier}-CAT-PDSC_ADMIN.xml"
-    basepath + filename
-  end
-
-  def s3_path
-    basepath = collection.identifier + '/' + identifier + '/'
-    filename = "#{full_identifier}-CAT-PDSC_ADMIN.xml"
-    basepath + filename
-  end
-
   def xml_key
     "paradisec.org.au/item/#{full_identifier}"
   end
