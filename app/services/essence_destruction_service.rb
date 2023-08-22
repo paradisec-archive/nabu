@@ -7,12 +7,12 @@ class EssenceDestructionService
     begin
       FileUtils.rm_f(essence.path)
 
-      puts "[DELETE] Removed essence file at [#{essence.path}]"
+      Rails.logger.info "[DELETE] Removed essence file at [#{essence.path}]"
 
       admin_files_regex = essence.path.sub(/\..+?$/, '*PDSC_ADMIN*')
       FileUtils.rm_f Dir.glob(admin_files_regex)
 
-      puts "[DELETE] Removed any admin files for essence at [#{admin_files_regex}]"
+      Rails.logger.info "[DELETE] Removed any admin files for essence at [#{admin_files_regex}]"
 
       result = true
     rescue => e
@@ -23,9 +23,9 @@ class EssenceDestructionService
     essence.destroy
 
     if result
-      {notice: 'Essence removed successfully, and file deleted from archive (undo not possible).'}
+      { notice: 'Essence removed successfully, and file deleted from archive (undo not possible).' }
     else
-      {error: "Essence removed, but deleting file failed with error: #{output}"}
+      { error: "Essence removed, but deleting file failed with error: #{output}" }
     end
   end
 

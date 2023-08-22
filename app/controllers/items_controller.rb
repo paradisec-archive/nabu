@@ -55,6 +55,10 @@ class ItemsController < ApplicationController
     end
   end
 
+  def edit
+    @page_title = 'Nabu - Edit Item'
+  end
+
   def create
     if @item.save
       flash[:notice] = 'Item was successfully created.'
@@ -65,10 +69,6 @@ class ItemsController < ApplicationController
 
       render action: 'new'
     end
-  end
-
-  def edit
-    @page_title = 'Nabu - Edit Item'
   end
 
   def destroy
@@ -155,7 +155,6 @@ class ItemsController < ApplicationController
     params.delete(:per_page) if params[:per_page] == '0'
 
     @page_title = 'Nabu - Advanced Item Search'
-    search_params = params[:export_all] ? params.merge(per_page: 500, start_page: 1) : params
     @params = advanced_search_params
 
     build_advanced_search
@@ -183,7 +182,7 @@ class ItemsController < ApplicationController
     @params = advanced_search_params
 
     accessible_items = Item.accessible_by(current_ability)
-                           .where(id: params[:item_ids].split(' '))
+                           .where(id: params[:item_ids].split)
                            .pluck(:id)
     BulkUpdateItemsService.new(item_ids: accessible_items,
                                current_user_email: current_user.try(:email),
@@ -254,11 +253,11 @@ class ItemsController < ApplicationController
       when 'mp3', 'ogg', 'oga'
         unless audio_values.key?(essence_basename)
           audio_values[essence_basename] = {
-            'files' => [],
+            'files' => []
           }
         end
         audio_values[essence_basename]['files'] << repository_essence_url
-      when 'mp4', 'webm', 'ogg', 'ogv', 'mov', 'webm'
+      when 'mp4', 'webm', 'ogv', 'mov'
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
       when 'jpg', 'jpeg', 'png'
@@ -291,7 +290,7 @@ class ItemsController < ApplicationController
       'trs' => trs_values,
       'video' => video_values
     }
-        # Ignore the file
+    # Ignore the file
     respond_to do |format|
       format.json do
         render json: response_value
@@ -304,7 +303,7 @@ class ItemsController < ApplicationController
   def try_full_identifier_redirect
     return if params[:search].blank?
 
-    collection_identifier, item_identifier = params[:search].split(/-/)
+    collection_identifier, item_identifier = params[:search].split('-')
 
     return unless collection_identifier.present? && item_identifier.present?
 
@@ -329,10 +328,7 @@ class ItemsController < ApplicationController
     options[:item_agents_attributes] ||= {}
     options[:item_agents_attributes].each_pair do |_id, iaa|
       name = iaa['user_id']
-      if name =~ /^NEWCONTACT:/
-        p 'NEW'
-        iaa['user_id'] = create_contact(name)
-      end
+      iaa['user_id'] = create_contact(name) if name =~ /^NEWCONTACT:/
     end
 
     options[:collector_id] = create_contact(options[:collector_id]) if options[:collector_id] =~ /^NEWCONTACT:/
@@ -340,7 +336,7 @@ class ItemsController < ApplicationController
 
   def find_by_full_identifier
     if params[:id]
-      collection_identifier, item_identifier = params[:id].split(/-/)
+      collection_identifier, item_identifier = params[:id].split('-')
       @collection = Collection.find_by(identifier: collection_identifier)
       @item = @collection.items.find_by(identifier: item_identifier)
     elsif params[:collection_id]
@@ -359,7 +355,7 @@ class ItemsController < ApplicationController
     export_all = params[:export_all] || false
     per_page = export_all ? 500 : (params[:per_page] || 10).to_i
 
-    #TODO: fix CSV stream for builder method
+    # TODO: fix CSV stream for builder method
 
     # only stream CSV if small enough
     if @search.total <= 5000 || (!export_all && per_page <= 5000)
@@ -389,12 +385,12 @@ class ItemsController < ApplicationController
     if params[:clause].present?
       @search = build_query(params)
       @items = @search
-      @result_ids = @items.map(&:full_identifier)
     else
       @search = ItemSearchService.build_advanced_search(params, current_user)
       @items = @search.hits.map(&:result)
-      @result_ids = @items.map(&:full_identifier)
     end
+
+    @result_ids = @items.map(&:full_identifier)
   end
 
   def build_deletable_params(item, items)
@@ -407,17 +403,19 @@ class ItemsController < ApplicationController
 
   def bulk_deletable_relation(relation, associated_resource, associated_resource_id, items)
     ids = relation.where(item_id: items.map(&:id))
-            .group_by(&associated_resource_id)
-            .keys
+                  .group_by(&associated_resource_id)
+                  .keys
+
+    return if ids.blank?
+
     associated_resource.where(id: ids).map do |resource|
       { id: resource.id, text: resource.name }
-    end if ids.present?
+    end
   end
 
   def basic_search_params
     params.permit(
       :format,
-
       :search, :page, :per_page, :sort, :direction,
       :language_code, :country_code, :collector_id,
       :export_all
