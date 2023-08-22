@@ -62,10 +62,6 @@ class Essence < ApplicationRecord
     end
   end
 
-  def path
-    Nabu::Application.config.archive_directory + "#{full_identifier}"
-  end
-
   def full_identifier
     "#{item.collection.identifier}/#{item.identifier}/#{filename}"
   end

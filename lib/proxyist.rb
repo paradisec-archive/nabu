@@ -22,6 +22,16 @@ module Net
 end
 
 module Proxyist
+  def self.list(identifier)
+    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}")
+
+    response = Net::HTTP.get_response(url)
+
+    raise 'Proxyist request failed' unless response.is_a?(Net::HTTPOK)
+
+    JSON.parse(response.body)
+  end
+
   def self.get_object(identifier, filename, params = {})
     url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
     url += '?disposition=attachment' if params[:download]

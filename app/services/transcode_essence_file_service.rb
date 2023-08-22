@@ -1,5 +1,10 @@
 require 'nabu/media'
 
+# TODO: Temp till paragest
+def essence_path(essence)
+  "/src/catalog/#{essence.full_identifier}"
+end
+
 # Transcode essence files for a single item
 class TranscodeEssenceFileService
   include ActionView::Helpers::NumberHelper
@@ -35,14 +40,14 @@ class TranscodeEssenceFileService
     new_essence_filename = File.basename(essence.filename, '.*') + '.webm'
     return if @item.essences.where(filename: new_essence_filename).any?
     new_essence = Essence.new(:item => @item, :filename => new_essence_filename)
-    return unless File.exist?(essence.path)
-    movie = FFMPEG::Movie.new(essence.path)
-    movie.transcode(new_essence.path, '-c:v libvpx -qmin 0 -qmax 20 -crf 5 -b:v 2M -c:a libvorbis')
+    return unless File.exist?(essence_path(essence))
+    movie = FFMPEG::Movie.new(essence_path(essence))
+    movie.transcode(essence_path(essence), '-c:v libvpx -qmin 0 -qmax 20 -crf 5 -b:v 2M -c:a libvorbis')
     populate_essence_object(new_essence)
   end
 
   def populate_essence_object(essence)
-    media = Nabu::Media.new(essence.path)
+    media = Nabu::Media.new(essence_path(essence))
     fail unless media
 
     essence.mimetype   = media.mimetype

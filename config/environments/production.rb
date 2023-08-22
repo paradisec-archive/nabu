@@ -100,7 +100,6 @@ Rails.application.configure do
 
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
   # --- OVERWRITE FOR PRODUCTION
-  config.archive_directory = "/srv/catalog/"
   config.upload_directories = [
     "/srv/nabu/archive_me/",
     "/srv/nabu/manual_uploads/"

@@ -1,16 +1,18 @@
 class EssenceDestructionService
-
   # remove file and db record(s)
   def self.destroy(essence)
     result = false
 
     begin
-      FileUtils.rm_f(essence.path)
+      Proxyist.delete(essence.item.full_identifier, essence.filename)
 
-      Rails.logger.info "[DELETE] Removed essence file at [#{essence.path}]"
+      Rails.logger.info "[DELETE] Removed essence file at [#{essence.item.full_identifier}:#{essence.filename}"
 
-      admin_files_regex = essence.path.sub(/\..+?$/, '*PDSC_ADMIN*')
-      FileUtils.rm_f Dir.glob(admin_files_regex)
+      files = Proxyist.list(essence.item.full_identifier)
+
+      admin_files_regex = essence.filename.sub(/\..+?$/, '.*PDSC_ADMIN.*')
+      admin_files = files.grep(Regexp.new(admin_files_regex))
+      admin_files.each { |file| Proxyist.delete(essence.item.full_identifier, file) }
 
       Rails.logger.info "[DELETE] Removed any admin files for essence at [#{admin_files_regex}]"
 
@@ -28,5 +30,4 @@ class EssenceDestructionService
       { error: "Essence removed, but deleting file failed with error: #{output}" }
     end
   end
-
 end

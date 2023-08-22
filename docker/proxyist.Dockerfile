@@ -1,4 +1,4 @@
-FROM ghcr.io/paradisec-archive/proxyist:v0.2.18
+FROM ghcr.io/paradisec-archive/proxyist:v0.3.0
 
 COPY docker/proxyist.config.prod.js /usr/src/app/proxyist.config.js
 

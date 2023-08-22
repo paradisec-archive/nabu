@@ -28,17 +28,11 @@ module Nabu
 
     # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
 
-    # This is the base directory to store the essence files in.
-    # They will be stored with a pattern of
-    # "/#{collection_id}/#{item_id}/#{filename}" .
-    config.archive_directory = "#{Rails.root}/public/system/nabu-archive/"
-
-    # This is the directory from where Nabu will pick up files to save to the
-    # structure defined by config.archive_directory . File names have to follow
-    # the pattern: "#{collection_id}-#{item_id}-xxx.xxx", so they can be moved
-    # into the correct directory.
-    # Note: files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
-    # will be copied, but not added to the list of imported files in Nabu.
+    # This is the directory from where Nabu will pick up files. File names have
+    # to follow the pattern: "#{collection_id}-#{item_id}-xxx.xxx", so they can
+    # be moved into the correct directory. Note: files of the pattern
+    # "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx" will be copied, but not
+    # added to the list of imported files in Nabu.
     config.upload_directories = [
       "#{Rails.root}/public/system/send_to_archive/",
       "/tmp/test/"

@@ -1,8 +1,10 @@
 class CatalogDbSyncValidatorService
+  # TODO: Make this support proxyist
+
   attr_reader :catalog_dir, :verbose
 
   def initialize(verbose: false)
-    @catalog_dir = Nabu::Application.config.archive_directory
+    @catalog_dir = '/srv/catalog'
     @verbose = verbose
   end
 

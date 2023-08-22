@@ -9,13 +9,10 @@ class ItemDestructionService
     item.destroy
 
     # remove directory and PDSC_ADMIN files on disk
-    directory = Nabu::Application.config.archive_directory + "#{item.collection.identifier}/#{item.identifier}/"
-    if File.directory?(directory)
-      FileUtils.rm_rf(directory)
-      Rails.logger.info "[DELETE] Removed entire item directory at [#{directory}]"
-    else
-      Rails.logger.info "[DELETE] The path [#{directory}] does not refer to an item directory!"
-    end
+    files = Proxyist.list(item.full_identifier)
+    files.each { |file| Proxyist.delete(item.full_identifier, file) }
+
+    Rails.logger.info "[DELETE] Removed entire item directory at [#{item.full_identifier}]: #{files.size} files"
 
     if deleted_essence_count.positive?
       response[:messages][:notice] = 'Item and all its contents removed permanently (no undo possible)'

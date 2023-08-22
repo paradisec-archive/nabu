@@ -1,5 +1,7 @@
 class CollectionDestructionService
   def self.destroy(collection)
+    item_identifiers = collection.items.map(&:full_identifier)
+
     essences = collection.items.map(&:essences).flatten
     essence_ids = essences.map(&:id)
 
@@ -12,13 +14,17 @@ class CollectionDestructionService
     begin
       collection.destroy
 
-      directory = Nabu::Application.config.archive_directory + "#{collection.identifier}"
-      if File.directory?(directory)
-        FileUtils.rm_rf(directory)
-        puts "[DELETE] Removed entire collection directory at [#{directory}]"
-      else
-        puts "[DELETE] The path [#{directory}] does not refer to a collection directory!"
+      # Remove The items just in case
+      item_identifiers.each do |item_identifier|
+        files = Proxyist.list(item_identifier)
+        files.each { |file| Proxyist.delete(item_identifier, file) }
+
+        Rails.logger.info "[DELETE] Removed entire item directory at [#{item}] #{files.size} files"
       end
+
+      files = Proxyist.list(collection.identifier)
+      files.each { |file| Proxyist.delete(collection.identifier, file) }
+      Rails.logger.info "[DELETE] Removed entire collection directory at [#{collection.identifier}] #{files.size} files"
     rescue => e
       return {
         success: false,
@@ -31,9 +37,9 @@ class CollectionDestructionService
     {
       success: true,
       messages: {
-        notice: "Collection removed successfully#{deleted_items_count == 0 ? '' : ' and files deleted from archive (undo not possible)'}."
+        notice: "Collection removed successfully#{deleted_items_count.zero? ? '' : ' and files deleted from archive (undo not possible)'}."
       },
-      can_undo: deleted_items_count == 0
+      can_undo: deleted_items_count.zero?
     }
   end
 end

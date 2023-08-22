@@ -10,6 +10,11 @@ include ApplicationHelper
 # # ERROR has its usual meaning
 # # No need for a keyword for announcing a particular action is about to start,
 # # or has just finished
+
+# TODO: Temp till new ingest system
+
+archive_dir = '/srv/catalog'
+
 namespace :archive do
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
@@ -232,7 +237,7 @@ namespace :archive do
           # make sure the archive directory for the collection and item exists
           # and move the file there
           begin
-            destination_path = Nabu::Application.config.archive_directory + "#{coll_id}/#{item_id}/"
+            destination_path = archive_dir + "#{coll_id}/#{item_id}/"
 
             if dry_run
               puts "DRY_RUN: file #{file} would be copied into archive at #{destination_path}"
@@ -319,10 +324,7 @@ namespace :archive do
     force_update = (ENV['FORCE'] == 'true')
     ignore_update_file_prefixes = (ENV['IGNORE_UPDATE_FILE_PREFIX'] || '').split(':')
 
-    # find essence files in Nabu::Application.config.archive_directory
-    archive = Nabu::Application.config.archive_directory
-
-    UpdateFilesService.run(archive, ignore_update_file_prefixes, force_update, verbose, dry_run)
+    UpdateFilesService.run(archive_dir, ignore_update_file_prefixes, force_update, verbose, dry_run)
   end
 
 
@@ -331,10 +333,7 @@ namespace :archive do
     verbose = ENV['VERBOSE'] ? true : false
     dry_run = ENV['DRY_RUN'] ? true : false
 
-    # find essence files in Nabu::Application.config.archive_directory
-    archive = Nabu::Application.config.archive_directory
-
-    AdminFilesService.run(verbose, archive, dry_run)
+    AdminFilesService.run(verbose, archive_dir, dry_run)
   end
 
   desc 'Delete collection with all items'
@@ -362,10 +361,7 @@ namespace :archive do
     collection.destroy
     puts "...done"
 
-    # now check files in directory
-    archive = Nabu::Application.config.archive_directory
-
-    files = Dir.glob(archive + "#{coll_id}/*")
+    files = Dir.glob(archive_dir + "#{coll_id}/*")
     if files.length > 0
       puts "\nNOW PLEASE REMOVE ARCHIVE FILES AND FOLDERS FOR COLLECTION #{coll_id}:"
       puts files
