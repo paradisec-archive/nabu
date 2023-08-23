@@ -109,7 +109,7 @@ class ChecksumAnalyserService
   end
 
   def self.find_checksum_files_by_collection(collection_pattern)
-    Dir.glob("#{Nabu::Application.config.archive_directory}/#{collection_pattern}/*-checksum-*").map do |file_path|
+    Dir.glob("/srv/catalog/#{collection_pattern}/*-checksum-*").map do |file_path|
       split_path = file_path.split('/')
 
       { destination_path: "#{split_path[0..(split_path.length - 2)].join('/')}/", file: split_path.last }
