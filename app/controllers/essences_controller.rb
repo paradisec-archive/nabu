@@ -1,9 +1,9 @@
 require 'proxyist'
 
 class EssencesController < ApplicationController
-  load_and_authorize_resource :collection, :find_by => :identifier, except: [:list_mimetypes]
-  load_and_authorize_resource :item, :find_by => :identifier, :through => :collection, except: [:list_mimetypes]
-  load_and_authorize_resource :essence, :through => :item, except: [:list_mimetypes]
+  load_and_authorize_resource :collection, find_by: :identifier, except: [:list_mimetypes]
+  load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: [:list_mimetypes]
+  load_and_authorize_resource :essence, through: :item, except: [:list_mimetypes]
 
   rescue_from CanCan::AccessDenied do
     flash[:notice] = 'Please Sign Up and Log In to access this file.'
@@ -12,15 +12,14 @@ class EssencesController < ApplicationController
 
   def show
     @page_title = "Nabu - #{@essence.filename} (#{@essence.item.title})"
-    unless can? :manage, @essence
-      if @essence.item.access_condition.nil?
-        flash[:error] = 'Item does not have data access conditions set'
-        redirect_to [@collection, @item]
-      elsif ['Open (subject to agreeing to PDSC access conditions)', 'Open (subject to the access condition details)'].include? @essence.item.access_condition.name
-        unless session["terms_#{@collection.id}"] == true
-          redirect_to show_terms_collection_item_essence_path
-        end
-      end
+
+    return if can? :manage, @essence
+
+    if @essence.item.access_condition.nil?
+      flash[:error] = 'Item does not have data access conditions set'
+      redirect_to [@collection, @item]
+    elsif ['Open (subject to agreeing to PDSC access conditions)'].include? @essence.item.access_condition.name
+      redirect_to show_terms_collection_item_essence_path unless session["terms_#{@collection.id}"] == true
     end
   end
 
@@ -60,11 +59,12 @@ class EssencesController < ApplicationController
   end
 
   def list_mimetypes
-    render json: Essence.where('mimetype like ?', "%#{params[:q]}%").distinct.order(:mimetype).pluck(:mimetype).map{|m| {id: m, name: m}} # list distinct mimetypes from the db
+    # list distinct mimetypes from the db
+    render json: Essence.where('mimetype like ?', "%#{params[:q]}%").distinct.order(:mimetype).pluck(:mimetype).map { |m| { id: m, name: m } }
   end
 
   def essence_params
     params.require(:essence)
-      .permit(:item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated)
+          .permit(:item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated)
   end
 end
