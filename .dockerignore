@@ -13,9 +13,9 @@
 !/nabu.graphql
 !/Rakefile
 
-!solr
-/solr/default
-/solr/development
-/solr/mycores
-/solr/test
-/solr/pids
+#!solr
+#/solr/default
+#/solr/development
+#/solr/mycores
+#/solr/test
+#/solr/pids
