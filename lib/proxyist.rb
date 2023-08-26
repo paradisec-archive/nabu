@@ -18,6 +18,12 @@ module Net
         http.head(url.path)
       end
     end
+
+    def self.delete(url)
+      start(url.hostname, url.port, use_ssl: url.scheme == 'https') do |http|
+        http.delete(url.path)
+      end
+    end
   end
 end
 
@@ -47,6 +53,12 @@ module Proxyist
     url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
 
     Net::HTTP.put(url, data, headers)
+  end
+
+  def self.delete_object(identifier, filename)
+    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+
+    Net::HTTP.delete(url)
   end
 
   def self.exists?(identifier, filename)

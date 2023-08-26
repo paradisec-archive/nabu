@@ -2,7 +2,7 @@
   %p.comment_body
     = simple_format comment.body
     - if can? :destroy, comment
-      = link_to 'Delete', comment_path(comment), :data => { :turbo => true, :turbo_method => :delete }, :remote => true, :class => 'button'
+      = button_to 'Delete', comment_path(comment), :method => :delete
   %p.comment_who
     = 'by '
     - if can? :manage, comment.owner

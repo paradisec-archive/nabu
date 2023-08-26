@@ -297,10 +297,9 @@
       -if @item.essences.any?
         %p.delete-warning
           %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
-        = link_to 'Delete item and contents', collection_item_path(@collection, @item), :class => 'button',
-          :data => { :turbo => true, :turbo_method => :delete, :turbo_confirm => 'Do you really want to delete this item and all of its content files?' }
+        = button_to 'Delete item and contents', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item and all of its content files?' }
       -else
-        = link_to 'Delete item', collection_item_path(@collection, @item), :data => { :turbo => true, :turbo_method => :delete, :turbo_confirm => 'Do you really want to delete this item?' }, :class => 'button'
+        = button_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item?' }
       = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button right', style: 'margin-left: 0.4rem;'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}

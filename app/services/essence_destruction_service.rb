@@ -4,7 +4,7 @@ class EssenceDestructionService
     result = false
 
     begin
-      Proxyist.delete(essence.item.full_identifier, essence.filename)
+      Proxyist.delete_object(essence.item.full_identifier, essence.filename)
 
       Rails.logger.info "[DELETE] Removed essence file at [#{essence.item.full_identifier}:#{essence.filename}"
 
