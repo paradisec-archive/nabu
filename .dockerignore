@@ -13,9 +13,8 @@
 !/nabu.graphql
 !/Rakefile
 
-#!solr
-#/solr/default
-#/solr/development
-#/solr/mycores
-#/solr/test
-#/solr/pids
+!/solr/solr.xml
+!/solr/zoo.cfg
+!/solr/configsets
+!/solr/production/core.properties
+!/solr/staging/core.properties
