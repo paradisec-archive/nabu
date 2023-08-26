@@ -15,7 +15,7 @@ if [ -z "$TASK_NAME" ]; then
 fi
 
 echo "Getting task..."
-TASK=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep $TASK_NAME | tail -1)
+TASK=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep -i $TASK_NAME | tail -1)
 
 echo "Getting cluster..."
 CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
