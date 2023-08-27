@@ -130,15 +130,12 @@ class CollectionsController < ApplicationController
     flash[:notice] = response[:messages][:notice]
     flash[:error] = response[:messages][:error]
 
-    if response[:success]
-      if response[:can_undo]
-        undo_link = view_context.link_to('undo', revert_version_path(@collection.versions.last), method: :post, class: 'undo')
-        flash[:notice] = flash[:notice] + " (#{undo_link})"
-      end
-      redirect_to search_collections_path
-    else
-      redirect_to @collection
+    if response[:success] && response[:can_undo]
+      undo_link = view_context.link_to('undo', revert_version_path(@collection.versions.last), method: :post, class: 'undo')
+      flash[:notice] = flash[:notice] + " (#{undo_link})"
     end
+
+    redirect_to search_collections_path
   end
 
   def search

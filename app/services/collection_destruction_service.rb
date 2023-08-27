@@ -19,7 +19,7 @@ class CollectionDestructionService
         files = Proxyist.list(item_identifier)
         files.each { |file| Proxyist.delete_object(item_identifier, file) }
 
-        Rails.logger.info "[DELETE] Removed entire item directory at [#{item}] #{files.size} files"
+        Rails.logger.info "[DELETE] Removed entire item directory at [#{item_identifier}] #{files.size} files"
       end
 
       files = Proxyist.list(collection.identifier)
