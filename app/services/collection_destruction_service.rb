@@ -17,13 +17,13 @@ class CollectionDestructionService
       # Remove The items just in case
       item_identifiers.each do |item_identifier|
         files = Proxyist.list(item_identifier)
-        files.each { |file| Proxyist.delete(item_identifier, file) }
+        files.each { |file| Proxyist.delete_object(item_identifier, file) }
 
         Rails.logger.info "[DELETE] Removed entire item directory at [#{item}] #{files.size} files"
       end
 
       files = Proxyist.list(collection.identifier)
-      files.each { |file| Proxyist.delete(collection.identifier, file) }
+      files.each { |file| Proxyist.delete_object(collection.identifier, file) }
       Rails.logger.info "[DELETE] Removed entire collection directory at [#{collection.identifier}] #{files.size} files"
     rescue => e
       return {

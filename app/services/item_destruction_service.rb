@@ -10,7 +10,7 @@ class ItemDestructionService
 
     # remove directory and PDSC_ADMIN files on disk
     files = Proxyist.list(item.full_identifier)
-    files.each { |file| Proxyist.delete(item.full_identifier, file) }
+    files.each { |file| Proxyist.delete_object(item.full_identifier, file) }
 
     Rails.logger.info "[DELETE] Removed entire item directory at [#{item.full_identifier}]: #{files.size} files"
 
