@@ -1,13 +1,18 @@
 # TODO
 
+## Migration
+* Jobs Container
+* Cron jobs
+* Solr index persistent?
+
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
-* Why is google crawling disabled
 
 # Security
 * Had to add lots of optional => true, are they really or should we fix the tests?
 
-# General NOtes
+# General Notes
+* Should some of the stuff we do as jobs be live?
 
 ## Stuff to replace
 * Add storage to NABU so we don't lose anything when containers die
@@ -23,8 +28,6 @@
 * streamio-ffmpeg replace with something more modern
 * ditch timeliness - overkill and outdated
 * Test CSRF on graphql
-* fix link_to :delete
-* Check link_to that move from confirm -> data-confirm works
 * CHeck f.submmit :confirm should this be data?
 * Can we move paper_trail to ApplicationRecord?
 * permit! used for search is bad
@@ -40,12 +43,8 @@
 # CRON
 ROtate logs
 mysql backup
-
 paper-trail can we move to JSON serialzer
-
 CHeck monit config
-Ask nick about /src/catalog/webserver_psdc
-
 *transform_images looks like it checks everything and then skips if it exists we should keep track
 
 # OAI
