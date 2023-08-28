@@ -1,7 +1,6 @@
 # TODO
 
 ## Migration
-* Jobs Container
 * Cron jobs
 * Solr index persistent?
 

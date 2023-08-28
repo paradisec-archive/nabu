@@ -127,33 +127,37 @@ export class AppStack extends cdk.Stack {
     // App
     // ////////////////////////
 
+    const appImage = ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' });
+    const commonAppImageOptions = {
+      image: appImage,
+      environment: {
+        RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
+        RAILS_ENV: railsEnv,
+        SOLR_URL: `http+srv://search.nabu/solr/${railsEnv}`,
+        PROXYIST_URL: 'http+srv://proxyist.nabu',
+        SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
+        DOI_PREFIX: '10.26278',
+        DATACITE_BASE_URL: 'https://mds.datacite.org',
+      },
+      secrets: {
+        SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(appSecrets, 'secret_key_base'),
+        NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
+        NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'host'),
+        RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_site_key'),
+        RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_secret_key'),
+        SENTRY_API_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'sentry_api_token'),
+        DATACITE_USER: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_user'),
+        DATACITE_PASS: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_pass'),
+      },
+    };
+
     const app = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'AppService', {
       serviceName: 'app',
       cluster,
       memoryLimitMiB: 1024,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' }),
+        ...commonAppImageOptions,
         containerPort: 3000,
-        environment: {
-          RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
-          RAILS_ENV: railsEnv,
-          SOLR_URL: `http+srv://search.nabu/solr/${railsEnv}`,
-          PROXYIST_URL: 'http+srv://proxyist.nabu',
-          SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
-          DOI_PREFIX: '10.26278',
-          DATACITE_BASE_URL: 'https://mds.datacite.org',
-
-        },
-        secrets: {
-          SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(appSecrets, 'secret_key_base'),
-          NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
-          NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'host'),
-          RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_site_key'),
-          RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_secret_key'),
-          SENTRY_API_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'sentry_api_token'),
-          DATACITE_USER: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_user'),
-          DATACITE_PASS: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_pass'),
-        },
       },
 
       // LB config
@@ -174,6 +178,26 @@ export class AppStack extends cdk.Stack {
 
     db.connections.allowDefaultPortFrom(autoScalingGroup, 'Allow from ECS service');
     app.loadBalancer.connections.allowTo(autoScalingGroup, ec2.Port.allTcp(), 'Allow from LB to ECS service');
+
+    // ////////////////////////
+    // Jobs
+    // ////////////////////////
+
+    const jobsTaskDefinition = new ecs.Ec2TaskDefinition(this, 'JobsTaskDefinition');
+    jobsTaskDefinition.addContainer('JobsContainer', {
+      ...commonAppImageOptions,
+      memoryLimitMiB: 1024,
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
+      command: ['bin/delayed_job', 'run'],
+      // command: ['bin/delayed_job', '-n', '5', '--daemon-options="--ontop"', 'start'],
+    });
+
+    new ecs.Ec2Service(this, 'JobsService', {
+      serviceName: 'jobs',
+      cluster,
+      taskDefinition: jobsTaskDefinition,
+      enableExecuteCommand: true,
+    });
 
     // ////////////////////////
     // Search

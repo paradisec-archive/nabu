@@ -82,6 +82,9 @@ COPY --chown=ruby:ruby --from=assets /tmp/public/assets public/assets
 
 COPY --chown=ruby:ruby . .
 
+RUN mkdir log
+RUN ln -s /dev/stdout log/delayed_job.log
+
 ENV \
   RAILS_ENV="production"
   # USER="ruby"
