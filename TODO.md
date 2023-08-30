@@ -2,7 +2,6 @@
 
 ## Migration
 * Cron jobs
-* Solr index persistent?
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3

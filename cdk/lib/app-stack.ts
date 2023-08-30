@@ -203,8 +203,17 @@ export class AppStack extends cdk.Stack {
     // Search
     // ////////////////////////
 
-    const searchTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SearchTaskDefinition');
-    searchTaskDefinition.addContainer('SearchContainer', {
+    const searchTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SearchTaskDefinition', {
+      volumes: [{
+        name: 'solr-data',
+        dockerVolumeConfiguration: {
+          scope: ecs.Scope.SHARED,
+          autoprovision: true,
+          driver: 'local',
+        },
+      }],
+    });
+    const searchContainer = searchTaskDefinition.addContainer('SearchContainer', {
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/search.Dockerfile' }),
       portMappings: [{ containerPort: 8983 }],
@@ -212,6 +221,11 @@ export class AppStack extends cdk.Stack {
       ulimits: [
         { name: ecs.UlimitName.NOFILE, softLimit: 65536, hardLimit: 65536 * 2 },
       ],
+    });
+    searchContainer.addMountPoints({
+      containerPath: `/var/solr/mnt/${railsEnv}`,
+      readOnly: false,
+      sourceVolume: 'solr-data',
     });
 
     new ecs.Ec2Service(this, 'SearchService', {
