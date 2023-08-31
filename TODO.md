@@ -2,6 +2,8 @@
 
 ## Migration
 * Cron jobs
+* AWS BAckups - RDS
+* Monitoring
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
@@ -39,10 +41,7 @@
 * language.retired to language.retired?
 
 # CRON
-ROtate logs
-mysql backup
 paper-trail can we move to JSON serialzer
-CHeck monit config
 *transform_images looks like it checks everything and then skips if it exists we should keep track
 
 # OAI

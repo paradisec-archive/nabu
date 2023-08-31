@@ -30,11 +30,6 @@ every 1.hour do
   nabu_rake "archive:import_files VERBOSE=true", lock: 'archive_import_files'
 end
 
-# TODO: We really shouldn't need this, commenting out for now
-# every 1.hour do
-#   nabu_rake "sunspot:reindex", lock: 'sunsport_reindex', output: { error: 'log/reindex.error.log' }
-# end
-
 every 1.day, :at => '2:00 am' do
   nabu_rake "archive:mint_dois MINT_DOIS_BATCH_SIZE=500", lock: 'archive_mint_dois', output: 'log/doi_minting.log'
 end
@@ -47,12 +42,3 @@ end
 # every 1.day, :at => '2:30 am' do
 #   nabu_rake "data:check_all_checksums", lock: 'data_check_all_checksums'
 # end
-
-every :reboot do
- nabu "bin/delayed_job -n 5 start"
-end
-
-# jonog - perform daily database backups of the database and archive weekly backups for the rest of the month
-#every 1.day, :at => '12:05 am' do
-  # 0 5 * * * /home/deploy/scripts/backup-mysql.rb > /home/deploy/logging/backup-`date +\%F`.log
-#end

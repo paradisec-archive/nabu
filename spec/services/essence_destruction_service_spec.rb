@@ -5,8 +5,7 @@ describe EssenceDestructionService do
 
   context 'when essence file is present on the server' do
     before do
-      #so there are no surprise directory deletions from the service tests
-      allow(FileUtils).to receive(:rm).and_return(nil)
+      allow(Proxyist).to receive(:delete_object).and_return(OpenStruct.new(code: '204'))
     end
 
     it 'should proceed without errors' do
@@ -18,16 +17,11 @@ describe EssenceDestructionService do
   end
 
   context 'when essence file is not present on the server' do
-    before do
-      # so there are no surprise directory deletions from the service tests
-      allow(FileUtils).to receive(:rm).and_raise StandardError.new('No such file or directory @ unlink_internal ')
-    end
-
     it 'should proceed with errors' do
       response = EssenceDestructionService.destroy(essence)
       expect(response).to_not have_key(:notice)
       expect(response).to have_key(:error)
-      expect(response[:error]).to eq('Essence removed, but deleting file failed with error: No such file or directory - ')
+      expect(response[:error]).to eq('Essence removed, but deleting file failed: Not Found')
     end
   end
 end
