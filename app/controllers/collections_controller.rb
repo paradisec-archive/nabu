@@ -61,7 +61,7 @@ class CollectionsController < ApplicationController
               display: 'disabled',
             }
           },
-          features: @collections.items.map { |item| item.as_geo_json(repository_item_url(@collection, item)) }.compact
+          features: @collection.items.map { |item| item.as_geo_json(repository_item_url(@collection, item)) }.compact
         }
 
         render json:
