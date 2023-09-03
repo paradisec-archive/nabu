@@ -662,8 +662,12 @@ class Item < ApplicationRecord
       },
       properties: {
         id: full_identifier,
+        url:,
         name: title,
         description:,
+        languages: content_languages.map(&:name_with_code).join(', '),
+        countries: countries.map(&:name_with_code).join(', '),
+        region:,
         udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
       }
