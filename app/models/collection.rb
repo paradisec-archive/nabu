@@ -539,10 +539,10 @@ class Collection < ApplicationRecord
       }
     }
 
-    json.properties.region = region if region
-    json.properties.description = description if description
-    json.properties.languages = languages.map(&:name_with_code).join(', ') unless languages.empty?
-    json.properties.countries = countries.map(&:name_with_code).join(', ') unless countries.empty?
+    json[:properties][:region] = region if region
+    json[:properties][:description] = description if description
+    json[:properties][:languages] = languages.map(&:name_with_code).join(', ') unless languages.empty?
+    json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
 
     json
   end
