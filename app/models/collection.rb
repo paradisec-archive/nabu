@@ -523,7 +523,7 @@ class Collection < ApplicationRecord
       date = created_at
     end
 
-    {
+    json = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -534,13 +534,17 @@ class Collection < ApplicationRecord
         url:,
         name: title,
         description:,
-        languages: languages.map(&:name_with_code).join(', '),
-        countries: countries.map(&:name_with_code).join(', '),
-        region:,
         udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
       }
     }
+
+    json.properties.region = region if region
+    json.properties.description = description if description
+    json.properties.languages = languages.map(&:name_with_code).join(', ') unless languages.empty?
+    json.properties.countries = countries.map(&:name_with_code).join(', ') unless countries.empty?
+
+    json
   end
 end
 # rubocop:enable Metrics/ClassLength

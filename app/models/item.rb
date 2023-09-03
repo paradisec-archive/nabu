@@ -654,7 +654,7 @@ class Item < ApplicationRecord
     date = originated_on.to_time if originated_on
     date ||= created_at
 
-    {
+    json = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -664,13 +664,16 @@ class Item < ApplicationRecord
         id: full_identifier,
         url:,
         name: title,
-        description:,
-        languages: content_languages.map(&:name_with_code).join(', '),
-        countries: countries.map(&:name_with_code).join(', '),
-        region:,
         udatestart: date.to_i * 1000,
         udateend: Time.zone.now.to_i * 1000
       }
     }
+
+    json.properties.region = region if region
+    json.properties.description = description if description
+    json.properties.languages = content_languages.map(&:name_with_code).join(', ') unless content_languages.empty?
+    json.properties.countries = countries.map(&:name_with_code).join(', ') unless countries.empty?
+
+    json
   end
 end
