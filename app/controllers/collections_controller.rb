@@ -27,7 +27,7 @@ class CollectionsController < ApplicationController
               display: 'disabled'
             }
           },
-          features: @collections.map(&:as_geo_json).compact
+          features: @collections.map { |collection| collection.as_geo_json(repository_collection_url(collection)) }.compact
         }
 
         render json:
@@ -61,7 +61,7 @@ class CollectionsController < ApplicationController
               display: 'disabled',
             }
           },
-          features: @collection.items.map(&:as_geo_json)
+          features: @collections.items.map { |item| item.as_geo_json(repository_item_url(@collection, item)) }.compact
         }
 
         render json:

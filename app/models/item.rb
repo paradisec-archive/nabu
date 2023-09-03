@@ -650,7 +650,7 @@ class Item < ApplicationRecord
     [lng, lat]
   end
 
-  def as_geo_json
+  def as_geo_json(url)
     date = originated_on.to_time if originated_on
     date ||= created_at
 

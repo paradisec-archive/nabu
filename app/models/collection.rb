@@ -510,7 +510,7 @@ class Collection < ApplicationRecord
     xml.target!
   end
 
-  def as_geo_json
+  def as_geo_json(url)
     center = center_coordinate({})
 
     return nil unless center
