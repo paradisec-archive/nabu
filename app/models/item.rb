@@ -669,9 +669,8 @@ class Item < ApplicationRecord
       }
     }
 
-    json[:properties][:region] = region if region
     json[:properties][:description] = description if description
-    json[:properties][:languages] = content_languages.map(&:name_with_code).join(', ') unless content_languages.empty?
+    json[:properties][:languages] = subject_languages.map(&:name_with_code).join(', ') unless subject_languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
 
     json
