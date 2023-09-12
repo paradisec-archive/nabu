@@ -50,6 +50,9 @@ class CollectionsController < ApplicationController
 
     @page_title = "Nabu - #{@collection.title}"
 
+    license = @collection.access_condition.name if @collection.access_condition
+    rights = @collection.access_condition.name if @collection.access_condition
+
     respond_to do |format|
       format.geo_json do
         json = {
@@ -57,13 +60,13 @@ class CollectionsController < ApplicationController
           metadata: {
             id: @collection.full_identifier,
             name: @collection.title,
-            description: @collection.description,
+            description: @collection.description || '',
             url: @collection.url,
             public: true,
             publisher: @collection.collector.name,
             contact: 'admin@paradisec.org.au',
-            license: @collection.access_condition.name,
-            rights: @collection.access_condition.name,
+            license:,
+            rights:
           },
           display: {
             basemapGallery: false,

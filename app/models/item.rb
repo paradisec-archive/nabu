@@ -663,13 +663,10 @@ class Item < ApplicationRecord
       properties: {
         id: full_identifier,
         name: title,
-        description:,
         url:,
         public: true,
         publisher: collector.name,
         contact: 'admin@paradisec.org.au',
-        license: access_condition.name,
-        rights: access_condition.name,
         udatestart: date.to_i * 1000
       }
     }
@@ -677,6 +674,8 @@ class Item < ApplicationRecord
     json[:properties][:description] = description if description
     json[:properties][:languages] = subject_languages.map(&:name_with_code).join(', ') unless subject_languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
+    json[:properties][:license] = access_condition.name if access_condition
+    json[:properties][:rights] = access_condition.name if access_condition
 
     json
   end
