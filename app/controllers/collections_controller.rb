@@ -61,7 +61,7 @@ class CollectionsController < ApplicationController
             id: @collection.full_identifier,
             name: @collection.title,
             description: @collection.description || '',
-            url: @collection.url,
+            url: repository_collection_url(collection),
             public: true,
             publisher: @collection.collector.name,
             contact: 'admin@paradisec.org.au',
