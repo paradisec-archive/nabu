@@ -18,8 +18,12 @@ class CollectionsController < ApplicationController
           type: 'FeatureCollection',
           metadata: {
             id: 'PARADISEC',
-            name: 'All Collections',
-            description: 'All Collections'
+            name: 'PARADISEC Collections',
+            description: 'PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.',
+            url: 'https://catalog.paradisec.org.au',
+            public: true,
+            publisher: 'Pacific and Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)',
+            contact: 'admin@paradisec.org.au',
           },
           display: {
             basemapGallery: false,
@@ -51,9 +55,15 @@ class CollectionsController < ApplicationController
         json = {
           type: 'FeatureCollection',
           metadata: {
-            id: @collection.identifier,
+            id: @collection.full_identifier,
             name: @collection.title,
-            description: @collection.description
+            description: @collection.description,
+            url: @collection.url,
+            public: true,
+            publisher: @collection.collector.name,
+            contact: 'admin@paradisec.org.au',
+            license: @collection.access_condition.name,
+            rights: @collection.access_condition.name,
           },
           display: {
             basemapGallery: false,

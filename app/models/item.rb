@@ -662,10 +662,15 @@ class Item < ApplicationRecord
       },
       properties: {
         id: full_identifier,
-        url:,
         name: title,
-        udatestart: date.to_i * 1000,
-        udateend: Time.zone.now.to_i * 1000
+        description:,
+        url:,
+        public: true,
+        publisher: collector.name,
+        contact: 'admin@paradisec.org.au',
+        license: access_condition.name,
+        rights: access_condition.name,
+        udatestart: date.to_i * 1000
       }
     }
 
