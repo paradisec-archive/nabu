@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import { MainStack } from '../lib/main-stack';
 import { AppStack } from '../lib/app-stack';
-import { NlbStack } from '../lib/nlb-stack';
 import { CommonStack } from '../lib/common-stack';
-import type { Environment } from '../lib/types';
+import type { AppProps, Environment } from '../lib/types';
 
 const globals = {
   appName: 'nabu',
@@ -37,16 +37,22 @@ if (!prod) {
 
 const app = new cdk.App();
 
-environments.forEach((environment) => {
-  new NlbStack(app, `${environment.appName}-nlbstack-${environment.env}`, environment, {
-    env: { account: environment.account, region: environment.region },
-  });
-
-  new AppStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
-    env: { account: environment.account, region: environment.region },
-  });
-});
-
 new CommonStack(app, `${prod.appName}-stack-common`, {
   env: { account: prod.account, region: prod.region },
+});
+
+environments.forEach((environment) => {
+  const mainStack = new MainStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
+    env: { account: environment.account, region: environment.region },
+  });
+
+  const props: AppProps = {
+    ...environment,
+    catalogBucket: mainStack.catalogBucket,
+    zone: mainStack.zone,
+  };
+
+  new AppStack(app, `${environment.appName}-appstack-${environment.env}`, props, {
+    env: { account: environment.account, region: environment.region },
+  });
 });

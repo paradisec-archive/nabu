@@ -16,21 +16,18 @@ ssh-add "${KEYNAME}.pem"
 echo "Finding AMI..."
 AMI=$(aws ec2 describe-images \
   --owners 099720109477 \
-  --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-kinetic-*-arm64-server*" \
+  --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-*-arm64-server*" \
   --query 'sort_by(Images, &CreationDate)[-1].{Name: Name, ImageId: ImageId, CreationDate: CreationDate, Owner:OwnerId}' \
   | jq -r .ImageId)
 
 echo "Finding VPC..."
 VPC_ID=$(aws ec2 describe-vpcs \
   | jq -r '.Vpcs[0].VpcId')
-VPC_ID=vpc-02edf39567b873732
 
 echo "Finding Subnet..."
 SUBNET_ID=$(aws ec2 describe-subnets \
   --filters "Name=vpc-id,Values=${VPC_ID}" \
   | jq -r '.Subnets[0] | .SubnetId')
-SUBNET_ID=subnet-01362dc69b5fd69f3
-
 
 echo "Creating EC2 Security Group..."
 GROUP_NAME="db-upload-group-delete-me-${R}"
@@ -111,7 +108,7 @@ echo SLEEPING
 echo SLEEPING
 echo SLEEPING
 echo SLEEPING
-sleep 300
+sleep 30
 
 echo "Waiting for EC2 Instance..."
 aws ec2 wait instance-running \
@@ -119,11 +116,13 @@ aws ec2 wait instance-running \
 
 echo "Installing dependencies..."
 ssh ubuntu@$INSTANCE_ID \
+  sudo apt update
+ssh ubuntu@$INSTANCE_ID \
   sudo apt install --yes mysql-client bzip2
 
 echo "Get DB secret..."
 DB_SECRET_ID=$(aws secretsmanager list-secrets \
-  | jq -r '.SecretList | .[] | select(.Name | test("RdsInstance")) | .ARN')
+  | jq -r '.SecretList | .[] | select(.Name | test("RdsIns")) | .ARN')
 
 DB_SECRET=$(aws secretsmanager get-secret-value \
   --secret-id "${DB_SECRET_ID}" \

@@ -236,5 +236,202 @@
         ]
       }
     ]
+  },
+  "ssm:account=618916419351:parameterName=/usyd/resources/vpc-id:region=ap-southeast-2": "vpc-0437e3b41f7565c3a",
+  "vpc-provider:account=618916419351:filter.vpc-id=vpc-0437e3b41f7565c3a:region=ap-southeast-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0437e3b41f7565c3a",
+    "vpcCidrBlock": "10.122.113.0/24",
+    "ownerAccountId": "618916419351",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0c482b618e6a76d2d",
+            "cidr": "10.122.113.0/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-05d93362e947058bc",
+            "cidr": "10.122.113.48/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-02fea604d89c6eb4b",
+            "cidr": "10.122.113.144/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-02286fa5cf985481f",
+            "cidr": "10.122.113.96/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-0ed390a90922cd9af",
+            "cidr": "10.122.113.64/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-08f6c9f045d8e4bfd",
+            "cidr": "10.122.113.160/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-0831ade9e3ee74487",
+            "cidr": "10.122.113.112/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-05aa26134dd8f6e72",
+            "cidr": "10.122.113.16/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-05125623fb0c0050a",
+            "cidr": "10.122.113.80/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-044aa4b92f7053d54",
+            "cidr": "10.122.113.128/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-07f3ce4c49091b63e",
+            "cidr": "10.122.113.32/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          },
+          {
+            "subnetId": "subnet-033dc928714037d88",
+            "cidr": "10.122.113.176/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-0000b9d745ba6cf19"
+          }
+        ]
+      }
+    ]
+  },
+  "ssm:account=847483222616:parameterName=/usyd/resources/vpc-id:region=ap-southeast-2": "vpc-09d5391b88ef5d9df",
+  "ssm:account=847483222616:parameterName=/usyd/resources/application-load-balancer/application/listener/https/arn:region=ap-southeast-2": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:listener/app/Ingress-alb-01/a98404019ba2c855/8fc41b4f78a5b234",
+  "vpc-provider:account=847483222616:filter.vpc-id=vpc-09d5391b88ef5d9df:region=ap-southeast-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-09d5391b88ef5d9df",
+    "vpcCidrBlock": "10.122.240.0/24",
+    "ownerAccountId": "847483222616",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0474d8c0f830997e9",
+            "cidr": "10.122.240.96/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-052bde6b68d6efca9",
+            "cidr": "10.122.240.48/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0c59747f5aa0b65e4",
+            "cidr": "10.122.240.144/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-05f49d1140adfa1c6",
+            "cidr": "10.122.240.0/28",
+            "availabilityZone": "ap-southeast-2a",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-07e56c449f278e722",
+            "cidr": "10.122.240.16/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0ee00782c019700e4",
+            "cidr": "10.122.240.64/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-01fa2f040204c9492",
+            "cidr": "10.122.240.112/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0c076e71533345a9c",
+            "cidr": "10.122.240.160/28",
+            "availabilityZone": "ap-southeast-2b",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0b619162411d1e59c",
+            "cidr": "10.122.240.32/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0716e24ac9cf62732",
+            "cidr": "10.122.240.80/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-09ff647d5b8779477",
+            "cidr": "10.122.240.128/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          },
+          {
+            "subnetId": "subnet-0a8badcfc99c18a96",
+            "cidr": "10.122.240.176/28",
+            "availabilityZone": "ap-southeast-2c",
+            "routeTableId": "rtb-027e70cb8f2b1f4ac"
+          }
+        ]
+      }
+    ]
+  },
+  "ssm:account=847483222616:parameterName=/usyd/resources/application-load-balancer/application/arn:region=ap-southeast-2": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/app/Ingress-alb-01/a98404019ba2c855",
+  "load-balancer-listener:account=847483222616:listenerProtocol=HTTPS:loadBalancerArn=arn$:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/app/Ingress-alb-01/a98404019ba2c855:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:listener/app/Ingress-alb-01/a98404019ba2c855/8fc41b4f78a5b234",
+    "listenerPort": 443,
+    "securityGroupIds": [
+      "sg-01757ad1caf451de3"
+    ]
+  },
+  "security-group:account=847483222616:region=ap-southeast-2:securityGroupId=sg-01757ad1caf451de3": {
+    "securityGroupId": "sg-01757ad1caf451de3",
+    "allowAllOutbound": false
+  },
+  "load-balancer:account=847483222616:loadBalancerArn=arn$:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/app/Ingress-alb-01/a98404019ba2c855:loadBalancerType=application:region=ap-southeast-2": {
+    "loadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/app/Ingress-alb-01/a98404019ba2c855",
+    "loadBalancerCanonicalHostedZoneId": "Z1GM3OXH4ZPM65",
+    "loadBalancerDnsName": "internal-Ingress-alb-01-1830394969.ap-southeast-2.elb.amazonaws.com",
+    "vpcId": "vpc-09d5391b88ef5d9df",
+    "securityGroupIds": [
+      "sg-01757ad1caf451de3"
+    ],
+    "ipAddressType": "ipv4"
   }
 }

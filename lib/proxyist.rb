@@ -1,5 +1,4 @@
 require 'net/http'
-require 'srv_lookup'
 
 BASE_URL = Rails.configuration.proxyist_url
 
@@ -29,7 +28,7 @@ end
 
 module Proxyist
   def self.list(identifier)
-    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}")
+    url = "#{BASE_URL}/object/#{identifier}"
 
     response = Net::HTTP.get_response(url)
 
@@ -39,7 +38,7 @@ module Proxyist
   end
 
   def self.get_object(identifier, filename, params = {})
-    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
     url += '?disposition=attachment' if params[:download]
 
     response = Net::HTTP.get_response(url)
@@ -50,19 +49,19 @@ module Proxyist
   end
 
   def self.upload_object(identifier, filename, data, headers = nil)
-    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
     Net::HTTP.put(url, data, headers)
   end
 
   def self.delete_object(identifier, filename)
-    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
     Net::HTTP.delete(url)
   end
 
   def self.exists?(identifier, filename)
-    url = SrvLookup.http("#{BASE_URL}/object/#{identifier}/#{filename}")
+    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
     Net::HTTP.head(url)
   end
