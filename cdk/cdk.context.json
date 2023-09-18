@@ -433,5 +433,27 @@
       "sg-01757ad1caf451de3"
     ],
     "ipAddressType": "ipv4"
+  },
+  "ssm:account=618916419351:parameterName=/usyd/resources/application-load-balancer/application/arn:region=ap-southeast-2": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a",
+  "load-balancer:account=618916419351:loadBalancerArn=arn$:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a:loadBalancerType=application:region=ap-southeast-2": {
+    "loadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a",
+    "loadBalancerCanonicalHostedZoneId": "Z1GM3OXH4ZPM65",
+    "loadBalancerDnsName": "internal-Ingress-alb-01-546310088.ap-southeast-2.elb.amazonaws.com",
+    "vpcId": "vpc-0437e3b41f7565c3a",
+    "securityGroupIds": [
+      "sg-02a8995547a7489b6"
+    ],
+    "ipAddressType": "ipv4"
+  },
+  "load-balancer-listener:account=618916419351:listenerProtocol=HTTPS:loadBalancerArn=arn$:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:listener/app/Ingress-alb-01/4162825c506c4b6a/0b2188c0cd0f4926",
+    "listenerPort": 443,
+    "securityGroupIds": [
+      "sg-02a8995547a7489b6"
+    ]
+  },
+  "security-group:account=618916419351:region=ap-southeast-2:securityGroupId=sg-02a8995547a7489b6": {
+    "securityGroupId": "sg-02a8995547a7489b6",
+    "allowAllOutbound": false
   }
 }

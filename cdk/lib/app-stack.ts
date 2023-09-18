@@ -83,7 +83,7 @@ export class AppStack extends cdk.Stack {
       minCapacity: 1,
       maxCapacity: 1,
 
-      keyName: 'nabu',
+      // keyName: 'nabu',
     });
     // needed by service connect
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({

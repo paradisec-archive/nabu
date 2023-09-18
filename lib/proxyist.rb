@@ -30,7 +30,7 @@ module Proxyist
   def self.list(identifier)
     url = "#{BASE_URL}/object/#{identifier}"
 
-    response = Net::HTTP.get_response(url)
+    response = Net::HTTP.get_response(URI.parse(url))
 
     raise 'Proxyist request failed' unless response.is_a?(Net::HTTPOK)
 
@@ -41,7 +41,7 @@ module Proxyist
     url = "#{BASE_URL}/object/#{identifier}/#{filename}"
     url += '?disposition=attachment' if params[:download]
 
-    response = Net::HTTP.get_response(url)
+    response = Net::HTTP.get_response(URI.parse(url))
 
     raise 'Proxyist is misonfigured, we only support redirects' unless response.is_a?(Net::HTTPRedirection)
 
@@ -51,18 +51,18 @@ module Proxyist
   def self.upload_object(identifier, filename, data, headers = nil)
     url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
-    Net::HTTP.put(url, data, headers)
+    Net::HTTP.put(URI.parse(url), data, headers)
   end
 
   def self.delete_object(identifier, filename)
     url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
-    Net::HTTP.delete(url)
+    Net::HTTP.delete(URI.parse(url))
   end
 
   def self.exists?(identifier, filename)
     url = "#{BASE_URL}/object/#{identifier}/#{filename}"
 
-    Net::HTTP.head(url)
+    Net::HTTP.head(URI.parse(url))
   end
 end
