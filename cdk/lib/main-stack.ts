@@ -16,6 +16,8 @@ export class MainStack extends cdk.Stack {
 
   public zone: route53.IHostedZone;
 
+  public tempCertificate: acm.ICertificate;
+
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -49,6 +51,16 @@ export class MainStack extends cdk.Stack {
       parameterName: '/nabu/resources/certificates/ingest',
       stringValue: certificate.certificateArn,
     });
+
+    // ////////////////////////
+    // Temp Cert
+    // ////////////////////////
+    if (env === 'prod') {
+      this.tempCertificate = new acm.Certificate(this, 'TempCertificate', {
+        domainName: 'catalog.paradisec.org.au',
+        validation: acm.CertificateValidation.fromDns(),
+      });
+    }
 
     // ////////////////////////
     // Meta Bucket

@@ -50,6 +50,7 @@ environments.forEach((environment) => {
     ...environment,
     catalogBucket: mainStack.catalogBucket,
     zone: mainStack.zone,
+    tempCertificate: mainStack.tempCertificate,
   };
 
   new AppStack(app, `${environment.appName}-appstack-${environment.env}`, props, {

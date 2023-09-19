@@ -24,11 +24,12 @@ export class AppStack extends cdk.Stack {
       appName,
       region,
       railsEnv,
-      // env,
+      env,
       zoneName,
 
       catalogBucket,
       zone,
+      tempCertificate,
     } = appProps;
 
     // ////////////////////////
@@ -275,6 +276,10 @@ export class AppStack extends cdk.Stack {
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
       ],
     });
+
+    if (env === 'prod') {
+      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
+    }
 
     // ////////////////////////
     // DNS
