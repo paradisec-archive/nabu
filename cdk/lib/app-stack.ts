@@ -305,12 +305,12 @@ export class AppStack extends cdk.Stack {
     // SES
     // ////////////////////////
 
-    if (env === 'stage') {
-      // From
-      new ses.EmailIdentity(this, 'AdminSesIdentity', {
-        identity: ses.Identity.email('admin@paradisec.org.au'),
-      });
+    // From
+    new ses.EmailIdentity(this, 'AdminSesIdentity', {
+      identity: ses.Identity.email('admin@paradisec.org.au'),
+    });
 
+    if (env === 'stage') {
       // To
       const testers = [
         'johnf@inodes.org',
