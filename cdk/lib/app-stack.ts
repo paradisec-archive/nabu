@@ -8,6 +8,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as ses from 'aws-cdk-lib/aws-ses';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
@@ -203,6 +204,7 @@ export class AppStack extends cdk.Stack {
         SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
         DOI_PREFIX: '10.26278',
         DATACITE_BASE_URL: 'https://mds.datacite.org',
+        AWS_REGION: region,
       },
       secrets: {
         SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(appSecrets, 'secret_key_base'),
@@ -222,6 +224,10 @@ export class AppStack extends cdk.Stack {
       portMappings: [{ containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'AppService' }),
     });
+    appTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendRawEmail'],
+      resources: ['*'],
+    }));
 
     const appService = new ecs.Ec2Service(this, 'AppService', {
       serviceName: 'app',
@@ -247,6 +253,10 @@ export class AppStack extends cdk.Stack {
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
       command: ['bin/delayed_job', 'run'],
     });
+    jobsTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: ['ses:SendRawEmail'],
+      resources: ['*'],
+    }));
 
     new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
@@ -290,5 +300,30 @@ export class AppStack extends cdk.Stack {
       zone,
       domainName: ssm.StringParameter.valueForStringParameter(this, '/usyd/resources/application-load-balancer/ingress/dns'),
     });
+
+    // ////////////////////////
+    // SES
+    // ////////////////////////
+
+    if (env === 'stage') {
+      // From
+      new ses.EmailIdentity(this, 'AdminSesIdentity', {
+        identity: ses.Identity.email('admin@paradisec.org.au'),
+      });
+
+      // To
+      const testers = [
+        'johnf@inodes.org',
+        'jodie.kell@sydney.edu.au',
+        'julia.miller@anu.edu.au',
+        'enwardy@hotmail.com',
+        'thien@unimelb.edu.au',
+      ];
+      testers.forEach((email) => {
+        new ses.EmailIdentity(this, `TesterSesIdentity-${email}`, {
+          identity: ses.Identity.email(email),
+        });
+      });
+    }
   }
 }
