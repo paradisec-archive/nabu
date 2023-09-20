@@ -95,8 +95,8 @@ Rails.application.configure do
   # Our Stuff
   ########################
 
-  config.action_mailer.default_url_options = { :host => 'catalog.paradisec.org.au' }
-  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.default_url_options = { host: 'catalog.paradisec.org.au' }
+  config.action_mailer.delivery_method = :sesv2
 
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
   # --- OVERWRITE FOR PRODUCTION
