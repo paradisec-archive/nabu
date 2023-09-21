@@ -174,6 +174,29 @@ export class AppStack extends cdk.Stack {
       },
     });
 
+    // ////////////////////////
+    // Viewer
+    // ////////////////////////
+
+    const viewerTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ViewerTaskDefinition');
+    viewerTaskDefinition.addContainer('ViewerContainer', {
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromAsset('..', { file: 'docker/viewer.Dockerfile' }),
+      portMappings: [{ name: 'viewer', containerPort: 80 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ViewerService' }),
+      environment: {
+        AWS_REGION: region,
+        BUCKET_NAME: catalogBucket.bucketName,
+      },
+    });
+
+    const viewerService = new ecs.Ec2Service(this, 'ViewerService', {
+      serviceName: 'viewer',
+      cluster,
+      taskDefinition: viewerTaskDefinition,
+      enableExecuteCommand: true,
+    });
+
     // //////////////////////
     // Secrets
     // ////////////////////////
@@ -258,12 +281,13 @@ export class AppStack extends cdk.Stack {
       resources: ['*'],
     }));
 
-    new ecs.Ec2Service(this, 'JobsService', {
+    const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
       cluster,
       taskDefinition: jobsTaskDefinition,
       enableExecuteCommand: true,
     });
+    jobsService.enableServiceConnect();
 
     // ////////////////////////
     // Application Load Balancer
@@ -273,23 +297,38 @@ export class AppStack extends cdk.Stack {
       loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
       listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
     });
-    const targetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
+    if (env === 'prod') {
+      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
+    }
+
+    const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
       targets: [appService],
       vpc,
       protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
     sslListener.addTargetGroups('AlbTargetGroups', {
-      targetGroups: [targetGroup],
+      targetGroups: [appTargetGroup],
       priority: 10,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
       ],
     });
 
-    if (env === 'prod') {
-      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
-    }
+    const viewerTargetGroup = new elbv2.ApplicationTargetGroup(this, 'ViewerTargetGroup', {
+      targets: [viewerService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('ViewerTargetGroups', {
+      targetGroups: [viewerTargetGroup],
+      priority: 5,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
+      ],
+    });
 
     // ////////////////////////
     // DNS
