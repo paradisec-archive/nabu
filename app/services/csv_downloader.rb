@@ -58,6 +58,7 @@ class CsvDownloader
       ).deliver
     end
 
+    File.delete(path)
   end
 
   def stream(orig_search)
