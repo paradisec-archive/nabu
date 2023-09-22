@@ -637,6 +637,7 @@ DEPENDENCIES
   rubocop-rake
   rubocop-rspec
   ruby-filemagic
+  rubyzip
   sassc-rails
   sd_notify
   selenium-webdriver

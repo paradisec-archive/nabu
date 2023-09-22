@@ -1,3 +1,5 @@
+require 'zip'
+
 class CsvDownloader
 
   INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
@@ -25,8 +27,7 @@ class CsvDownloader
 
     Rails.logger.info {"#{generation_start} Generating CSV for download"}
 
-    filename = "nabu_items_#{Date.today}.csv"
-    path = "#{Rails.root}/tmp/#{filename}"
+    path = Rails.root.join('tmp', "nabu_items_#{Time.zone.today}.csv").to_s
 
     CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
       search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
@@ -46,6 +47,13 @@ class CsvDownloader
     generation_end = DateTime.now
     Rails.logger.info {"#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds"}
 
+    filename = "nabu_items_#{Time.zone.today}.zip"
+    zip_path = Rails.root.join('tmp', filename).to_s
+
+    Zip::File.open(zip_path, create: true) do |zipfile|
+      zipfile.add(File.basename(path), path)
+    end
+
     if @current_user.email.present?
       CsvDownloadMailer.csv_download_email(
         @current_user.email,
@@ -54,11 +62,12 @@ class CsvDownloader
         total,
         @csv_requested_time.in_time_zone('Australia/Sydney'),
         filename,
-        path
+        zip_path
       ).deliver
     end
 
     File.delete(path)
+    File.delete(zip_path)
   end
 
   def stream(orig_search)

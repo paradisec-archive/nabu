@@ -1,7 +1,22 @@
 class ItemSearchService
   def self.build_solr_search(params, current_user)
-    Item.solr_search(include: [:collection, :collector, :countries]) do
-      Rails.logger.info params[:search]
+    include = [
+      :collection,
+      :collector,
+      :countries,
+      :collector,
+      :operator,
+      :essences,
+      :university,
+      :content_languages,
+      :data_categories,
+      :data_types,
+      :discourse_type,
+      :access_condition,
+      :subject_languages,
+      { :item_agents => %i[user agent_role] }
+    ]
+    Item.solr_search(include:) do
       fulltext params[:search], :minimum_match => '100%'
 
       facet :content_language_ids, :country_ids

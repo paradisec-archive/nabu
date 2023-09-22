@@ -122,6 +122,7 @@ gem "ruby-filemagic" # Detect file types
 gem "streamio-ffmpeg" # ffmpeg interface
 gem "rmagick" # Image processing
 gem "whenever", :require => false # scheduling
+gem "rubyzip" # Zip the large CSV files before emailing
 
 # Deployment
 gem "capistrano", require: false, group: :development
