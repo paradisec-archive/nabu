@@ -3,7 +3,6 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { MainStack } from '../lib/main-stack';
 import { AppStack } from '../lib/app-stack';
-import { CommonStack } from '../lib/common-stack';
 import type { AppProps, Environment } from '../lib/types';
 
 const globals = {
@@ -36,10 +35,6 @@ if (!prod) {
 }
 
 const app = new cdk.App();
-
-new CommonStack(app, `${prod.appName}-stack-common`, {
-  env: { account: prod.account, region: prod.region },
-});
 
 environments.forEach((environment) => {
   const mainStack = new MainStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
