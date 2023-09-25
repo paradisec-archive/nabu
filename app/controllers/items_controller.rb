@@ -353,7 +353,7 @@ class ItemsController < ApplicationController
   def stream_csv(search_type)
     downloader = CsvDownloader.new(search_type, basic_search_params, current_user)
     export_all = params[:export_all] || false
-    per_page = export_all ? 500 : (params[:per_page] || 10).to_i
+    per_page = export_all ? 50_000 : (params[:per_page] || 10).to_i
 
     # TODO: fix CSV stream for builder method
 
