@@ -2,7 +2,7 @@
 
 export AWS_OUTPUT="json"
 
-TASK_NAME=app
+TASK_NAME=App
 
 echo "Getting cluster..."
 CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
@@ -18,8 +18,7 @@ if [ -z "$TASK_NAME" ]; then
 fi
 
 echo "Getting service..."
-SERVICE=$(aws ecs list-services --cluster $CLUSTER | jq  -r '.serviceArns | .[]' | grep -- $TASK_NAME | tail -1)
-
+SERVICE=$(aws ecs list-services --cluster $CLUSTER | jq  -r '.serviceArns | .[]' | grep -i -- $TASK_NAME | tail -1)
 
 echo "Getting service name..."
 SERVICE_NAME=$(aws ecs describe-services --services $SERVICE --cluster $CLUSTER | jq -r .services[0].serviceName)
@@ -31,4 +30,5 @@ aws ecs execute-command \
   --cluster $CLUSTER \
   --task $TASK \
   --interactive \
+  --container "${TASK_NAME}Container" \
   --command "bundle exec rake $@"

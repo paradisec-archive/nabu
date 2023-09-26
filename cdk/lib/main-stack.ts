@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -94,9 +93,5 @@ export class MainStack extends cdk.Stack {
       }],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-
-    // Create a temp user for the migration
-    const tempUser = iam.User.fromUserName(this, 's3TempUser', 's3-migration-temp');
-    this.catalogBucket.grantReadWrite(tempUser);
   }
 }
