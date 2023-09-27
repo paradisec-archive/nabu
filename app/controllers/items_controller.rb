@@ -132,6 +132,8 @@ class ItemsController < ApplicationController
 
     @result_ids = @search.hits.map(&:result).map(&:full_identifier) if params[:search]
 
+    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
+
     if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
       redirect_to search_items_path(search_params.merge(page: 1))
 

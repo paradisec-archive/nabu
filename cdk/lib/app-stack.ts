@@ -245,7 +245,7 @@ export class AppStack extends cdk.Stack {
     appTaskDefinition.addContainer('AppContainer', {
       ...commonAppImageOptions,
       // NOTE: This is huge due to being able to show all 30000 items on the one page
-      memoryLimitMiB: 3072,
+      memoryLimitMiB: 2048,
       portMappings: [{ containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'AppService' }),
     });
