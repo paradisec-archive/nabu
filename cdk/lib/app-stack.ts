@@ -114,7 +114,7 @@ export class AppStack extends cdk.Stack {
       }],
     });
     const searchContainer = searchTaskDefinition.addContainer('SearchContainer', {
-      memoryLimitMiB: 1024,
+      memoryLimitMiB: 1536,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/search.Dockerfile' }),
       portMappings: [{ name: 'search', containerPort: 8983 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SearchService' }),
@@ -149,7 +149,7 @@ export class AppStack extends cdk.Stack {
 
     const proxyistTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ProxyistTaskDefinition');
     proxyistTaskDefinition.addContainer('ProxyistContainer', {
-      memoryLimitMiB: 512,
+      memoryLimitMiB: 256,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/proxyist.Dockerfile' }),
       portMappings: [{ name: 'proxyist', containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ProxyistService' }),
@@ -181,7 +181,7 @@ export class AppStack extends cdk.Stack {
 
     const viewerTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ViewerTaskDefinition');
     viewerTaskDefinition.addContainer('ViewerContainer', {
-      memoryLimitMiB: 512,
+      memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/viewer.Dockerfile' }),
       portMappings: [{ name: 'viewer', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ViewerService' }),
@@ -219,7 +219,6 @@ export class AppStack extends cdk.Stack {
     const appImage = ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' });
     const commonAppImageOptions: ecs.ContainerDefinitionOptions = {
       image: appImage,
-      memoryLimitMiB: 1024,
       environment: {
         RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
         RAILS_ENV: railsEnv,
@@ -245,6 +244,8 @@ export class AppStack extends cdk.Stack {
     const appTaskDefinition = new ecs.Ec2TaskDefinition(this, 'AppTaskDefinition');
     appTaskDefinition.addContainer('AppContainer', {
       ...commonAppImageOptions,
+      // NOTE: This is huge due to being able to show all 30000 items on the one page
+      memoryLimitMiB: 3072,
       portMappings: [{ containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'AppService' }),
     });
@@ -274,6 +275,7 @@ export class AppStack extends cdk.Stack {
     const jobsTaskDefinition = new ecs.Ec2TaskDefinition(this, 'JobsTaskDefinition');
     jobsTaskDefinition.addContainer('JobsContainer', {
       ...commonAppImageOptions,
+      memoryLimitMiB: 512,
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
       command: ['bin/delayed_job', 'run'],
     });
