@@ -92,6 +92,18 @@ export class MainStack extends cdk.Stack {
         includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
       }],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
+      cors: [{
+        allowedMethods: [
+          s3.HttpMethods.GET,
+        ],
+        allowedOrigins: [
+          'https://catalog.paradisec.org.au',
+          `https:catalog.${zoneName}`,
+        ],
+        allowedHeaders: [
+          '*',
+        ],
+      }],
     });
   }
 }
