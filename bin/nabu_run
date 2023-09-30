@@ -4,8 +4,10 @@ docker compose run \
   --rm \
   -v "$PWD":/app \
   -v "$PWD"/vendor/bundle:/bundler \
+  -v "$HOME"/.aws:/root/.aws \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
+  -e AWS_PROFILE=nabu-prod \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
   app \
   "$@"

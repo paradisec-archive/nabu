@@ -51,4 +51,12 @@ WORKDIR /app
 
 RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
 
+RUN cd /tmp \
+  && curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+  && unzip -q awscliv2.zip \
+  && ./aws/install \
+  && rm -rf /tmp/awscliv2.zip /tmp/aws \
+  && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
+  && dpkg -i session-manager-plugin.deb
+
 CMD ["bin/rails", "server", "-b", "0.0.0.0"]
