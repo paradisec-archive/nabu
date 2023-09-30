@@ -3,7 +3,7 @@ FROM solr:8
 USER root
 
 RUN echo 'chown -R solr:solr /var/solr/mnt/*' > /docker-entrypoint-initdb.d/perms.sh
-RUN echo 'echo moo > /tmp/moo' >> /docker-entrypoint-initdb.d/perms.sh
+RUN echo 'rm /var/solr/mnt/*/index/write.lock' > /docker-entrypoint-initdb.d/write.sh
 
 USER solr
 
