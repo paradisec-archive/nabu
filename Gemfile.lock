@@ -77,8 +77,6 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
-    airbrussh (1.4.1)
-      sshkit (>= 1.6.1, != 1.7.0)
     annotate (3.2.0)
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
@@ -122,35 +120,12 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     backport (1.2.0)
     bcrypt (3.1.19)
-    bcrypt_pbkdf (1.1.0)
     benchmark (0.2.1)
     bindex (0.8.1)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
     builder (3.2.4)
     cancancan (3.5.0)
-    capistrano (3.17.3)
-      airbrussh (>= 1.0.0)
-      i18n
-      rake (>= 10.0.0)
-      sshkit (>= 1.9.0)
-    capistrano-bundler (2.1.0)
-      capistrano (~> 3.1)
-    capistrano-rails (1.6.2)
-      capistrano (~> 3.1)
-      capistrano-bundler (>= 1.1, < 3)
-    capistrano-rbenv (2.2.0)
-      capistrano (~> 3.1)
-      sshkit (~> 1.3)
-    capistrano-sentry (0.4.2)
-      capistrano (~> 3.1)
-    capistrano3-delayed-job (1.7.6)
-      capistrano (~> 3.0, >= 3.0.0)
-      daemons (~> 1.3)
-    capistrano3-puma (6.0.0.beta.1)
-      capistrano (~> 3.7)
-      capistrano-bundler
-      puma (>= 5.1, < 7.0)
     capybara (3.39.2)
       addressable
       matrix
@@ -165,7 +140,6 @@ GEM
     concurrent-ruby (1.2.2)
     country-select (1.2.1)
     crass (1.0.6)
-    curb (1.0.5)
     daemons (1.4.1)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
@@ -198,7 +172,6 @@ GEM
       dotenv (= 2.8.1)
       railties (>= 3.2)
     e2mmap (0.1.0)
-    ed25519 (1.3.0)
     erubi (1.12.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
@@ -324,11 +297,8 @@ GEM
       net-protocol
     net-protocol (0.2.1)
       timeout
-    net-scp (4.0.0)
-      net-ssh (>= 2.6.5, < 8.0.0)
     net-smtp (0.3.3)
       net-protocol
-    net-ssh (7.1.0)
     nilify_blanks (1.4.0)
       activerecord (>= 4.0.0)
       activesupport (>= 4.0.0)
@@ -492,7 +462,6 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    sd_notify (0.1.1)
     selenium-webdriver (4.10.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -531,9 +500,6 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sshkit (1.21.4)
-      net-scp (>= 1.1.2)
-      net-ssh (>= 2.8.0)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
     streamio-ffmpeg (3.0.2)
@@ -586,19 +552,10 @@ DEPENDENCIES
   activeadmin
   annotate
   aws-sdk-rails
-  bcrypt_pbkdf
   bootsnap
   cancancan
-  capistrano
-  capistrano-bundler
-  capistrano-rails
-  capistrano-rbenv
-  capistrano-sentry
-  capistrano3-delayed-job
-  capistrano3-puma (= 6.0.0.beta.1)
   capybara
   country-select
-  curb
   daemons
   database_cleaner
   debug
@@ -607,7 +564,6 @@ DEPENDENCIES
   devise
   doorkeeper
   dotenv-rails
-  ed25519
   factory_bot_rails
   graphiql-rails (= 1.8.0)
   graphql
@@ -639,7 +595,6 @@ DEPENDENCIES
   ruby-filemagic
   rubyzip
   sassc-rails
-  sd_notify
   selenium-webdriver
   sentry-delayed_job
   sentry-rails

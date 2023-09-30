@@ -124,19 +124,6 @@ gem "rmagick" # Image processing
 gem "whenever", :require => false # scheduling
 gem "rubyzip" # Zip the large CSV files before emailing
 
-# Deployment
-gem "capistrano", require: false, group: :development
-gem "bcrypt_pbkdf", require: false, group: :development
-gem "ed25519", require: false, group: :development
-gem "capistrano-bundler", require: false, group: :development
-gem "capistrano-rails", require: false, group: :development
-gem "capistrano-rbenv", require: false, group: :development
-gem "capistrano3-puma", '6.0.0.beta.1', require: false, group: :development
-gem 'capistrano3-delayed-job', require: false, group: :development
-gem 'capistrano-sentry', require: false, group: :development
-gem "sd_notify" # Needed by capstrano3-puma
-gem 'curb'
-
 group :development, :test do
   gem "rspec-rails"
   gem "rails-controller-testing"
