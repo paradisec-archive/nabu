@@ -141,6 +141,7 @@ GEM
     concurrent-ruby (1.2.2)
     country-select (1.2.1)
     crass (1.0.6)
+    curb (1.0.5)
     daemons (1.4.1)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
@@ -562,6 +563,7 @@ DEPENDENCIES
   cancancan
   capybara
   country-select
+  curb
   daemons
   database_cleaner
   debug
