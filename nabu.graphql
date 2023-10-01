@@ -5,43 +5,43 @@ type AccessCondition {
 }
 
 type Agent {
-  roleName: String
+  role_name: String
   user: Person
-  userName: String
+  user_name: String
 }
 
 type Boundary {
-  eastLimit: Float!
-  northLimit: Float!
-  southLimit: Float!
-  westLimit: Float!
+  east_limit: Float!
+  north_limit: Float!
+  south_limit: Float!
+  west_limit: Float!
 }
 
 type Collection {
-  accessClass: String
-  accessNarrative: String
+  access_class: String
+  access_narrative: String
   boundaries: Boundary
   citation: String
   collector: Person
   comments: String
   complete: Boolean
-  contentLanguages: [Language]
+  content_languages: [Language]
   countries: [Country]
   description: String
   doi: String
-  doiXml: String
-  fieldOfResearch: FieldOfResearch
+  doi_xml: String
+  field_of_research: FieldOfResearch
   grants: [Grant]
   id: ID!
   identifier: String!
   media: String
-  metadataSource: String
+  metadata_source: String
   operator: Person
-  orthographicNotes: String
+  orthographic_notes: String
   permalink: String!
   region: String
-  subjectLanguages: [Language]
-  tapeLocation: Boolean
+  subject_languages: [Language]
+  tape_location: Boolean
   title: String!
   university: University
 }
@@ -68,7 +68,7 @@ type DataType {
 
 type DiscourseType {
   id: ID!
-  itesm: [Item]
+  items: [Item]
   name: String!
 }
 
@@ -77,17 +77,22 @@ type Essence {
   channels: Int
   citation: String
   collection: Collection
+  collectionId: Int
+  createdAt: ISO8601DateTime
+  derivedFilesGenerated: Boolean
   doi: String
-  doiXml: String
+  doi_xml: String
   duration: Float
   filename: String
   fps: Int
   id: ID!
   item: Item
+  itemId: Int
   mimetype: String
-  permalink: String!
+  permalink: String
   samplerate: Int
   size: Int
+  updatedAt: ISO8601DateTime
 }
 
 type FieldOfResearch {
@@ -98,92 +103,108 @@ type FieldOfResearch {
 }
 
 type FundingBody {
-  fundedCollections: [Collection]
+  funded_collections: [Collection]
   grants: [Grant]
   id: ID!
-  keyPrefix: String
+  key_prefix: String
   name: String!
 }
 
 type Grant {
-  colleciton: Collection
-  fundingBody: FundingBody
+  collection: Collection
+  funding_body: FundingBody
   id: ID!
   identifier: String
 }
 
+"""
+An ISO 8601-encoded datetime
+"""
+scalar ISO8601DateTime
+
 type Item {
-  accessClass: String
-  accessCondition: AccessCondition
-  accessConditionName: String
-  accessNarrative: String
-  bornDigital: Boolean
+  access_class: String
+  access_condition: AccessCondition
+  access_condition_name: String
+  access_narrative: String
+  born_digital: Boolean
   boundaries: Boundary
   citation: String
   collection: Collection!
   collector: Person!
-  contentLanguages: [Language]
+  content_languages: [Language]
   countries: [Country]
-  dataCategories: [DataCategory]
-  dataTypes: [DataType]
+  data_categories: [DataCategory]
+  data_types: [DataType]
   description: String
   dialect: String
-  digitisedOn: String
-  discourseType: DiscourseType
+  digitised_on: String
+  discourse_type: DiscourseType
   doi: String
-  doiXml: String
+  doi_xml: String
   essences: [Essence]
-  essencesCount: Int
-  fullIdentifier: String!
+  essences_count: Int
+  full_identifier: String!
   id: ID!
   identifier: String!
-  ingestNotes: String
-  itemAgents: [Agent]
+  ingest_notes: String
+  item_agents: [Agent]
   language: String
   operator: Person
-  originalMedia: String
-  originatedOn: String
-  originatedOnNarrative: String
+  original_media: String
+  originated_on: String
+  originated_on_narrative: String
   permalink: String!
   private: Boolean
   public: Boolean
-  receivedOn: String
+  received_on: String
   region: String
-  subjectLanguages: [Language]
+  subject_languages: [Language]
   title: String
   tracking: String
   university: University
 }
 
 type ItemResult {
-  nextPage: Int
+  next_page: Int
   results: [Item]!
   total: Int!
 }
 
 type Language {
-  archiveLink: String
+  archive_link: String
   code: String!
   collection: [Collection]
   countries: [Country]
   id: ID!
-  itemsForContent: [Item]
-  itemsForLanguage: [Item]
+  items_for_content: [Item]
+  items_for_language: [Item]
   name: String!
   retired: Boolean
 }
 
+type Mutation
+
 type Person {
-  collectedItems: Item
+  collected_items: Item
   country: String
-  firstName: String
+  first_name: String
   id: ID!
-  lastName: String
+  last_name: String
   name: String
 }
 
 type Query {
-  items(access_class: String, access_condition_name: String, access_narrative: String, born_digital: Boolean, collection_identifier: String, collector_name: String, description: String, dialect: String, digitised_on: String, discourse_type_name: String, doi: String, essencesCount: Int, full_identifier: String, id: ID, identifier: String, ingestNotes: String, language: String, limit: Int = 10, operator_name: String, original_media: String, originated_on: String, originated_on_narrative: String, page: Int = 1, private: Boolean, received_on: String, region: String, title: String, tracking: String, university_name: String): ItemResult
+  """
+  Find a collection by identifier. e.g. NT1
+  """
+  collection(identifier: ID!): Collection
+
+  """
+  Find an item by full identifier. e.g. NT1-009
+  """
+  item(fullIdentifier: ID!): Item
+  items(access_class: String, access_condition_name: String, access_narrative: String, born_digital: Boolean, collection_identifier: String, collector_name: String, description: String, dialect: String, digitised_on: String, discourse_type_name: String, doi: String, essences_count: Int, full_identifier: String, id: ID, identifier: String, ingest_notes: String, language: String, limit: Int = 10, operator_name: String, original_media: String, originated_on: String, originated_on_narrative: String, page: Int = 1, private: Boolean, received_on: String, region: String, title: String, tracking: String, university_name: String): ItemResult
 }
 
 type University {
@@ -191,5 +212,5 @@ type University {
   id: ID!
   items: [Item]
   name: String!
-  partyIdentifier: String
+  party_identifier: String
 }
