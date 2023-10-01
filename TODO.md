@@ -2,8 +2,8 @@
 
 ## Migration
 * Cron jobs
-* AWS BAckups - RDS
 * Monitoring
+* Clean up SPF records
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
