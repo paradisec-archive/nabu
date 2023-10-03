@@ -121,67 +121,9 @@ namespace :archive do
     dir_list = Nabu::Application.config.upload_directories
 
     dir_list.each do |upload_directory|
-      next unless File.directory?(upload_directory)
-
-      dir_contents = Dir.entries(upload_directory)
-
-      # for each essence file, find its collection & item
-      # by matching the pattern
-      # "#{collection_id}-#{item_id}-xxx.xxx"
-      files_array = dir_contents.select {|file| File.file?("#{upload_directory}/#{file}") }
-      next unless files_array.any?
-
-      checksum_files = files_array.select { |file| file.include?('-checksum-PDSC_ADMIN.txt') }.map{|file| {destination_path: upload_directory, file: file}}
-      failed_checksum_files = []
-      if checksum_files.any?
-        puts "[CHECKSUM] Found #{checksum_files.count} checksum #{"file".pluralize(checksum_files.count)} (out of a total of #{files_array.count} #{"file".pluralize(files_array.count)}) ..."
-
-        failed_checksum_files = check_checksums(checksum_files)
-      end
-
       puts 'Start processing files to import...'
       files_array.each do |file|
         puts '---------------------------------------------------------------'
-
-        # To move to the archive, have success true
-        # To move to rejected, have success false
-        # To leave alone, skip an iteration of this loop with next
-        success = true
-
-        # Nabu Import Messages 9.
-        # Action: Leave as-is.
-        # skip files that can't be read
-        unless File.readable?("#{upload_directory}/#{file}")
-          puts "ERROR: file #{file} skipped, since it's not readable" if verbose
-          next
-        end
-
-        # Action: Leave as-is.
-        # Skip files that are currently uploading
-        last_updated = File.stat("#{upload_directory}/#{file}").mtime
-        if (Time.now - last_updated) < 60*10
-          next
-        end
-
-        if failed_checksum_files.include?("#{upload_directory}/#{file}".gsub('//', '/'))
-          puts "ERROR: file #{file} skipped, since it failed the checksum validation" if verbose
-          success = false
-        end
-
-        # Nabu Import Messages 8.
-        # Action: Move to rejected folder.
-        # skip files of size 0 bytes
-        # Unless annis
-        if File.size("#{upload_directory}/#{file}").zero? && file !~ /\.annis$/
-          puts "ERROR: file #{file} skipped, since it is empty" if verbose
-          success = false
-        end
-
-        # Action: Move to rejected folder.
-        basename, extension, coll_id, item_id, collection, item = parse_file_name(file)
-        unless collection && item
-          success = false
-        end
 
         # Uncommon errors 1.
         # Action: Move to rejected folder.
@@ -189,23 +131,6 @@ namespace :archive do
         if success && item_id.length > 30
           puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
           success = false
-        end
-
-        # move old style CAT and df files to the new naming scheme
-        if basename.split('-').last == "CAT" || basename.split('-').last == "df"
-          begin
-            if dry_run
-              puts "DRY_RUN: file #{file} would be renamed to #{basename + "-PDSC_ADMIN." + extension} within upload folder"
-            else
-              FileUtils.mv(upload_directory + "/" + file, upload_directory + "/" + basename + "-PDSC_ADMIN." + extension)
-            end
-          rescue
-            puts "ERROR: file #{file} skipped - not able to rename within upload folder" if verbose
-            next
-          end
-
-          file = basename + "-PDSC_ADMIN." + extension
-          basename, _extension, _coll_id, _item_id, _collection, _item = parse_file_name(file)
         end
 
         is_non_admin_file = basename.split('-').last != "PDSC_ADMIN"
@@ -230,71 +155,6 @@ namespace :archive do
           end
         end
 
-        # if meta data import was successful then we move to archive else move to rejected
-        if success
-          # Uncommon errors 2.
-          # Action: Leave as-is.
-          # make sure the archive directory for the collection and item exists
-          # and move the file there
-          begin
-            destination_path = archive_dir + "#{coll_id}/#{item_id}/"
-
-            if dry_run
-              puts "DRY_RUN: file #{file} would be copied into archive at #{destination_path}"
-            else
-              FileUtils.mkdir_p(destination_path)
-            end
-          rescue
-            puts "ERROR: file #{file} skipped - not able to create directory #{destination_path}" if verbose
-            next
-          end
-
-          # Uncommon errors 3.
-          # Action: Leave as-is.
-          begin
-            if dry_run
-              puts "DRY_RUN: file #{file} would be copied into archive at #{destination_path}"
-            else
-              FileUtils.cp(upload_directory + file, destination_path + file)
-            end
-          rescue
-            puts "ERROR: file #{file} skipped - not able to read it or write to #{destination_path + file}" if verbose
-
-            next
-          end
-
-          puts "SUCCESS: file #{file} copied into archive at #{destination_path}"
-        else # if !success
-          rejected_directory = upload_directory + "/Rejected/"
-
-          unless File.directory?(rejected_directory)
-            puts "ERROR: file #{file} not rejected - Rejected file folder #{rejected_directory} does not exist" if verbose
-
-            next
-          end
-
-          begin
-            if dry_run
-              puts "DRY_RUN: file #{file} would be copied into rejected file folder at #{rejected_directory}"
-            else
-              FileUtils.cp(upload_directory + file, rejected_directory + file)
-            end
-          rescue
-            puts "ERROR: file #{file} skipped - not able to read it or write to #{rejected_directory + file}" if verbose
-
-            next
-          end
-
-          puts "INFO: file #{file} copied into rejected file folder at #{rejected_directory}"
-        end
-
-        # if everything went well, meaning it was either moved into the archive, or moved to the rejected folder,
-        # remove file from original directory
-        if dry_run
-          puts "DRY_RUN: file #{file} would be removed from upload folder"
-        else
-          FileUtils.rm(upload_directory + file)
-        end
 
         # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
         # so don't worry about success value.
