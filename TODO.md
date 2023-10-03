@@ -4,6 +4,7 @@
 * Cron jobs
 * Monitoring
 * Clean up SPF records
+* Remove checksum files from the repository
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
