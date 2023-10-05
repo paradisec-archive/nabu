@@ -229,7 +229,7 @@ namespace :archive do
   end
 
   desc "Mint DOIs for objects that don't have one"
-  task :mint_dois => :environment do
+  task mint_dois: :environment do
     dry_run = ENV['DRY_RUN'] ? true : false
     batch_size = Integer(ENV['MINT_DOIS_BATCH_SIZE'] || 100)
     BatchDoiMintingService.run(batch_size, dry_run)

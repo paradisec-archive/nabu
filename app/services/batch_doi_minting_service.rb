@@ -1,5 +1,6 @@
 # Batch minting of DOIs.
 # For an individual minting, see DoiMintingService.
+
 class BatchDoiMintingService
   def self.run(batch_size, dry_run)
     batch_doi_minting_service = new(batch_size, dry_run)
@@ -23,19 +24,23 @@ class BatchDoiMintingService
     # OPTIMIZATION: This isn't optimized for saving a lot of objects, but when eager loaded is added,
     # the amount of memory consumed is unacceptably large.
     (
-      Collection.where(doi: nil, private: false).includes(:collector, :university).limit(@batch_size) +
-      Item.joins(:collection).where(doi: nil, private: false, collections: {private: false}).includes(:collector, :university, :collection).limit(@batch_size) +
-      Essence.includes(item: [:collector, :collection]).where(doi: nil, items: {private: false, collections: {private: false}}).limit(@batch_size)
+      Collection
+        .where(doi: nil, private: false).includes(:collector, :university).limit(@batch_size) +
+      Item
+        .joins(:collection).where(doi: nil, private: false, collections: { private: false }).includes(:collector, :university, :collection).limit(@batch_size) +
+      Essence
+        .includes(item: %i[collector collection]).where(doi: nil, items: { private: false, collections: { private: false } }).limit(@batch_size)
     ).first(@batch_size)
   end
 
   def run
-    puts "Start Minting: #{Time.now}"
+    Rails.logger.info "Start Minting: #{Time.current}"
     @unminted_objects.each do |unminted_object|
       next unless public_object?(unminted_object)
+
       @doi_minting_service.mint_doi(unminted_object)
     end
-    puts "Finished Minting: #{Time.now}"
+    Rails.logger.info "Finished Minting: #{Time.current}"
   end
 
   # This is the canonical source of information on whether an object is public, as far as BatchDoiMintingService

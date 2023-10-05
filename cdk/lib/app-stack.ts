@@ -1,10 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
+import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -291,6 +293,23 @@ export class AppStack extends cdk.Stack {
       enableExecuteCommand: true,
     });
     jobsService.enableServiceConnect();
+
+    if (env === 'prod') {
+      // ////////////////////////
+      // Scheduled Tasks
+      // ////////////////////////
+      new ecsPatterns.ScheduledEc2Task(this, 'MintDoisTask', {
+        cluster,
+        scheduledEc2TaskImageOptions: {
+          ...commonAppImageOptions,
+          memoryLimitMiB: 256,
+          logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
+          command: ['rake', 'archive:mint_dois'],
+          // environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+        },
+        schedule: appscaling.Schedule.cron({ minute: '0', hour: '2' }),
+      });
+    }
 
     // ////////////////////////
     // Application Load Balancer
