@@ -9,7 +9,12 @@ Bundler.require(*Rails.groups)
 module Nabu
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.1
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w(assets tasks))
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -25,19 +30,6 @@ module Nabu
 
     ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
     ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
-
-    # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
-    # This is the directory that Nabu will scan for new files frequently.
-    # If it finds files in there that match the pattern
-    # "#{collection_id}-#{item_id}-xxx.xxx",
-    # it will create an appropriate metadata file
-    # e.g.
-    # .wav -> .imp.xml
-    # .mp3 -> .id3.xml
-    # .ogg -> .vorbiscomment (TODO)
-    config.scan_directory = "#{Rails.root}/public/system/prepare_for_sealing/"
-    config.write_imp = "#{Rails.root}/public/system/XMLImport/"
-    config.write_id3 = "#{Rails.root}/public/system/ID3Import/"
 
     config.viewer_url = '/viewer'
 

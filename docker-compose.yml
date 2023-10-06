@@ -10,15 +10,17 @@ version: "3"
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/app.dev.Dockerfile
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
       PROXYIST_URL: http://proxyist:3000
     volumes:
-      - .:/app
-      - ./vendor/bundle:/bundler
+      - .:/rails
+      - ./vendor/bundle:/usr/local/bundle
 
   proxy:
     image: nginx

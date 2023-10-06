@@ -2,11 +2,19 @@
 
 ## Setting up your dev environment
 
-This application has been configured around docker-compose
+Use direnv to add bin to your path
+```bash
+PATH_add bin
+```
+
+Bring up the environment
 
 ```bash
 # Build the base image
 docker compose build
+
+# Install the gems
+nabu_run bundle
 
 # Bring up all the containers
 docker compose up
@@ -15,17 +23,18 @@ docker compose up
 This brings up the following containers
 * app - the rails app
 * search - Solr instance for search (dev + test)
+* proxyist - S3 proxy
 * db - mysql data base (dev + test)
-
+* s3 - s3 mock
 
 You can then easily run all the standard commands by prefixing with ***nabu***
 
 ``` bash
-bin/nabu_run bundle install
-bin/nabu_run bundle exec rake db:create
-bin/nabu_run bundle exec rake db:schema:load
-bin/nabu_test bundle exec rake db:schema:load
-bin/nabu_run bundle exec guard # Test runner
+nabu_run bundle install
+nabu_run bundle exec rake db:create
+nabu_run bundle exec rake db:schema:load
+nabu_test bundle exec rake db:schema:load
+nabu_run bundle exec guard # Test runner
 ```
 
 ## Production

@@ -222,7 +222,7 @@ export class AppStack extends cdk.Stack {
     // App
     // ////////////////////////
 
-    const appImage = ecs.ContainerImage.fromAsset('..', { file: 'docker/app.Dockerfile' });
+    const appImage = ecs.ContainerImage.fromAsset('..', { file: 'Dockerfile' });
     const commonAppImageOptions: ecs.ContainerDefinitionOptions = {
       image: appImage,
       environment: {

@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore all environment files (except templates).
+/.env*
+!/.env*.erb
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
@@ -18,7 +22,7 @@
 !/tmp/pids/
 !/tmp/pids/.keep
 
-# Ignore uploaded files in development
+# Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
 !/storage/.keep
 /tmp/storage/*
@@ -34,6 +38,8 @@
 # Our Stuff
 ##################
 
+/vendor/bundle
+
 # solr
 /solr/data
 /solr/test/data
@@ -42,16 +48,3 @@
 /solr/production/data
 /solr/staging/data
 /solr/pids
-
-# dotenv
-.env
-
-.ruby-version
-.ruby-gemset
-.idea/
-.sass-cache/
-rerun.txt
-.DS_Store
-db/legacy/
-public/system/
-vendor/bundle

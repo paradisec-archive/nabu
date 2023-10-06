@@ -2,7 +2,7 @@
 
 docker compose run \
   --rm \
-  -v "$PWD":/app \
+  -v "$PWD":/rails \
   -v "$PWD"/vendor/bundle:/bundler \
   -v "$HOME"/.aws:/root/.aws \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \

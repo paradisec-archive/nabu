@@ -1,5 +1,9 @@
 # TODO
 
+## Rails 7.1
+Can we get rid of sassc??
+Do we need dotenv rails?
+
 ## Migration
 * Monitoring
 * Clean up SPF records
