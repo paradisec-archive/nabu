@@ -1,0 +1,28 @@
+{
+  "name": "cron-worker",
+  "version": "1.0.0",
+  "description": "Cron jobs",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "author": "John Ferlito <johnf@inodes.org>",
+  "license": "GPL",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.427.0",
+    "croner": "^7.0.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node-lts": "^18.12.5",
+    "@tsconfig/strictest": "^2.0.2",
+    "@types/node": "^18",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-import-resolver-node": "^0.3.7",
+    "eslint-plugin-import": "^2.25.2",
+    "typescript": "^5.2.2"
+  }
+}

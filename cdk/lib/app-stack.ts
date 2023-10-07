@@ -82,7 +82,7 @@ export class AppStack extends cdk.Stack {
         subnets: appSubnets,
       },
 
-      instanceType: new ec2.InstanceType('c6a.xlarge'),
+      instanceType: new ec2.InstanceType('m6a.xlarge'),
       machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
 
       minCapacity: 1,
@@ -295,20 +295,25 @@ export class AppStack extends cdk.Stack {
     jobsService.enableServiceConnect();
 
     if (env === 'prod') {
-      // ////////////////////////
-      // Scheduled Tasks
-      // ////////////////////////
-      new ecsPatterns.ScheduledEc2Task(this, 'MintDoisTask', {
-        cluster,
-        scheduledEc2TaskImageOptions: {
-          ...commonAppImageOptions,
-          memoryLimitMiB: 256,
-          logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
-          command: ['rake', 'archive:mint_dois'],
-          // environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
-        },
-        schedule: appscaling.Schedule.cron({ minute: '0', hour: '2' }),
+      const cronTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CronTaskDefinition');
+      cronTaskDefinition.addContainer('CronContainer', {
+        ...commonAppImageOptions,
+        memoryLimitMiB: 512,
+        logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'CronService' }),
+        command: ['node', 'cron-worker/index.js'],
       });
+      cronTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: ['ses:SendEmail'],
+        resources: ['*'],
+      }));
+
+      const cronService = new ecs.Ec2Service(this, 'CronService', {
+        serviceName: 'cron',
+        cluster,
+        taskDefinition: cronTaskDefinition,
+        enableExecuteCommand: true,
+      });
+      cronService.enableServiceConnect();
     }
 
     // ////////////////////////

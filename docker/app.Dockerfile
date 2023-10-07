@@ -13,15 +13,6 @@ RUN apt-get update -qq && \
     libcurl4-openssl-dev \
     default-libmysqlclient-dev
 
-  # libssl-dev \
-  # libreadline-dev \
-  # libyaml-dev \
-  # libsqlite3-dev \
-  # sqlite3 \
-  # libxml2-dev \
-  # libxslt1-dev \
-  # libcurl4-openssl-dev \
-
 ###############################################################################
 #
 FROM builder as bundler
@@ -31,19 +22,20 @@ COPY Gemfile Gemfile.lock /tmp
 RUN bundle config set --local deployment 'true'
 RUN bundle config set --local without 'development:test'
 RUN bundle install --jobs "$(nproc)"
-RUN ls /tmp/vendor/bundle
-RUN ls /usr/local/bundle
 
-# FROM node as yarn
-# WORKDIR /tmp
-# COPY package.json yarn.lock /
-# RUN yarn install
+FROM node as yarn
+COPY cron-worker /tmp/cron-worker
+WORKDIR /tmp/cron-worker
+RUN npm install && \
+  npm run build
+
+RUN ls /tmp
+RUN ls /tmp/cron-worker
 
 FROM builder as assets
 WORKDIR /tmp
 COPY --from=bundler /usr/local/bundle /usr/local/bundle
 COPY --from=bundler /tmp/vendor/bundle /tmp/vendor/bundle
-# COPY --from=yarn /tmp/node_modules node_modules
 COPY app app
 COPY bin bin
 COPY config config
@@ -66,6 +58,17 @@ RUN apt-get update -qq && \
   apt-get clean && \
   rm  -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
+# Node bits
+RUN apt-get update -qq && \
+  apt-get install -y ca-certificates curl gnupg && \
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg && \
+  apt-key add /usr/share/keyrings/nodesource.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+  apt-get update && \
+  apt-get install nodejs -y && \
+  apt-get clean && \
+  rm  -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+
 WORKDIR /app
 
 RUN useradd --create-home ruby
@@ -81,6 +84,9 @@ COPY --chown=ruby:ruby --from=bundler /tmp/vendor/bundle vendor/bundle
 COPY --chown=ruby:ruby --from=assets /tmp/public/assets public/assets
 
 COPY --chown=ruby:ruby . .
+
+COPY --from=yarn /tmp/cron-worker/node_modules cron-worker/node_modules
+COPY --from=yarn /tmp/cron-worker/index.js cron-worker/index.js
 
 RUN mkdir log
 RUN ln -s /dev/stdout log/delayed_job.log

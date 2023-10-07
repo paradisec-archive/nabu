@@ -2,6 +2,7 @@
 !/app
 !/bin
 !/config
+!/cron-worker
 !/docker
 !/db
 !/lib
