@@ -334,19 +334,19 @@ ActiveAdmin.setup do |config|
   # config.use_webpacker = true
 end
 
-# module AdminPageLayoutOverride
-#   def build(*args)
-#     # This will be added at the beginning of <head>
-#     within head do
-#       render partial: 'layouts/active_admin'
-#     end
-#
-#     super
-#   end
-# end
-#
-# ActiveAdmin::Views::Pages::Base.prepend(AdminPageLayoutOverride)
-#
+module AdminPageLayoutOverride
+  def build(*args)
+    # This will be added at the beginning of <head>
+    within head do
+      render partial: 'layouts/active_admin'
+    end
+
+    super
+  end
+end
+
+ActiveAdmin::Views::Pages::Base.prepend(AdminPageLayoutOverride)
+
 # https://github.com/paper-trail-gem/paper_trail/blob/master/doc/pt_13_yaml_safe_load.md
 ::ActiveRecord.yaml_column_permitted_classes = [
   ::ActiveRecord::Type::Time::Value,

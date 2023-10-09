@@ -1,10 +1,8 @@
-import 'custom/maps';
-
 // import 'active_admin_importmap/base';
 // Below is the contents of the above with jquery fiexes
 
 import 'jquery'
-import 'jquery-ui'
+import 'jquery-ui' // FIX We use this instead of the individual imports
 import 'jquery-ujs'
 
 import 'active_admin_importmap/ext/jquery'
