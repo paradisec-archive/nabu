@@ -21,8 +21,8 @@
 class Country < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true, :uniqueness => { case_sensitive: false }
-  validates :code, :presence => true, :uniqueness => { case_sensitive: false }
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :code, presence: true, uniqueness: { case_sensitive: false }
 
   scope :alpha, -> { order(:name) }
 
@@ -31,12 +31,15 @@ class Country < ApplicationRecord
   end
 
   has_many :countries_languages
-  has_many :languages, :through => :countries_languages, :dependent => :restrict_with_exception
+  has_many :languages, through: :countries_languages, dependent: :restrict_with_exception
 
   has_one :latlon_boundary
 
-
   def language_archive_link
     "http://www.language-archives.org/country/#{code.upcase}"
+  end
+
+  def self.ransackable_attributes(_ = nil)
+    %w[code id name]
   end
 end

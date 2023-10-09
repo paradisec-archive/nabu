@@ -45,4 +45,8 @@ class University < ApplicationRecord
     errors.add(:base, "University used in items or collection - cannot be removed.") if items.count > 0 || collections.count > 0
     errors.empty?
   end
+
+  def self.ransackable_attributes(_ = nil)
+    %w[created_at id name party_identifier updated_at]
+  end
 end

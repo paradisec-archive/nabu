@@ -26,10 +26,18 @@ class Download < ApplicationRecord
   belongs_to :user
   belongs_to :essence
 
-  has_one :item, :through => :essence
+  has_one :item, through: :essence
 
-  delegate :collection, :to => :item
+  delegate :collection, to: :item
 
-  validates :user, :associated => true
-  validates :essence, :associated => true
+  validates :user, associated: true
+  validates :essence, associated: true
+
+  def self.ransackable_attributes(_ = nil)
+    %w[created_at essence_id id updated_at user_id]
+  end
+
+  def self.ransackable_associations(_ = nil)
+    %w[essence item user]
+  end
 end

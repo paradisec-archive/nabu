@@ -23,6 +23,10 @@ class ItemSubjectLanguage < ApplicationRecord
   belongs_to :language
   belongs_to :item
 
-  validates :language_id, :presence => true
-  #validates :item_id, :presence => true
+  validates :language_id, presence: true
+  #validates :item_id, presence: true
+
+  def self.ransackable_attributes(_ = nil)
+    %w[id item_id language_id]
+  end
 end

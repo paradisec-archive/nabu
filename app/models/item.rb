@@ -673,4 +673,24 @@ class Item < ApplicationRecord
 
     json
   end
+
+  def self.ransackable_attributes(_ = nil)
+    %w[
+      access_condition_id access_narrative admin_comment born_digital collection_id
+      collector_id created_at description dialect digitised_on discourse_type_id doi
+      east_limit essences_count external id identifier ingest_notes language
+      metadata_exportable metadata_exported_on metadata_imported_on north_limit
+      operator_id original_media originated_on originated_on_narrative private received_on
+      region south_limit tapes_returned title tracking university_id updated_at url west_limit
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[
+      access_condition admins agents collection collector comments content_languages countries
+      data_categories data_types discourse_type essences item_admins item_agents
+      item_content_languages item_countries item_data_categories item_data_types
+      item_subject_languages item_users operator subject_languages university users versions
+    ]
+  end
 end

@@ -21,9 +21,9 @@
 class FieldOfResearch < ApplicationRecord
   has_paper_trail
 
-  validates :name, :identifier, :presence => true
-  validates :name, :identifier, :uniqueness => { case_sensitive: false }
-  validates :identifier, :numericality => {:only_integer => true}
+  validates :name, :identifier, presence: true
+  validates :name, :identifier, uniqueness: { case_sensitive: false }
+  validates :identifier, numericality: { only_integer: true }
 
   scope :alpha, -> { order(:name) }
 
@@ -31,5 +31,9 @@ class FieldOfResearch < ApplicationRecord
     "#{identifier} - #{name}"
   end
 
-  has_many :collections, :dependent => :restrict_with_exception
+  has_many :collections, dependent: :restrict_with_exception
+
+  def self.ransackable_attributes(_ = nil)
+    %w[id identifier name]
+  end
 end

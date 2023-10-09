@@ -24,8 +24,8 @@
 class Language < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true
-  validates :code, :presence => true, :uniqueness => { case_sensitive: false }
+  validates :name, presence: true
+  validates :code, presence: true, uniqueness: { case_sensitive: false }
 
   scope :alpha, -> { order(:name) }
 
@@ -38,16 +38,24 @@ class Language < ApplicationRecord
   end
 
   has_many :countries_languages
-  has_many :countries, :through => :countries_languages, :dependent => :destroy
-  accepts_nested_attributes_for :countries_languages, :allow_destroy => true
-  #validates :countries, :length => { :minimum => 1 }
+  has_many :countries, through: :countries_languages, dependent: :destroy
+  accepts_nested_attributes_for :countries_languages, allow_destroy: true
+  #validates :countries, length: { :minimum => 1 }
 
   has_many :item_content_languages
-  has_many :items_for_content, :through => :item_content_languages, :source => :item, :dependent => :restrict_with_exception
+  has_many :items_for_content, through: :item_content_languages, source: :item, dependent: :restrict_with_exception
 
   has_many :item_subject_languages
-  has_many :items_for_subject, :through => :item_subject_languages, :source => :item, :dependent => :restrict_with_exception
+  has_many :items_for_subject, through: :item_subject_languages, source: :item, dependent: :restrict_with_exception
 
   has_many :collection_languages
-  has_many :collections, :through => :collection_languages, :dependent => :restrict_with_exception
+  has_many :collections, through: :collection_languages, dependent: :restrict_with_exception
+
+  def self.ransackable_attributes(_ = nil)
+    %w[code east_limit id name north_limit retired south_limit west_limit]
+  end
+
+  def self.ransackable_associations(_ = nil)
+    %w[collection_languages collections countries countries_languages item_content_languages item_subject_languages items_for_content items_for_subject versions]
+  end
 end

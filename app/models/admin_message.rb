@@ -20,4 +20,8 @@ class AdminMessage < ApplicationRecord
   validates :message, presence: true
   validates :start_at, presence: true
   validates :finish_at, presence: true
+
+  def self.ransackable_attributes(_ = nil)
+    %w[created_at finish_at id message start_at updated_at]
+  end
 end

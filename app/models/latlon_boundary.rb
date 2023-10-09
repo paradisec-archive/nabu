@@ -26,4 +26,12 @@ class LatlonBoundary < ApplicationRecord
   belongs_to :country
 
   validates_presence_of :north_limit, :south_limit, :west_limit, :east_limit, :country
+
+  def self.ransackable_attributes(_ = nil)
+    %w[country_id east_limit id north_limit south_limit west_limit wrapped]
+  end
+
+  def self.ransackable_associations(_ = nil)
+    %w[country versions]
+  end
 end

@@ -17,7 +17,7 @@ class FundingBody < ApplicationRecord
   has_paper_trail
 
   validates :name, :presence => true
-  validates :name, :key_prefix, :uniqueness => true
+  validates :name, :key_prefix, uniqueness: true
 
   scope :alpha, -> { order(:name) }
 
@@ -36,7 +36,11 @@ class FundingBody < ApplicationRecord
 
   def ok_to_destroy?
     errors.clear
-    errors.add(:base, "Funding body used in collections and cannot be removed.") if collections.count > 0
+    errors.add(:base, 'Funding body used in collections and cannot be removed.') if collections.positive?
     errors.empty?
+  end
+
+  def self.ransackable_attributes(_ = nil)
+    %w[created_at id key_prefix name updated_at]
   end
 end

@@ -183,11 +183,21 @@ class User < ApplicationRecord
     ok_to_destroy? ? super : self
   end
 
+  def self.ransackable_attributes(_ = nil)
+    %w[
+      address address2 admin collector confirmation_sent_at confirmation_token confirmed_at
+      contact_only country created_at current_sign_in_at current_sign_in_ip email encrypted_password
+      failed_attempts first_name id last_name last_sign_in_at last_sign_in_ip locked_at party_identifier
+      phone remember_created_at reset_password_sent_at reset_password_token rights_transfer_reason
+      rights_transferred_to_id sign_in_count unconfirmed_email unlock_token updated_at
+    ]
+  end
+
   private
 
   def ok_to_destroy?
     errors.clear
-    errors.add(:base, "User owns items and cannot be removed.") if owned_items.count > 0
+    errors.add(:base, 'User owns items and cannot be removed.') if owned_items.positive?
     errors.empty?
   end
 

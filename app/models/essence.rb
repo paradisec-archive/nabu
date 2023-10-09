@@ -122,6 +122,14 @@ class Essence < ApplicationRecord
     item
   end
 
+  def self.ransackable_attributes(_ = nil)
+    %w[bitrate channels created_at derived_files_generated doi duration filename fps id item_id mimetype samplerate size updated_at]
+  end
+
+  def self.ransackable_associations(_ = nil)
+    %w[item versions]
+  end
+
   private
 
   def update_catalog_file

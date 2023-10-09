@@ -548,5 +548,14 @@ class Collection < ApplicationRecord
 
     json
   end
+
+  def self.ransackable_attributes(_ = nil)
+    %w[
+      access_condition_id access_narrative collector_id comments complete created_at deposit_form_received
+      description doi east_limit field_of_research_id id identifier media metadata_source north_limit
+      operator_id orthographic_notes private region south_limit tape_location title university_id
+      updated_at west_limit
+    ]
+  end
 end
 # rubocop:enable Metrics/ClassLength

@@ -12,8 +12,8 @@
 # **`updated_at`**  | `datetime`         | `not null`
 #
 ActiveAdmin.register AccessCondition do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
   actions :all
 
   permit_params :name

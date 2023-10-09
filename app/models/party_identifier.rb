@@ -20,4 +20,8 @@ class PartyIdentifier < ApplicationRecord
 
   validates_presence_of :user_id, :party_type
   validates_uniqueness_of :party_type, scope: :user_id
+
+  def self.ransackable_attributes(_ = nil)
+    %w[created_at id identifier party_type updated_at user_id]
+  end
 end
