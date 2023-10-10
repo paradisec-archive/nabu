@@ -201,6 +201,11 @@ type Query {
   collection(identifier: ID!): Collection
 
   """
+  Find a collection by identifier. e.g. NT1
+  """
+  essence(filename: String!, fullIdentifier: ID!): Essence
+
+  """
   Find an item by full identifier. e.g. NT1-009
   """
   item(fullIdentifier: ID!): Item

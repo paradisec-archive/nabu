@@ -11,10 +11,9 @@ class GraphqlController < ApplicationController
 
   # since this is a JSON request, don't use authorize! which will try and redirect to login page
   def check_auth
-    unless can? :graphql, Item
-      render status: 401, json: {error: 'Must be logged in to query Nabu'}
-      return
-    end
+    return if  can? :graphql, Item
+
+    render status: :unauthorized, json: { error: 'Must be logged in to query Nabu' }
   end
 
   def execute
@@ -23,13 +22,14 @@ class GraphqlController < ApplicationController
     operation_name = params[:operationName]
     context = {
       # Query context goes here, for example:
-      current_user: current_user,
+      current_user:
     }
-    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
+    result = NabuSchema.execute(query, { variables:, context:, operation_name:, max_complexity: 200 })
     render json: result
-  rescue StandardError => e
-    raise e unless Rails.env.development?
-    handle_error_in_development(e)
+  rescue StandardError => error
+    raise error unless Rails.env.development?
+
+    handle_error_in_development(error)
   end
 
   def schema
@@ -58,10 +58,10 @@ class GraphqlController < ApplicationController
     end
   end
 
-  def handle_error_in_development(e)
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+  def handle_error_in_development(error)
+    logger.error error.message
+    logger.error error.backtrace.join("\n")
 
-    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+    render json: { errors: [{ message: error.message, backtrace: error.backtrace }], data: {} }, status: :internal_server_error
   end
 end

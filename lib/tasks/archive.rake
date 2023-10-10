@@ -125,16 +125,6 @@ namespace :archive do
       files_array.each do |file|
         puts '---------------------------------------------------------------'
 
-        # Uncommon errors 1.
-        # Action: Move to rejected folder.
-        # skip files with item_id longer than 30 chars, because OLAC can't deal with them
-        if success && item_id.length > 30
-          puts "ERROR: file #{file} skipped - item id longer than 30 chars (OLAC incompatible)" if verbose
-          success = false
-        end
-
-        is_non_admin_file = basename.split('-').last != "PDSC_ADMIN"
-
         # Action: If it's PDSC_ADMIN, move the file
         # Action: If it fails to import, move to rejected.
         # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"

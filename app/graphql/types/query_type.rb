@@ -13,7 +13,7 @@ module Types
 
     # Then provide an implementation:
     def collection(identifier:)
-      Collection.find_by(identifier: identifier)
+      Collection.find_by(identifier:)
     end
 
     field :item, ItemType, 'Find an item by full identifier. e.g. NT1-009' do
@@ -74,6 +74,19 @@ module Types
         results.next_page,
         results
       )
+    end
+
+    field :essence, EssenceType, 'Find a collection by identifier. e.g. NT1' do
+      argument :full_identifier, ID
+      argument :filename, String
+    end
+
+    def essence(full_identifier:, filename:)
+      collection_identifier, item_identifier = full_identifier.split('-')
+      collection = Collection.find_by(identifier: collection_identifier)
+      item = collection.items.find_by(identifier: item_identifier)
+
+      item.essences.find_by(filename:)
     end
   end
 end
