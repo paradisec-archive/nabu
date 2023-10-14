@@ -11,7 +11,7 @@ class GraphqlController < ApplicationController
 
   # since this is a JSON request, don't use authorize! which will try and redirect to login page
   def check_auth
-    return if  can? :graphql, Item
+    return if can? :graphql, Item
 
     render status: :unauthorized, json: { error: 'Must be logged in to query Nabu' }
   end
@@ -24,7 +24,7 @@ class GraphqlController < ApplicationController
       # Query context goes here, for example:
       current_user:
     }
-    result = NabuSchema.execute(query, { variables:, context:, operation_name:, max_complexity: 200 })
+    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
     render json: result
   rescue StandardError => error
     raise error unless Rails.env.development?

@@ -1,10 +1,10 @@
 # TODO
 
 ## Migration
-* Cron jobs
 * Monitoring
 * Clean up SPF records
 * Remove checksum files from the repository
+* Clean up Media::New
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
