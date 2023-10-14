@@ -2,18 +2,18 @@
 
 module Mutations
   class EssenceUpdate < BaseMutation
-    description "Updates a essence by id"
+    description 'Updates a essence by id'
 
     field :essence, Types::EssenceType, null: false
 
     argument :id, ID, required: true
-    argument :essence_input, Types::EssenceInputType, required: true
+    argument :attributes, Types::EssenceAttributes, required: true
 
-    def resolve(id:, essence_input:)
+    def resolve(id:, attributes:)
       essence = ::Essence.find(id)
-      raise GraphQL::ExecutionError.new "Error updating essence", extensions: essence.errors.to_hash unless essence.update(**essence_input)
+      raise GraphQL::ExecutionError.new 'Error updating essence', extensions: essence.errors.to_hash unless essence.update(**attributes)
 
-      { essence: essence }
+      { essence: }
     end
   end
 end
