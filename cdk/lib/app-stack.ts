@@ -332,6 +332,7 @@ export class AppStack extends cdk.Stack {
       targets: [appService],
       vpc,
       protocol: elbv2.ApplicationProtocol.HTTP,
+      deregistrationDelay: cdk.Duration.seconds(30),
     });
 
     sslListener.addTargetGroups('AlbTargetGroups', {

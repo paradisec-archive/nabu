@@ -7,11 +7,11 @@ module Types
     argument :collection_identifier, String
     argument :filename, String
     argument :mimetype, String
-    argument :bitrate, Integer
-    argument :samplerate, Integer
     argument :size, Integer
-    argument :duration, Float
-    argument :channels, Integer
-    argument :fps, Integer
+    argument :bitrate, Integer, required: false
+    argument :samplerate, Integer, required: false
+    argument :duration, Float, required: false
+    argument :channels, Integer, required: false
+    argument :fps, Integer, required: false
   end
 end
