@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_20_014716) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_14_051157) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -187,6 +187,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_20_014716) do
     t.datetime "updated_at", precision: nil
     t.string "doi"
     t.boolean "derived_files_generated", default: false
+    t.index ["item_id", "filename"], name: "index_essences_on_item_id_and_filename", unique: true
     t.index ["item_id"], name: "index_essences_on_item_id"
   end
 
