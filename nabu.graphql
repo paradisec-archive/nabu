@@ -121,9 +121,16 @@ type EssenceCreatePayload {
 Attributes for creating or updating an essence
 """
 input EssenceInput {
+  bitrate: Int!
+  channels: Int!
   collectionIdentifier: String!
+  duration: Float!
   filename: String!
+  fps: Int!
   itemIdentifier: String!
+  mimetype: String!
+  samplerate: Int!
+  size: Int!
 }
 
 type FieldOfResearch {
