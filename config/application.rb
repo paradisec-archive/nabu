@@ -27,17 +27,6 @@ module Nabu
     ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
 
     # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
-
-    # This is the directory from where Nabu will pick up files. File names have
-    # to follow the pattern: "#{collection_id}-#{item_id}-xxx.xxx", so they can
-    # be moved into the correct directory. Note: files of the pattern
-    # "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx" will be copied, but not
-    # added to the list of imported files in Nabu.
-    config.upload_directories = [
-      "#{Rails.root}/public/system/send_to_archive/",
-      "/tmp/test/"
-    ]
-
     # This is the directory that Nabu will scan for new files frequently.
     # If it finds files in there that match the pattern
     # "#{collection_id}-#{item_id}-xxx.xxx",

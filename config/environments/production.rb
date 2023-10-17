@@ -99,12 +99,6 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :sesv2
 
   # --- NABU APPLICATION SPECIFIC DIRECTORIES BELOW HERE ---
-  # --- OVERWRITE FOR PRODUCTION
-  config.upload_directories = [
-    "/srv/nabu/archive_me/",
-    "/srv/nabu/manual_uploads/"
-  ]
-
   config.scan_directory = '/srv/nabu/scan_directory/'
   config.write_id3 = '/srv/nabu/id3_export/'
   config.write_imp = '/srv/nabu/xml_export/'

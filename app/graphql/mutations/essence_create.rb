@@ -11,15 +11,12 @@ module Mutations
     argument :filename, String
     argument :attributes, Types::EssenceAttributes, required: true
 
-    def resolve(item_identifier:, collection_identifier:, filename:, essence_input:)
-      input = essence_input.to_h
+    def resolve(item_identifier:, collection_identifier:, filename:, attributes:)
       collection = Collection.find_by(identifier: collection_identifier)
 
       item = collection.items.find_by(identifier: item_identifier)
-      input[:item_id] = item.id
-      Rails.logger.info "input: #{input}"
 
-      essence = ::Essence.new(filename:, **input)
+      essence = ::Essence.new(filename:, item_id: item.id, **attributes)
       raise GraphQL::ExecutionError.new 'Error creating essence', extensions: essence.errors.to_hash unless essence.save
 
       { essence: }

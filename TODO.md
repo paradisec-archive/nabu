@@ -5,6 +5,9 @@
 * Clean up SPF records
 * Remove checksum files from the repository
 * Clean up Media::New
+* FIx DB and S3 filenames and extensions
+* qua files are these quarantine with viruses?
+* Check with nick about removing pfsx
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3

@@ -16,6 +16,62 @@ include ApplicationHelper
 archive_dir = '/srv/catalog'
 
 namespace :archive do
+  desc 'Import files into the archive'
+  task :import_files => :environment do
+    verbose = ENV['VERBOSE'] ? true : false
+    dry_run = ENV['DRY_RUN'] ? true : false
+
+    # Always update metadata, unlike the update_files task
+    force_update = true
+
+    # find essence files in Nabu::Application.config.upload_directories
+    dir_list = Nabu::Application.config.upload_directories
+
+    dir_list.each do |upload_directory|
+      puts 'Start processing files to import...'
+      files_array.each do |file|
+        puts '---------------------------------------------------------------'
+
+        # Action: If it's PDSC_ADMIN, move the file
+        # Action: If it fails to import, move to rejected.
+        # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
+        # will be copied, but not added to the list of imported files in Nabu.
+        if is_non_admin_file && success
+          # extract media metadata from file
+          puts "INFO: Inspecting file #{file}..."
+          begin
+            if dry_run
+              puts "DRY_RUN: file #{file} would be imported into Nabu"
+            else
+              success = import_metadata(upload_directory, file, item, extension, force_update)
+            end
+          rescue => e
+            puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
+            puts " >> #{e.backtrace}"
+            success = false
+          end
+        end
+
+
+        # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
+        # so don't worry about success value.
+        # REVIEW: Can this code throw an exception?
+        if success
+          full_file_path = destination_path + "/" + file
+          essence = Essence.where(:item_id => item, :filename => file).first
+          media = Nabu::Media.new full_file_path
+          if dry_run
+            puts "DRY_RUN: thumbnails for file #{file} would be generated"
+          else
+            generate_derived_files(full_file_path, item, essence, extension, media, verbose)
+          end
+        end
+
+        puts "...done"
+      end
+    end
+  end
+
   desc 'Provide essence files in scan_directory with metadata for sealing'
   task :export_metadata => :environment do
     verbose = ENV['VERBOSE'] ? true : false
@@ -109,61 +165,6 @@ namespace :archive do
   end
 
 
-  desc 'Import files into the archive'
-  task :import_files => :environment do
-    verbose = ENV['VERBOSE'] ? true : false
-    dry_run = ENV['DRY_RUN'] ? true : false
-
-    # Always update metadata, unlike the update_files task
-    force_update = true
-
-    # find essence files in Nabu::Application.config.upload_directories
-    dir_list = Nabu::Application.config.upload_directories
-
-    dir_list.each do |upload_directory|
-      puts 'Start processing files to import...'
-      files_array.each do |file|
-        puts '---------------------------------------------------------------'
-
-        # Action: If it's PDSC_ADMIN, move the file
-        # Action: If it fails to import, move to rejected.
-        # files of the pattern "#{collection_id}-#{item_id}-xxx-PDSC_ADMIN.xxx"
-        # will be copied, but not added to the list of imported files in Nabu.
-        if is_non_admin_file && success
-          # extract media metadata from file
-          puts "INFO: Inspecting file #{file}..."
-          begin
-            if dry_run
-              puts "DRY_RUN: file #{file} would be imported into Nabu"
-            else
-              success = import_metadata(upload_directory, file, item, extension, force_update)
-            end
-          rescue => e
-            puts "ERROR: file #{file} skipped - error importing metadata [#{e.message}]" if verbose
-            puts " >> #{e.backtrace}"
-            success = false
-          end
-        end
-
-
-        # Try doing generation of thumbnails. Failure to do this does not indicate a failure of the import process,
-        # so don't worry about success value.
-        # REVIEW: Can this code throw an exception?
-        if success
-          full_file_path = destination_path + "/" + file
-          essence = Essence.where(:item_id => item, :filename => file).first
-          media = Nabu::Media.new full_file_path
-          if dry_run
-            puts "DRY_RUN: thumbnails for file #{file} would be generated"
-          else
-            generate_derived_files(full_file_path, item, essence, extension, media, verbose)
-          end
-        end
-
-        puts "...done"
-      end
-    end
-  end
 
   desc 'Create all missing PDSC_ADMIN files'
   task admin_files: :environment do
@@ -249,19 +250,6 @@ namespace :archive do
 
 
   def import_metadata(path, file, item, extension, force_update)
-    full_file_path = path + "/" + file
-
-    media = Nabu::Media.new full_file_path
-
-    essence = Essence.where(item_id: item, filename: file).first
-    essence ||= Essence.new(item:, filename:  file)
-
-    essence.mimetype   = media.mimetype
-    essence.size       = media.size
-    essence.bitrate    = media.bitrate
-    essence.samplerate = media.samplerate
-    essence.duration   = number_with_precision(media.duration, :precision => 3)
-    essence.channels   = media.channels
     essence.fps        = media.fps
 
     essence.save!
