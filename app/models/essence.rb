@@ -52,6 +52,8 @@ class Essence < ApplicationRecord
   validates :fps, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
 
   # ensure that the item catalog gets updated when essences are added/removed
+
+  before_save :round_duration
   after_create :update_catalog_file
   before_destroy :update_catalog_file
 
@@ -129,5 +131,9 @@ class Essence < ApplicationRecord
 
   def update_catalog_file
     ItemCatalogService.new(item).delay.save_file
+  end
+
+  def round_duration
+    self.duration = duration.round(3) if duration.present?
   end
 end

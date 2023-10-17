@@ -8,6 +8,7 @@
 * FIx DB and S3 filenames and extensions
 * qua files are these quarantine with viruses?
 * Check with nick about removing pfsx
+* Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
 
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
