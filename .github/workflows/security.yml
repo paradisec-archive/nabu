@@ -15,6 +15,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - run: |
+          echo 'sonar.projectKey=paradisec-nabu' > sonar-project.properties
+
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
