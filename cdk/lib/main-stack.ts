@@ -67,6 +67,7 @@ export class MainStack extends cdk.Stack {
     const metaBucket = new s3.Bucket(this, 'MetaBucket', {
       bucketName: `${appName}-meta-${env}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
@@ -78,6 +79,7 @@ export class MainStack extends cdk.Stack {
     this.catalogBucket = new s3.Bucket(this, 'CatalogBucket', {
       bucketName: `${appName}-catalog-${env}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       // TODO: Do we want tiering?
       // intelligentTieringConfigurations: [ ],
