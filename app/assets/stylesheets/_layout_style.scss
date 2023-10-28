@@ -205,7 +205,6 @@ body.bp {
     margin-bottom: 8px;
     width: 100%;
     box-sizing: border-box;
-    -moz-box-sizing: border-box;
     legend {
       font-size: 18px;
       text-shadow: grey 2px 2px 3px;
@@ -322,8 +321,7 @@ body.bp {
       padding: 4px 0;
       border: solid 1px #E5E5E5;
       box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
-      background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
-      background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+      background: linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     }
 
     select.bool {
@@ -353,10 +351,7 @@ body.bp {
     border: solid 1px #E5E5E5;
     background: #FFFFFF;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
-    background: -webkit-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
-    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
-    background: -ms-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
-    background: -o-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    background: linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     &:hover, &:focus {
       box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 8px;
     }
@@ -371,7 +366,6 @@ body.bp {
   input[type="text"], input[type="email"], input[type="password"], textarea {
     width: 100%;
     box-sizing: border-box;
-    -moz-box-sizing: border-box;
     padding: 7px;
     margin: 0 7px 0 0;
     &#search {

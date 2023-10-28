@@ -94,23 +94,17 @@ $(function () {
         switch (typeForField) {
             case 'boolean':
                 return replaceWithBooleanInput(valueField);
-                break;
             case 'number':
                 return replaceWithNumber(valueField);
-                break;
             case 'date':
                 return replaceWithDateInput(valueField);
-                break;
             case 'collection':
                 return replaceWithCollection(valueField, fieldName);
-                break;
             case 'autocomplete':
                 return replaceWithAutocomplete(valueField, fieldName);
-                break;
             case 'text':
             default:
                 return replaceWithTextInput(valueField);
-                break;
         }
     }
     $(document).on('change', '.operator', function() {
