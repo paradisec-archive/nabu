@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import { AwsSolutionsChecks } from 'cdk-nag';
+
 import { MainStack } from '../lib/main-stack';
 import { AppStack } from '../lib/app-stack';
 import type { AppProps, Environment } from '../lib/types';
@@ -52,3 +54,5 @@ environments.forEach((environment) => {
     env: { account: environment.account, region: environment.region },
   });
 });
+
+cdk.Aspects.of(app).add(new AwsSolutionsChecks({ verbose: true }));

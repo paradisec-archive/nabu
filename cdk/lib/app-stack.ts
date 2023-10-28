@@ -1,12 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';

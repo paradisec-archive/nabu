@@ -7,6 +7,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 import { Environment } from './types';
+import { NagSuppressions } from 'cdk-nag';
 
 export class MainStack extends cdk.Stack {
   public catalogBucket: s3.IBucket;
@@ -71,6 +72,10 @@ export class MainStack extends cdk.Stack {
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+    NagSuppressions.addResourceSuppressions(
+      metaBucket,
+      [{ id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" }],
+    );
 
     // ////////////////////////
     // Catalog bucket
