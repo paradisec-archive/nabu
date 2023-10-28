@@ -175,7 +175,7 @@ class Item < ApplicationRecord
   end
 
   def public?
-    self.private == false && self.collection.private == false
+    !self.private && !self.collection.private
   end
 
   def full_identifier
