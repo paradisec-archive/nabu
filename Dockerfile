@@ -46,11 +46,7 @@ RUN npm install --global yarn
 RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
 
-VOLUME /app
-WORKDIR /app
-
-RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
-
+# AWS tools
 RUN cd /tmp \
   && curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
   && unzip -q awscliv2.zip \
@@ -58,5 +54,15 @@ RUN cd /tmp \
   && rm -rf /tmp/awscliv2.zip /tmp/aws \
   && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
   && dpkg -i session-manager-plugin.deb
+
+
+VOLUME /app
+WORKDIR /app
+
+RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
+
+RUN useradd -ms /bin/bash deploy
+
+USER deploy
 
 CMD ["bin/rails", "server", "-b", "0.0.0.0"]
