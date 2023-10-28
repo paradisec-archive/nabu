@@ -349,9 +349,8 @@ body.bp {
       width: 400px;
     }
     border: solid 1px #E5E5E5;
-    background: #FFFFFF;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
     background: linear-gradient(to top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
     &:hover, &:focus {
       box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 8px;
     }
