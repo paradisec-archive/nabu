@@ -111,6 +111,8 @@ export class MainStack extends cdk.Stack {
           '*',
         ],
       }],
+      serverAccessLogsBucket: metaBucket,
+      serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
     });
   }
 }

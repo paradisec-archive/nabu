@@ -17,6 +17,7 @@ import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { SecretValue } from 'aws-cdk-lib';
 
 import { AppProps } from './types';
+import { NagSuppressions } from 'cdk-nag';
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
@@ -61,6 +62,10 @@ export class AppStack extends cdk.Stack {
         subnets: dataSubnets,
       },
     });
+    NagSuppressions.addResourceSuppressions(
+      db,
+      [{ id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' }],
+    );
 
     // ////////////////////////
     // ECS Cluster
@@ -284,6 +289,11 @@ export class AppStack extends cdk.Stack {
       actions: ['ses:SendRawEmail'],
       resources: ['*'],
     }));
+    NagSuppressions.addResourceSuppressions(
+      jobsTaskDefinition,
+      [{ id: 'AwsSolutions-IAM5', reason: 'SES has no resources', appliesTo: ['Resource::*'] }],
+      true,
+    );
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
@@ -403,5 +413,10 @@ export class AppStack extends cdk.Stack {
         backup.BackupResource.fromRdsDatabaseInstance(db),
       ],
     });
+    NagSuppressions.addResourceSuppressions(
+      plan,
+      [{ id: 'AwsSolutions-IAM4', reason: 'Managed Policy is fine', appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'] }],
+      true,
+    );
   }
 }
