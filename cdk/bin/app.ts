@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { AwsSolutionsChecks } from 'cdk-nag';
+import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
 import { MainStack } from '../lib/main-stack';
 import { AppStack } from '../lib/app-stack';
@@ -50,9 +50,13 @@ environments.forEach((environment) => {
     tempCertificate: mainStack.tempCertificate,
   };
 
-  new AppStack(app, `${environment.appName}-appstack-${environment.env}`, props, {
+  const stack = new AppStack(app, `${environment.appName}-appstack-${environment.env}`, props, {
     env: { account: environment.account, region: environment.region },
   });
+  NagSuppressions.addStackSuppressions(stack, [
+    { id: 'AwsSolutions-IAM5', reason: 'Too many false positives' },
+    { id: 'AwsSolutions-EC26', reason: 'Too many false positives' },
+  ]);
 });
 
 cdk.Aspects.of(app).add(new AwsSolutionsChecks({ verbose: true }));

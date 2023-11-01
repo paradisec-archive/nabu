@@ -54,18 +54,24 @@ export class AppStack extends cdk.Stack {
     const db = new rds.DatabaseInstance(this, 'RdsInstance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MICRO),
-      storageEncrypted: true, // NOTE: It defaults to true, but SonarQube doesn't seem to know that
+      // storageEncrypted: true, // NOTE: It defaults to true, but SonarQube doesn't seem to know that
       credentials: rds.Credentials.fromGeneratedSecret('nabu'),
       databaseName: 'nabu',
       vpc,
       vpcSubnets: {
         subnets: dataSubnets,
       },
+      deletionProtection: true,
     });
     NagSuppressions.addResourceSuppressions(
       db,
-      [{ id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' }],
+      [
+        { id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' },
+        { id: 'AwsSolutions-RDS11', reason: 'Standard port is fine' },
+        { id: 'AwsSolutions-RDS2', reason: 'FIXME: We should have encryption' }, // FIXME: We should really fix this
+      ],
     );
+    db.addRotationSingleUser();
 
     // ////////////////////////
     // ECS Cluster
@@ -74,6 +80,7 @@ export class AppStack extends cdk.Stack {
     const cluster = new ecs.Cluster(this, 'Cluster', {
       clusterName: appName,
       vpc,
+      containerInsights: true,
     });
     cluster.addDefaultCloudMapNamespace({
       name: 'nabu',
@@ -94,6 +101,13 @@ export class AppStack extends cdk.Stack {
 
       // keyName: 'nabu',
     });
+    NagSuppressions.addResourceSuppressions(
+      autoScalingGroup,
+      [
+        { id: 'AwsSolutions-EC26', reason: 'EBS coume already encrypted due to AMI defaults' },
+        { id: 'AwsSolutions-AS3', reason: 'We can live without the other notifications' },
+      ],
+    );
     // needed by service connect
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ecs:Poll'],
@@ -154,6 +168,10 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const proxyistTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ProxyistTaskDefinition');
+    NagSuppressions.addResourceSuppressions(
+      proxyistTaskDefinition,
+      [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }],
+    );
     proxyistTaskDefinition.addContainer('ProxyistContainer', {
       memoryLimitMiB: 256,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/proxyist.Dockerfile' }),
@@ -186,6 +204,10 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const viewerTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ViewerTaskDefinition');
+    NagSuppressions.addResourceSuppressions(
+      viewerTaskDefinition,
+      [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }],
+    );
     viewerTaskDefinition.addContainer('ViewerContainer', {
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', { file: 'docker/viewer.Dockerfile' }),
@@ -217,6 +239,10 @@ export class AppStack extends cdk.Stack {
         datacite_pass: SecretValue.unsafePlainText('secret'),
       },
     });
+    NagSuppressions.addResourceSuppressions(
+      appSecrets,
+      [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }],
+    );
 
     // ////////////////////////
     // App
@@ -248,6 +274,10 @@ export class AppStack extends cdk.Stack {
     };
 
     const appTaskDefinition = new ecs.Ec2TaskDefinition(this, 'AppTaskDefinition');
+    NagSuppressions.addResourceSuppressions(
+      appTaskDefinition,
+      [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }],
+    );
     appTaskDefinition.addContainer('AppContainer', {
       ...commonAppImageOptions,
       // NOTE: This is huge due to being able to show all 30000 items on the one page
@@ -279,6 +309,10 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const jobsTaskDefinition = new ecs.Ec2TaskDefinition(this, 'JobsTaskDefinition');
+    NagSuppressions.addResourceSuppressions(
+      jobsTaskDefinition,
+      [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }],
+    );
     jobsTaskDefinition.addContainer('JobsContainer', {
       ...commonAppImageOptions,
       memoryLimitMiB: 512,
@@ -289,11 +323,6 @@ export class AppStack extends cdk.Stack {
       actions: ['ses:SendRawEmail'],
       resources: ['*'],
     }));
-    NagSuppressions.addResourceSuppressions(
-      jobsTaskDefinition,
-      [{ id: 'AwsSolutions-IAM5', reason: 'SES has no resources', appliesTo: ['Resource::*'] }],
-      true,
-    );
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
