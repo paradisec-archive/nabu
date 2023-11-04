@@ -122,7 +122,8 @@ gem "streamio-ffmpeg" # ffmpeg interface
 gem "rmagick" # Image processing
 gem "whenever", :require => false # scheduling
 gem "rubyzip" # Zip the large CSV files before emailing
-gem 'curb' # Download CSVs for import
+gem "curb" # Download CSVs for import
+gem "rufus-scheduler" # Cron
 
 group :development, :test do
   gem "rspec-rails"
