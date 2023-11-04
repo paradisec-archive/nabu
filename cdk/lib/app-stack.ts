@@ -11,13 +11,11 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { SecretValue } from 'aws-cdk-lib';
+
+import { NagSuppressions } from 'cdk-nag';
 
 import { AppProps } from './types';
-import { NagSuppressions } from 'cdk-nag';
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
@@ -68,10 +66,11 @@ export class AppStack extends cdk.Stack {
       [
         { id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' },
         { id: 'AwsSolutions-RDS11', reason: 'Standard port is fine' },
+        { id: 'AwsSolutions-SMG4', reason: 'Rails doesn\'t support rotation' },
         { id: 'AwsSolutions-RDS2', reason: 'FIXME: We should have encryption' }, // FIXME: We should really fix this
       ],
+      true,
     );
-    db.addRotationSingleUser();
 
     // ////////////////////////
     // ECS Cluster
@@ -231,12 +230,12 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
     const appSecrets = new secretsmanager.Secret(this, 'AppSecrets', {
       secretObjectValue: {
-        recaptcha_site_key: SecretValue.unsafePlainText('secret'),
-        recaptcha_secret_key: SecretValue.unsafePlainText('secret'),
-        sentry_api_token: SecretValue.unsafePlainText('secret'),
-        secret_key_base: SecretValue.unsafePlainText('secret'),
-        datacite_user: SecretValue.unsafePlainText('secret'),
-        datacite_pass: SecretValue.unsafePlainText('secret'),
+        recaptcha_site_key: cdk.SecretValue.unsafePlainText('secret'),
+        recaptcha_secret_key: cdk.SecretValue.unsafePlainText('secret'),
+        sentry_api_token: cdk.SecretValue.unsafePlainText('secret'),
+        secret_key_base: cdk.SecretValue.unsafePlainText('secret'),
+        datacite_user: cdk.SecretValue.unsafePlainText('secret'),
+        datacite_pass: cdk.SecretValue.unsafePlainText('secret'),
       },
     });
     NagSuppressions.addResourceSuppressions(
@@ -263,8 +262,8 @@ export class AppStack extends cdk.Stack {
       },
       secrets: {
         SECRET_KEY_BASE: ecs.Secret.fromSecretsManager(appSecrets, 'secret_key_base'),
-        NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'password'),
-        NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret as ISecret, 'host'),
+        NABU_DATABASE_PASSWORD: ecs.Secret.fromSecretsManager(db.secret!, 'password'),
+        NABU_DATABASE_HOSTNAME: ecs.Secret.fromSecretsManager(db.secret!, 'host'),
         RECAPTCHA_SITE_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_site_key'),
         RECAPTCHA_SECRET_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'recaptcha_secret_key'),
         SENTRY_API_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'sentry_api_token'),
