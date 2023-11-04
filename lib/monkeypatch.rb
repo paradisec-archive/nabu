@@ -51,3 +51,7 @@ module OAI::Provider::Response
     prepend RecordResponseExtensions
   end
 end
+
+# Make zeitwork happy
+module Monkeypatch
+end

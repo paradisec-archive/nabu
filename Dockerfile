@@ -72,7 +72,7 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server", "-log-to-stdout"]
+CMD ["./bin/rails", "server", "--log-to-stdout"]
 
 # RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
 

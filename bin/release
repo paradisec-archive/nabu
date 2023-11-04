@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
+ENV=$1
+if [ -z "$ENV" ]; then
+  echo "Usage: bin/release <staging|production>"
+  exit 1
+fi
+
 git push
-git co production
+git co $ENV
 git merge --ff-only main
 git push
 git co main
-nabu_run bundle exec cap production deploy
