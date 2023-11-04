@@ -455,5 +455,39 @@
   "security-group:account=618916419351:region=ap-southeast-2:securityGroupId=sg-02a8995547a7489b6": {
     "securityGroupId": "sg-02a8995547a7489b6",
     "allowAllOutbound": false
+  },
+  "load-balancer:account=847483222616:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:847483222616$:loadbalancer/app/Ingress-alb-01/a98404019ba2c855:loadBalancerType=application:region=ap-southeast-2": {
+    "loadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/app/Ingress-alb-01/a98404019ba2c855",
+    "loadBalancerCanonicalHostedZoneId": "Z1GM3OXH4ZPM65",
+    "loadBalancerDnsName": "internal-Ingress-alb-01-1830394969.ap-southeast-2.elb.amazonaws.com",
+    "vpcId": "vpc-09d5391b88ef5d9df",
+    "securityGroupIds": [
+      "sg-01757ad1caf451de3"
+    ],
+    "ipAddressType": "ipv4"
+  },
+  "load-balancer-listener:account=847483222616:listenerProtocol=HTTPS:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:847483222616$:loadbalancer/app/Ingress-alb-01/a98404019ba2c855:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:listener/app/Ingress-alb-01/a98404019ba2c855/8fc41b4f78a5b234",
+    "listenerPort": 443,
+    "securityGroupIds": [
+      "sg-01757ad1caf451de3"
+    ]
+  },
+  "load-balancer:account=618916419351:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:618916419351$:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a:loadBalancerType=application:region=ap-southeast-2": {
+    "loadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a",
+    "loadBalancerCanonicalHostedZoneId": "Z1GM3OXH4ZPM65",
+    "loadBalancerDnsName": "internal-Ingress-alb-01-546310088.ap-southeast-2.elb.amazonaws.com",
+    "vpcId": "vpc-0437e3b41f7565c3a",
+    "securityGroupIds": [
+      "sg-02a8995547a7489b6"
+    ],
+    "ipAddressType": "ipv4"
+  },
+  "load-balancer-listener:account=618916419351:listenerProtocol=HTTPS:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:618916419351$:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:listener/app/Ingress-alb-01/4162825c506c4b6a/0b2188c0cd0f4926",
+    "listenerPort": 443,
+    "securityGroupIds": [
+      "sg-02a8995547a7489b6"
+    ]
   }
 }

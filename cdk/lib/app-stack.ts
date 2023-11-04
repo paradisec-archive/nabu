@@ -334,6 +334,10 @@ export class AppStack extends cdk.Stack {
 
     if (env === 'prod') {
       const cronTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CronTaskDefinition');
+      NagSuppressions.addResourceSuppressions(
+        cronTaskDefinition,
+        [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }],
+      );
       cronTaskDefinition.addContainer('CronContainer', {
         ...commonAppImageOptions,
         memoryLimitMiB: 512,

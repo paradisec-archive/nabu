@@ -49,7 +49,7 @@
 # Docker
 /Dockerfile
 /docker-compose.yml
-/docker
+# /docker
 
 # Tests
 /Guardfile
