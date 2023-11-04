@@ -105,7 +105,7 @@ gem "aws-sdk-rails" # Send emails via SES
 
 # Frameworks
 gem "activeadmin"
-  gem "country-select"
+  gem "country_select"
 gem "graphql"
 gem "graphiql-rails" , "1.8.0" # https://github.com/rmosolgo/graphiql-rails/issues/106
 gem "delayed-web"
