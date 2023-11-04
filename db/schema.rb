@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_14_051157) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_04_204243) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -421,10 +421,12 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_051157) do
     t.string "rights_transfer_reason"
     t.string "party_identifier"
     t.boolean "collector", default: false, null: false
+    t.string "unikey"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["rights_transferred_to_id"], name: "index_users_on_rights_transferred_to_id"
+    t.index ["unikey"], name: "index_users_on_unikey", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 

@@ -34,6 +34,7 @@
 # **`rights_transfer_reason`**    | `string(255)`      |
 # **`sign_in_count`**             | `integer`          | `default(0)`
 # **`unconfirmed_email`**         | `string(255)`      |
+# **`unikey`**                    | `string(255)`      |
 # **`unlock_token`**              | `string(255)`      |
 # **`created_at`**                | `datetime`         | `not null`
 # **`updated_at`**                | `datetime`         | `not null`
@@ -49,6 +50,8 @@
 #     * **`reset_password_token`**
 # * `index_users_on_rights_transferred_to_id`:
 #     * **`rights_transferred_to_id`**
+# * `index_users_on_unikey` (_unique_):
+#     * **`unikey`**
 # * `index_users_on_unlock_token` (_unique_):
 #     * **`unlock_token`**
 #
@@ -69,6 +72,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :email, presence: true, unless: proc { |user| user.contact_only? }
+  validates :unikey, uniqueness: true
 
   paginates_per 10
 
@@ -108,13 +112,13 @@ class User < ApplicationRecord
   }
 
   # find identifying info for single user with duplicates
-  scope :duplicates_of, lambda do |first, last, user_ids = nil|
+  scope :duplicates_of, lambda { |first, last, user_ids = nil|
     specific_user_ids = user_ids || [-1]
     User.joins('LEFT OUTER JOIN ('\
                    'SELECT first_name, last_name FROM users GROUP BY first_name, last_name HAVING COUNT(*) > 1'\
                ') d ON users.first_name = d.first_name AND users.last_name = d.last_name')
         .where('(users.first_name = ? AND users.last_name = ?) OR users.id in (?)', first, last, specific_user_ids)
-  end
+  }
 
   scope :users, -> { where(contact_only: false) }
   scope :collectors, -> { where(collector: true) }
@@ -192,7 +196,7 @@ class User < ApplicationRecord
       contact_only country created_at current_sign_in_at current_sign_in_ip email encrypted_password
       failed_attempts first_name id last_name last_sign_in_at last_sign_in_ip locked_at party_identifier
       phone remember_created_at reset_password_sent_at reset_password_token rights_transfer_reason
-      rights_transferred_to_id sign_in_count unconfirmed_email unlock_token updated_at
+      rights_transferred_to_id sign_in_count unconfirmed_email unlock_token updated_at unikey
     ]
   end
 

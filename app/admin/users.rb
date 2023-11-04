@@ -62,7 +62,7 @@ ActiveAdmin.register User do
 
   permit_params :party_identifiers_attributes, :email, :first_name, :last_name,
     :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,
-    :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector
+    :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector, :unikey
 
   before_destroy :check_dependent
 
@@ -201,6 +201,7 @@ ActiveAdmin.register User do
       row :contact_only
       row :admin
       row :party_identifier
+      row :unikey
       #TODO: uncomment once this stuff is tested in staging
       # row :party_identifiers do |user|
       #   user.party_identifiers.map{|p| p.identifier}.join("\n")
@@ -245,6 +246,7 @@ ActiveAdmin.register User do
         f.input :password_confirmation
       end
       f.input :party_identifier
+      f.input :unikey
       #TODO: uncomment once this stuff is tested in staging
       # f.has_many :party_identifiers, allow_destroy: true do |p|
       #   p.input :user_id, as: :hidden, input_html: {value: f.object.id}
