@@ -65,10 +65,10 @@ class User < ApplicationRecord
          :confirmable, :lockable, :trackable
 
   # Optionally a user has transferred their rights to another one, e.g. then deceased.
-  belongs_to :rights_transferred_to, :class_name => 'User', :optional => true
+  belongs_to :rights_transferred_to, class_name: 'User', optional: true
 
-  validates :first_name, :presence => true
-  validates :email, :presence => true, :unless => proc { |user| user.contact_only? }
+  validates :first_name, presence: true
+  validates :email, presence: true, unless: proc { |user| user.contact_only? }
 
   paginates_per 10
 
@@ -78,19 +78,19 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :party_identifiers, allow_destroy: true
 
   has_many :collection_admins
-  has_many :collections, :through => :collection_admins, :dependent => :destroy
+  has_many :collections, through: :collection_admins, dependent: :destroy
 
   has_many :item_admins
-  has_many :items, :through => :item_admins, :dependent => :destroy
+  has_many :items, through: :item_admins, dependent: :destroy
 
   has_many :item_users
 
-  has_many :item_agents, :dependent => :destroy
+  has_many :item_agents, dependent: :destroy
 
-  has_many :owned_items, :class_name => 'Item', :foreign_key => :collector_id, :dependent => :restrict_with_exception
-  has_many :owned_collections, :class_name => 'Collection', :foreign_key => :collector_id
+  has_many :owned_items, class_name: 'Item', foreign_key: :collector_id, dependent: :restrict_with_exception
+  has_many :owned_collections, class_name: 'Collection', foreign_key: :collector_id
 
-  delegate :name, :to => :rights_transferred_to, :prefix => true, :allow_nil => true
+  delegate :name, to: :rights_transferred_to, prefix: true, allow_nil: true
 
   has_many :access_grants,
            class_name: 'Doorkeeper::AccessGrant',
@@ -103,24 +103,27 @@ class User < ApplicationRecord
            dependent: :delete_all
 
   # find all users with multiple entries by name
-  scope :all_duplicates, -> { distinct.select([:first_name, :last_name]).group(:first_name, :last_name).having('count(*) > 1') }
-
-  # find identifying info for single user with duplicates
-  scope :duplicates_of, ->(first, last, user_ids = nil) {
-    specific_user_ids = user_ids || [-1]
-    User.joins('''left outer join (select first_name, last_name from users group by first_name, last_name having count(*) > 1) d
-            on users.first_name = d.first_name and users.last_name = d.last_name''')
-      .where('(users.first_name = ? and users.last_name = ?) or users.id in (?)', first, last, specific_user_ids)
+  scope :all_duplicates, lambda {
+    distinct.select(%i[first_name last_name]).group(:first_name, :last_name).having('count(*) > 1')
   }
 
-  scope :users, -> { where(:contact_only => false) }
-  scope :collectors, -> { where(:collector => true) }
-  scope :contacts, -> { where(:contact_only => true) }
-  scope :admins, -> { where(:admin => true) }
+  # find identifying info for single user with duplicates
+  scope :duplicates_of, lambda do |first, last, user_ids = nil|
+    specific_user_ids = user_ids || [-1]
+    User.joins('LEFT OUTER JOIN ('\
+                   'SELECT first_name, last_name FROM users GROUP BY first_name, last_name HAVING COUNT(*) > 1'\
+               ') d ON users.first_name = d.first_name AND users.last_name = d.last_name')
+        .where('(users.first_name = ? AND users.last_name = ?) OR users.id in (?)', first, last, specific_user_ids)
+  end
+
+  scope :users, -> { where(contact_only: false) }
+  scope :collectors, -> { where(collector: true) }
+  scope :contacts, -> { where(contact_only: true) }
+  scope :admins, -> { where(admin: true) }
 
   # Set random password for contacts
   before_validation do
-    if self.contact_only?
+    if contact_only?
       password = Devise.friendly_token.first(12)
       self.password = password
       self.password_confirmation = password
@@ -128,7 +131,7 @@ class User < ApplicationRecord
   end
 
   def self.sortable_columns
-    %w{last_name first_name id address address2 country email phone admin contact_only}
+    %w[last_name first_name id address address2 country email phone admin contact_only]
   end
 
   def name
@@ -205,6 +208,6 @@ class User < ApplicationRecord
 
   # Don't send email for contacts
   def confirmation_required?
-    !confirmed? && !self.contact_only?
+    !confirmed? && !contact_only?
   end
 end
