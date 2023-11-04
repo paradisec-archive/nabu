@@ -88,5 +88,14 @@ module Types
 
       item.essences.find_by(filename:)
     end
+
+    field :user_by_uni_key, EmailUserType, 'Find a user by their unikey' do
+      argument :unikey, String
+    end
+
+    def user_by_uni_key(unikey:)
+      User.find_by(unikey:)
+    end
+
   end
 end
