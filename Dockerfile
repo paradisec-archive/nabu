@@ -25,7 +25,8 @@ RUN apt-get update -qq && \
 RUN apt-get install --no-install-recommends -y \
       libcurl4-openssl-dev \
       libmagic-dev \
-      libmagickwand-dev
+      libmagickwand-dev \
+      nodejs # For cron FIXME: Rewrite this in ruby
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
