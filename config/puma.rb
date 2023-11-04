@@ -34,8 +34,4 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-if ENV['RAILS_ENV'] === 'production'
-  bind 'unix:///srv/www/nabu/shared/tmp/sockets/nabu-puma.sock'
-else
-  bind 'tcp://0.0.0.0:3000'
-end
+bind 'tcp://0.0.0.0:3000'
