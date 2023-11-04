@@ -3,7 +3,6 @@
 ## Rails 7.1
 Can we get rid of sassc??
 Do we need dotenv rails?
-Make the cron thingy use ruby so we don't need node in production
 
 ## Migration
 * Monitoring

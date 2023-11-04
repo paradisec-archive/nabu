@@ -342,7 +342,7 @@ export class AppStack extends cdk.Stack {
         ...commonAppImageOptions,
         memoryLimitMiB: 512,
         logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'CronService' }),
-        command: ['node', 'cron-worker/index.js'],
+        command: ['bundle', 'exec', 'cron-worker/cron.rb'],
       });
       cronTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: ['ses:SendEmail'],
