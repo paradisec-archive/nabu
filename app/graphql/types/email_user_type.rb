@@ -7,7 +7,8 @@ module Types
     field :last_name, String, null: true
 
     def self.authorized?(object, context)
-      super && context[:current_user] && context[:current_user].admin?
+      # TODO: implement scopes
+      super && context[:authenticated]
     end
   end
 end

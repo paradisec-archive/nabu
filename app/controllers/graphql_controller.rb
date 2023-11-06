@@ -9,19 +9,11 @@ class GraphqlController < ApplicationController
 
   before_action :check_auth, except: [:schema]
 
-  # since this is a JSON request, don't use authorize! which will try and redirect to login page
-  def check_auth
-    return if can? :graphql, Item
-
-    render status: :unauthorized, json: { error: 'Must be logged in to query Nabu' }
-  end
-
   def execute
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
       current_user:
     }
     result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
@@ -37,6 +29,13 @@ class GraphqlController < ApplicationController
   end
 
   private
+
+  # since this is a JSON request, don't use authorize! which will try and redirect to login page
+  def check_auth
+    return if can? :graphql, Item
+
+    render status: :unauthorized, json: { error: 'Must be logged in to query Nabu' }
+  end
 
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)
