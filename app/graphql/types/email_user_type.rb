@@ -7,7 +7,7 @@ module Types
     field :last_name, String, null: true
 
     def self.authorized?(object, context)
-      super && context[:viewer].admin?
+      super && context[:current_user] && context[:current_user].admin?
     end
   end
 end
