@@ -450,5 +450,7 @@ export class AppStack extends cdk.Stack {
       [{ id: 'AwsSolutions-IAM4', reason: 'Managed Policy is fine', appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup'] }],
       true,
     );
+
+    cdk.Tags.of(this).add('uni:billing:application', 'para');
   }
 }
