@@ -72,7 +72,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :email, presence: true, unless: proc { |user| user.contact_only? }
-  validates :unikey, uniqueness: true
+  validates :unikey, uniqueness: true, allow_nil: true
 
   paginates_per 10
 
