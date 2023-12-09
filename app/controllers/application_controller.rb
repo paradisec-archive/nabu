@@ -2,8 +2,21 @@ class ApplicationController < ActionController::Base
   before_action :set_timezone
   before_action :set_access_headers
   before_action :set_sentry_user
+  before_action :validate_per_page_param
 
   private
+  def validate_per_page_param
+    fields = %i[per_page items_page page files_per_page]
+    fields.each do |param|
+      next if params[param].blank?
+
+      value = params[param]
+      unless value.is_a?(Integer) || (value.is_a?(String) && value.match?(/\A\d+\z/))
+        params.delete(param)
+      end
+    end
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     # If it's a JSON request, give a 40x rather than redirecting them
     case
