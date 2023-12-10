@@ -24,6 +24,7 @@ class ItemsController < ApplicationController
           render template: 'items/show', formats: [:xml], handlers: [:haml]
         end
       end
+      format.rocrate { render :show }
     end
   end
 

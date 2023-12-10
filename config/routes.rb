@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     end
     resources :items, except: %i[index] do
       member do
+        get 'ro-crate-metadata.json', to: 'items#show', as: 'rocrate', defaults: { format: :rocrate }
         get :display
         get :data
         patch :inherit_details
