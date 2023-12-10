@@ -45,8 +45,9 @@ Rails.application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
-    resources :items, except: %i[index] do
+    resources :items, except: %i[index show] do
       member do
+        get :show
         get 'ro-crate-metadata.json', to: 'items#show', as: 'rocrate', defaults: { format: :rocrate }
         get :display
         get :data
