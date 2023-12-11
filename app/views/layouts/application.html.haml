@@ -71,6 +71,8 @@
             %li= current_link_to 'Dashboard', dashboard_path, 'page#dashboard'
           %li= current_link_to 'Collections', search_collections_path, 'collections'
           %li= current_link_to 'Items', search_items_path, 'items'
+          - if admin_user_signed_in?
+            %li= current_link_to 'Admin', admin_dashboard_path, 'admin'
           %li= current_link_to 'Contact', contact_path, 'page#contact'
 
       - admin_messages_class = "admin-messages-empty" if admin_messages.empty?
