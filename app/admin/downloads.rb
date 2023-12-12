@@ -45,7 +45,7 @@ ActiveAdmin.register Download do
     id_column
     column :user
     column :essence do |download|
-      if download && download.essence
+      if download&.essence
         link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
       else
         "Essence #{download.essence_id}, now removed"
@@ -71,7 +71,11 @@ ActiveAdmin.register Download do
       row :id
       row :user
       row :essence do
-        link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+        if download&.essence
+          link_to download.essence.filename, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+        else
+          "Essence #{download.essence_id}, now removed"
+        end
       end
       row :item do
         link_to download.item.full_identifier, Rails.application.routes.url_helpers.collection_item_path(download.collection, download.item)

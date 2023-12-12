@@ -10,6 +10,7 @@ export type Environment = {
   readonly branchNames: string[],
   readonly account: string,
   readonly zoneName: string,
+  readonly acmeValue: string,
 };
 
 export type AppProps = Environment & {

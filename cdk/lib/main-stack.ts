@@ -27,6 +27,7 @@ export class MainStack extends cdk.Stack {
       // region,
       // railsEnv,
       env,
+      acmeValue,
       zoneName,
     } = environment;
 
@@ -37,6 +38,13 @@ export class MainStack extends cdk.Stack {
     this.zone = new route53.PublicHostedZone(this, 'HostedZone', {
       zoneName,
       caaAmazon: true,
+    });
+
+    // Create lets encrypt txt records for cloudflare
+    new route53.TxtRecord(this, 'CloudFlareAcmeTxtRecord', {
+      zone: this.zone,
+      recordName: `_acme-challenge.${zoneName}`,
+      values: [ acmeValue ],
     });
 
     // ////////////////////////
