@@ -67,36 +67,20 @@ def essence_json(json, essence)
   json.sampleRate essence.samplerate if essence.samplerate
 end
 
-# def geo_id(lat, lng)
-#   "#geo-#{lat}-#{lng}"
-# end
-#
-# def geo_json(json, lng, lat, name)
-#   json.set! '@id', geo_id(lat, lng)
-#   json.set! '@type', 'GeoCoordinates'
-#   json.latitude lat
-#   json.longitude lng
-#   json.name "#{name} Latitude: #{lat} Longitude: #{lng}"
-# end
-
-# FIXME: Is the order right?
 def geo_shape_id(shape)
   "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
 end
 
-# FIXME: Is the order right?
-def geo_shape_json(json, shape)
-  json.set! '@id', geo_shape_id(shape)
-  json.set! '@type', 'GeoShape'
-  json.box "#{shape.west_limit},#{shape.south_limit} #{shape.east_limit},#{shape.north_limit}"
+def geo_shape_json(json, s)
+  json.set! '@id', geo_shape_id(s)
+  json.set! '@type', 'gsp:wktLiteral'
+  json.box "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))";
 end
 
-# FIXME: Is the order right?
 def geo_place_id(place)
   "#place_geo-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
 end
 
-# FIXME: Is the order right?
 # FIXME: Why does this exist?
 def geo_place_json(json, place)
   json.set! '@id', geo_place_id(place)
@@ -172,7 +156,12 @@ def organisation_json(json, organisation)
   json.name organisation.name
 end
 
-json.set! '@context', 'https://w3id.org/ro/crate/1.2-DRAFT/context'
+json.set! '@context', [
+  'https://w3id.org/ro/crate/1.2-DRAFT/context',
+  { '@vocab': 'http://schema.org/' },
+  'http://purl.archive.org/language-data-commons/context.json',
+  { gsp: 'http://www.opengis.net/ont/geosparql#' }
+]
 
 # rubocop:disable Metrics/BlockLength
 json.set! '@graph' do
@@ -212,7 +201,7 @@ json.set! '@graph' do
 
   # The item
   json.child! do
-    json.set! '@id', 'ro-crate-metadata.json'
+    json.set! '@id', repository_item_url(@item.collection, @item)
     json.set! '@type', %w[Dataset RepositoryObject]
     json.additionalType 'item'
 
@@ -229,6 +218,7 @@ json.set! '@graph' do
 
     json.dateCreated @item.created_at.utc
     json.dateModified @item.updated_at.utc
+    json.datePublished @item.updated_at.utc
     json.description @item.description
     json.hasPart do
       json.array! @item.essences do |essence|
@@ -255,7 +245,7 @@ json.set! '@graph' do
 
     json.bornDigital @item.born_digital
 
-    json.contentLanguages do
+    json.inLanguage do
       json.array! @item.content_languages do |language|
         json.set! '@id', language_id(language)
       end
