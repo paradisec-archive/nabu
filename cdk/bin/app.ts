@@ -20,7 +20,7 @@ const environments: Environment[] = [
     branchNames: ['main', 'aws'],
     account: '847483222616',
     zoneName: 'nabu-stage.paradisec.org.au',
-    acmeValue: '6WoB2owFTVccDsbfCFSO_qouVzxQAqO7jWkC74CL_OY',
+    acmeValue: 'PM0DillUQGnKlpqsD9dmT-s8U6Jq7WeSPEKOrptZWQI',
   },
   {
     ...globals,
@@ -29,7 +29,7 @@ const environments: Environment[] = [
     branchNames: ['production'],
     account: '618916419351',
     zoneName: 'nabu-prod.paradisec.org.au',
-    acmeValue: 'f4KGWTu5zsbD_5gjbco27P7765Tv1RI_q__mV6ASLU0',
+    acmeValue: 'coAr3vAsNUwrReLqZAtAPgfcwvnqPCPovbyYTp791i8',
   },
 ];
 const prod = environments.find((env) => env.env === 'prod');
