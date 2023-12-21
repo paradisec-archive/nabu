@@ -21,6 +21,7 @@ const environments: Environment[] = [
     account: '847483222616',
     zoneName: 'nabu-stage.paradisec.org.au',
     acmeValue: 'PM0DillUQGnKlpqsD9dmT-s8U6Jq7WeSPEKOrptZWQI',
+    cloudflare: 'catalog.nabu-stage.paradisec.org.au.cdn.cloudflare.net',
   },
   {
     ...globals,
@@ -30,6 +31,7 @@ const environments: Environment[] = [
     account: '618916419351',
     zoneName: 'nabu-prod.paradisec.org.au',
     acmeValue: 'coAr3vAsNUwrReLqZAtAPgfcwvnqPCPovbyYTp791i8',
+    cloudflare: 'catalog.nabu-prod.paradisec.org.au.cdn.cloudflare.net',
   },
 ];
 const prod = environments.find((env) => env.env === 'prod');

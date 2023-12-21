@@ -31,6 +31,7 @@ export class AppStack extends cdk.Stack {
       catalogBucket,
       zone,
       tempCertificate,
+      cloudflare,
     } = appProps;
 
     // ////////////////////////
@@ -406,7 +407,7 @@ export class AppStack extends cdk.Stack {
     new route53.CnameRecord(this, 'CatalogRecord', {
       recordName: 'catalog',
       zone,
-      domainName: ssm.StringParameter.valueForStringParameter(this, '/usyd/resources/application-load-balancer/ingress/dns'),
+      domainName: cloudflare,
     });
 
     // ////////////////////////

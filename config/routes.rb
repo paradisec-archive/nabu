@@ -45,10 +45,8 @@ Rails.application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
-    resources :items, except: %i[index show] do
+    resources :items, except: %i[index] do
       member do
-        get :show
-        get 'ro-crate-metadata.json', to: 'items#show', as: 'rocrate', defaults: { format: :rocrate }
         get :display
         get :data
         patch :inherit_details
@@ -73,6 +71,14 @@ Rails.application.routes.draw do
       get 'new_report' => 'items#new_report'
       post 'send_report' => 'items#send_report'
       get 'report_sent' => 'items#report_sent'
+    end
+  end
+
+  resources :collections do
+    resources :items, only: %i[] do
+      member do
+        get 'ro-crate-metadata.json', to: 'items#show', as: 'rocrate', defaults: { format: :rocrate }
+      end
     end
   end
 
