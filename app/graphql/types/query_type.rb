@@ -96,6 +96,5 @@ module Types
     def user_by_unikey(unikey:)
       User.find_by(unikey:)
     end
-
   end
 end

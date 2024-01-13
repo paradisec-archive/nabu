@@ -39,4 +39,5 @@ class Types::ItemType < Types::BaseObject
   field :private, Boolean, null: true
   field :citation, String, null: true
   field :permalink, String, method: :full_path, null: false
+  field :metadata_exportable, Boolean, null: false
 end
