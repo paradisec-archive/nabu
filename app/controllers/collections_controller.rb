@@ -44,7 +44,7 @@ class CollectionsController < ApplicationController
     @num_items_ready = @collection.items.where.not(digitised_on: nil).count
     @num_essences = Essence.where(item_id: @collection.items).count
 
-    @items = @collection.items.includes(:access_condition, :collection).page(params[:items_page]).per(params[:items_per_page])
+    @items = @collection.items.includes(:access_condition, :collection, :essences).page(params[:items_page]).per(params[:items_per_page])
 
     @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier)
 

@@ -48,7 +48,7 @@
                 %td.nowrap{style: 'min-width: 75px;'}
                   - if item.digitised_on
                     = item.digitised_on.strftime('%d/%m/%Y')
-                %td= item.essences.count
+                %td= item.essences.size
               %td{style: 'min-width: 60px;'}
                 = link_to 'View', [item.collection, item], {class: 'minwhitespace'}
                 = link_to 'Edit', edit_collection_item_path(item.collection, item), {class: 'minwhitespace'} if can? :update, item

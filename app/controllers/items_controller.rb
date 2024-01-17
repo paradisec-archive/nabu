@@ -2,8 +2,11 @@ class ItemsController < ApplicationController
   include HasReturnToLastSearch
   include ItemQueryBuilder
 
-  load_and_authorize_resource :collection, find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
-  load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
+  before_action :find_item, only: :show
+  load_and_authorize_resource :collection, find_by: :identifier,
+                                           except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
+  load_and_authorize_resource :item, find_by: :identifier, through: :collection,
+                                     except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
   authorize_resource only: %i[advanced_search bulk_update bulk_edit new_report send_report report_sent]
 
   def show
@@ -347,6 +350,19 @@ class ItemsController < ApplicationController
     end
   end
 
+  # So we can include things and solve N + 1 queries
+  def find_item
+    @item = Item.includes([
+                            { item_agents: %i[agent_role user] },
+                            { item_admins: %i[agent_role user] },
+                            :collection,
+                            :essences,
+                            :item_countries,
+                            :item_subject_languages,
+                            :item_content_languages
+                          ]).find_by(identifier: params[:id])
+  end
+
   def save_item_catalog_file(item)
     return if item.nil?
 
@@ -398,9 +414,12 @@ class ItemsController < ApplicationController
 
   def build_deletable_params(item, items)
     item.bulk_deleteable[:countries] = bulk_deletable_relation(ItemCountry, Country, :country_id, items)
-    item.bulk_deleteable[:subject_languages] = bulk_deletable_relation(ItemSubjectLanguage, Language, :language_id, items)
-    item.bulk_deleteable[:content_languages] = bulk_deletable_relation(ItemContentLanguage, Language, :language_id, items)
-    item.bulk_deleteable[:data_categories] = bulk_deletable_relation(ItemDataCategory, DataCategory, :data_category_id, items)
+    item.bulk_deleteable[:subject_languages] =
+      bulk_deletable_relation(ItemSubjectLanguage, Language, :language_id, items)
+    item.bulk_deleteable[:content_languages] =
+      bulk_deletable_relation(ItemContentLanguage, Language, :language_id, items)
+    item.bulk_deleteable[:data_categories] =
+      bulk_deletable_relation(ItemDataCategory, DataCategory, :data_category_id, items)
     item.bulk_deleteable[:data_types] = bulk_deletable_relation(ItemDataType, DataType, :data_type_id, items)
   end
 
@@ -431,11 +450,9 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    if %w[create update bulk_update].include?(params[:action])
-      tidy_params!
-    end
+    tidy_params! if %w[create update bulk_update].include?(params[:action])
 
-    permitted = params
+    params
       .require(:item)
       .permit(
         :identifier, :title, :external, :url, :description, :region, :collection_id,
@@ -464,7 +481,5 @@ class ItemsController < ApplicationController
         item_agents_attributes: {},
         country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [], admin_ids: [], user_ids: []
       )
-
-    permitted
   end
 end
