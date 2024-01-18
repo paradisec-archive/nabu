@@ -354,7 +354,7 @@ class ItemsController < ApplicationController
   def find_item
     @item = Item.includes([
                             { item_agents: %i[agent_role user] },
-                            { item_admins: %i[agent_role user] },
+                            { item_admins: %i[user] },
                             :collection,
                             :essences,
                             :item_countries,
