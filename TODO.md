@@ -48,6 +48,7 @@ Do we need dotenv rails?
 * Add everything needed to search_params
 * The item clause builder should probably use solr and not sql
 * language.retired to language.retired?
+* Fix comments so they are ajax again
 
 # CRON
 paper-trail can we move to JSON serialzer

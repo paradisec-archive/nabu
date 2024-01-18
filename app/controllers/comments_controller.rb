@@ -1,11 +1,11 @@
 class CommentsController < ApplicationController
   load_and_authorize_resource :except => :create
 
-  respond_to :js
+  # respond_to :js
 
   def create
     resource = params[:commentable_type].constantize.find(params[:commentable_id])
-    @comment = resource.comments.build(params[:comment])
+    @comment = resource.comments.build(comment_params)
     authorize! :create, @comment
     @comment.owner = current_user
     if @comment.save
@@ -14,7 +14,7 @@ class CommentsController < ApplicationController
       flash[:error] = 'Error while sending the comment.'
     end
 
-    respond_with @comment
+    redirect_to [@comment.commentable.collection, @comment.commentable]
   end
 
   def destroy
