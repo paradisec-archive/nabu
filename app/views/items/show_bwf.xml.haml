@@ -1,16 +1,3 @@
-%REPORT
-  %BEXTDATA
-  %QUALITYREPORT
-    %BASICDATA
-      %ARCHIVENUMBER= @item.full_identifier
-      %TITLE= @item.title
-      %OPERATOR= @item.operator_name
-    %QUALITYEVENTS
-      %EVENT
-        %TYPE IngestNotes0
-        %COMMENT= @item.ingest_notes
-        %SAMPLECOUNT 0
-
 %Core
   %Description
     = "# Notes
@@ -29,3 +16,4 @@
   %OriginationDate= @item.originated_on
   %BextVersion 1
   %CodingHistory A=PCM,F=96000,W=24,M=stereo,T=Paragest Pipeline
+  =# %COMMENT= @item.ingest_notes
