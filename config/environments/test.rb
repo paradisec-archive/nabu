@@ -69,4 +69,6 @@ Rails.application.configure do
   config.active_job.queue_adapter = :inline
 
   config.action_mailer.default_url_options = { host: 'example.com' }
+
+  config.hosts << 'www.example.com'
 end

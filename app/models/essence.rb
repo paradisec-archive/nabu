@@ -25,6 +25,9 @@
 #
 # * `index_essences_on_item_id`:
 #     * **`item_id`**
+# * `index_essences_on_item_id_and_filename` (_unique_):
+#     * **`item_id`**
+#     * **`filename`**
 #
 
 class Essence < ApplicationRecord

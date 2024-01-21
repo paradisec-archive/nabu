@@ -1,0 +1,31 @@
+%REPORT
+  %BEXTDATA
+  %QUALITYREPORT
+    %BASICDATA
+      %ARCHIVENUMBER= @item.full_identifier
+      %TITLE= @item.title
+      %OPERATOR= @item.operator_name
+    %QUALITYEVENTS
+      %EVENT
+        %TYPE IngestNotes0
+        %COMMENT= @item.ingest_notes
+        %SAMPLECOUNT 0
+
+%Core
+  %Description
+    = "# Notes
+    = "Reference: https://catalog.paradisec.org.au/repository/#{@item.collection.identifier}/#{@item.identifier}"
+    = ""
+    = "Description: #{@item.description}."
+    = ""
+
+    - unless @item.subject_languages.empty?
+      = "Language: \"#{@item.subject_languages.first.name}\" #{@item.subject_languages.first.code};"
+
+    - unless @item.countries.empty?
+      = "Country: #{@item.countries.first.code};"
+
+  %Originator= @item.collector_name
+  %OriginationDate= @item.originated_on
+  %BextVersion 1
+  %CodingHistory A=PCM,F=96000,W=24,M=stereo,T=Paragest Pipeline

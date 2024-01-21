@@ -27,6 +27,34 @@ module Types
       collection.items.find_by(identifier: item_identifier)
     end
 
+    field :item_bwf_xml, ItemBwfXmlType, 'Get the BWF XML for an item' do
+      argument :full_identifier, ID
+    end
+    def item_bwf_xml(full_identifier:)
+      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:current_user]&.admin?
+
+      collection_identifier, item_identifier = full_identifier.split('-')
+      collection = Collection.find_by(identifier: collection_identifier)
+      raise(GraphQL::ExecutionError, 'Not found') unless collection
+
+      item = collection.items.find_by(identifier: item_identifier)
+      raise(GraphQL::ExecutionError, 'Not found') unless item
+
+      warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
+        i.set_user(context[:current_user], scope: :user)
+      end
+      item_renderer = ItemsController.renderer.new('warden' => warden)
+
+      {
+        full_identifier: item.full_identifier,
+        collection_identifier: collection.identifier,
+        item_identifier: item.identifier,
+        xml: item_renderer.render('items/show_bwf', formats: [:xml], assigns: { item: }),
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }
+    end
+
     field :items, Types::ItemResultType, null: true do
       argument :limit, Integer, default_value: 10, required: false
       argument :page, Integer, default_value: 1, required: false
