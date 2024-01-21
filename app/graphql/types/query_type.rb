@@ -31,12 +31,6 @@ module Types
       argument :full_identifier, ID
     end
     def item_bwf_xml(full_identifier:)
-      p 'MOO'
-      p 'MOO'
-      p 'MOO'
-      p 'MOO'
-      p 'MOO'
-      p context
       raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
 
       collection_identifier, item_identifier = full_identifier.split('-')

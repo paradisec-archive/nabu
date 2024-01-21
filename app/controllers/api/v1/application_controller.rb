@@ -12,7 +12,7 @@ module Api
       end
 
       def admin_authenticated
-        !!doorkeeper_token.id && doorkeeper_token.scopes.include?('admin')
+        !!doorkeeper_token.id && doorkeeper_token.scopes&.include?('admin')
       end
 
       def current_user
