@@ -14,6 +14,11 @@ Do we need dotenv rails?
 * Check with nick about removing pfsx
 * Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
 
+## API
+We are using Doorkeeper to provide oauth tokens
+These are for API access not to act on behalf of users
+If we give tokens to more than paragest we need to rethink this
+
 ## Need Nick
 * Rotate the recaptcha keys and switch to v3
 

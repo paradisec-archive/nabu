@@ -13,14 +13,15 @@ module Api
         context = {
           # Query context goes here, for example:
           current_user:,
-          authenticated:
+          authenticated:,
+          admin_authenticated:
         }
         result = NabuSchema.execute(query, variables:, context:, operation_name:)
         render json: result
-      rescue StandardError => error
-        raise error unless Rails.env.development?
+      rescue StandardError => e
+        raise e unless Rails.env.development?
 
-        handle_error_in_development(error)
+        handle_error_in_development(e)
       end
 
       private

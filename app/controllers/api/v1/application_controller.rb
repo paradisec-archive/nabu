@@ -11,6 +11,10 @@ module Api
         !!doorkeeper_token.id
       end
 
+      def admin_authenticated
+        !!doorkeeper_token.id && doorkeeper_token.scopes.include?('admin')
+      end
+
       def current_user
         @current_user ||= User.find_by(id: doorkeeper_token[:resource_owner_id])
       end
