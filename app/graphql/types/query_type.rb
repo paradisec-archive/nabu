@@ -27,10 +27,11 @@ module Types
       collection.items.find_by(identifier: item_identifier)
     end
 
-    field :item_bwf_xml, ItemBwfXmlType, 'Get the BWF XML for an item' do
+    field :item_bwf_csv, ItemBwfCsvType, 'Get the BWF XML for an item' do
       argument :full_identifier, ID
+      argument :filename, String
     end
-    def item_bwf_xml(full_identifier:)
+    def item_bwf_csv(full_identifier:, filename:)
       raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
 
       collection_identifier, item_identifier = full_identifier.split('-')
@@ -40,16 +41,39 @@ module Types
       item = collection.items.find_by(identifier: item_identifier)
       raise(GraphQL::ExecutionError, 'Not found') unless item
 
-      warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
-        i.set_user(context[:current_user], scope: :user)
+      desc = [
+        '# Notes',
+        '',
+        "Reference: https://catalog.paradisec.org.au/repository/#{collection.identifier}/#{item.identifier}",
+      ]
+
+      unless item.subject_languages.empty?
+        desc << "Language: #{item.subject_languages.first.name}\" #{item.subject_languages.first.code}"
       end
-      item_renderer = ItemsController.renderer.new('warden' => warden)
+
+      desc << "Country: #{item.countries.first.code}" unless item.countries.empty?
+      desc << "Description: #{item.description}"
+
+      bwf = {
+        'FileName' => filename,
+        'Description' => desc.join('\n').truncate(256),
+        'Originator' => item.collector_name,
+        'OriginationDate' => item.originated_on,
+        'BextVersion' => 1,
+        'CodingHistory' => 'A=PCM,F=96000,W=24,M=stereo,T=Paragest Pipeline'
+        # 'TBA' => @item.ingest_notes
+      }
+
+      csv = CSV.generate(headers: true) do |c|
+        c << bwf.keys
+        c << bwf.values
+      end
 
       {
         full_identifier: item.full_identifier,
         collection_identifier: collection.identifier,
         item_identifier: item.identifier,
-        xml: item_renderer.render('items/show_bwf', formats: [:xml], assigns: { item: }),
+        csv:,
         created_at: item.created_at,
         updated_at: item.updated_at
       }
