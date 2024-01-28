@@ -13,6 +13,7 @@ Do we need dotenv rails?
 * qua files are these quarantine with viruses?
 * Check with nick about removing pfsx
 * Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
+* Remove old ids3 and bwf xml creation
 
 ## API
 We are using Doorkeeper to provide oauth tokens

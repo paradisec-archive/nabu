@@ -1,0 +1,20 @@
+;FFMETADATA1
+title=Persistent identifier: <%= @item.full_identifier %>
+TIT3=<%= @item.title %>
+description=<%= @item.description %>
+artist=Collector: <%= @item.collector_name %>
+album=Collection: <%= @item.collection.title %>
+publisher=PARADISEC
+genre=[item_type]
+TMED=[item_media]
+encoded_by=Operator: <%= @item.operator_name %>
+<% unless @item.countries.empty? -%>
+comment=<%= @item.countries.first.name %> <%= @item.countries.first.code %>
+<% end -%>
+<% if @item.access_condition -%>
+copyright=<%= @item.access_condition.name %>
+<% end -%>
+<% unless @item.subject_languages.empty? -%>
+language="<%= @item.subject_languages.first.name %>" <%= @item.subject_languages.first.code %>
+<% end -%>
+date=<%= @item.originated_on %>

@@ -27,7 +27,7 @@ module Types
       collection.items.find_by(identifier: item_identifier)
     end
 
-    field :item_bwf_csv, ItemBwfCsvType, 'Get the BWF XML for an item' do
+    field :item_bwf_csv, ItemBwfCsvType, 'Get the BWF CSV for an item' do
       argument :full_identifier, ID
       argument :filename, String
     end
@@ -74,6 +74,36 @@ module Types
         collection_identifier: collection.identifier,
         item_identifier: item.identifier,
         csv:,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }
+    end
+
+    field :item_id3, ItemId3Type, 'Get the ID3 XML for an item' do
+      argument :full_identifier, ID
+    end
+    def item_id3(full_identifier:)
+      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
+
+      collection_identifier, item_identifier = full_identifier.split('-')
+      collection = Collection.find_by(identifier: collection_identifier)
+      raise(GraphQL::ExecutionError, 'Not found') unless collection
+
+      item = collection.items.find_by(identifier: item_identifier)
+      raise(GraphQL::ExecutionError, 'Not found') unless item
+
+      warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
+        i.set_user(context[:current_user], scope: :user)
+      end
+      item_renderer = ItemsController.renderer.new('warden' => warden)
+
+      txt = item_renderer.render(:item_id3, formats: [:txt], assigns: { item: })
+
+      {
+        full_identifier: item.full_identifier,
+        collection_identifier: collection.identifier,
+        item_identifier: item.identifier,
+        txt:,
         created_at: item.created_at,
         updated_at: item.updated_at
       }
