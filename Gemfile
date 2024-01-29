@@ -142,6 +142,7 @@ group :development do
   gem "rubocop-rails", :require => false
   gem "rubocop-rake", :require => false
   gem "rubocop-rspec", :require => false
+  gem "rubocop-graphql", :require => false
 
   gem "solargraph"
 end

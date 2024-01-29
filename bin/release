@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
+set -e
+
 ENV=$1
 if [ -z "$ENV" ]; then
-  echo "Usage: bin/release <staging|production>"
+  echo "Usage: bin/release <stage|prod>"
   exit 1
 fi
 
 git push
-git co $ENV
+git switch $ENV
 git merge --ff-only main
 git push
-git co main
+git switch main
+
+cd cdk
+AWS_PROFILE=nabu-${ENV} yarn cdk deploy nabu-appstack-${ENV}

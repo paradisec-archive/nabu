@@ -9,17 +9,20 @@ WORKDIR /rails
 
 # Set production environment
 ENV RAILS_ENV="development" \
-    BUNDLE_PATH="/usr/local/bundle"
+  BUNDLE_PATH="/usr/local/bundle"
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
+  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
 
 # App specific
 RUN apt-get install --no-install-recommends -y \
-      libcurl4-openssl-dev \
-      libmagic-dev \
-      libmagickwand-dev
+  libcurl4-openssl-dev \
+  libmagic-dev \
+  libmagickwand-dev
+
+# So rubocop works
+RUN mkdir -p /home/johnf/work/nabu; ln -s /rails /home/johnf/work/nabu/nabu
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash
@@ -32,34 +35,33 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 EXPOSE 3000
 CMD ["./bin/rails", "server"]
 
-# RUN mkdir -p /home/johnf/work/nabu; ln -s /app /home/johnf/work/nabu/nabu
 
 # RUN cd /tmp \
-  # && curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-  # && unzip -q awscliv2.zip \
-  # && ./aws/install \
-  # && rm -rf /tmp/awscliv2.zip /tmp/aws \
-  # && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
-  # && dpkg -i session-manager-plugin.deb
+# && curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+# && unzip -q awscliv2.zip \
+# && ./aws/install \
+# && rm -rf /tmp/awscliv2.zip /tmp/aws \
+# && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
+# && dpkg -i session-manager-plugin.deb
 # Stuff we might need
-  # net-tools \
-  # ruby-kgio \
-  # git-core \
-  # curl \
-  # zlib1g-dev \
-  # build-essential \
-  # libssl-dev \
-  # libreadline-dev \
-  # libsqlite3-dev \
-  # sqlite3 \
-  # libxml2-dev \
-  # libxslt1-dev \
-  # software-properties-common \
-  # libffi-dev \
-  # nodejs \
-  # openjdk-17-jre \
-  # wget \
-  # npm
+# net-tools \
+# ruby-kgio \
+# git-core \
+# curl \
+# zlib1g-dev \
+# build-essential \
+# libssl-dev \
+# libreadline-dev \
+# libsqlite3-dev \
+# sqlite3 \
+# libxml2-dev \
+# libxslt1-dev \
+# software-properties-common \
+# libffi-dev \
+# nodejs \
+# openjdk-17-jre \
+# wget \
+# npm
 
 
 # Chrome for headless testing
