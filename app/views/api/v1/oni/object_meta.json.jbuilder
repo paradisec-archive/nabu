@@ -1,13 +1,29 @@
 # frozen_string_literal: true
 
+def id
+  @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
+end
+
 def rocrate_json(json)
   json.set! '@id', 'ro-crate-metadata.json'
   json.set! '@type', 'CreativeWork'
   json.conformsTo do
     json.set! '@id', 'https://w3id.org/ro/crate/1.2-DRAFT'
   end
+
   json.about do
-    json.set! '@id', rocrate_collection_item_url(@item)
+    json.set! '@id', api_v1_oni_object_meta_url({ id: })
+  end
+end
+
+def rocrate_collection_json(json)
+  json.set! '@id', 'ro-crate-metadata.json'
+  json.set! '@type', 'CreativeWork'
+  json.conformsTo do
+    json.set! '@id', 'https://w3id.org/ro/crate/1.2-DRAFT'
+  end
+  json.about do
+    json.set! '@id', api_v1_oni_object_meta({ id: })
   end
 end
 
@@ -48,7 +64,7 @@ def person_json(json, user, roles)
 end
 
 def essence_id(essence)
-  repository_essence_url(essence.collection, essence.item, essence.filename) 
+  repository_essence_url(essence.collection, essence.item, essence.filename)
 end
 
 def essence_json(json, essence)
@@ -74,7 +90,7 @@ end
 def geo_shape_json(json, s)
   json.set! '@id', geo_shape_id(s)
   json.set! '@type', 'gsp:wktLiteral'
-  json.box "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))";
+  json.box "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))"
 end
 
 def geo_place_id(place)
@@ -170,59 +186,65 @@ json.set! '@graph' do
   #   contact_json(json)
   # end
 
-  json.child! { place_json(json, @item.region) }
+  json.child! { place_json(json, @data.region) }
 
-  json.array! @item.countries do |country|
+  json.array! @data.countries do |country|
     country_json(json, country)
   end
 
-  json.array! @item.subject_languages do |language|
+  json.array! @data.subject_languages do |language|
     geo_shape_json(json, language)
   end
-  json.array! @item.content_languages do |language|
+  json.array! @data.content_languages do |language|
     geo_shape_json(json, language)
   end
 
-  json.child! { property_value_json(json, 'collectionIdentifier', @item.collection.identifier) }
-  json.child! { property_value_json(json, 'doi', @item.doi) }
+  json.child! { property_value_json(json, 'collectionIdentifier', @data.collection.identifier) } if @is_item
+
+  json.child! { property_value_json(json, 'doi', @data.doi) }
   json.child! { property_value_json(json, 'domain', 'paradisec.org.au') }
   # TODO: What is this and how do we get it?
   json.child! do
     property_value_json(json, 'hashId', '72b3dc1401c8ff06aacba0990a128fc113cf9ad5275f494b05c')
   end
-  json.child! { property_value_json(json, 'id', @item.full_identifier) }
-  json.child! { property_value_json(json, 'itemIdentifier', @item.identifier) }
+  json.child! { property_value_json(json, 'id', @data.full_identifier) }
+  json.child! { property_value_json(json, 'itemIdentifier', @data.identifier) }
 
-  json.array! (@item.content_languages + @item.subject_languages).uniq do |lang|
+  json.array! (@data.content_languages + @data.subject_languages).uniq do |lang|
     language_json(json, lang)
   end
 
-  json.child! { geo_place_json(json, @item) }
+  json.child! { geo_place_json(json, @data) }
 
   # The item
   json.child! do
-    json.set! '@id', repository_item_url(@item.collection, @item)
+    json.set! '@id', id
     json.set! '@type', %w[Dataset RepositoryObject]
     json.additionalType 'item'
 
     json.contentLocation do
-      json.child! { json.set! '@id', place_id(@item.region) }
-      json.child! { json.set! '@id', geo_place_id(@item) }
+      json.child! { json.set! '@id', place_id(@data.region) }
+      json.child! { json.set! '@id', geo_place_id(@data) }
     end
 
-    json.contributor do
-      json.array! @item.item_agents do |item_agent|
-        json.set! '@id', person_id(item_agent.user)
+    if @is_item
+      json.contributor do
+        json.array! @data.item_agents do |item_agent|
+          json.set! '@id', person_id(item_agent.user)
+        end
       end
     end
 
-    json.dateCreated @item.created_at.utc
-    json.dateModified @item.updated_at.utc
-    json.datePublished @item.updated_at.utc
-    json.description @item.description
-    json.hasPart do
-      json.array! @item.essences do |essence|
-        json.set! '@id', essence_id(essence)
+    json.dateCreated @data.created_at.utc
+    json.dateModified @data.updated_at.utc
+    json.datePublished @data.updated_at.utc
+    json.description @data.description
+
+    if @is_item
+      json.hasPart do
+        json.array! @data.essences do |essence|
+          json.set! '@id', essence_id(essence)
+        end
       end
     end
 
@@ -235,80 +257,83 @@ json.set! '@graph' do
       json.child! { json.set! '@id', propery_value_identifier('doi') }
     end
 
-    json.license { json.set! '@id', access_condition_id(@item.access_condition) }
+    json.license { json.set! '@id', access_condition_id(@data.access_condition) }
 
-    json.memberOf { json.set! '@id', repository_collection_url(@item.collection) }
+    json.memberOf { json.set! '@id', repository_collection_url(@data.collection) } if @is_item
 
-    json.name @item.title
+    json.name @data.title
 
-    json.publisher { json.set! '@id', person_id(@item.collector) }
+    json.publisher { json.set! '@id', person_id(@data.collector) }
 
-    json.bornDigital @item.born_digital
+    json.bornDigital @data.born_digital if @is_item
 
     json.inLanguage do
-      json.array! @item.content_languages do |language|
+      json.array! @data.content_languages do |language|
         json.set! '@id', language_id(language)
       end
     end
 
     json.countries do
-      json.array! @item.countries do |country|
+      json.array! @data.countries do |country|
         json.set! '@id', country_id(country)
       end
     end
 
-    json.digitisedOn @item.digitised_on
-    json.external @item.external
-    json.languageAsGiven @item.language
-    json.metadataExportable @item.metadata_exportable
-    json.originalMedia @item.original_media
-    json.originatedOn @item.originated_on
-    json.private @item.private
+    if @is_item
+      json.digitisedOn @data.digitised_on
+      json.external @data.external
+      json.languageAsGiven @data.language
+      json.metadataExportable @data.metadata_exportable
+      json.originalMedia @data.original_media
+      json.originatedOn @data.originated_on
+      json.tapesReturned @data.tapes_returned
+
+      grouped_item_agents = @data.item_agents.group_by(&:user).map do |user, item_agents|
+        data = { user:, roles: item_agents.map(&:agent_role) }
+        data[:roles].push(OpenStruct.new({ name: 'collector' })) if user.id == @data.collector.id
+
+        data
+      end
+      json.array! grouped_item_agents do |grouped_item_agent|
+        person_json(json, grouped_item_agent[:user], grouped_item_agent[:roles])
+      end
+
+      json.array! @data.essences do |essence|
+        essence_json(json, essence)
+      end
+
+      roles = grouped_item_agents.map { |grouped_item_agent| grouped_item_agent[:roles] }.flatten.uniq
+      json.array! roles do |role|
+        role_json(json, role)
+      end
+    end
+
+    json.private @data.private
 
     json.subjectLanguages do
-      json.array! @item.subject_languages do |language|
+      json.array! @data.subject_languages do |language|
         json.set! '@id', language_id(language)
       end
     end
-    json.tapesReturned @item.tapes_returned
 
     # json.about do
-    #   json.set! '@id', rocrate_collection_item_url(@item)
+    #   json.set! '@id', rocrate_collection_item_url(@data)
     # end
     # json.conformsTo do
     #   json.set! '@id', 'https://w3id.org/ro/crate/1.2-DRAFT'
     # end
   end
 
-  grouped_item_agents = @item.item_agents.group_by(&:user).map do |user, item_agents|
-    data = { user:, roles: item_agents.map(&:agent_role) }
-    data[:roles].push(OpenStruct.new({ name: 'collector' })) if user.id == @item.collector.id
-
-    data
-  end
-  json.array! grouped_item_agents do |grouped_item_agent|
-    person_json(json, grouped_item_agent[:user], grouped_item_agent[:roles])
-  end
-
-  json.array! @item.essences do |essence|
-    essence_json(json, essence)
+  json.child! do
+    access_condition_json(json, @data.access_condition)
   end
 
   json.child! do
-    access_condition_json(json, @item.access_condition)
-  end
-
-  json.child! do
-    organisation_json(json, @item.university)
+    organisation_json(json, @data.university)
   end
 
   json.child! do
     rocrate_json(json)
-  end
-
-  roles = grouped_item_agents.map { |grouped_item_agent| grouped_item_agent[:roles] }.flatten.uniq
-  json.array! roles do |role|
-    role_json(json, role)
   end
 end
 # rubocop:enable Metrics/BlockLength

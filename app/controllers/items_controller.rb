@@ -27,7 +27,6 @@ class ItemsController < ApplicationController
           render template: 'items/show', formats: [:xml], handlers: [:haml]
         end
       end
-      format.rocrate { render :show }
     end
   end
 
@@ -75,6 +74,30 @@ class ItemsController < ApplicationController
     end
   end
 
+  def update
+    if params[:item] && params[:item][:user_ids].is_a?(String) && !params[:item][:user_ids].empty?
+      flash[:alert] = 'Error in submitted value for View/Download access users'
+      redirect_to [@collection, @item]
+      return
+    end
+
+    params.delete(:files_per_page) if params[:files_per_page] == '0'
+
+    @num_files = @item.essences.length
+    @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
+
+    if @item.update(item_params)
+      # update xml file of the item
+      save_item_catalog_file(@item)
+
+      flash[:notice] = 'Item was successfully updated.'
+      redirect_to [@collection, @item]
+    else
+      @page_title = 'Nabu - Edit Item'
+      render action: 'edit'
+    end
+  end
+
   def destroy
     response = ItemDestructionService.destroy(@item)
 
@@ -100,30 +123,6 @@ class ItemsController < ApplicationController
     end
 
     redirect_to [@collection, @item]
-  end
-
-  def update
-    if params[:item] && params[:item][:user_ids].is_a?(String) && !params[:item][:user_ids].empty?
-      flash[:alert] = 'Error in submitted value for View/Download access users'
-      redirect_to [@collection, @item]
-      return
-    end
-
-    params.delete(:files_per_page) if params[:files_per_page] == '0'
-
-    @num_files = @item.essences.length
-    @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
-
-    if @item.update(item_params)
-      # update xml file of the item
-      save_item_catalog_file(@item)
-
-      flash[:notice] = 'Item was successfully updated.'
-      redirect_to [@collection, @item]
-    else
-      @page_title = 'Nabu - Edit Item'
-      render action: 'edit'
-    end
   end
 
   def search
@@ -354,16 +353,16 @@ class ItemsController < ApplicationController
   def find_item
     @collection = Collection.find_by(identifier: params[:collection_id])
     @item = @collection.items
-      .includes([
-        { item_agents: %i[agent_role user] },
-        { item_admins: %i[user] },
-        :collection,
-        :essences,
-        :item_countries,
-        :item_subject_languages,
-        :item_content_languages
-      ])
-      .find_by(identifier: params[:id])
+                       .includes([
+                                   { item_agents: %i[agent_role user] },
+                                   { item_admins: %i[user] },
+                                   :collection,
+                                   :essences,
+                                   :item_countries,
+                                   :item_subject_languages,
+                                   :item_content_languages
+                                 ])
+                       .find_by(identifier: params[:id])
   end
 
   def save_item_catalog_file(item)

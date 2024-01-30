@@ -68,15 +68,36 @@ module Api
         if md
           @collection = Collection.find_by(identifier: md[1])
           @data = @collection.items.find_by(identifier: md[2])
-          puts "FOO1"
         else
           md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
-          puts "FOO2"
           unless md
             render json: { error: 'Invalid id parameter' }, status: :bad_request
             return
           end
           @data = Collection.find_by(identifier: md[1])
+        end
+      end
+
+      def object_meta
+        unless params[:id]
+          render json: { error: 'id is required' }, status: :bad_request
+
+          return
+        end
+
+        md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
+        if md
+          @collection = Collection.find_by(identifier: md[1])
+          @data = @collection.items.find_by(identifier: md[2])
+          @is_item = true
+        else
+          md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
+          unless md
+            render json: { error: 'Invalid id parameter' }, status: :bad_request
+            return
+          end
+          @data = Collection.find_by(identifier: md[1])
+          @is_item = false
         end
       end
     end
