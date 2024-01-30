@@ -1,13 +1,12 @@
-json.set! 'total', @data.size
+json.total @data.size
 
-json.set! 'data', @data do |data|
-  type = data.class.name
+json.data @data do |data|
+  class_name = data.class.name
+  is_collection = class_name == 'Collection'
 
-  json.conformsTo "https://purl.archive.org/language-data-commons/profile##{type}"
+  json.conformsTo "https://purl.archive.org/language-data-commons/profile##{class_name}"
 
-  collection = type == 'Collection' ? data.identifier : data.collection.identifier
-  item = type == 'item' ? "/#{data.identifier}" : ''
-  json.crateId "http://catalog.paradisec.org.au/repository/#{collection}#{item}"
+  json.crateId is_collection ? repository_collection_url(data) : repository_item_url(data.collection, data)
 
   json.record do
     json.name data.title

@@ -2,8 +2,7 @@ module Api
   module V1
     class OniController < ApplicationController
       def objects
-        # FIXME: somethigg more sensible for all records
-        limit = (params[:limit] || 1_000_000).to_i
+        limit = (params[:limit] || 1_000_000).to_i # FIXME: Better way for all record
         offset = (params[:offset] || 0).to_i
         conforms_to = params[:conformsTo]
 
@@ -13,18 +12,30 @@ module Api
         collections_table = Collection.where(private: false).arel_table
         items_table = Item.where(private: false).arel_table
 
-        collections_query = collections_table.project(:id, :created_at, collection_label.as('type')).where(collections_table[:private].eq(false))
-
+        collections_query = collections_table.where(collections_table[:private].eq(false))
         items_query = items_table.project(:id, :created_at, item_label.as('type')).where(items_table[:private].eq(false))
 
-        combined_query = case conforms_to
-                         when 'https://purl.archive.org/language-data-commons/profile#Collection'
-                           collections_query
-                         when 'https://purl.archive.org/language-data-commons/profile#Item'
-                           items_query
-                         else
-                           collections_query.union(items_query)
-                         end
+        if params[:memberOf]
+          md = params[:memberOf].match(repository_collection_url(:collection_identifier => '(.*)'))
+          unless md
+            render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
+            return
+          end
+
+          collections_query = collections_query.where(collections_table[:identifier].eq(md[1])).project(:id)
+          combined_query = items_query.where(items_table[:collection_id].in(collections_query))
+        else
+
+          collections_query = collections_query.project(:id, :created_at, collection_label.as('type'))
+          combined_query = case conforms_to
+                           when 'https://purl.archive.org/language-data-commons/profile#Collection'
+                             collections_query
+                           when 'https://purl.archive.org/language-data-commons/profile#Item'
+                             items_query
+                           else
+                             collections_query.union(items_query)
+                           end
+        end
 
         final_query = Arel::SelectManager.new(Arel::Table.engine)
         final_query.from(combined_query.as('combined')).project(Arel.star).order('created_at ASC').skip(offset).take(limit)
