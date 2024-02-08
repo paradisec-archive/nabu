@@ -50,17 +50,13 @@ def person_id(user)
   user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
 end
 
-def person_json(json, user, roles)
+def person_json(json, user)
   json.set! '@id', person_id(user)
   json.set! '@type', 'Person'
   json.email user.email if user.email
   json.familyName user.last_name
   json.givenName user.first_name
   json.name user.name
-  # FIXME: Should this be roles?
-  json.role roles do |role|
-    json.set! '@id', role_id(role)
-  end
 end
 
 def essence_id(essence)
@@ -72,8 +68,8 @@ def essence_json(json, essence)
   json.set! '@type', 'File'
   json.bitrate essence.bitrate if essence.bitrate
   json.contentSize essence.size
-  json.dateCreated essence.created_at.utc
-  json.dateModified essence.updated_at.utc
+  json.dateCreated essence.created_at.to_date
+  json.dateModified essence.updated_at.to_date
   json.duration essence.duration if essence.duration
   json.encodingFormat essence.mimetype
   json.name essence.filename
@@ -89,8 +85,8 @@ end
 
 def geo_shape_json(json, s)
   json.set! '@id', geo_shape_id(s)
-  json.set! '@type', 'gsp:wktLiteral'
-  json.box "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))"
+  json.set! '@type', 'Geometry'
+  json.asWKT "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))"
 end
 
 def geo_place_id(place)
@@ -176,7 +172,8 @@ json.set! '@context', [
   'https://w3id.org/ro/crate/1.2-DRAFT/context',
   { '@vocab': 'http://schema.org/' },
   'http://purl.archive.org/language-data-commons/context.json',
-  { gsp: 'http://www.opengis.net/ont/geosparql#' }
+  { Geometry: 'http://www.opengis.net/ont/geosparql#Geometry', asWKT: 'http://www.opengis.net/ont/geosparql#asWKT' },
+  'https://w3id.org/ldac/context'
 ]
 
 # rubocop:disable Metrics/BlockLength
@@ -192,10 +189,9 @@ json.set! '@graph' do
     country_json(json, country)
   end
 
-  json.array! @data.subject_languages do |language|
-    geo_shape_json(json, language)
-  end
-  json.array! @data.content_languages do |language|
+  languages = (@data.subject_languages + @data.content_languages).uniq { |language| geo_shape_id(language) }
+
+  json.array! languages do |language|
     geo_shape_json(json, language)
   end
 
@@ -235,9 +231,9 @@ json.set! '@graph' do
       end
     end
 
-    json.dateCreated @data.created_at.utc
-    json.dateModified @data.updated_at.utc
-    json.datePublished @data.updated_at.utc
+    json.dateCreated @data.created_at.to_date
+    json.dateModified @data.updated_at.to_date
+    json.datePublished @data.updated_at.to_date
     json.description @data.description
 
     if @is_item
@@ -258,7 +254,7 @@ json.set! '@graph' do
     end
 
     json.license { json.set! '@id', access_condition_id(@data.access_condition) }
-
+    json.conformsTo { json.set! '@id', 'https://w3id.org/ldac/profile' }
     json.memberOf { json.set! '@id', repository_collection_url(@data.collection) } if @is_item
 
     json.name @data.title
@@ -286,26 +282,6 @@ json.set! '@graph' do
       json.metadataExportable @data.metadata_exportable
       json.originalMedia @data.original_media
       json.originatedOn @data.originated_on
-      json.tapesReturned @data.tapes_returned
-
-      grouped_item_agents = @data.item_agents.group_by(&:user).map do |user, item_agents|
-        data = { user:, roles: item_agents.map(&:agent_role) }
-        data[:roles].push(OpenStruct.new({ name: 'collector' })) if user.id == @data.collector.id
-
-        data
-      end
-      json.array! grouped_item_agents do |grouped_item_agent|
-        person_json(json, grouped_item_agent[:user], grouped_item_agent[:roles])
-      end
-
-      json.array! @data.essences do |essence|
-        essence_json(json, essence)
-      end
-
-      roles = grouped_item_agents.map { |grouped_item_agent| grouped_item_agent[:roles] }.flatten.uniq
-      json.array! roles do |role|
-        role_json(json, role)
-      end
     end
 
     json.private @data.private
@@ -315,13 +291,23 @@ json.set! '@graph' do
         json.set! '@id', language_id(language)
       end
     end
+    json.tapesReturned @data.tapes_returned
 
-    # json.about do
-    #   json.set! '@id', rocrate_collection_item_url(@data)
-    # end
-    # json.conformsTo do
-    #   json.set! '@id', 'https://w3id.org/ro/crate/1.2-DRAFT'
-    # end
+    @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
+      json.set! agent_role.name do
+        json.array! item_agents do |item_agent|
+          json.set! '@id', person_id(item_agent.user)
+        end
+      end
+    end
+  end
+
+  json.array! @data.item_agents.map(&:user).uniq do |user|
+    person_json(json, user)
+  end
+
+  json.array! @data.essences do |essence|
+    essence_json(json, essence)
   end
 
   json.child! do
@@ -335,5 +321,10 @@ json.set! '@graph' do
   json.child! do
     rocrate_json(json)
   end
+
+  # roles = grouped_item_agents.map { |grouped_item_agent| grouped_item_agent[:roles] }.flatten.uniq
+  # json.array! roles do |role|
+  #   role_json(json, role)
+  # end
 end
 # rubocop:enable Metrics/BlockLength
