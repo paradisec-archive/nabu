@@ -93,7 +93,6 @@ def geo_place_id(place)
   "#place_geo-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
 end
 
-# FIXME: Why does this exist?
 def geo_place_json(json, place)
   json.set! '@id', geo_place_id(place)
   json.set! '@type', 'Place'
@@ -211,6 +210,7 @@ json.set! '@graph' do
   end
 
   json.child! { geo_place_json(json, @data) }
+  json.child! { geo_shape_json(json, @data) }
 
   # The item
   json.child! do
