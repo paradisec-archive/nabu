@@ -25,7 +25,6 @@ module Api
           collections_query = collections_query.where(collections_table[:identifier].eq(md[1])).project(:id)
           combined_query = items_query.where(items_table[:collection_id].in(collections_query))
         else
-
           collections_query = collections_query.project(:id, :created_at, collection_label.as('type'))
           combined_query = case conforms_to
                            when 'https://purl.archive.org/language-data-commons/profile#Collection'

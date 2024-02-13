@@ -89,6 +89,7 @@ export class AppStack extends cdk.Stack {
       vpcSubnets: {
         subnets: dataSubnets,
       },
+      enablePerformanceInsights: true,
       deletionProtection: true,
     });
     NagSuppressions.addResourceSuppressions(
