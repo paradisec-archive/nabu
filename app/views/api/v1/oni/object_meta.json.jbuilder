@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+@geos = []
+
 def id
   @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
 end
@@ -12,7 +14,7 @@ def rocrate_json(json)
   end
 
   json.about do
-    json.set! '@id', api_v1_oni_object_meta_url({ id: })
+    json.set! '@id', id
   end
 end
 
@@ -79,36 +81,35 @@ def essence_json(json, essence)
   json.sampleRate essence.samplerate if essence.samplerate
 end
 
-def geo_shape_id(shape)
+def geometry_id(shape)
   "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
 end
 
-def geo_shape_json(json, s)
-  json.set! '@id', geo_shape_id(s)
+def geometry_json(json, data)
+  json.set! '@id', geometry_id(data)
   json.set! '@type', 'Geometry'
-  json.asWKT "POLYGON((#{s.north_limit} #{s.west_limit}, #{s.north_limit} #{s.east_limit}, #{s.south_limit} #{s.east_limit}, #{s.south_limit} #{s.west_limit}, #{s.north_limit} #{s.west_limit}))"
+  coords = [
+    "#{data.west_limit} #{data.north_limit}",
+    "#{data.east_limit} #{data.north_limit}",
+    "#{data.east_limit} #{data.south_limit}",
+    "#{data.west_limit} #{data.south_limit}",
+    "#{data.west_limit} #{data.north_limit}"
+  ]
+  json.asWKT "POLYGON((#{coords.join(', ')}))"
 end
 
-def geo_place_id(place)
-  "#place_geo-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
+def place_id(place, name = nil)
+  name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
 end
 
-def geo_place_json(json, place)
-  json.set! '@id', geo_place_id(place)
+def place_json(json, place, name= nil)
+  json.set! '@id', place_id(place, name)
+  json.name name if name
   json.set! '@type', 'Place'
   json.geo do
-    json.set! '@id', geo_shape_id(place)
+    json.set! '@id', geometry_id(place)
   end
-end
-
-def place_id(name)
-  "#place-#{name}"
-end
-
-def place_json(json, name)
-  json.set! '@id', place_id(name)
-  json.set! '@type', 'Place'
-  json.name name
+  @geos << place
 end
 
 def country_id(country)
@@ -142,9 +143,11 @@ def language_json(json, language)
   json.set! '@type', 'Language'
   json.code language.code
   json.location do
-    json.set! '@id', geo_shape_id(language)
+    json.set! '@id', geometry_id(language)
   end
   json.name language.name
+
+  @geos << language
 end
 
 def access_condition_id(access_condition)
@@ -177,50 +180,35 @@ json.set! '@context', [
 
 # rubocop:disable Metrics/BlockLength
 json.set! '@graph' do
-  # The Ro-Crate itself
-  # json.child! do
-  #   contact_json(json)
-  # end
-
-  json.child! { place_json(json, @data.region) }
+  json.child! { place_json(json, @data, @data.region) } if @data.region
 
   json.array! @data.countries do |country|
     country_json(json, country)
-  end
-
-  languages = (@data.subject_languages + @data.content_languages).uniq { |language| geo_shape_id(language) }
-
-  json.array! languages do |language|
-    geo_shape_json(json, language)
   end
 
   json.child! { property_value_json(json, 'collectionIdentifier', @data.collection.identifier) } if @is_item
 
   json.child! { property_value_json(json, 'doi', @data.doi) }
   json.child! { property_value_json(json, 'domain', 'paradisec.org.au') }
-  # TODO: What is this and how do we get it?
-  json.child! do
-    property_value_json(json, 'hashId', '72b3dc1401c8ff06aacba0990a128fc113cf9ad5275f494b05c')
-  end
   json.child! { property_value_json(json, 'id', @data.full_identifier) }
   json.child! { property_value_json(json, 'itemIdentifier', @data.identifier) }
 
-  json.array! (@data.content_languages + @data.subject_languages).uniq do |lang|
+  languages = (@data.content_languages + @data.subject_languages).uniq(&:code)
+  json.array! languages.each do |lang|
     language_json(json, lang)
   end
 
-  json.child! { geo_place_json(json, @data) }
-  json.child! { geo_shape_json(json, @data) }
+  json.child! { place_json(json, @data) }
+  json.child! { geometry_json(json, @data) }
 
   # The item
   json.child! do
     json.set! '@id', id
-    json.set! '@type', %w[Dataset RepositoryObject]
+    json.set! '@type', %w[RepositoryObject]
     json.additionalType 'item'
 
     json.contentLocation do
-      json.child! { json.set! '@id', place_id(@data.region) }
-      json.child! { json.set! '@id', geo_place_id(@data) }
+      json.child! { json.set! '@id', place_id(@data, @data.region) }
     end
 
     if @is_item
@@ -247,14 +235,13 @@ json.set! '@graph' do
     json.identifier do
       json.child! { json.set! '@id', propery_value_identifier('domain') }
       json.child! { json.set! '@id', propery_value_identifier('id') }
-      json.child! { json.set! '@id', propery_value_identifier('hashId') }
       json.child! { json.set! '@id', propery_value_identifier('itemId') }
       json.child! { json.set! '@id', propery_value_identifier('collectionId') }
       json.child! { json.set! '@id', propery_value_identifier('doi') }
     end
 
     json.license { json.set! '@id', access_condition_id(@data.access_condition) }
-    json.conformsTo { json.set! '@id', 'https://w3id.org/ldac/profile' }
+    json.conformsTo { json.set! '@id', 'https://w3id.org/ldac/profile#Object' }
     json.memberOf { json.set! '@id', repository_collection_url(@data.collection) } if @is_item
 
     json.name @data.title
@@ -276,12 +263,12 @@ json.set! '@graph' do
     end
 
     if @is_item
-      json.digitisedOn @data.digitised_on
+      json.digitisedOn @data.digitised_on.to_date if @data.digitised_on
       json.external @data.external
       json.languageAsGiven @data.language
       json.metadataExportable @data.metadata_exportable
-      json.originalMedia @data.original_media
-      json.originatedOn @data.originated_on
+      json.originalMedia @data.original_media if @data.original_media
+      json.originatedOn @data.originated_on.to_date if @data.originated_on
     end
 
     json.private @data.private
@@ -322,9 +309,9 @@ json.set! '@graph' do
     rocrate_json(json)
   end
 
-  # roles = grouped_item_agents.map { |grouped_item_agent| grouped_item_agent[:roles] }.flatten.uniq
-  # json.array! roles do |role|
-  #   role_json(json, role)
-  # end
+  geometries = @geos.uniq { |g| geometry_id(g) }
+  json.array! geometries do |geo|
+    geometry_json(json, geo)
+  end
 end
 # rubocop:enable Metrics/BlockLength
