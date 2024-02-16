@@ -3,7 +3,7 @@ module Api
     class ApplicationController < ::ApplicationController
       skip_before_action :verify_authenticity_token
 
-      before_action :doorkeeper_authorize!
+      prepend_before_action :doorkeeper_authorize!
 
       private
 
