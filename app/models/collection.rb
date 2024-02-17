@@ -86,7 +86,8 @@ class Collection < ApplicationRecord
   validates :identifier,
             presence: true,
             uniqueness: { case_sensitive: false },
-            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" }
+            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" },
+            length: { in: 3..10 }
   validates :title, presence: true
 
   validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true

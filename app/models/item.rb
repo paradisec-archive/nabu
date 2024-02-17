@@ -110,8 +110,8 @@ class Item < ApplicationRecord
   validates :identifier,
             presence: true,
             uniqueness: { case_sensitive: false, scope: %i[collection_id identifier] },
-            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" }
-  validates :identifier, length: { within: 2..30 }
+            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" },
+            length: { in: 2..30 }
   validates :title, presence: true
   validates :collector_id, presence: true
 
