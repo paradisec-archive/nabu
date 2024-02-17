@@ -68,57 +68,57 @@ class Item < ApplicationRecord
   include HasBoundaries
   include ActionView::Helpers::SanitizeHelper
 
-  delegate :url_helpers, :to => 'Rails.application.routes'
+  delegate :url_helpers, to: 'Rails.application.routes'
   has_paper_trail
   nilify_blanks
 
   belongs_to :collection
-  belongs_to :collector, :class_name => 'User'
-  belongs_to :operator, :class_name => 'User', :optional => true
-  belongs_to :university, :optional => true
-  belongs_to :access_condition, :optional => true
-  belongs_to :discourse_type, :optional => true
+  belongs_to :collector, class_name: 'User'
+  belongs_to :operator, class_name: 'User', optional: true
+  belongs_to :university, optional: true
+  belongs_to :access_condition, optional: true
+  belongs_to :discourse_type, optional: true
 
-  has_many :item_countries, :dependent => :destroy
-  has_many :countries, :through => :item_countries, :validate => true
+  has_many :item_countries, dependent: :destroy
+  has_many :countries, through: :item_countries, validate: true
 
-  has_many :item_subject_languages, :dependent => :destroy
-  has_many :subject_languages, :through => :item_subject_languages, :source => :language, :validate => true
+  has_many :item_subject_languages, dependent: :destroy
+  has_many :subject_languages, through: :item_subject_languages, source: :language, validate: true
 
-  has_many :item_content_languages, :dependent => :destroy
-  has_many :content_languages, :through => :item_content_languages, :source => :language, :validate => true
+  has_many :item_content_languages, dependent: :destroy
+  has_many :content_languages, through: :item_content_languages, source: :language, validate: true
 
-  has_many :item_admins, :dependent => :destroy
-  has_many :admins, :through => :item_admins, :validate => true, :source => :user
+  has_many :item_admins, dependent: :destroy
+  has_many :admins, through: :item_admins, validate: true, source: :user
 
-  has_many :item_users, :dependent => :destroy
-  has_many :users, :through => :item_users, :validate => true, :source => :user
+  has_many :item_users, dependent: :destroy
+  has_many :users, through: :item_users, validate: true, source: :user
 
-  has_many :item_agents, :dependent => :destroy
-  has_many :agents, :through => :item_agents, :validate => true, :source => :user
+  has_many :item_agents, dependent: :destroy
+  has_many :agents, through: :item_agents, validate: true, source: :user
 
-  has_many :item_data_categories, :dependent => :destroy
-  has_many :data_categories, :through => :item_data_categories, :validate => true
+  has_many :item_data_categories, dependent: :destroy
+  has_many :data_categories, through: :item_data_categories, validate: true
 
-  has_many :item_data_types, :dependent => :destroy
-  has_many :data_types, :through => :item_data_types, :validate => true
+  has_many :item_data_types, dependent: :destroy
+  has_many :data_types, through: :item_data_types, validate: true
 
-  has_many :essences, :dependent => :restrict_with_exception
-  has_many :comments, :as => :commentable, :dependent => :destroy
+  has_many :essences, dependent: :restrict_with_exception
+  has_many :comments, as: :commentable, dependent: :destroy
 
   # require presence of these three fields.
   validates :identifier,
-            :presence => true,
-            :uniqueness => {:case_sensitive => false, :scope => %i[collection_id identifier]},
-            :format => { :with => /\A[a-zA-Z0-9_]*\z/, :message => "error - only letters and numbers and '_' allowed" }
-  validates_length_of :identifier, :within => 2..30
-  validates :title, :presence => true
-  validates :collector_id, :presence => true
+            presence: true,
+            uniqueness: { case_sensitive: false, scope: %i[collection_id identifier] },
+            format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" }
+  validates :identifier, length: { within: 2..30 }
+  validates :title, presence: true
+  validates :collector_id, presence: true
 
-  validates :north_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
-  validates :south_limit, :numericality => {:greater_than_or_equal_to => -90, :less_then_or_equal_to => 90}, :allow_nil => true
-  validates :west_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
-  validates :east_limit, :numericality => {:greater_than_or_equal_to => -180, :less_then_or_equal_to => 180}, :allow_nil => true
+  validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
+  validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
+  validates :west_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
+  validates :east_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
 
   bulk = %i[
     bulk_edit_append_title bulk_edit_append_description bulk_edit_append_region
@@ -133,25 +133,24 @@ class Item < ApplicationRecord
   ]
   attr_reader(*bulk)
 
-  accepts_nested_attributes_for :item_agents, :allow_destroy => true, :reject_if => :all_blank
+  accepts_nested_attributes_for :item_agents, allow_destroy: true, reject_if: :all_blank
 
-  delegate :name, :to => :collector, :prefix => true, :allow_nil => true
-  delegate :sortname, :to => :collector, :prefix => true, :allow_nil => true
-  delegate :name, :to => :operator, :prefix => true, :allow_nil => true
-  delegate :name, :to => :university, :prefix => true, :allow_nil => true
-  delegate :name, :to => :discourse_type, :prefix => true, :allow_nil => true
-  delegate :name, :to => :access_condition, :prefix => true, :allow_nil => true
+  delegate :name, to: :collector, prefix: true, allow_nil: true
+  delegate :sortname, to: :collector, prefix: true, allow_nil: true
+  delegate :name, to: :operator, prefix: true, allow_nil: true
+  delegate :name, to: :university, prefix: true, allow_nil: true
+  delegate :name, to: :discourse_type, prefix: true, allow_nil: true
+  delegate :name, to: :access_condition, prefix: true, allow_nil: true
 
   paginates_per 10
 
   after_initialize :prefill
 
+  before_save :propagate_collector
   after_save :update_collection_countries_and_languages
   after_save :update_catalog_file
 
-  before_save :propagate_collector
-
-  scope :public_items, -> { joins(:collection).where(:private => false, :collection => {:private => false}) }
+  scope :public_items, -> { joins(:collection).where(private: false, collection: { private: false }) }
 
   def default_map_boundaries?
     if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
@@ -162,20 +161,20 @@ class Item < ApplicationRecord
   end
 
   def propagate_collector
-    if collector_id_changed?
-      unless collector_id_was.nil?
-        collector_was = User.find(collector_id_was)
-        # we're removing one item from the users's 'owned' items
-        collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
-        collector_was.save
-      end
-      collector.collector = true
-      collector.save
+    return unless collector_id_changed?
+
+    unless collector_id_was.nil?
+      collector_was = User.find(collector_id_was)
+      # we're removing one item from the users's 'owned' items
+      collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
+      collector_was.save
     end
+    collector.collector = true
+    collector.save
   end
 
   def public?
-    !self.private && !self.collection.private
+    !private && !collection.private
   end
 
   def full_identifier
@@ -243,31 +242,32 @@ class Item < ApplicationRecord
     unless override
       # by default, only inherit attributes which don't already have a value
       existing_attributes = Hash[*inherited_attributes.keys.map do |key|
-                                   val = self.public_send(key)
-                                   [key.to_sym, val] unless val.blank?
-                                  end.reject{|x| x.nil?}.flatten(1)]
+                                    val = public_send(key)
+                                    [key.to_sym, val] if val.present?
+                                  end.reject { |x| x.nil? }.flatten(1)]
       # -> this merge causes the current attribute value to replace the inherited one before we update
       inherited_attributes = inherited_attributes.merge(existing_attributes)
     end
     # since the attributes here are already explicitly whitelisted, just inherit them and don't add to attr_accessible
 
     inherited_attributes.each_pair do |key, val|
-      self.public_send("#{key}=", val)
+      public_send("#{key}=", val)
     end
-    self.save
+    save
   end
 
   def self.sortable_columns
-    %w{full_identifier title collector_sortname updated_at language sort_country essences_count}
+    %w[full_identifier title collector_sortname updated_at language sort_country essences_count]
   end
 
   searchable(
-    include: [:content_languages, :subject_languages, :countries, :data_categories, :data_types, :essences, :collection, :collector, :university, :operator, :discourse_type, :agents, :admins, :users]
+    include: %i[content_languages subject_languages countries data_categories data_types essences collection collector university operator
+                discourse_type agents admins users]
   ) do
     # Things we want to perform full text search on
     text :title
-    text :identifier, :as => :identifier_textp
-    text :full_identifier, :as => :full_identifier_textp
+    text :identifier, as: :identifier_textp
+    text :full_identifier, as: :full_identifier_textp
     text :collector_name
     text :university_name
     text :operator_name
@@ -312,20 +312,20 @@ class Item < ApplicationRecord
     end
 
     # Link models for faceting or dropdowns
-    integer :content_language_ids, :references => Language, :multiple => true
-    integer :collector_id, :references => User
-    integer :collection_id, :references => Collection
-    integer :operator_id, :references => User
-    integer :country_ids, :references => Country, :multiple => true
-    integer :university_id, :references => University
-    integer :subject_language_ids, :references => Language, :multiple => true
-    integer :data_category_ids, :references => DataCategory, :multiple => true
-    integer :data_type_ids, :references => DataType, :multiple => true
-    integer :discourse_type_id, :references => DiscourseType
-    integer :access_condition_id, :references => AccessCondition
-    integer :agent_ids, :references => User, :multiple => true
-    integer :admin_ids, :references => User, :multiple => true
-    integer :user_ids, :references => User, :multiple => true
+    integer :content_language_ids, references: Language, multiple: true
+    integer :collector_id, references: User
+    integer :collection_id, references: Collection
+    integer :operator_id, references: User
+    integer :country_ids, references: Country, multiple: true
+    integer :university_id, references: University
+    integer :subject_language_ids, references: Language, multiple: true
+    integer :data_category_ids, references: DataCategory, multiple: true
+    integer :data_type_ids, references: DataType, multiple: true
+    integer :discourse_type_id, references: DiscourseType
+    integer :access_condition_id, references: AccessCondition
+    integer :agent_ids, references: User, multiple: true
+    integer :admin_ids, references: User, multiple: true
+    integer :user_ids, references: User, multiple: true
 
     # Things we want to sort or use :with on
     integer :id
@@ -357,28 +357,28 @@ class Item < ApplicationRecord
     time :metadata_exported_on
     time :created_at
     time :updated_at
-    string :content_languages, :multiple => true do
+    string :content_languages, multiple: true do
       content_languages.map(&:name)
     end
-    string :content_language_codes, :multiple => true do
+    string :content_language_codes, multiple: true do
       content_languages.map(&:code)
     end
-    string :subject_languages, :multiple => true do
+    string :subject_languages, multiple: true do
       subject_languages.map(&:name)
     end
-    string :countries, :multiple => true do
+    string :countries, multiple: true do
       countries.map(&:name)
     end
-    string :country_codes, :multiple => true do
+    string :country_codes, multiple: true do
       countries.map(&:code)
     end
     string :sort_country do
       countries.order('name ASC').map(&:name).join(',')
     end
-    string :data_categories, :multiple => true do
+    string :data_categories, multiple: true do
       data_categories.map(&:name)
     end
-    string :data_types, :multiple => true do
+    string :data_types, multiple: true do
       data_types.map(&:name)
     end
     string :filename, multiple: true do
@@ -390,57 +390,56 @@ class Item < ApplicationRecord
     integer :essences_count
 
     # Things we want to check blankness of
-    blank_fields = [:title, :description, :originated_on, :originated_on_narrative, :url, :language, :dialect, :region, :original_media, :received_on, :digitised_on, :ingest_notes, :metadata_imported_on, :metadata_exported_on, :tracking, :access_narrative, :admin_comment]
+    blank_fields = %i[title description originated_on originated_on_narrative url language dialect region original_media received_on
+                      digitised_on ingest_notes metadata_imported_on metadata_exported_on tracking access_narrative admin_comment]
     blank_fields.each do |f|
-      boolean "#{f}_blank".to_sym do
-        self.public_send(f).blank?
+      boolean :"#{f}_blank" do
+        public_send(f).blank?
       end
     end
   end
 
   def next_item
-    Item.where(:collection_id => self.collection).order(:identifier).where('identifier > ?', self.identifier).first
+    Item.where(collection_id: collection).order(:identifier).where('identifier > ?', identifier).first
   end
 
   def prev_item
-    Item.where(:collection_id => self.collection).order(:identifier).where('identifier < ?', self.identifier).last
+    Item.where(collection_id: collection).order(:identifier).where('identifier < ?', identifier).last
   end
 
   def citation
-    cite = ""
-    if collector
-      cite += "#{collector.name} (collector)"
-    end
+    cite = ''
+    cite += "#{collector.name} (collector)" if collector
     item_agents.group_by(&:user).map do |user, ias|
-      cite += ", " unless cite == ""
+      cite += ', ' unless cite == ''
       cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
     end
     cite += ", #{originated_on.year}" if originated_on
-    cite += '. ' unless cite == ""
+    cite += '. ' unless cite == ''
     cite += "<i>#{sanitize(title)}</i>. "
     last = essence_types.count - 1
     essence_types.each_with_index do |type, index|
-        cite += type
-        if index != last
-            cite += "/"
-        else
-            cite += ". "
-        end
+      cite += type
+      cite += if index == last
+                '. '
+              else
+                '/'
+              end
     end
     cite += " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
-    if doi
-      cite += " https://dx.doi.org/#{doi}"
-    else
-      cite += " #{full_path}"
-    end
+    cite += if doi
+              " https://dx.doi.org/#{doi}"
+            else
+              " #{full_path}"
+            end
     cite
   end
 
   def coordinates?
     (north_limit && north_limit != 0) ||
-    (south_limit && south_limit != 0) ||
-    (west_limit && west_limit != 0) ||
-    (east_limit && east_limit != 0)
+      (south_limit && south_limit != 0) ||
+      (west_limit && west_limit != 0) ||
+      (east_limit && east_limit != 0)
   end
 
   def csv_countries
@@ -464,7 +463,7 @@ class Item < ApplicationRecord
   end
 
   def csv_item_agents
-    result = ""
+    result = ''
     item_agents.each do |agent|
       result += "#{agent.user.name} (#{agent.agent_role.name});"
     end
@@ -501,7 +500,10 @@ class Item < ApplicationRecord
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
-      xml.tag! 'dc:identifier', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}", 'xsi:type' => 'dcterms:URI' unless external?
+      unless external?
+        xml.tag! 'dc:identifier', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}",
+                 'xsi:type' => 'dcterms:URI'
+      end
       xml.tag! 'dc:identifier', url if url?
 
       xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
@@ -513,13 +515,12 @@ class Item < ApplicationRecord
 
       essences.each do |essence|
         unless /PDSC_ADMIN/.match(essence.filename)
-          xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}/#{essence.filename}", 'xsi:type' => 'dcterms:URI'
+          xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}/#{essence.filename}",
+                   'xsi:type' => 'dcterms:URI'
         end
       end
 
-      if collector
-        xml.tag! 'dc:contributor', collector_name, 'xsi:type' => 'olac:role', 'olac:code' => 'compiler'
-      end
+      xml.tag! 'dc:contributor', collector_name, 'xsi:type' => 'olac:role', 'olac:code' => 'compiler' if collector
 
       item_agents.each do |agent|
         xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => agent.agent_role.name
@@ -532,39 +533,39 @@ class Item < ApplicationRecord
         xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
       end
 
-      format = ""
+      format = ''
       format += "Digitised: #{digitised_on? ? 'yes' : 'no'}"
-      format += "\nMedia: #{original_media}" unless original_media.blank?
-      format += "\nAudio Notes: #{ingest_notes}" unless ingest_notes.blank?
+      format += "\nMedia: #{original_media}" if original_media.present?
+      format += "\nAudio Notes: #{ingest_notes}" if ingest_notes.present?
       xml.tag! 'dc:format', format
       countries.each do |country|
         xml.tag! 'dc:coverage', country.code, 'xsi:type' => 'dcterms:ISO3166'
       end
 
       if coordinates?
-        location = ""
+        location = ''
         location += "northlimit=#{north_limit}; southlimit=#{south_limit}; "
         location += "westlimit=#{west_limit}; eastlimit=#{east_limit}"
-        xml.tag! 'dc:coverage', location,  'xsi:type' => 'dcterms:Box'
+        xml.tag! 'dc:coverage', location, 'xsi:type' => 'dcterms:Box'
       end
 
       data_categories.each do |data_category|
         case data_category.name
         when 'historical reconstruction', 'historical_text'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'historical_linguistics'
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'historical_linguistics'
         when 'language description'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'language_description'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'language_documentation'
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'language_documentation'
         when 'lexicon'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'lexicon'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'lexicography'
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'lexicography'
         when 'primary text'
           xml.tag! 'dc:type', 'xsi:type' => 'olac:linguistic-type', 'olac:code' => 'primary_text'
-          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field',  'olac:code' => 'text_and_corpus_linguistics'
+          xml.tag! 'dc:subject', 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'text_and_corpus_linguistics'
         when 'song'
           xml.tag! 'dc:subject', ' xsi:type' => 'olac:discourse-type', 'olac:code' => 'singing'
         when 'typological analysis'
-          xml.tag! 'dc:subject', data_category.name, 'xsi:type' => 'olac:linguistic-field' , 'olac:code' => 'typology'
+          xml.tag! 'dc:subject', data_category.name, 'xsi:type' => 'olac:linguistic-field', 'olac:code' => 'typology'
         when 'instrumental music'
           xml.tag! 'dc:type', 'instrumental music'
         else
@@ -578,7 +579,7 @@ class Item < ApplicationRecord
 
       if access_condition
         access = access_condition.name
-        access += ", #{access_narrative}" if !access_narrative.blank?
+        access += ", #{access_narrative}" if access_narrative.present?
         xml.tag! 'dcterms:accessRights', access
         xml.tag! 'dc:rights', access_condition.name
       end
@@ -613,9 +614,9 @@ class Item < ApplicationRecord
       collection_updated = true
     end
 
-    if collection_updated
-      collection.save
-    end
+    return unless collection_updated
+
+    collection.save
   end
 
   def access_class
@@ -685,7 +686,7 @@ class Item < ApplicationRecord
     ]
   end
 
-  def self.ransackable_associations(auth_object = nil)
+  def self.ransackable_associations(_auth_object = nil)
     %w[
       access_condition admins agents collection collector comments content_languages countries
       data_categories data_types discourse_type essences item_admins item_agents
