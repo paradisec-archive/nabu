@@ -1,5 +1,3 @@
-puts 'MOO'
-p @data
 class_name = @data.class.name
 is_collection = class_name == 'Collection'
 url = is_collection ? repository_collection_url(@data) : repository_item_url(@data.collection, @data)

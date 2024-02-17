@@ -1,5 +1,5 @@
 ;FFMETADATA1
-title=Persistent identifier: <%= @item.full_identifier %>
+title=Persistent identifier: <%= repository_item_url(@item.collection, @item) %>
 TIT3=<%= @item.title %>
 description=<%= @item.description %>
 artist=Collector: <%= @item.collector_name %>
