@@ -44,7 +44,7 @@ export class MainStack extends cdk.Stack {
     new route53.TxtRecord(this, 'CloudFlareAcmeTxtRecord', {
       zone: this.zone,
       recordName: `_acme-challenge.${zoneName}`,
-      values: [ acmeValue ],
+      values: [acmeValue],
     });
 
     // ////////////////////////
@@ -98,6 +98,7 @@ export class MainStack extends cdk.Stack {
       // intelligentTieringConfigurations: [ ],
       // TODO: Decide on lifecycle rules
       // lifecycleRules: [],
+      versioned: env === 'prod',
       inventories: [{
         destination: {
           bucket: metaBucket,
