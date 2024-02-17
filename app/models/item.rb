@@ -113,7 +113,6 @@ class Item < ApplicationRecord
             format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" },
             length: { in: 2..30 }
   validates :title, presence: true
-  validates :collector_id, presence: true
 
   validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
   validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
@@ -153,11 +152,10 @@ class Item < ApplicationRecord
   scope :public_items, -> { joins(:collection).where(private: false, collection: { private: false }) }
 
   def default_map_boundaries?
-    if (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
-      true
-    else
-      false
-    end
+    (north_limit - 80.0).abs < Float::EPSILON &&
+      (south_limit - -80.0).abs < Float::EPSILON &&
+      (east_limit - -40.0).abs < Float::EPSILON &&
+      (west_limit - -20.0).abs < Float::EPSILON
   end
 
   def propagate_collector
@@ -166,7 +164,7 @@ class Item < ApplicationRecord
     unless collector_id_was.nil?
       collector_was = User.find(collector_id_was)
       # we're removing one item from the users's 'owned' items
-      collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1) > 0
+      collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1).positive?
       collector_was.save
     end
     collector.collector = true
@@ -178,7 +176,7 @@ class Item < ApplicationRecord
   end
 
   def full_identifier
-    collection.identifier + '-' + identifier
+    "#{collection.identifier}-#{identifier}"
   end
 
   def full_path

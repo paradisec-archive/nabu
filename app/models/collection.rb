@@ -119,7 +119,10 @@ class Collection < ApplicationRecord
   before_save :propagate_collector
 
   def default_map_boundaries?
-    (north_limit == 80.0) && (south_limit == -80.0) && (east_limit == -40.0) && (west_limit == -20.0)
+    (north_limit - 80.0).abs < Float::EPSILON &&
+      (south_limit - -80.0).abs < Float::EPSILON &&
+      (east_limit - -40.0).abs < Float::EPSILON &&
+      (west_limit - -20.0).abs < Float::EPSILON
   end
 
   def propagate_collector
