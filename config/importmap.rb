@@ -10,7 +10,3 @@ pin_all_from "app/javascript/custom", under: "custom"
 pin_all_from "app/javascript/vendor", under: "vendor"
 pin "jquery", to: "https://cdn.jsdelivr.net/npm/jquery@1.11.3/dist/jquery.js"
 pin "jquery-ui", to: "https://cdn.jsdelivr.net/npm/jquery-ui@1.13.2/dist/jquery-ui.min.js"
-
-pin "active_admin_importmap", preload: true
-pin_all_from "app/javascript/active_admin_importmap", under: "active_admin_importmap"
-pin "jquery-ujs", to: "https://ga.jspm.io/npm:jquery-ujs@1.2.3/src/rails.js"
