@@ -1,7 +1,7 @@
 require 'nabu/ex_site9'
 require 'nabu/nabu_spreadsheet'
 
-# rubocop:disable Metrics/ClassLength
+# rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 class CollectionsController < ApplicationController
   include HasReturnToLastSearch
 
@@ -23,7 +23,7 @@ class CollectionsController < ApplicationController
             url: 'https://catalog.paradisec.org.au',
             public: true,
             publisher: 'Pacific and Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)',
-            contact: 'admin@paradisec.org.au',
+            contact: 'admin@paradisec.org.au'
           },
           display: {
             basemapGallery: false,
@@ -71,7 +71,7 @@ class CollectionsController < ApplicationController
           display: {
             basemapGallery: false,
             info: {
-              display: 'disabled',
+              display: 'disabled'
             }
           },
           features: @collection.items.map { |item| item.as_geo_json(repository_item_url(@collection, item)) }.compact
@@ -470,4 +470,4 @@ class CollectionsController < ApplicationController
       )
   end
 end
-# rubocop:enable Metrics/ClassLength
+# rubocop:enable Metrics/ClassLength,Metrics/MethodLength

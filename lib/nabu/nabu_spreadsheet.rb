@@ -6,13 +6,13 @@ module Nabu
     def self.new_of_correct_type(data)
       book = load_spreadsheet(data)
       book.sheet(0) unless book.nil?
-      case
-      when book.nil?
+
+      if book.nil?
         NullNabuSpreadsheet.new(nil)
       # Currently parsed as a Float of value 2.0
-      when book.row(1)[2].to_i == 2
+      elsif book.row(1)[2].to_i == 2
         Version2NabuSpreadsheet.new(book)
-      when book.row(1)[2].to_i == 3
+      elsif book.row(1)[2].to_i == 3
         Version3NabuSpreadsheet.new(book)
       else
         Version1NabuSpreadsheet.new(book)
@@ -50,7 +50,7 @@ module Nabu
       @collection = Collection.find_by_identifier coll_id
       collector = parse_user
       unless collector
-        @errors << "ERROR collector does not exist"
+        @errors << 'ERROR collector does not exist'
         return
       end
       parse_collection_info(collector, coll_id)
@@ -70,7 +70,7 @@ module Nabu
 
         parse_row(row, collector)
       end
-    end #parse
+    end # parse
 
     def valid?
       @errors.empty? && @collection.valid?
@@ -80,10 +80,10 @@ module Nabu
 
     def parse_user
       first_name, last_name = parse_user_names
-      user = User.where(first_name: first_name, last_name: last_name).first
+      user = User.where(first_name:, last_name:).first
 
       unless user
-        @errors << "Please create user #{[first_name, last_name].join(" ")} first<br/>"
+        @errors << "Please create user #{[first_name, last_name].join(' ')} first<br/>"
         return nil
       end
       user.save if user.valid?
@@ -103,8 +103,8 @@ module Nabu
       @collection.title = 'PLEASE PROVIDE TITLE'
       @collection.description = 'PLEASE PROVIDE DESCRIPTION'
       # update collection details
-      @collection.title = parse_collection_title unless parse_collection_title.blank?
-      @collection.description = parse_collection_description unless parse_collection_description.blank?
+      @collection.title = parse_collection_title if parse_collection_title.present?
+      @collection.description = parse_collection_description if parse_collection_description.present?
     end
 
     def parse_row(row, collector)
@@ -116,7 +116,7 @@ module Nabu
       # if collection_id is part of item_id string, remove it
       item_id.slice! "#{@collection.identifier}-"
 
-      item = Item.where(:collection_id => @collection.id).where(:identifier => item_id)[0]
+      item = Item.where(collection_id: @collection.id).where(identifier: item_id)[0]
       unless item
         item = Item.new
         item.identifier = item_id
@@ -140,8 +140,8 @@ module Nabu
       end
 
       # update title and description
-      item.title = row[1].to_s unless row[1].blank?
-      item.description = row[2].to_s unless row[2].blank?
+      item.title = row[1].to_s if row[1].present?
+      item.description = row[2].to_s if row[2].present?
 
       # add content and subject language
       if row[3].present?
@@ -188,14 +188,14 @@ module Nabu
       # add origination date
       if row[6].present?
         date = row[6].to_s
-        date += "-01-01" if date.length == 4 ## take a guess they forgot the month & day
+        date += '-01-01' if date.length == 4 ## take a guess they forgot the month & day
         begin
           date_conv = date.to_date
         rescue StandardError
           @notices << "Item #{item.identifier} : Date invalid - Item skipped"
           return nil
         end
-        item.originated_on = date_conv unless date_conv.blank?
+        item.originated_on = date_conv if date_conv.present?
       end
 
       # add region
@@ -270,7 +270,7 @@ module Nabu
       if item.valid?
         @items << item
       else
-        @notices << "WARNING: item #{item.identifier} invalid - skipped (#{item.errors.full_messages.join(", ")})"
+        @notices << "WARNING: item #{item.identifier} invalid - skipped (#{item.errors.full_messages.join(', ')})"
       end
     end
 
@@ -282,13 +282,13 @@ module Nabu
 
       item_agent = ItemAgent.new
 
-      user = User.where(first_name: first_name, last_name: last_name).first
+      user = User.where(first_name:, last_name:).first
 
       unless user
         random_string = SecureRandom.base64(16)
         user = User.create({
-                             first_name: first_name,
-                             last_name: last_name,
+                             first_name:,
+                             last_name:,
                              password: random_string,
                              password_confirmation: random_string,
                              contact_only: true
@@ -337,7 +337,7 @@ module Nabu
     end
 
     class NullNabuSpreadsheet < NabuSpreadsheet
-      def initialize(book = nil)
+      def initialize(_book = nil)
         @notices = []
         @errors = ['ERROR File is neither XLS nor XLSX']
         @items = []
@@ -369,7 +369,7 @@ module Nabu
       def parse_user_names
         name = @book.row(7)[1]
         unless name
-          @errors << "Got no name for collector"
+          @errors << 'Got no name for collector'
           return nil
         end
 
@@ -402,7 +402,7 @@ module Nabu
         last_name = @book.row(10)[1]
 
         unless first_name
-          @errors << "Got no name for collector"
+          @errors << 'Got no name for collector'
           return nil
         end
 
@@ -433,7 +433,7 @@ module Nabu
         last_name = @book.row(10)[1]
 
         unless first_name
-          @errors << "Got no name for collector"
+          @errors << 'Got no name for collector'
           return nil
         end
 
