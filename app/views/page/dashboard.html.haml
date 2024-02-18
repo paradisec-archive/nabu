@@ -9,8 +9,7 @@
     .right
       %p
         - if can? :create, Collection
-          - if current_user.admin?
-            = link_to 'Add new collection', new_collection_path, :class => 'button'
+          = link_to 'Add new collection', new_collection_path, :class => 'button'
           = link_to 'Upload metadata file', metadata_collections_path, :class => 'button'
         - if can? :create, Item
           = link_to 'Depositor Report', new_report_items_path, :class => 'button'

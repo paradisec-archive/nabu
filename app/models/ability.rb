@@ -6,6 +6,7 @@ class Ability
     #############
     # Guests
     #############
+
     if user.new_record?
       can :read, Collection, private: false
       can :read, Item, private: false
@@ -51,7 +52,7 @@ class Ability
     #############
 
     # Only admins can create a collection
-    cannot :create, Collection
+    cannot :create, Collection, collection_admins: nil
 
     # Only collection_admins can manage a collection
     can :read,   Collection, items: { item_users: { user_id: user.id } }
