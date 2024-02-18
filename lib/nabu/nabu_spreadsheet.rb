@@ -48,12 +48,15 @@ module Nabu
 
     def parse
       coll_id = parse_coll_id
-      @collection = Collection.find_by(identifier: coll_id)
+      @collection = Collection
+                    .includes(:languages, :countries, collection_admins: [:user], items: { item_admins: [:user] })
+                    .find_by(identifier: coll_id)
       collector = parse_user
       unless collector
         @errors << 'ERROR collector does not exist'
         return
       end
+
       parse_collection_info(collector, coll_id)
       return unless @errors.empty?
 
@@ -117,7 +120,9 @@ module Nabu
       # if collection_id is part of item_id string, remove it
       item_id.slice! "#{@collection.identifier}-"
 
-      item = Item.where(collection_id: @collection.id).where(identifier: item_id)[0]
+      item = Item
+             .where(collection_id: @collection.id)
+             .where(identifier: item_id)[0]
       unless item
         item = Item.new
         item.identifier = item_id
