@@ -351,7 +351,7 @@ class ItemsController < ApplicationController
 
   # So we can include things and solve N + 1 queries
   def find_item
-    @collection = Collection.find_by(identifier: params[:collection_id])
+    @collection = Collection.find_by!(identifier: params[:collection_id])
     @item = @collection.items
                        .includes([
                                    { item_agents: %i[agent_role user] },
@@ -362,7 +362,7 @@ class ItemsController < ApplicationController
                                    :item_subject_languages,
                                    :item_content_languages
                                  ])
-                       .find_by(identifier: params[:id])
+                       .find_by!(identifier: params[:id])
   end
 
   def save_item_catalog_file(item)
