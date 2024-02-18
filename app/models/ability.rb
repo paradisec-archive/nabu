@@ -1,8 +1,11 @@
+# rubocop:disable Metrics/AbcSize,Metrics/MethodLength
 class Ability
   include CanCan::Ability
 
   def initialize(user)
+    #############
     # Guests
+    #############
     if user.new_record?
       can :read, Collection, private: false
       can :read, Item, private: false
@@ -11,22 +14,29 @@ class Ability
       return
     end
 
+    #############
     # PARADISEC admins
+    #############
     if user.admin?
       can :manage, :all
 
       return
     end
 
+    #############
+    # Users
+    #############
+
     # Users can manage themselves
     can :manage, User, id: user.id
     can :read, User
 
+    #############
+    # Meta data models
+    #############
+
     # Anyone can create a university
     can :create, University
-
-    # Only admins can create a collection
-    cannot :create, Collection
 
     # Anyone can read these entities - need them for creation
     can :read, Language
@@ -35,6 +45,13 @@ class Ability
     # DataType seems to work fine without this `can` statement, but include it for consistency.
     can :read, DataType
     can :read, DiscourseType
+
+    #############
+    # Collections
+    #############
+
+    # Only admins can create a collection
+    cannot :create, Collection
 
     # Only collection_admins can manage a collection
     can :read,   Collection, items: { item_users: { user_id: user.id } }
@@ -50,6 +67,10 @@ class Ability
 
     # Anyone can view non-private collections
     can :read, Collection, private: false
+
+    #############
+    # Items
+    #############
 
     can :data,   Item, public?: true
     can :data,   Item, item_users: { user_id: user.id }
@@ -74,6 +95,10 @@ class Ability
     cannot :bulk_edit, Item
     cannot :bulk_update, Item
 
+    #############
+    # Essence
+    #############
+
     can %i[read download show_terms agree_to_terms display],  Essence,
         item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
     can %i[read download show_terms agree_to_terms display],  Essence,
@@ -86,3 +111,4 @@ class Ability
     can :create, Comment, commentable: { private: false }
   end
 end
+# rubocop:enable Metrics/AbcSize,Metrics/MethodLength
