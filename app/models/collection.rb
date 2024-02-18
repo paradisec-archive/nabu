@@ -119,6 +119,8 @@ class Collection < ApplicationRecord
   before_save :propagate_collector
 
   def default_map_boundaries?
+    return false unless north_limit && south_limit && east_limit && west_limit
+
     (north_limit - 80.0).abs < Float::EPSILON &&
       (south_limit - -80.0).abs < Float::EPSILON &&
       (east_limit - -40.0).abs < Float::EPSILON &&
