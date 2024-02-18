@@ -7,7 +7,7 @@ class Ability
     # Guests
     #############
 
-    if user.new_record?
+    if !user
       can :read, Collection, private: false
       can :read, Item, private: false
       can :data, Item, private: false
