@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: truemeta
 
 @geos = []
 
@@ -102,7 +102,7 @@ def place_id(place, name = nil)
   name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
 end
 
-def place_json(json, place, name= nil)
+def place_json(json, place, name = nil)
   json.set! '@id', place_id(place, name)
   json.name name if name
   json.set! '@type', 'Place'
@@ -301,8 +301,10 @@ json.set! '@graph' do
     access_condition_json(json, @data.access_condition)
   end
 
-  json.child! do
-    organisation_json(json, @data.university)
+  if @data.university
+    json.child! do
+      organisation_json(json, @data.university)
+    end
   end
 
   json.child! do
