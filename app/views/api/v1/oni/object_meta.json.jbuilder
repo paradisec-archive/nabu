@@ -201,11 +201,11 @@ json.set! '@graph' do
   json.child! { place_json(json, @data) }
   json.child! { geometry_json(json, @data) }
 
-  # The item
+  # The item or collection
   json.child! do
     json.set! '@id', id
     json.set! '@type', %w[RepositoryObject]
-    json.additionalType 'item'
+    json.additionalType @is_item ? 'item' : 'collection'
 
     json.contentLocation do
       json.child! { json.set! '@id', place_id(@data, @data.region) }
@@ -269,6 +269,15 @@ json.set! '@graph' do
       json.metadataExportable @data.metadata_exportable
       json.originalMedia @data.original_media if @data.original_media
       json.originatedOn @data.originated_on.to_date if @data.originated_on
+      json.tapesReturned @data.tapes_returned
+
+      @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
+        json.set! agent_role.name do
+          json.array! item_agents do |item_agent|
+            json.set! '@id', person_id(item_agent.user)
+          end
+        end
+      end
     end
 
     json.private @data.private
@@ -276,15 +285,6 @@ json.set! '@graph' do
     json.subjectLanguages do
       json.array! @data.subject_languages do |language|
         json.set! '@id', language_id(language)
-      end
-    end
-    json.tapesReturned @data.tapes_returned
-
-    @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
-      json.set! agent_role.name do
-        json.array! item_agents do |item_agent|
-          json.set! '@id', person_id(item_agent.user)
-        end
       end
     end
   end
