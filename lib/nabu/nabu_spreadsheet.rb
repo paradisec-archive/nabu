@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 module Nabu
   # TODO: Create spreadsheet version which handles DataType entries.
   class NabuSpreadsheet
@@ -5,7 +6,7 @@ module Nabu
 
     def self.new_of_correct_type(data)
       book = load_spreadsheet(data)
-      book.sheet(0) unless book.nil?
+      book&.sheet(0)
 
       if book.nil?
         NullNabuSpreadsheet.new(nil)
@@ -47,7 +48,7 @@ module Nabu
 
     def parse
       coll_id = parse_coll_id
-      @collection = Collection.find_by_identifier coll_id
+      @collection = Collection.find_by(identifier: coll_id)
       collector = parse_user
       unless collector
         @errors << 'ERROR collector does not exist'
@@ -70,7 +71,7 @@ module Nabu
 
         parse_row(row, collector)
       end
-    end # parse
+    end
 
     def valid?
       @errors.empty? && @collection.valid?
@@ -147,7 +148,7 @@ module Nabu
       if row[3].present?
         content_languages = row[3].split('|')
         content_languages.each do |language|
-          content_language = Language.find_by_name(language) || Language.find_by_code(language)
+          content_language = Language.find_by(name: language) || Language.find_by(code: language)
           if content_language
             item.content_languages << content_language unless item.content_languages.include? content_language
           else
@@ -158,7 +159,7 @@ module Nabu
       if row[4].present?
         subject_languages = row[4].split('|')
         subject_languages.each do |language|
-          subject_language = Language.find_by_name(language) || Language.find_by_code(language)
+          subject_language = Language.find_by(name: language) || Language.find_by(code: language)
           if subject_language
             item.subject_languages << subject_language unless item.subject_languages.include? subject_language
           else
@@ -172,10 +173,10 @@ module Nabu
         countries = row[5].split('|')
         countries.each do |country|
           code, = country.strip.split(' - ')
-          cntry = Country.find_by_code(code.strip)
+          cntry = Country.find_by(code: code.strip)
           unless cntry
             # try country name
-            cntry = Country.find_by_name(code.strip)
+            cntry = Country.find_by(name: code.strip)
             unless cntry
               @notices << "Item #{item.identifier} : Country not found - Item skipped"
               return nil
@@ -208,7 +209,7 @@ module Nabu
       if row[9].present?
         data_category_names = row[9].split('|')
         data_category_names.each do |data_category_name|
-          data_category = DataCategory.find_by_name(data_category_name)
+          data_category = DataCategory.find_by(name: data_category_name)
           if data_category
             item.data_categories << data_category unless item.data_categories.include?(data_category)
           else
@@ -222,7 +223,7 @@ module Nabu
       if data_types_column && row[data_types_column].present?
         data_type_names = row[data_types_column].split('|')
         data_type_names.each do |data_type_name|
-          data_type = DataType.find_by_name(data_type_name)
+          data_type = DataType.find_by(name: data_type_name)
           if data_type
             item.data_types << data_type unless item.data_types.include?(data_type)
           else
@@ -235,7 +236,7 @@ module Nabu
       # add discourse type
       if row[discourse_type_column].present?
         discourse_type_name = row[discourse_type_column]
-        discourse_type = DiscourseType.find_by_name(discourse_type_name)
+        discourse_type = DiscourseType.find_by(name: discourse_type_name)
         if discourse_type
           item.discourse_type = discourse_type
         else
@@ -252,7 +253,7 @@ module Nabu
 
       # Add agents
       agent_cell_ranges.each do |agent_cell_range|
-        break unless row[agent_cell_range.begin].present?
+        break if row[agent_cell_range.begin].blank?
 
         agent_cells = row[agent_cell_range]
         item_agent = parse_agent(agent_cells)
@@ -455,3 +456,4 @@ module Nabu
     end
   end
 end
+# rubocop:enable Metrics/ClassLength,Metrics/MethodLength
