@@ -1,7 +1,8 @@
+# rubocop:disable Metrics/BlockLength
 ActiveAdmin.register_page 'Catalog Report' do
   content do
-    year = params[:year] || Date.today.year
-    month = params[:month] || Date.today.month
+    year = params[:year] || Time.zone.today.year
+    month = params[:month] || Time.zone.today.month
     month = month.to_i
     year = year.to_i
     date = Date.parse("#{year}-#{month}-01")
@@ -44,9 +45,10 @@ ActiveAdmin.register_page 'Catalog Report' do
       %w[new updated].each do |which|
         column do
           panel "#{which.capitalize} Collections" do
-            insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, data[:"#{which}_collections"] do
+            table_for data[:"#{which}_collections"] do
               column :identifier do |collection|
-                link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
+                # Have to call the full path here as activeadmin has a collection_path
+                link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection)
               end
               column :title
             end
@@ -59,7 +61,7 @@ ActiveAdmin.register_page 'Catalog Report' do
       %w[new updated].each do |which|
         column do
           panel "#{which.capitalize} Items" do
-            insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, data[:"#{which}_items"] do
+            table_for data[:"#{which}_items"] do
               column :full_identifier do |item|
                 link_to item.full_identifier, [item.collection, item]
               end
@@ -87,41 +89,50 @@ ActiveAdmin.register_page 'Catalog Report' do
     columns do
       column do
         panel 'File Type Metrics' do
-          stuff = Essence.where('created_at <= ?',
-                                date.end_of_month).select('mimetype, COUNT(*) as files, SUM(size) as bytes, SUM(duration) as duration').group(:mimetype).order('files desc')
-          insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, stuff do
+          data = Essence
+                 .where('created_at <= ?', date.end_of_month)
+                 .select('mimetype, COUNT(*) as files, SUM(size) as bytes, SUM(duration) as duration')
+                 .group(:mimetype)
+                 .order('files desc')
+
+          table_for data do
             column :type
             column :files
-            column :bytes, as: 'Size' do |thing|
-              number_to_human_size thing.bytes
-            end
-            column :duration do |thing|
-              number_to_human_duration thing.duration
-            end
+            column(:bytes) { |row| number_to_human_size row.bytes }
+            column(:duration) { |row| number_to_human_duration row.duration }
           end
         end
       end
 
       column do
         panel 'Collection Metrics' do
-          insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.all do
-            column :identifier
-            column :items do |collection|
-              collection.items.count
-            end
+          data = Collection
+                 .select('
+                   collections.id AS id,
+                   collections.identifier AS identifier,
+                   COUNT(DISTINCT items.id) AS items_count,
+                   COUNT(DISTINCT essences.id) AS essences_count,
+                   SUM(essences.size) AS total_size,
+                   SUM(essences.duration) AS total_duration
+                 ')
+                 .joins('LEFT JOIN items ON items.collection_id = collections.id')
+                 .joins('LEFT JOIN essences ON essences.item_id = items.id')
+                 .where('collections.created_at <= ?', date.end_of_month)
+                 .where('items.created_at <= ? OR items.created_at IS NULL', date.end_of_month)
+                 .where('essences.created_at <= ? OR essences.created_at IS NULL', date.end_of_month)
+                 .group(:identifier)
+                 .order(:identifier)
 
-            column :files do |collection|
-              Essence.where('created_at <= ?', date.end_of_month).where(item_id: collection.items.map(&:id)).count
-            end
-            column :bytes, as: 'Size' do |collection|
-              number_to_human_size Essence.where('created_at <= ?', date.end_of_month).where(item_id: collection.items.map(&:id)).sum(:size)
-            end
-            column :duration do |collection|
-              number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).where(item_id: collection.items.map(&:id)).sum(:duration)
-            end
+          table_for data do
+            column :identifier
+            column 'Items', :items_count
+            column 'Files', :essences_count
+            column('Bytes', :total_size) { |row| number_to_human_size(row.total_size || 0) }
+            column('Duration', :total_duration) { |row| number_to_human_duration(row.total_duration || 0) }
           end
         end
       end
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
