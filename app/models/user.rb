@@ -204,7 +204,7 @@ class User < ApplicationRecord
 
   def ok_to_destroy?
     errors.clear
-    errors.add(:base, 'User owns items and cannot be removed.') if owned_items.positive?
+    errors.add(:base, 'User owns items and cannot be removed.') if owned_items.count.positive?
     errors.empty?
   end
 
