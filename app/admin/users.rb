@@ -69,7 +69,7 @@ ActiveAdmin.register User do
 
   controller do
     def check_dependent(object)
-      return unless object.owned_items.positive?
+      return unless object.owned_items.count.positive?
 
       flash[:error] = 'ERROR: User owns items - cannot be removed.'
       false
