@@ -8,17 +8,6 @@
       %td Archive
       %td= "S3 via #{Rails.configuration.proxyist_url}"
     %tr
-      %td Upload Directories
+      %td Upload Location
       %td
-        - Nabu::Application.config.upload_directories.each do |dir|
-          = dir
-          %br
-    %tr
-      %td Scan WAV and MP3 files
-      %td= Nabu::Application.config.scan_directory
-    %tr
-      %td Write imp.xml files
-      %td= Nabu::Application.config.write_imp
-    %tr
-      %td Write ID3 files
-      %td= Nabu::Application.config.write_id3
+        = Rails.env.production? ? 's3://paragest-ingest-prod/incoming' : 's3://paragest-ingest-stage/incoming'
