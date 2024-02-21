@@ -240,7 +240,7 @@ json.set! '@graph' do
       json.child! { json.set! '@id', propery_value_identifier('doi') }
     end
 
-    json.license { json.set! '@id', access_condition_id(@data.access_condition) }
+    json.license { json.set! '@id', access_condition_id(@data.access_condition) } if @data.access_condition
     json.conformsTo { json.set! '@id', 'https://w3id.org/ldac/profile#Object' }
     json.memberOf { json.set! '@id', repository_collection_url(@data.collection) } if @is_item
 
