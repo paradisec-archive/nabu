@@ -289,8 +289,10 @@ json.set! '@graph' do
     end
   end
 
-  json.array! @data.item_agents.map(&:user).uniq do |user|
-    person_json(json, user)
+  if @is_item
+    json.array! @data.item_agents.map(&:user).uniq do |user|
+      person_json(json, user)
+    end
   end
 
   json.array! @data.essences do |essence|
