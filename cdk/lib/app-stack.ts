@@ -1,3 +1,5 @@
+import { execSync } from 'child_process';
+
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
@@ -314,7 +316,12 @@ export class AppStack extends cdk.Stack {
     // App
     // ////////////////////////
 
-    const appImage = ecs.ContainerImage.fromAsset("..", { file: "Dockerfile" });
+    const appImage = ecs.ContainerImage.fromAsset("..", {
+      file: "Dockerfile",
+      buildArgs: {
+        GIT_SHA: execSync('git rev-parse HEAD').toString().trim(),
+      },
+    });
     const commonAppImageOptions: ecs.ContainerDefinitionOptions = {
       image: appImage,
       environment: {
