@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
 export AWS_OUTPUT="json"
 
-TASK_NAME="${1^}"
+TASK_NAME="App"
 shift
 
 echo "Getting cluster..."
@@ -32,4 +34,7 @@ aws ecs execute-command \
   --task "$TASK" \
   --interactive \
   --container "${TASK_NAME}Container" \
-  --command "/bin/bash $*"
+  --command '/bin/bash -c "mysqldump -u nabu -h $NABU_DATABASE_HOSTNAME --password=$NABU_DATABASE_PASSWORD nabu | bzip2 | base64"' >|../nabu.sql.bz2.b64
+
+tail -n +6 ../nabu.sql.bz2.b64 | head -n -4 | base64 -id >|../nabu.sql.bz2
+rm ../nabu.sql.bz2.b64
