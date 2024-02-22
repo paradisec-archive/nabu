@@ -293,10 +293,10 @@ json.set! '@graph' do
     json.array! @data.item_agents.map(&:user).uniq do |user|
       person_json(json, user)
     end
-  end
 
-  json.array! @data.essences do |essence|
-    essence_json(json, essence)
+    json.array! @data.essences do |essence|
+      essence_json(json, essence)
+    end
   end
 
   json.child! do
