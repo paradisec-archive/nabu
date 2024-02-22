@@ -21,14 +21,14 @@ class PageController < ApplicationController
     @num_collections = collections.count
     @collections = collections.page(params[:collections_page]).per(params[:collections_per_page])
 
-    items = Item.where(collector_id: current_user).order(:updated_at)
+    items = Item.includes(:collection).where(collector_id: current_user).order(:updated_at)
     @num_items = items.count
     @items = items.page(params[:items_page]).per(params[:items_per_page])
 
     @comments = Comment.owned_by(current_user)
     @num_comments = @comments.count
 
-    @comments_left = Item.where(collector_id: current_user).map(&:comments).flatten
+    @comments_left = Item.includes(:comments).where(collector_id: current_user).map(&:comments).flatten
     @num_comments_left = @comments_left.count
 
     item_counts = Item.group(:collection_id).count
