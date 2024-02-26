@@ -9,5 +9,6 @@ docker compose run \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -e AWS_PROFILE=nabu-prod \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
+  -v "$HOME"/.irb_history:/rails/.irb_history \
   app \
   "$@"

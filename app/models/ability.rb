@@ -7,7 +7,7 @@ class Ability
     # Guests
     #############
 
-    if !user
+    unless user
       can :read, Collection, private: false
       can :read, Item, private: false
       can :data, Item, private: false
@@ -51,15 +51,15 @@ class Ability
     # Collections
     #############
 
-    # Only admins can create a collection
-    cannot :create, Collection, collection_admins: nil
-
     # Only collection_admins can manage a collection
     can :read,   Collection, items: { item_users: { user_id: user.id } }
     can :read,   Collection, items: { item_admins: { user_id: user.id } }
     can :manage, Collection, collection_admins: { user_id: user.id }
     can :update, Collection, operator_id: user.id
     can :update, Collection, collector_id: user.id
+
+    # Only admins can create a collection
+    cannot :create, Collection
 
     can :advanced_search, Collection
     cannot :search_csv, Collection
