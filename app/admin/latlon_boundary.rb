@@ -18,14 +18,19 @@
 #
 # * `index_latlon_boundaries_on_country_id`:
 #     * **`country_id`**
-#
+
 ActiveAdmin.register LatlonBoundary, as: 'CountryBoundary' do
-  menu :parent => 'Other Entities'
-  actions :all, :except => [:destroy]
+  menu parent: 'Other Entities'
+
+  includes :country
+
+  actions :all, except: [:destroy]
 
   permit_params :north_limit, :south_limit, :west_limit, :east_limit, :country, :country_id, :wrapped
 
-  index do |boundaries|
+  config.filters = false
+
+  index do
     column :id
     column :country do |boundary|
       link_to boundary.country.name, boundary.country
