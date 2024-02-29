@@ -14,19 +14,19 @@ class ItemSearchService
       :discourse_type,
       :access_condition,
       :subject_languages,
-      { :item_agents => %i[user agent_role] }
+      { item_agents: %i[user agent_role] }
     ]
     Item.solr_search(include:) do
-      fulltext params[:search], :minimum_match => '100%'
+      fulltext params[:search], minimum_match: '100%'
 
       facet :content_language_ids, :country_ids
-      facet :collector_id, :limit => 100
+      facet :collector_id, limit: 100
 
       with(:collector_id, params[:collector_id]) if params[:collector_id].present?
       with(:content_language_codes, params[:language_code]) if params[:language_code].present?
       with(:country_codes, params[:country_code]) if params[:country_code].present?
 
-      unless current_user && current_user.admin?
+      unless current_user&.admin?
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
@@ -37,16 +37,17 @@ class ItemSearchService
         order_by c, sort_direction(params)
       end
 
-      paginate :page => params[:page], :per_page => params[:per_page]
+      paginate page: params[:page], per_page: params[:per_page]
     end
   end
 
   def self.build_advanced_search(params, current_user)
-    Item.solr_search(include: [:collection, :collector, :countries]) do
+    Item.solr_search(include: %i[collection collector countries]) do
       # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|
         next if params[field.name].blank?
-        keywords params[field.name], :fields => [field.name]
+
+        keywords params[field.name], fields: [field.name]
       end
 
       # Exact search
@@ -54,16 +55,16 @@ class ItemSearchService
         next if params[field.name].blank? && params[field.name] != false # use to_s to avoid `false.blank? == true` issue
 
         case field.type
-          when Sunspot::Type::StringType
-          when Sunspot::Type::IntegerType
-            with field.name, params[field.name]
-          when Sunspot::Type::BooleanType
-            # handle literal true and string "true" or "1" from mysql db
-            with field.name, params[field.name].to_s =~ /^true|1$/ ? true : false
-          when Sunspot::Type::TimeType
-            with(field.name).between((Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day))
-          else
-            p "WARNING can't search: #{field.type} #{field.name}"
+        when Sunspot::Type::StringType
+        when Sunspot::Type::IntegerType
+          with field.name, params[field.name]
+        when Sunspot::Type::BooleanType
+          # handle literal true and string "true" or "1" from mysql db
+          with field.name, params[field.name].to_s =~ /^true|1$/ ? true : false
+        when Sunspot::Type::TimeType
+          with(field.name).between((Time.zone.parse(params[field.name]).beginning_of_day)..(Time.zone.parse(params[field.name]).end_of_day))
+        else
+          Rails.logger.warn "WARNING can't search: #{field.type} #{field.name}"
         end
       end
 
@@ -106,17 +107,15 @@ class ItemSearchService
           end
         end
       end
-      
-      if params[:no_files]
-        with(:essences_count).greater_than(0)
-      end
+
+      with(:essences_count).greater_than(0) if params[:no_files]
 
       if params[:exclusions].present?
         exclusions = params[:exclusions].split(',')
         without(:id, exclusions)
       end
 
-      unless current_user && current_user.admin?
+      unless current_user&.admin?
         any_of do
           with(:private, false)
           with(:admin_ids, current_user.id) if current_user
@@ -127,7 +126,7 @@ class ItemSearchService
         order_by c, sort_direction(params)
       end
 
-      paginate :page => params[:page], :per_page => params[:per_page]
+      paginate page: params[:page], per_page: params[:per_page]
     end
   end
 
@@ -136,6 +135,6 @@ class ItemSearchService
   end
 
   def self.sort_direction(params)
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 end
