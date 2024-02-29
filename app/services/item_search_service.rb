@@ -1,22 +1,23 @@
 class ItemSearchService
+  INCLUDE = [
+    :collection,
+    :collector,
+    :countries,
+    :collector,
+    :operator,
+    :essences,
+    :university,
+    :content_languages,
+    :data_categories,
+    :data_types,
+    :discourse_type,
+    :access_condition,
+    :subject_languages,
+    { item_agents: %i[user agent_role] }
+  ].freeze
+
   def self.build_solr_search(params, current_user)
-    include = [
-      :collection,
-      :collector,
-      :countries,
-      :collector,
-      :operator,
-      :essences,
-      :university,
-      :content_languages,
-      :data_categories,
-      :data_types,
-      :discourse_type,
-      :access_condition,
-      :subject_languages,
-      { item_agents: %i[user agent_role] }
-    ]
-    Item.solr_search(include:) do
+    Item.solr_search(include: INCLUDE) do
       fulltext params[:search], minimum_match: '100%'
 
       facet :content_language_ids, :country_ids
@@ -42,7 +43,7 @@ class ItemSearchService
   end
 
   def self.build_advanced_search(params, current_user)
-    Item.solr_search(include: %i[collection collector countries]) do
+    Item.solr_search(include: INCLUDE) do
       # Full text search
       Sunspot::Setup.for(Item).all_text_fields.each do |field|
         next if params[field.name].blank?

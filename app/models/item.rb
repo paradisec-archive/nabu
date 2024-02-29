@@ -260,10 +260,7 @@ class Item < ApplicationRecord
     %w[full_identifier title collector_sortname updated_at language sort_country essences_count]
   end
 
-  searchable(
-    include: %i[content_languages subject_languages countries data_categories data_types essences collection collector university operator
-                discourse_type agents admins users]
-  ) do
+  searchable do
     # Things we want to perform full text search on
     text :title
     text :identifier, as: :identifier_textp
