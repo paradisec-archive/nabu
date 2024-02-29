@@ -1,20 +1,19 @@
 require 'zip'
 
 class CsvDownloader
+  INCLUDED_CSV_FIELDS = %i[full_identifier title external description url collector_sortname operator_name csv_item_agents
+                           csv_filenames csv_mimetypes csv_fps_values csv_samplerates csv_channel_counts
+                           university_name language dialect csv_subject_languages csv_content_languages csv_countries region csv_data_categories csv_data_types
+                           discourse_type_name originated_on originated_on_narrative north_limit south_limit west_limit east_limit access_condition_name
+                           access_narrative].freeze
 
-  INCLUDED_CSV_FIELDS = [:full_identifier, :title, :external, :description, :url, :collector_sortname, :operator_name, :csv_item_agents,
-                         :csv_filenames, :csv_mimetypes, :csv_fps_values, :csv_samplerates, :csv_channel_counts,
-                         :university_name, :language, :dialect, :csv_subject_languages, :csv_content_languages, :csv_countries, :region, :csv_data_categories, :csv_data_types,
-                         :discourse_type_name, :originated_on, :originated_on_narrative, :north_limit, :south_limit, :west_limit, :east_limit, :access_condition_name,
-                         :access_narrative]
-
-  CSV_OPTIONS = {quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map{|f| f.to_s.titleize}, write_headers: true}
+  CSV_OPTIONS = { quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map { |f| f.to_s.titleize }, write_headers: true }.freeze
 
   def initialize(search_type, params, current_user)
-      @search_type = search_type
-      @params = params
-      @current_user = current_user
-      @csv_requested_time = DateTime.now
+    @search_type = search_type
+    @params = params
+    @current_user = current_user
+    @csv_requested_time = DateTime.now
   end
 
   def email
@@ -25,27 +24,27 @@ class CsvDownloader
                ItemSearchService.build_advanced_search(@params, @current_user)
              end
 
-    Rails.logger.info {"#{generation_start} Generating CSV for download"}
+    Rails.logger.info { "#{generation_start} Generating CSV for download" }
 
     path = Rails.root.join('tmp', "nabu_items_#{Time.zone.today}.csv").to_s
 
     CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
-      search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+      search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       # if the user requested all results, iterate over the remaining pages
       while @params[:export_all] && search.results.next_page
         search = if @search_type == :basic
-                    ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
-                  else
-                    ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
-                  end
-        search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+                   ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
+                 else
+                   ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
+                 end
+        search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end
     end
 
     total = @params[:export_all] ? search.total : (@params[:per_page] || 10)
 
     generation_end = DateTime.now
-    Rails.logger.info {"#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds"}
+    Rails.logger.info { "#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds" }
 
     filename = "nabu_items_#{Time.zone.today}.zip"
     zip_path = Rails.root.join('tmp', filename).to_s
@@ -71,29 +70,27 @@ class CsvDownloader
   end
 
   def stream(orig_search)
-    filename = "nabu_items_#{Date.today}.csv"
+    filename = "nabu_items_#{Time.zone.today}.csv"
 
     search = orig_search
 
     # use enumerator to customise streaming the response
-    streamed_csv = ->(output) {
+    streamed_csv = lambda { |output|
       # wrap the IO output so that CSV pushes writes directly into it
       csv = CSV.new(output, **CSV_OPTIONS)
-      search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+      search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
 
       # if the user requested all results, iterate over the remaining pages
       while @params[:export_all] && search.results.next_page
         search = if @search_type == :basic
-          ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
-        else
-          ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
-        end
-        search.results.each{|r| csv << INCLUDED_CSV_FIELDS.map{|f| r.public_send(f)}}
+                   ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
+                 else
+                   ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
+                 end
+        search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end
     }
 
-    return filename, streamed_csv
-
+    [filename, streamed_csv]
   end
-
 end
