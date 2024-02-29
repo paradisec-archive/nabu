@@ -129,13 +129,12 @@ class ItemsController < ApplicationController
     return if try_full_identifier_redirect
 
     params.delete(:per_page) if params[:per_page] == '0'
+    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
 
-    search_params = params[:export_all] ? basic_search_params.merge(per_page: 500, start_page: 1) : basic_search_params
+    search_params = params[:export_all] ? basic_search_params.merge(per_page: 50_000, start_page: 1) : basic_search_params
     @search = ItemSearchService.build_solr_search(search_params, current_user)
 
     @result_ids = @search.hits.map(&:result).map(&:full_identifier) if params[:search]
-
-    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
 
     if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
       redirect_to search_items_path(search_params.merge(page: 1))
@@ -158,9 +157,12 @@ class ItemsController < ApplicationController
 
   def advanced_search
     params.delete(:per_page) if params[:per_page] == '0'
+    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
+
+    search_params = params[:export_all] ? advanced_search_params.merge(per_page: 50_000, start_page: 1) : advanced_search_params
 
     @page_title = 'Nabu - Advanced Item Search'
-    @params = advanced_search_params
+    @params = search_params
 
     build_advanced_search
     respond_to do |format|
@@ -372,14 +374,13 @@ class ItemsController < ApplicationController
   end
 
   def stream_csv(search_type)
-    downloader = CsvDownloader.new(search_type, basic_search_params, current_user)
     export_all = params[:export_all] || false
-    per_page = export_all ? 50_000 : (params[:per_page] || 10).to_i
+    downloader = CsvDownloader.new(search_type, @params, current_user)
 
     # TODO: fix CSV stream for builder method
 
     # only stream CSV if small enough
-    if @search.total <= 5000 || (!export_all && per_page <= 5000)
+    if @search.total <= 5_000 || (!export_all && @params[:per_page] <= 5_000)
       filename, body = downloader.stream(@search)
 
       headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
@@ -407,7 +408,7 @@ class ItemsController < ApplicationController
       @search = build_query(params)
       @items = @search
     else
-      @search = ItemSearchService.build_advanced_search(params, current_user)
+      @search = ItemSearchService.build_advanced_search(@params, current_user)
       @items = @search.hits.map(&:result)
     end
 
