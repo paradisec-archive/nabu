@@ -114,8 +114,8 @@ class User < ApplicationRecord
   # find identifying info for single user with duplicates
   scope :duplicates_of, lambda { |first, last, user_ids = nil|
     specific_user_ids = user_ids || [-1]
-    User.joins('LEFT OUTER JOIN ('\
-                   'SELECT first_name, last_name FROM users GROUP BY first_name, last_name HAVING COUNT(*) > 1'\
+    User.joins('LEFT OUTER JOIN (' \
+               'SELECT first_name, last_name FROM users GROUP BY first_name, last_name HAVING COUNT(*) > 1' \
                ') d ON users.first_name = d.first_name AND users.last_name = d.last_name')
         .where('(users.first_name = ? AND users.last_name = ?) OR users.id in (?)', first, last, specific_user_ids)
   }
@@ -124,6 +124,8 @@ class User < ApplicationRecord
   scope :collectors, -> { where(collector: true) }
   scope :contacts, -> { where(contact_only: true) }
   scope :admins, -> { where(admin: true) }
+  scope :unconfirmed, -> { where(contact_only: false, confirmed_at: nil).where('created_at < ?', 1.week.ago) }
+  scope :never_signed_in, -> { where(contact_only: false, last_sign_in_at: nil).where('created_at < ?', 1.week.ago).where.not(confirmed_at: nil) }
 
   # Set random password for contacts
   before_validation do
@@ -147,7 +149,7 @@ class User < ApplicationRecord
   end
 
   def display_label
-    "#{name}#{!contact_only? ? ' <em>[user]</em>' : ''}"
+    "#{name}#{contact_only? ? '' : ' <em>[user]</em>'}"
   end
 
   def identifiable_name

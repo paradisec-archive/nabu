@@ -60,6 +60,8 @@ ActiveAdmin.register User do
   scope :contacts
   scope :admins
   scope :collectors
+  scope :unconfirmed
+  scope :never_signed_in
 
   permit_params :party_identifiers_attributes, :email, :first_name, :last_name,
                 :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,
