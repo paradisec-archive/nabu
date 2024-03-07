@@ -2,7 +2,7 @@ module Api
   module V1
     class OniController < ApplicationController
       def objects
-        limit = (params[:limit] || 1_000_000).to_i # FIXME: Better way for all record
+        limit = (params[:limit] || 5_000).to_i # FIXME: Better way for all record
         offset = (params[:offset] || 0).to_i
         conforms_to = params[:conformsTo]
 
@@ -16,7 +16,7 @@ module Api
         items_query = items_table.project(:id, :created_at, item_label.as('type')).where(items_table[:private].eq(false))
 
         if params[:memberOf]
-          md = params[:memberOf].match(repository_collection_url(:collection_identifier => '(.*)'))
+          md = params[:memberOf].match(repository_collection_url(collection_identifier: '(.*)'))
           unless md
             render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
             return
@@ -44,8 +44,8 @@ module Api
         collection_ids = ids.select { |id| id['type'] == 'collection' }.pluck('id')
         item_ids = ids.select { |id| id['type'] == 'item' }.pluck('id')
 
-        collections = Collection.where(id: collection_ids)
-        items = Item.where(id: item_ids)
+        collections = Collection.where(id: collection_ids).includes(:access_condition)
+        items = Item.where(id: item_ids).includes(:collection, :access_condition)
 
         @data = ids.map do |id|
           if id['type'] == 'collection'
