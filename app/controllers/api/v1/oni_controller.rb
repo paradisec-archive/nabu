@@ -98,6 +98,8 @@ module Api
           @data = Collection.find_by(identifier: md[1])
           @is_item = false
         end
+
+        raise ActiveRecord::RecordNotFound unless @data
       end
     end
   end
