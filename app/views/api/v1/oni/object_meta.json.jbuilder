@@ -299,8 +299,10 @@ json.set! '@graph' do
     end
   end
 
-  json.child! do
-    access_condition_json(json, @data.access_condition)
+  if @data.access_condition
+    json.child! do
+      access_condition_json(json, @data.access_condition)
+    end
   end
 
   if @data.university
