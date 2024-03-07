@@ -241,7 +241,7 @@ json.set! '@graph' do
     end
 
     json.license { json.set! '@id', access_condition_id(@data.access_condition) } if @data.access_condition
-    json.conformsTo { json.set! '@id', "https://w3id.org/ldac/profile##{@is_item ? 'Item' : 'Collection'}" }
+    json.conformsTo { json.set! '@id', "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" }
     json.memberOf { json.set! '@id', repository_collection_url(@data.collection) } if @is_item
 
     json.name @data.title
