@@ -204,7 +204,7 @@ json.set! '@graph' do
   # The item or collection
   json.child! do
     json.set! '@id', id
-    json.set! '@type', %w[Data Object RepositoryObject]
+    json.set! '@type', ['Data', 'Object', @is_item ? 'RepositoryObject' : 'RepositoryCollection']
     json.additionalType @is_item ? 'item' : 'collection'
 
     json.contentLocation do
