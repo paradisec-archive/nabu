@@ -1,0 +1,18 @@
+{
+  total: @data.size,
+
+  data: @data.map do |data|
+    class_name = data.class.name
+    is_collection = class_name == 'Collection'
+
+    {
+      conformsTo: "https://purl.archive.org/language-data-commons/profile##{class_name}",
+      crateId: is_collection ? repository_collection_url(data) : repository_item_url(data.collection, data),
+      record: {
+        name: data.title,
+        license: data.access_condition_name,
+        description: data.description
+      }
+    }
+  end
+}

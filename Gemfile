@@ -24,7 +24,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
+# gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
@@ -82,6 +82,7 @@ gem "haml-rails", "~> 2.0" # We use HAML for templates instead of erb
 gem "kaminari" # Pagination
 gem "oai" # OAI-PMH
 gem "rexml" # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
+gem "jb" # for json templates, simploer and faster than jbuilder
 
 # Analytics and instrumentation
 gem "sentry-ruby"

@@ -1,0 +1,311 @@
+# frozen_string_literal: truemeta
+
+# rubocop:disable Metrics/MethodLength,
+
+def id
+  @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
+end
+
+def rocrate_json
+  {
+    '@id': 'ro-crate-metadata.json',
+    '@type': 'CreativeWork',
+    conformsTo: {
+      '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
+    },
+    about: {
+      '@id': id
+      # '@id': api_v1_oni_object_meta({ id: })
+    }
+  }
+end
+
+def role_id(role)
+  "#role-#{role.name}"
+end
+
+def role_json(role)
+  {
+    '@id': role_id(role),
+    '@type': 'Role',
+    name: role.name
+  }
+end
+
+def contact_json
+  {
+    '@id': 'admin@paradisec.org.au',
+    '@type': 'ContactPoint',
+    contactType: 'customer service',
+    email: 'admin@paradisec.org.au',
+    identifier: 'admin@paradisec.org.au',
+    url: 'https://paradisec.org.au'
+  }
+end
+
+def person_id(user)
+  user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
+end
+
+def person_json(user)
+  json = {
+    '@id': person_id(user),
+    '@type': 'Person',
+    familyName: user.last_name,
+    givenName: user.first_name,
+    name: user.name
+  }
+
+  json[:email] = user.email if user.email
+
+  json
+end
+
+def essence_id(essence)
+  repository_essence_url(essence.collection, essence.item, essence.filename)
+end
+
+def essence_json(essence)
+  json = {
+    '@id': essence_id(essence),
+    '@type': 'File',
+    contentSize: essence.size,
+    dateCreated: essence.created_at.to_date,
+    dateModified: essence.updated_at.to_date,
+    encodingFormat: essence.mimetype,
+    name: essence.filename,
+    doi: essence.doi
+    # essenceId: essence.id # Should we expose this????,
+  }
+  json[:bitrate] = essence.bitrate if essence.bitrate
+  json[:duration] = essence.duration if essence.duration
+  json[:channels] = essence.channels if essence.channels
+  json[:sampleRate] = essence.samplerate if essence.samplerate
+
+  json
+end
+
+@geos = []
+def geometry_id(shape)
+  "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
+end
+
+def geometry_json(data)
+  coords = [
+    "#{data.west_limit} #{data.north_limit}",
+    "#{data.east_limit} #{data.north_limit}",
+    "#{data.east_limit} #{data.south_limit}",
+    "#{data.west_limit} #{data.south_limit}",
+    "#{data.west_limit} #{data.north_limit}"
+  ]
+
+  {
+    '@id': geometry_id(data),
+    '@type': 'Geometry',
+    asWKT: "POLYGON((#{coords.join(', ')}))"
+  }
+end
+
+def place_id(place, name = nil)
+  name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
+end
+
+def place_json(place, name = nil)
+  @geos << place
+  json = {
+    '@id': place_id(place, name),
+    '@type': 'Place',
+    geo: {
+      '@id': geometry_id(place)
+    }
+  }
+  json[:name] = name if name
+
+  json
+end
+
+def country_id(country)
+  "#country-#{country.name}"
+end
+
+def country_json(country)
+  {
+
+    '@id': country_id(country),
+    '@type': 'Country',
+    code: country.code,
+    name: country.name
+  }
+end
+
+def propery_value_identifier(name)
+  "#identifier_#{name}"
+end
+
+def property_value_json(name, value)
+  {
+    '@id': propery_value_identifier(name),
+    '@type': 'PropertyValue',
+    name:,
+    value:
+  }
+end
+
+def language_id(language)
+  "#language-#{language.code}"
+end
+
+def language_json(language)
+  @geos << language
+
+  {
+    '@id': language_id(language),
+    '@type': 'Language',
+    code: language.code,
+    location: {
+      '@id': geometry_id(language)
+    },
+    name: language.name
+  }
+end
+
+def access_condition_id(access_condition)
+  "#license-#{access_condition.id}"
+end
+
+def access_condition_json(access_condition)
+  {
+    '@id': access_condition_id(access_condition),
+    '@type': 'CreativeWork',
+    name: access_condition.name
+  }
+end
+
+def organisation_id(organisation)
+  organisation.party_identifier
+end
+
+def organisation_json(organisation)
+  {
+    '@id': organisation_id(organisation),
+    '@type': 'Organisation',
+    name: organisation.name
+  }
+end
+
+# starts: here,
+graph = []
+graph << place_json(@data, @data.region) if @data.region
+
+@data.countries.each do |country|
+  graph << country_json(country)
+end
+
+graph << property_value_json('collectionIdentifier', @data.collection.identifier) if @is_item
+
+graph << property_value_json('doi', @data.doi)
+graph << property_value_json('domain', 'paradisec.org.au')
+graph << property_value_json('id', @data.full_identifier)
+graph << property_value_json('itemIdentifier', @data.identifier)
+
+languages = (@data.content_languages + @data.subject_languages).uniq(&:code)
+languages.each do |lang|
+  graph << language_json(lang)
+end
+
+graph << place_json(@data)
+graph << geometry_json(@data)
+
+# The item or collection
+data = {
+  '@id': id,
+  '@type': ['Data', 'Object', @is_item ? 'RepositoryObject' : 'RepositoryCollection'],
+  additionalType: @is_item ? 'item' : 'collection',
+
+  contentLocation: [{
+    '@id': place_id(@data, @data.region)
+  }],
+
+  dateCreated: @data.created_at.to_date,
+  dateModified: @data.updated_at.to_date,
+  datePublished: @data.updated_at.to_date,
+  description: @data.description,
+
+  identifier: [
+    { '@id': propery_value_identifier('domain') },
+    { '@id': propery_value_identifier('id') },
+    { '@id': propery_value_identifier('itemId') },
+    { '@id': propery_value_identifier('collectionId') },
+    { '@id': propery_value_identifier('doi') }
+  ],
+
+  conformsTo: { '@id': "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" },
+
+  name: @data.title,
+
+  publisher: { '@id': person_id(@data.collector) },
+
+  inLanguage: @data.content_languages.map { |language| { '@id': language_id(language) } },
+
+  countries: @data.countries.map { |country| { '@id': country_id(country) } },
+
+  private: @data.private,
+
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_id(language) } }
+}
+
+data[:license] = { '@id': access_condition_id(@data.access_condition) } if @data.access_condition
+
+if @is_item
+  data[:contributor] = @data.item_agents.map { |item_agent| { '@id': person_id(item_agent.user) } }
+  data[:bornDigital] = @data.born_digital
+  data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
+  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_id(essence) } }
+  data[:digitisedOn] = @data.digitised_on.to_date if @data.digitised_on
+  data[:external] = @data.external
+  data[:languageAsGiven] = @data.language
+  data[:metadataExportable] = @data.metadata_exportable
+  data[:originalMedia] = @data.original_media if @data.original_media
+  data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
+  data[:tapesReturned] = @data.tapes_returned
+
+  @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
+    data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_id(item_agent.user) } }
+  end
+end
+
+graph << data
+
+if @is_item
+  @data.item_agents.map(&:user).uniq do |user|
+    graph << person_json(user)
+  end
+
+  @data.essences do |essence|
+    graph << essence_json(essence)
+  end
+end
+
+graph << access_condition_json(@data.access_condition) if @data.access_condition
+
+graph << organisation_json(@data.university) if @data.university
+
+graph << rocrate_json
+
+geometries = @geos.uniq { |g| geometry_id(g) }
+geometries.each do |geo|
+  graph << geometry_json(geo)
+end
+
+{
+  '@context': [
+    'https://w3id.org/ro/crate/1.2-DRAFT/context',
+    { '@vocab': 'http://schema.org/' },
+    'http://purl.archive.org/language-data-commons/context.json',
+    { Geometry: 'http://www.opengis.net/ont/geosparql#Geometry', asWKT: 'http://www.opengis.net/ont/geosparql#asWKT' },
+    'https://w3id.org/ldac/context'
+  ],
+  '@graph': graph
+}
+
+# rubocop:enable Metrics/MethodLength,
