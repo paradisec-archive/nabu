@@ -122,22 +122,23 @@ def country_json(country)
     name: country.name
   }
   @countries.add(country)
-  @countries.add(country)
 
   id
 end
 
-def propery_value_identifier(name)
-  "#identifier_#{name}"
-end
-
+@property_values = Set.new
 def property_value_json(name, value)
-  {
-    '@id': propery_value_identifier(name),
+  id = "#identifier_#{name}"
+
+  property_value = {
+    '@id': id,
     '@type': 'PropertyValue',
     name:,
     value:
   }
+  @property_values.add(property_value)
+
+  { '@id':  id }
 end
 
 @languages = Set.new
@@ -185,13 +186,6 @@ end
 # starts: here,
 graph = []
 
-graph << property_value_json('collectionIdentifier', @data.collection.identifier) if @is_item
-
-graph << property_value_json('doi', @data.doi)
-graph << property_value_json('domain', 'paradisec.org.au')
-graph << property_value_json('id', @data.full_identifier)
-graph << property_value_json('itemIdentifier', @data.identifier)
-
 # The item or collection
 data = {
   '@id': id,
@@ -208,11 +202,10 @@ data = {
   description: @data.description,
 
   identifier: [
-    { '@id': propery_value_identifier('domain') },
-    { '@id': propery_value_identifier('id') },
-    { '@id': propery_value_identifier('itemId') },
-    { '@id': propery_value_identifier('collectionId') },
-    { '@id': propery_value_identifier('doi') }
+    property_value_json('domain', 'paradisec.org.au'),
+    property_value_json('id', @data.full_identifier),
+    property_value_json('itemIdentifier', @data.identifier),
+    property_value_json('doi', @data.doi)
   ],
 
   conformsTo: { '@id': "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" },
@@ -233,6 +226,7 @@ data = {
 data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
 
 if @is_item
+  data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
   data[:contributor] = @data.item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
   data[:bornDigital] = @data.born_digital
   data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
@@ -260,6 +254,8 @@ graph << organisation_json(@data.university) if @data.university
 graph << rocrate_json
 
 # Add all the references
+graph.concat(@access_conditions.to_a)
+graph.concat(@property_values.to_a)
 graph.concat(@countries.to_a)
 graph.concat(@access_conditions.to_a)
 graph.concat(@people.to_a)
