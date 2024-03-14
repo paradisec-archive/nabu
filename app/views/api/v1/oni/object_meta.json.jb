@@ -20,36 +20,22 @@ def rocrate_json
   }
 end
 
-def role_id(role)
-  "#role-#{role.name}"
-end
+# def contact_json
+#   {
+#     '@id': 'admin@paradisec.org.au',
+#     '@type': 'ContactPoint',
+#     contactType: 'customer service',
+#     email: 'admin@paradisec.org.au',
+#     identifier: 'admin@paradisec.org.au',
+#     url: 'https://paradisec.org.au'
+#   }
+# end
 
-def role_json(role)
-  {
-    '@id': role_id(role),
-    '@type': 'Role',
-    name: role.name
-  }
-end
-
-def contact_json
-  {
-    '@id': 'admin@paradisec.org.au',
-    '@type': 'ContactPoint',
-    contactType: 'customer service',
-    email: 'admin@paradisec.org.au',
-    identifier: 'admin@paradisec.org.au',
-    url: 'https://paradisec.org.au'
-  }
-end
-
-def person_id(user)
-  user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
-end
-
+@people = Set.new
 def person_json(user)
+  id = user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
   json = {
-    '@id': person_id(user),
+    '@id': id,
     '@type': 'Person',
     familyName: user.last_name,
     givenName: user.first_name,
@@ -57,17 +43,17 @@ def person_json(user)
   }
 
   json[:email] = user.email if user.email
+  @people.add(json)
 
-  json
+  id
 end
 
-def essence_id(essence)
-  repository_essence_url(essence.collection, essence.item, essence.filename)
-end
-
+@essences = Set.new
 def essence_json(essence)
+  id = repository_essence_url(essence.collection, essence.item, essence.filename)
+
   json = {
-    '@id': essence_id(essence),
+    '@id': id,
     '@type': 'File',
     contentSize: essence.size,
     dateCreated: essence.created_at.to_date,
@@ -82,60 +68,63 @@ def essence_json(essence)
   json[:channels] = essence.channels if essence.channels
   json[:sampleRate] = essence.samplerate if essence.samplerate
 
-  json
+  @essences.add(json)
+
+  id
 end
 
-@geos = []
-def geometry_id(shape)
-  "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
-end
-
-def geometry_json(data)
+@geos = Set.new
+def geometry_json(shape)
+  id = "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
   coords = [
-    "#{data.west_limit} #{data.north_limit}",
-    "#{data.east_limit} #{data.north_limit}",
-    "#{data.east_limit} #{data.south_limit}",
-    "#{data.west_limit} #{data.south_limit}",
-    "#{data.west_limit} #{data.north_limit}"
+    "#{shape.west_limit} #{shape.north_limit}",
+    "#{shape.east_limit} #{shape.north_limit}",
+    "#{shape.east_limit} #{shape.south_limit}",
+    "#{shape.west_limit} #{shape.south_limit}",
+    "#{shape.west_limit} #{shape.north_limit}"
   ]
 
-  {
-    '@id': geometry_id(data),
+  json = {
+    '@id': id,
     '@type': 'Geometry',
     asWKT: "POLYGON((#{coords.join(', ')}))"
   }
+
+  @geos.add(json)
+
+  id
 end
 
-def place_id(place, name = nil)
-  name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
-end
-
+@places = Set.new
 def place_json(place, name = nil)
-  @geos << place
+  id = name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
   json = {
-    '@id': place_id(place, name),
+    '@id': id,
     '@type': 'Place',
     geo: {
-      '@id': geometry_id(place)
+      '@id': geometry_json(place)
     }
   }
   json[:name] = name if name
 
-  json
+  @places.add(json)
+
+  id
 end
 
-def country_id(country)
-  "#country-#{country.name}"
-end
-
+@countries = Set.new
 def country_json(country)
-  {
-
-    '@id': country_id(country),
+  id = "#country-#{country.name}"
+  country = {
+    '@id': id,
     '@type': 'Country',
     code: country.code,
     name: country.name
   }
+  @countries.add(country)
+  @countries.add(country)
+
+  id
 end
 
 def propery_value_identifier(name)
@@ -151,34 +140,34 @@ def property_value_json(name, value)
   }
 end
 
-def language_id(language)
-  "#language-#{language.code}"
-end
-
+@languages = Set.new
 def language_json(language)
-  @geos << language
-
-  {
-    '@id': language_id(language),
+  id = "#language-#{language.code}"
+  json = {
+    '@id': id,
     '@type': 'Language',
     code: language.code,
     location: {
-      '@id': geometry_id(language)
+      '@id': geometry_json(language)
     },
     name: language.name
   }
+  @languages.add(json)
+
+  id
 end
 
-def access_condition_id(access_condition)
-  "#license-#{access_condition.id}"
-end
-
+@access_conditions = Set.new
 def access_condition_json(access_condition)
-  {
-    '@id': access_condition_id(access_condition),
+  id = "#license-#{access_condition.id}"
+  json = {
+    '@id': id,
     '@type': 'CreativeWork',
     name: access_condition.name
   }
+  @access_conditions.add(json)
+
+  id
 end
 
 def organisation_id(organisation)
@@ -195,11 +184,6 @@ end
 
 # starts: here,
 graph = []
-graph << place_json(@data, @data.region) if @data.region
-
-@data.countries.each do |country|
-  graph << country_json(country)
-end
 
 graph << property_value_json('collectionIdentifier', @data.collection.identifier) if @is_item
 
@@ -208,14 +192,6 @@ graph << property_value_json('domain', 'paradisec.org.au')
 graph << property_value_json('id', @data.full_identifier)
 graph << property_value_json('itemIdentifier', @data.identifier)
 
-languages = (@data.content_languages + @data.subject_languages).uniq(&:code)
-languages.each do |lang|
-  graph << language_json(lang)
-end
-
-graph << place_json(@data)
-graph << geometry_json(@data)
-
 # The item or collection
 data = {
   '@id': id,
@@ -223,7 +199,7 @@ data = {
   additionalType: @is_item ? 'item' : 'collection',
 
   contentLocation: [{
-    '@id': place_id(@data, @data.region)
+    '@id': place_json(@data, @data.region)
   }],
 
   dateCreated: @data.created_at.to_date,
@@ -243,24 +219,24 @@ data = {
 
   name: @data.title,
 
-  publisher: { '@id': person_id(@data.collector) },
+  publisher: { '@id': person_json(@data.collector) },
 
-  inLanguage: @data.content_languages.map { |language| { '@id': language_id(language) } },
+  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
 
-  countries: @data.countries.map { |country| { '@id': country_id(country) } },
+  countries: @data.countries.map { |country| { '@id': country_json(country) } },
 
   private: @data.private,
 
-  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_id(language) } }
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } }
 }
 
-data[:license] = { '@id': access_condition_id(@data.access_condition) } if @data.access_condition
+data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
 
 if @is_item
-  data[:contributor] = @data.item_agents.map { |item_agent| { '@id': person_id(item_agent.user) } }
+  data[:contributor] = @data.item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
   data[:bornDigital] = @data.born_digital
   data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
-  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_id(essence) } }
+  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
   data[:digitisedOn] = @data.digitised_on.to_date if @data.digitised_on
   data[:external] = @data.external
   data[:languageAsGiven] = @data.language
@@ -270,21 +246,12 @@ if @is_item
   data[:tapesReturned] = @data.tapes_returned
 
   @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
-    data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_id(item_agent.user) } }
+    # FIXME
+    data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
   end
 end
 
 graph << data
-
-if @is_item
-  @data.item_agents.map(&:user).uniq do |user|
-    graph << person_json(user)
-  end
-
-  @data.essences do |essence|
-    graph << essence_json(essence)
-  end
-end
 
 graph << access_condition_json(@data.access_condition) if @data.access_condition
 
@@ -292,10 +259,14 @@ graph << organisation_json(@data.university) if @data.university
 
 graph << rocrate_json
 
-geometries = @geos.uniq { |g| geometry_id(g) }
-geometries.each do |geo|
-  graph << geometry_json(geo)
-end
+# Add all the references
+graph.concat(@countries.to_a)
+graph.concat(@access_conditions.to_a)
+graph.concat(@people.to_a)
+graph.concat(@essences.to_a) if @is_item
+graph.concat(@geos.to_a)
+graph.concat(@places.to_a)
+graph.concat(@languages.to_a)
 
 {
   '@context': [
