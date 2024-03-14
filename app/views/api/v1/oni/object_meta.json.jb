@@ -138,7 +138,7 @@ def property_value_json(name, value)
   }
   @property_values.add(property_value)
 
-  { '@id':  id }
+  { '@id': id }
 end
 
 @languages = Set.new
@@ -189,17 +189,11 @@ graph = []
 # The item or collection
 data = {
   '@id': id,
+
   '@type': ['Data', 'Object', @is_item ? 'RepositoryObject' : 'RepositoryCollection'],
+  conformsTo: { '@id': "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" },
+
   additionalType: @is_item ? 'item' : 'collection',
-
-  contentLocation: [{
-    '@id': place_json(@data, @data.region)
-  }],
-
-  dateCreated: @data.created_at.to_date,
-  dateModified: @data.updated_at.to_date,
-  datePublished: @data.updated_at.to_date,
-  description: @data.description,
 
   identifier: [
     property_value_json('domain', 'paradisec.org.au'),
@@ -208,29 +202,32 @@ data = {
     property_value_json('doi', @data.doi)
   ],
 
-  conformsTo: { '@id': "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" },
-
   name: @data.title,
+  description: @data.description,
+
+  contentLocation: [{
+    '@id': place_json(@data, @data.region)
+  }],
+
+  dateCreated: @data.created_at.to_date,
+  dateModified: @data.updated_at.to_date,
+  datePublished: @data.updated_at.to_date,
 
   publisher: { '@id': person_json(@data.collector) },
 
-  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
-
-  countries: @data.countries.map { |country| { '@id': country_json(country) } },
-
   private: @data.private,
 
-  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } }
+  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
+  countries: @data.countries.map { |country| { '@id': country_json(country) } }
 }
 
 data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
 
 if @is_item
-  data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
-  data[:contributor] = @data.item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
-  data[:bornDigital] = @data.born_digital
   data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
-  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
+  data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
+  data[:bornDigital] = @data.born_digital
   data[:digitisedOn] = @data.digitised_on.to_date if @data.digitised_on
   data[:external] = @data.external
   data[:languageAsGiven] = @data.language
@@ -238,23 +235,20 @@ if @is_item
   data[:originalMedia] = @data.original_media if @data.original_media
   data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
   data[:tapesReturned] = @data.tapes_returned
+  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
 
   @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
-    # FIXME
     data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
   end
 end
 
 graph << data
-
-graph << access_condition_json(@data.access_condition) if @data.access_condition
-
-graph << organisation_json(@data.university) if @data.university
-
 graph << rocrate_json
 
+# TODO: need to workout where this goes and then reimplemrnt like below
+graph << organisation_json(@data.university) if @data.university
+
 # Add all the references
-graph.concat(@access_conditions.to_a)
 graph.concat(@property_values.to_a)
 graph.concat(@countries.to_a)
 graph.concat(@access_conditions.to_a)
