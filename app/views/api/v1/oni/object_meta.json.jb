@@ -217,7 +217,7 @@ data = {
 
   private: @data.private,
 
-  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
+  inLanguage: (@is_item ? @data.content_languages : @data.languages).map { |language| { '@id': language_json(language) } },
   subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
   countries: @data.countries.map { |country| { '@id': country_json(country) } }
 }
