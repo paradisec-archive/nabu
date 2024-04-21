@@ -11,7 +11,7 @@ module Types
     field :mimetype, String
     field :bitrate, Integer
     field :samplerate, Integer
-    field :size, Integer
+    field :size, GraphQL::Types::BigInt
     field :duration, Float
     field :channels, Integer
     field :fps, Integer
