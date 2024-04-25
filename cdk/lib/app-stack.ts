@@ -510,9 +510,11 @@ export class AppStack extends cdk.Stack {
         targets: [appService],
         vpc,
         protocol: elbv2.ApplicationProtocol.HTTP,
-        deregistrationDelay: cdk.Duration.seconds(30),
+        deregistrationDelay: cdk.Duration.seconds(5),
         healthCheck: {
           path: '/up',
+          interval: cdk.Duration.seconds(5),
+          healthyThresholdCount: 2,
         },
       },
     );
