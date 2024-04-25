@@ -24,6 +24,8 @@
 
     = stylesheet_link_tag 'application', 'data-turbo-track': 'reload'
     = javascript_importmap_tags
+    -# We load this manually rather than in config/importmap as we need it to exist in the global namespace
+    = javascript_import_module_tag 'maps'
 
     %script{ src: 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', defer: true }
     %script{ src: "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_MAPS_API_KEY'] || 'AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'}&callback=initMap&v=weekly", defer: true }
