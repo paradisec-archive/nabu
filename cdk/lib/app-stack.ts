@@ -515,6 +515,7 @@ export class AppStack extends cdk.Stack {
           path: '/up',
           interval: cdk.Duration.seconds(5),
           healthyThresholdCount: 2,
+          timeout: cdk.Duration.seconds(4),
         },
       },
     );
