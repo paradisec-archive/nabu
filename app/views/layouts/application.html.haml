@@ -26,12 +26,7 @@
     = javascript_importmap_tags
 
     %script{ src: 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js', defer: true }
-    = javascript_include_tag 'maps', defer: true
-    - if Rails.env.production?
-      %script{ src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E&callback=initMap&v=weekly', defer: true }
-    - else
-      %script{ src: "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_MAPS_API_KEY']}&callback=initMap&v=weekly", defer: true }
-
+    %script{ src: 'https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_MAPS_API_KEY'] || 'AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E'}&callback=initMap&v=weekly', defer: true }
     %script{ src: 'https://browser.sentry-cdn.com/7.55.2/bundle.tracing.min.js', integrity: 'sha384-u0VnF/CCtmgYR2cShUDrGNHOlH3jdsqBHK+yrIo7uqFygjVXak8CMh+/81vtqNBF', crossorigin: 'anonymous' }
 
     -if Rails.env.production?
