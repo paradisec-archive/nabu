@@ -6,7 +6,7 @@
     =link_to 'Return To Results', session[:search_from].merge(session[:search_params]), :class => 'button'
 
 .right
-  - if can? :manage, @collection
+  - if can? :update, @collection
     = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button'
 
 .clear
@@ -194,13 +194,16 @@
           %td= number_to_human @num_essences
 
 
-    .right
-      -if @collection.items.any?
+  .right
+    - if can? :destroy, Collection
+      - if @collection.items.any?
         %p.delete-warning
           %strong This collection contains items! If you choose to delete it they will be deleted too, as well as any content files they contain. This action can not be undone!
-        = button_to 'Delete collection and contents', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection and all of its items?' }
-      -else
-        = button_to 'Delete collection', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection?' }
+        = button_to 'Delete collection and contents', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection and all of its items?' }, :class => 'button-red'
+      - else
+        = button_to 'Delete collection', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection?' }, :class => 'button-red'
+
+    - if can? :update, Collection
       = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button right'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}

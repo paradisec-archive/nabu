@@ -292,14 +292,16 @@
     = render :partial => 'comments/new', :locals => { :item => @item }
     = render :partial => 'comments/comments', :locals => {:comments => @item.comments.approved}
 
-  - if can? :update, @item
     .right
-      -if @item.essences.any?
-        %p.delete-warning
-          %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
-        = button_to 'Delete item and contents', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item and all of its content files?' }
-      -else
-        = button_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item?' }
-      = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button right', style: 'margin-left: 0.4rem;'
+      - if can? :destroy, @item
+        - if @item.essences.any?
+          %p.delete-warning
+            %strong This item contains content files. If you choose to delete it, they will be deleted too and this action can not be undone!
+          = button_to 'Delete item and contents', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item and all of its content files?' }, :class => 'button-red'
+        - else
+          = button_to 'Delete item', collection_item_path(@collection, @item), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this item?' }, :class => 'button-red'
+
+      - if can? :update, @item
+        = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button right', style: 'margin-left: 0.4rem;'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}

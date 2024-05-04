@@ -34,37 +34,3 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 CMD ["./bin/rails", "server"]
-
-
-# RUN cd /tmp \
-# && curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-# && unzip -q awscliv2.zip \
-# && ./aws/install \
-# && rm -rf /tmp/awscliv2.zip /tmp/aws \
-# && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
-# && dpkg -i session-manager-plugin.deb
-# Stuff we might need
-# net-tools \
-# ruby-kgio \
-# git-core \
-# curl \
-# zlib1g-dev \
-# build-essential \
-# libssl-dev \
-# libreadline-dev \
-# libsqlite3-dev \
-# sqlite3 \
-# libxml2-dev \
-# libxslt1-dev \
-# software-properties-common \
-# libffi-dev \
-# nodejs \
-# openjdk-17-jre \
-# wget \
-# npm
-
-
-# Chrome for headless testing
-# RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-# RUN apt-get -y install ./google-chrome-stable_current_amd64.deb
-

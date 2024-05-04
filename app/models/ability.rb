@@ -54,9 +54,9 @@ class Ability
     # Only collection_admins can manage a collection
     can :read,   Collection, items: { item_users: { user_id: user.id } }
     can :read,   Collection, items: { item_admins: { user_id: user.id } }
-    can :manage, Collection, collection_admins: { user_id: user.id }
-    can :update, Collection, operator_id: user.id
-    can :update, Collection, collector_id: user.id
+    can %i[read update], Collection, collection_admins: { user_id: user.id }
+    can %i[read update], Collection, operator_id: user.id
+    can %i[read update], Collection, collector_id: user.id
 
     # Only admins can create a collection
     cannot :create, Collection

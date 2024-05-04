@@ -83,4 +83,9 @@ Rails.application.configure do
   # Show emails in the browser
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
+
+  config.web_console.permissions = ['192.168.88.150', '172.18.0.3']
+
+  # NOTE: Not sure why we need this and the magic isn't happening by itself
+  config.assets.digest = false
 end

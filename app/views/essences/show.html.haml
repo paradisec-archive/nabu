@@ -95,8 +95,8 @@
           To request access, contact
           =link_to 'admin@paradisec.org.au', 'mailto:admin@paradisec.org.au'
 
-  - if admin_user_signed_in?
+  - if can? :destroy, @essence
     .right
-      = button_to 'Delete essence', collection_item_essence_path(@collection, @item, @essence), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this file and its metadata from the archive (no undo possible)?' }
+      = button_to 'Delete essence', collection_item_essence_path(@collection, @item, @essence), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this file and its metadata from the archive (no undo possible)?' }, :class => 'button-red'
 
 = render partial: 'terms/licence_footer', locals: {all_work: false}

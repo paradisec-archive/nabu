@@ -3,6 +3,6 @@
 
 require 'dotenv/tasks'
 
-require_relative "config/application"
+require_relative 'config/application'
 
 Rails.application.load_tasks
