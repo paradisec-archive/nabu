@@ -10,7 +10,7 @@
 .clear
 
 - if params.to_unsafe_h.size > 2
-  %p== #{@search.total_count rescue @search.total} search results
+  %p== #{@search.total_count} search results (#{@search.took} ms)
 
   = render partial: 'search_results', locals: {show_exclusions: true}
 
@@ -25,7 +25,7 @@
 
 %a.drawer-toggle.drawer-qb{href:'#', class: params[:clause].present? ? '' : 'hidden'} Switch to Classic mode
 .drawer.drawer-qb{class: params[:clause].present? ? '' : 'closed'}
-  = render partial: 'items/query_builder'
+  -# = render partial: 'items/query_builder'
 
 
 %a.drawer-toggle.drawer-as{href:'#', class: params[:clause].present? ? 'hidden' : ''} Switch to Builder mode

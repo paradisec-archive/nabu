@@ -169,103 +169,114 @@ class Collection < ApplicationRecord
     end
   end
 
+  searchkick geo_shape: [:bounds], word_start: [:identifier]
+
   def self.sortable_columns
     %w[identifier title collector_sortname university_name created_at sort_language sort_country]
   end
 
-  searchable(
-    include: [
-      :university, :collector, :operator, :field_of_research, :languages, :countries, :admins,
-      { items: %i[admins users] }
+  def self.search_includes
+    %i[collector countries languages university]
+  end
+
+  def self.search_user_fields
+    %i[admin_ids item_admin_ids item_user_ids]
+  end
+
+  def self.search_agg_fields
+    %i[languages countries collector_name]
+  end
+
+  def self.search_text_fields
+    %i[identifier title description access_narrative region metadata_source orthographic_notes media comments tape_location]
+  end
+
+  def self.search_filter_fields
+    %i[
+      complete private created_at updated_at deposit_form_received
+      collector_id operator_id university_id country_ids language_ids admin_ids access_condition_id field_of_research_id funding_id
+      title_blank description_blank access_narative_blank region_blank metadata_source_blank orthographic_notes_blank
+      media_blank comments_blank tape_location_blank grant_identifier_blank
+      created_at_blank updated_at_blank
     ]
-  ) do
-    # Things we want to perform full text search on
-    text :title
-    text :identifier, as: :identifier_textp
-    text :identifier2 do
-      identifier
-    end
-    text :university_name
-    text :collector_name
-    text :region
-    text :description
-    text :operator_name
-    text :field_of_research do
-      field_of_research_name
-    end
-    text :languages do
-      languages.map(&:name)
-    end
-    text :countries do
-      countries.map(&:name)
-    end
-    text :access_narrative
-    text :metadata_source
-    text :orthographic_notes
-    text :media
-    text :comments
-    text :tape_location
+  end
 
-    # Link models for faceting or dropdowns
-    integer :language_ids, references: Language, multiple: true
-    integer :collector_id, references: User
-    integer :operator_id, references: User
-    integer :country_ids, references: Country, multiple: true
-    integer :university_id, references: University
-    integer :field_of_research_id, references: FieldOfResearch
-    # integer :funding_body_ids, references: FundingBody, multiple: true
-    integer :admin_ids, references: User, multiple: true
-    integer :access_condition_id, references: AccessCondition
+  scope :search_import, lambda {
+                          includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, items: %i[admins users])
+                        }
 
-    # Things we want to sort or use :with on
-    integer :id
-    integer :item_admin_ids, references: User, multiple: true do
-      items.flat_map(&:admin_ids).uniq
+  def search_data
+    data = {
+      # Extra things for basic full text search
+      university_name:,
+      collector_name:,
+      operator_name:,
+      field_of_research: field_of_research_name,
+      languages: languages.map(&:name),
+      countries: countries.map(&:name),
+
+      # Full text plus advanced search
+      identifier:,
+      title:,
+      description:,
+      access_narrative:,
+      region:,
+      metadata_source:,
+      orthographic_notes:,
+      media:,
+      comments:,
+      tape_location:,
+
+      complete:,
+      private:,
+
+      # Link models for dropdowns and aggs
+      collector_id:,
+      operator_id:,
+      university_id:,
+      country_ids: countries.map(&:id),
+      language_ids: languages.map(&:id),
+      admin_ids: admins.map(&:id),
+      item_admin_ids: items.flat_map(&:admin_ids).uniq,
+      item_user_ids: items.flat_map(&:user_ids).uniq,
+      access_condition_id:,
+      field_of_research_id:,
+      funding_body_ids: grants.map(&:funding_body_id),
+      deposit_form_received:,
+
+      created_at: created_at.to_date,
+      updated_at: updated_at.to_date
+    }
+
+    if north_limit
+      # TODO: SHould this be allowed in the data?
+      data[:bounds] = if north_limit == south_limit && east_limit == west_limit
+                        { type: 'point', coordinates: [west_limit, north_limit] }
+                      else
+                        {
+                          type: 'polygon',
+                          coordinates: [[
+                            [west_limit, north_limit],
+                            [east_limit, north_limit],
+                            [east_limit, south_limit],
+                            [west_limit, south_limit],
+                            [west_limit, north_limit]
+                          ]]
+                        }
+                      end
     end
-    integer :item_user_ids, references: User, multiple: true do
-      items.flat_map(&:user_ids).uniq
-    end
-    string :title
-    string :identifier
-    string :university_name
-    string :collector_name
-    string :collector_sortname
-    string :region
-    string :languages, multiple: true do
-      languages.map(&:name)
-    end
-    string :language_codes, multiple: true do
-      languages.map(&:code)
-    end
-    string :countries, multiple: true do
-      countries.map(&:name)
-    end
-    string :country_codes, multiple: true do
-      countries.map(&:code)
-    end
-    string :sort_language do
-      languages.order('name ASC').map(&:name).join(',')
-    end
-    string :sort_country do
-      countries.order('name ASC').map(&:name).join(',')
-    end
-    float :north_limit
-    float :south_limit
-    float :west_limit
-    float :east_limit
-    boolean :complete
-    boolean :private
-    boolean :deposit_form_received
-    time :created_at
-    time :updated_at
 
     # Things we want to check blankness of
-    blank_fields = %i[title description region access_narrative metadata_source orthographic_notes media created_at updated_at comments tape_location]
-    blank_fields.each do |f|
-      boolean :"#{f}_blank" do
-        public_send(f).blank?
-      end
+    blank_fields = %i[
+      title description
+      access_narrative region metadata_source orthographic_notes media comments tape_location
+      created_at updated_at
+    ]
+    blank_fields.each do |field|
+      data["#{field}_blank"] = public_send(field).blank?
     end
+
+    data
   end
 
   def to_param

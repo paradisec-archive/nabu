@@ -4,9 +4,8 @@
   = link_to 'Basic Search', search_collections_path
 .clear
 
-
 - if params.to_unsafe_h.size > 2
-  %p== #{@search.total} search results
+  %p== #{@search.total_count} search results (#{@search.took} ms)
 
   = render 'collections/search_results'
 
@@ -198,14 +197,6 @@
           %th= label_tag :funding_body_id, 'Funding body'
           %td= select_tag :funding_body_id, options_from_collection_for_select(FundingBody.alpha, :id, :name, params[:funding_body_id]), :include_blank => true, :data => {:placeholder => 'Choose a funding body...'}, :class => 'select2'
 
-        %tr
-          %th Grant identifier:
-          %td
-            = text_field_tag :grant_identifier, params[:grant_identifier]
-            %br
-            Blank
-            = check_box_tag :grant_identifier_blank, 1, params[:grant_identifier_blank]
-
     = submit_tag 'Search', :name => nil
     = link_to 'Clear', advanced_search_collections_path, class: "button"
 
@@ -214,4 +205,4 @@
   %p
     = link_to 'Export CSV (visible results)', advanced_search_collections_path(:format => :csv, :params => params.permit!) if can? :search_csv, Collection
   %p
-    = link_to 'Export CSV (all results)', advanced_search_collections_path(:format => :csv, :params => params.permit!.merge(:per_page => @search.total, :page => 1)) if can? :search_csv, Collection
+    = link_to 'Export CSV (all results)', advanced_search_collections_path(:format => :csv, :params => params.permit!.merge(:per_page => @search.total_count, :page => 1)) if can? :search_csv, Collection

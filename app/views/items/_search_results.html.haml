@@ -41,9 +41,9 @@
           %td
             %label{style: 'width: 100%; display: block; text-align:center'}= check_box_tag('exclude[]', item.id, false, id: "exclude_#{item.id}")
 
--if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
-  = render partial: 'items/pagination', locals: {results: @search}
--else
+- if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
+  = paginate @search
+- else
   %p.bold There were NO results for your search.
 
 %div

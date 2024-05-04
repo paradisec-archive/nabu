@@ -1,5 +1,5 @@
 
-= paginate @search.hits
+= paginate @search
 
 %table.table
   %tr
@@ -12,7 +12,7 @@
     = sortable :university_name, 'Source university'
     %th Actions
 
-    - @search.each_hit_with_result do |hit, collection|
+    - @search.each do |collection|
       %tr
         %td= collection.identifier
         %td= collection.title
@@ -30,11 +30,11 @@
           = link_to 'View', collection if can? :read, collection
           = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
 
--if @search.results.empty?
+-if @search.empty?
   %p.bold There were NO results for your search.
 
-= paginate @search.hits
+= paginate @search
 
 %p
-  - ['10', '50', '100', "all #{@search.total}"].each do |n|
+  - ['10', '50', '100', "all #{@search.total_count}"].each do |n|
     = link_to "Show #{n}", @params.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : @params[:page]), class: 'button'

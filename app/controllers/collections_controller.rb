@@ -3,14 +3,19 @@ require 'nabu/nabu_spreadsheet'
 
 # rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 class CollectionsController < ApplicationController
-  include HasReturnToLastSearch
-
   before_action :tidy_params, only: %i[create update bulk_update]
   load_and_authorize_resource find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit]
   authorize_resource only: %i[advanced_search bulk_update bulk_edit]
 
+  include HasReturnToLastSearch
+  include HasSearch
+  self.search_model = Collection
+
   def index
     @collections = Collection.where(private: false)
+
+    description = 'PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures)'
+    description << ' curates digital material about small or endangered languages.'
 
     respond_to do |format|
       format.geo_json do
@@ -19,7 +24,7 @@ class CollectionsController < ApplicationController
           metadata: {
             id: 'PARADISEC',
             name: 'PARADISEC Collections',
-            description: 'PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.',
+            description:,
             url: 'https://catalog.paradisec.org.au',
             public: true,
             publisher: 'Pacific and Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)',
@@ -139,38 +144,9 @@ class CollectionsController < ApplicationController
   end
 
   def search
-    params.delete(:per_page) if params[:per_page] == '0'
-
     @page_title = 'Nabu - Collections'
     @params = search_params
-
-    @search = Collection.solr_search(include: %i[collector countries languages university]) do
-      fulltext params[:search]
-      facet :language_ids, :country_ids
-      facet :collector_id, limit: 100
-
-      with(:language_codes, params[:language_code]) if params[:language_code].present?
-      with(:country_codes, params[:country_code]) if params[:country_code].present?
-      with(:collector_id, params[:collector_id]) if params[:collector_id].present?
-
-      unless current_user&.admin?
-        any_of do
-          with(:private, false)
-          with(:admin_ids, current_user.id) if current_user
-          with(:item_admin_ids, current_user.id) if current_user
-          with(:item_user_ids, current_user.id) if current_user
-        end
-      end
-      sort_column(Collection).each do |c|
-        order_by c, sort_direction
-      end
-      paginate page: params[:page], per_page: params[:per_page]
-    end
-
-    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
-      redirect_to search_collections_path(search_params.merge(page: 1))
-      return
-    end
+    @search = build_basic_search
 
     respond_to do |format|
       format.html
@@ -185,11 +161,8 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search
-    params.delete(:per_page) if params[:per_page] == '0'
-
     @page_title = 'Nabu - Advanced Search Collections'
     @params = advanced_search_params
-
     @search = build_advanced_search
 
     respond_to do |format|
@@ -354,86 +327,6 @@ class CollectionsController < ApplicationController
     end
 
     params[:collection][:collector_id] = create_contact(params[:collection][:collector_id]) if params[:collection][:collector_id] =~ /^NEWCONTACT:/
-  end
-
-  def build_advanced_search
-    Collection.solr_search(include: %i[collector countries languages university]) do
-      # Full text search
-      Sunspot::Setup.for(Collection).all_text_fields.each do |field|
-        next if params[field.name].blank?
-
-        keywords params[field.name], fields: [field.name]
-      end
-
-      # Exact search
-      Sunspot::Setup.for(Collection).fields.each do |field|
-        next if params[field.name].blank?
-
-        case field.type
-        when Sunspot::Type::IntegerType
-          with field.name, params[field.name]
-        when Sunspot::Type::BooleanType
-          with field.name, params[field.name] =~ /^true|1$/ ? true : false
-        when Sunspot::Type::TimeType
-          with(field.name).between(Time.parse(params[field.name]).beginning_of_day)..(Time.parse(params[field.name]).end_of_day)
-        else
-          logger.warn "WARNING can't search: #{field.type} #{field.name}"
-        end
-      end
-
-      # GEO Is special
-      if params[:north_limit]
-        all_of do
-          with(:north_limit).less_than    params[:north_limit]
-          with(:north_limit).greater_than params[:south_limit]
-
-          with(:south_limit).less_than    params[:north_limit]
-          with(:south_limit).greater_than params[:south_limit]
-
-          if params[:west_limit] <= params[:east_limit]
-            with(:west_limit).greater_than params[:west_limit]
-            with(:west_limit).less_than    params[:east_limit]
-
-            with(:east_limit).greater_than params[:west_limit]
-            with(:east_limit).less_than    params[:east_limit]
-          else
-            any_of do
-              all_of do
-                with(:west_limit).greater_than params[:west_limit]
-                with(:west_limit).less_than    180
-              end
-              all_of do
-                with(:west_limit).less_than    params[:east_limit]
-                with(:west_limit).greater_than(-180)
-              end
-            end
-            any_of do
-              all_of do
-                with(:east_limit).greater_than params[:west_limit]
-                with(:east_limit).less_than    180
-              end
-              all_of do
-                with(:east_limit).less_than    params[:east_limit]
-                with(:east_limit).greater_than(-180)
-              end
-            end
-          end
-        end
-      end
-
-      unless current_user&.admin?
-        any_of do
-          with(:private, false)
-          with(:admin_ids, current_user.id) if current_user
-        end
-      end
-
-      sort_column(Collection).each do |c|
-        order_by c, sort_direction
-      end
-
-      paginate page: params[:page], per_page: params[:per_page]
-    end
   end
 
   def search_params

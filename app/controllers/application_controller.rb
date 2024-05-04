@@ -5,30 +5,30 @@ class ApplicationController < ActionController::Base
   before_action :validate_per_page_param
 
   private
+
   def validate_per_page_param
     fields = %i[per_page items_page page files_per_page]
-    fields.each do |param|
-      next if params[param].blank?
+    fields.each do |name|
+      next unless params[name]
 
-      value = params[param]
-      unless value.is_a?(Integer) || (value.is_a?(String) && value.match?(/\A\d+\z/))
-        params.delete(param)
-      end
+      params[name] = params[name].to_i
+      params[name] = 1000 if params[name] && params[name] > 1000
+
+      params.delete(param) if params[name].zero?
     end
   end
 
   rescue_from CanCan::AccessDenied do |exception|
     # If it's a JSON request, give a 40x rather than redirecting them
-    case
-    when request.format.symbol == :json && current_user
-      render nothing: true, :status => 403
-    when request.format.symbol == :json
-      render nothing: true, :status => 401
-    when current_user
-      redirect_to root_url, :alert => exception.message
+    if request.format.symbol == :json && current_user
+      render nothing: true, status: :forbidden
+    elsif request.format.symbol == :json
+      render nothing: true, status: :unauthorized
+    elsif current_user
+      redirect_to root_url, alert: exception.message
     else
-      session["user_return_to"] = request.fullpath
-      redirect_to new_user_session_path, :alert => exception.message
+      session['user_return_to'] = request.fullpath
+      redirect_to new_user_session_path, alert: exception.message
     end
   end
 
@@ -40,16 +40,8 @@ class ApplicationController < ActionController::Base
     Sentry.set_user(id: current_user.id, email: current_user.email) if current_user
   end
 
-  def sort_column(model)
-    model.sortable_columns.include?(params[:sort]) ? [params[:sort]] : model.sortable_columns[0, 2]
-  end
-
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
-  end
-
   def authenticate_admin_user!
-    redirect_to new_user_session_path unless current_user && current_user.admin?
+    redirect_to new_user_session_path unless current_user&.admin?
   end
 
   def current_admin_user
@@ -66,22 +58,22 @@ class ApplicationController < ActionController::Base
 
     last_space = name.rindex(' ')
     if last_space
-      first_name = name[0..last_space-1]
-      last_name = name[last_space+1..-1]
+      first_name = name[0..last_space - 1]
+      last_name = name[last_space + 1..]
     else
       first_name = name
     end
 
-    contact = User.where(:first_name => first_name, :last_name => last_name).first
+    contact = User.where(first_name:, last_name:).first
     if contact.nil?
       random_string = SecureRandom.base64(16)
       contact = User.create!({
-        :first_name => first_name,
-        :last_name => last_name,
-        :password => random_string,
-        :password_confirmation => random_string,
-        :contact_only => true
-      })
+                               first_name:,
+                               last_name:,
+                               password: random_string,
+                               password_confirmation: random_string,
+                               contact_only: true
+                             })
     end
     contact.id
   end

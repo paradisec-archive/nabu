@@ -15,6 +15,10 @@ Do we need dotenv rails?
 * Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
 * Remove old ids3 and bwf xml creation
 
+## Search
+* Explore searchjoy
+* https://github.com/ankane/searchkick?tab=readme-ov-file#partial-matches
+
 ## API
 We are using Doorkeeper to provide oauth tokens
 These are for API access not to act on behalf of users

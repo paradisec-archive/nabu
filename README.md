@@ -65,7 +65,7 @@ If necessary:
 
 ``` bash
 bin/aws/ecs_rake deploy:migrate
-bin/aws/ecs_rake sunspot:reindex
+bin/aws/ecs_rake searchkick:reindex
 ```
 
 ## Importing a production database into your development environment
@@ -73,7 +73,7 @@ bin/aws/ecs_rake sunspot:reindex
 ``` bash
 bin/aws/ecs_shell app -c 'mysqldump -u nabu -h "$NABU_DATABASE_HOSTNAME" --password "$NABU_DATABASE_PASSWORD" nabu | bzip2 | base64 > /tmp/nabu.sql.bz2'
 bzip2 -dc ../nabu.sql.bz2 | mysql -h 127.0.0.1 -u root nabu_devel
-nabu_run bundle exec rake sunspot:reindex
+nabu_run bundle exec rake searchkick:reindex
 ```
 
 ## Production Tasks

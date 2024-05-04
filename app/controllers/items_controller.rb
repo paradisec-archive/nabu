@@ -1,7 +1,4 @@
 class ItemsController < ApplicationController
-  include HasReturnToLastSearch
-  include ItemQueryBuilder
-
   before_action :find_item, only: :show
   load_and_authorize_resource :collection, find_by: :identifier,
                                            except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
@@ -9,9 +6,11 @@ class ItemsController < ApplicationController
                                      except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
   authorize_resource only: %i[advanced_search bulk_update bulk_edit new_report send_report report_sent]
 
-  def show
-    params.delete(:files_per_page) if params[:files_per_page] == '0'
+  include HasReturnToLastSearch
+  include HasSearch
+  self.search_model = Item
 
+  def show
     @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
@@ -43,10 +42,7 @@ class ItemsController < ApplicationController
 
     attributes.delete('id')
 
-    associations = %i[
-      country_ids subject_language_ids content_language_ids
-      admin_ids user_ids data_category_ids data_type_ids
-    ]
+    associations = %i[country_ids subject_language_ids content_language_ids admin_ids user_ids data_category_ids data_type_ids]
     associations.each do |association|
       attributes[association] = existing.public_send(association)
     end
@@ -80,8 +76,6 @@ class ItemsController < ApplicationController
       redirect_to [@collection, @item]
       return
     end
-
-    params.delete(:files_per_page) if params[:files_per_page] == '0'
 
     @num_files = @item.essences.length
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
@@ -128,22 +122,11 @@ class ItemsController < ApplicationController
   def search
     return if try_full_identifier_redirect
 
-    params.delete(:per_page) if params[:per_page] == '0'
-    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
-
-    search_params = params[:export_all] ? basic_search_params.merge(per_page: 50_000, start_page: 1) : basic_search_params
-    @search = ItemSearchService.build_solr_search(search_params, current_user)
-
-    @result_ids = @search.hits.map(&:result).map(&:full_identifier) if params[:search]
-
-    if params[:page].to_i > 1 && params[:page].to_i > @search.results.total_pages
-      redirect_to search_items_path(search_params.merge(page: 1))
-
-      return
-    end
-
     @page_title = 'Nabu - Item Search'
-    @params = search_params
+    @params = basic_search_params
+    @search = build_basic_search
+
+    @result_ids = @search.map(&:full_identifier) if params[:search]
 
     respond_to do |format|
       format.html
@@ -156,15 +139,22 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
-    params.delete(:per_page) if params[:per_page] == '0'
-    params[:per_page] = '1000' if params[:per_page] && params[:per_page].to_i > 1000
-
     search_params = params[:export_all] ? advanced_search_params.merge(per_page: 50_000, start_page: 1) : advanced_search_params
 
     @page_title = 'Nabu - Advanced Item Search'
     @params = search_params
 
     build_advanced_search
+
+    # TODO: Ditch new builder??
+    @search = if params[:clause].present?
+                build_query(params)
+              else
+                build_advanced_search
+              end
+
+    @result_ids = @search.map(&:full_identifier)
+
     respond_to do |format|
       format.html
       if can? :search_csv, Item
@@ -398,21 +388,6 @@ class ItemsController < ApplicationController
 
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
     redirect_back fallback_location: root_path
-  end
-
-  def build_advanced_search
-    @types_for_fields = ItemQueryBuilder::TYPES_FOR_FIELDS
-    @fields = @types_for_fields.keys.map(&:to_s).sort
-
-    if params[:clause].present?
-      @search = build_query(params)
-      @items = @search
-    else
-      @search = ItemSearchService.build_advanced_search(@params, current_user)
-      @items = @search.hits.map(&:result)
-    end
-
-    @result_ids = @items.map(&:full_identifier)
   end
 
   def build_deletable_params(item, items)

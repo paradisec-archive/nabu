@@ -249,7 +249,7 @@ GEM
     has_scope (0.8.2)
       actionpack (>= 5.2)
       activesupport (>= 5.2)
-    highline (2.1.0)
+    hashie (5.0.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     importmap-rails (1.2.3)
@@ -338,7 +338,9 @@ GEM
       builder (>= 3.1.0)
       faraday (< 3)
       faraday-follow_redirects (>= 0.3.0, < 2)
-    options (2.3.2)
+    opensearch-ruby (3.2.0)
+      faraday (>= 1.0, < 3)
+      multi_json (>= 1.0)
     orm_adapter (0.5.0)
     paper_trail (15.1.0)
       activerecord (>= 6.1)
@@ -348,10 +350,6 @@ GEM
       ast (~> 2.4.1)
       racc
     pkg-config (1.5.6)
-    pr_geohash (1.0.0)
-    progress_bar (1.3.3)
-      highline (>= 1.6, < 3)
-      options (~> 2.3.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -436,9 +434,6 @@ GEM
       nokogiri
       roo (>= 2.0.0, < 3)
       spreadsheet (> 0.9.0)
-    rsolr (2.5.0)
-      builder (>= 2.1.2)
-      faraday (>= 0.9, < 3, != 2.0.0)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -505,6 +500,9 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    searchkick (5.3.1)
+      activemodel (>= 6.1)
+      hashie
     selenium-webdriver (4.16.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -534,6 +532,9 @@ GEM
       thor (~> 1.0)
       tilt (~> 2.0)
       yard (~> 0.9, >= 0.9.24)
+    sorbet (0.5.11361)
+      sorbet-static (= 0.5.11361)
+    sorbet-static (0.5.11361-x86_64-linux)
     spreadsheet (1.3.0)
       ruby-ole
     sprockets (4.2.1)
@@ -548,12 +549,6 @@ GEM
     streamio-ffmpeg (3.0.2)
       multi_json (~> 1.8)
     stringio (3.1.0)
-    sunspot (2.6.0)
-      pr_geohash (~> 1.0)
-      rsolr (>= 1.1.1, < 3)
-    sunspot_rails (2.6.0)
-      rails (>= 3)
-      sunspot (= 2.6.0)
     temple (0.10.3)
     thor (1.3.0)
     tilt (2.3.0)
@@ -621,8 +616,8 @@ DEPENDENCIES
   mysql2 (~> 0.5)
   nilify_blanks
   oai
+  opensearch-ruby
   paper_trail
-  progress_bar
   puma (>= 5.0)
   rails (~> 7.1.0)
   rails-controller-testing
@@ -640,15 +635,16 @@ DEPENDENCIES
   rubyzip
   rufus-scheduler
   sassc-rails
+  searchkick
   selenium-webdriver
   sentry-delayed_job
   sentry-rails
   sentry-ruby
   solargraph
+  sorbet
   sprockets-rails
   stimulus-rails
   streamio-ffmpeg
-  sunspot_rails
   traceroute
   turbo-rails
   tzinfo-data

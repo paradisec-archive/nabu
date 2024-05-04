@@ -260,140 +260,150 @@ class Item < ApplicationRecord
     %w[full_identifier title collector_sortname updated_at language sort_country essences_count]
   end
 
-  searchable do
-    # Things we want to perform full text search on
-    text :title
-    text :identifier, as: :identifier_textp
-    text :full_identifier, as: :full_identifier_textp
-    text :collector_name
-    text :university_name
-    text :operator_name
-    text :description
-    text :language
-    text :dialect
-    text :region
-    text :discourse_type_name
-    text :access_narrative
-    text :ingest_notes
-    text :tracking
-    text :original_media
-    text :content_languages do
-      content_languages.map(&:name)
-    end
-    text :subject_languages do
-      subject_languages.map(&:name)
-    end
-    text :countries do
-      countries.map(&:name)
-    end
-    text :data_categories do
-      data_categories.map(&:name)
-    end
-    text :data_types do
-      data_types.map(&:name)
-    end
-    text :filename do
-      essences.map(&:filename)
-    end
-    text :mimetype do
-      essences.map(&:mimetype)
-    end
-    text :fps do
-      essences.map(&:fps)
-    end
-    text :samplerate do
-      essences.map(&:samplerate)
-    end
-    text :channels do
-      essences.map(&:channels)
-    end
+  searchkick geo_shape: [:bounds], word_start: %i[identifier full_identifier collection_identifier]
 
-    # Link models for faceting or dropdowns
-    integer :content_language_ids, references: Language, multiple: true
-    integer :collector_id, references: User
-    integer :collection_id, references: Collection
-    integer :operator_id, references: User
-    integer :country_ids, references: Country, multiple: true
-    integer :university_id, references: University
-    integer :subject_language_ids, references: Language, multiple: true
-    integer :data_category_ids, references: DataCategory, multiple: true
-    integer :data_type_ids, references: DataType, multiple: true
-    integer :discourse_type_id, references: DiscourseType
-    integer :access_condition_id, references: AccessCondition
-    integer :agent_ids, references: User, multiple: true
-    integer :admin_ids, references: User, multiple: true
-    integer :user_ids, references: User, multiple: true
+  def self.search_includes
+    includes = %i[
+      collection collector countries collector operator essences university content_languages
+      data_categories data_types discourse_type access_condition subject_languages
+    ]
+    includes << { item_agents: %i[user agent_role] }
 
-    # Things we want to sort or use :with on
-    integer :id
-    string :title
-    string :identifier
-    string :full_identifier, stored: true
-    string :university_name
-    string :collector_name
-    string :collector_sortname
-    string :region
-    string :language
-    string :identifier
-    string :collection_identifier do
-      collection.identifier
+    includes
+  end
+
+  def self.search_user_fields
+    %i[admin_ids user_ids]
+  end
+
+  def self.search_agg_fields
+    %i[content_languages countries collector_name]
+  end
+
+  def self.search_text_fields
+    %i[
+      full_identifier
+      title description
+      originated_on originated_on_narrative url language dialect region received_on digitised_on metadata_imported_on metadata_exported_on ingest_notes tracking
+      filename original_media access_narrative admin_comment
+    ]
+  end
+
+  def self.search_filter_fields
+    %i[
+      private external no_files
+      title_blank description_blank
+      originated_on_blank originated_on_narrative_blank url_blank language_blank dialect_blank region_blank original_media_blank admin_comment_blank
+      received_on_blank digitised_on_blank metadata_imported_on_blank metadata_exported_on_blank ingest_notes_blank tracking_blank access_narrative_blank
+      collector_id country_ids subject_language_ids content_language_ids operator_id university_id data_category_ids data_type_ids discourse_type_id agent_id
+      admin_ids user_ids access_condition_id
+      mimetype framesPerSecond samplerate channels
+      metadata_exportable born_digital tapes_returned
+      created_at_blank updated_at_blank
+      created_at updated_at
+    ]
+  end
+
+  scope :search_import,
+        lambda {
+          # includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, items: %i[admins users])
+          includes(:users, :content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
+                   :essences, :collection, :collector, :operator,
+                   :item_admins, :item_agents, :item_users)
+        }
+
+  def search_data
+    data = {
+      # Full text plus advanced search
+      id:,
+      identifier:,
+      collection_identifier: collection.identifier,
+      full_identifier:,
+      title:,
+      description:,
+      region:,
+      dialect:,
+      language:,
+      discourse_type_name:,
+      access_narrative:,
+      ingest_notes:,
+      tracking:,
+      original_media:,
+
+      # Extra things for basic full text search
+      collector_name:,
+      university_name:,
+      operator_name:,
+      content_languages: content_languages.map(&:name),
+      content_languages_code: content_languages.map(&:code),
+      subject_languages: subject_languages.map(&:name),
+      countries: countries.map(&:name),
+      country_codes: countries.map(&:code),
+      data_categories: data_categories.map(&:name),
+      data_types: data_types.map(&:name),
+      filename: essences.map(&:filename),
+      mimetype: essences.map(&:mimetype),
+
+      external:,
+      private:,
+
+      # Link models for dropdowns and aggs
+      content_language_ids: content_languages.map(&:id),
+      data_category_ids: data_categories.map(&:id),
+      data_type_ids: data_types.map(&:id),
+      subject_language_ids: subject_languages.map(&:id),
+      collection_id:,
+      collector_id:,
+      operator_id:,
+      country_ids: countries.map(&:id),
+      university_id:,
+      access_condition_id:,
+      discourse_type_id:,
+      admin_ids: item_admins.map(&:user_id),
+      agent_ids: item_agents.map(&:user_id),
+      user_ids: item_users.map(&:user_id),
+      originated_on:,
+      metadata_exportable:,
+      born_digital:,
+      tapes_returned:,
+
+      received_on: received_on&.to_date,
+      digitised_on: digitised_on&.to_date,
+      metadata_imported_on: metadata_imported_on&.to_date,
+      metadata_exported_on: metadata_exported_on&.to_date,
+
+      created_at: created_at.to_date,
+      updated_at: updated_at.to_date
+    }
+
+    if north_limit
+      # TODO: Should this be allowed in the data?
+      data[:bounds] = if north_limit == south_limit && east_limit == west_limit
+                        { type: 'point', coordinates: [west_limit, north_limit] }
+                      else
+                        {
+                          type: 'polygon',
+                          coordinates: [[
+                            [west_limit, north_limit],
+                            [east_limit, north_limit],
+                            [east_limit, south_limit],
+                            [west_limit, south_limit],
+                            [west_limit, north_limit]
+                          ]]
+                        }
+                      end
     end
-    boolean :private
-    boolean :external
-    date :originated_on
-    float :north_limit
-    float :south_limit
-    float :west_limit
-    float :east_limit
-    boolean :metadata_exportable
-    boolean :born_digital
-    boolean :tapes_returned
-    time :received_on
-    time :digitised_on
-    time :metadata_imported_on
-    time :metadata_exported_on
-    time :created_at
-    time :updated_at
-    string :content_languages, multiple: true do
-      content_languages.map(&:name)
-    end
-    string :content_language_codes, multiple: true do
-      content_languages.map(&:code)
-    end
-    string :subject_languages, multiple: true do
-      subject_languages.map(&:name)
-    end
-    string :countries, multiple: true do
-      countries.map(&:name)
-    end
-    string :country_codes, multiple: true do
-      countries.map(&:code)
-    end
-    string :sort_country do
-      countries.order('name ASC').map(&:name).join(',')
-    end
-    string :data_categories, multiple: true do
-      data_categories.map(&:name)
-    end
-    string :data_types, multiple: true do
-      data_types.map(&:name)
-    end
-    string :filename, multiple: true do
-      essences.map(&:filename)
-    end
-    string :mimetype, multiple: true do
-      essences.map(&:mimetype)
-    end
-    integer :essences_count
 
     # Things we want to check blankness of
-    blank_fields = %i[title description originated_on originated_on_narrative url language dialect region original_media received_on
-                      digitised_on ingest_notes metadata_imported_on metadata_exported_on tracking access_narrative admin_comment]
-    blank_fields.each do |f|
-      boolean :"#{f}_blank" do
-        public_send(f).blank?
-      end
+    blank_fields = %i[
+      title description originated_on originated_on_narrative url language dialect region original_media received_on
+      digitised_on ingest_notes metadata_imported_on metadata_exported_on tracking access_narrative admin_comment
+    ]
+    blank_fields.each do |field|
+      data["#{field}_blank"] = public_send(field).blank?
     end
+
+    data
   end
 
   def next_item

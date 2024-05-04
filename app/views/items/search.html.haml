@@ -15,7 +15,7 @@
 
     .clear
 
-    %p== #{@search.total} search results
+    %p== #{@search.total_count} search results (#{@search.took} ms)
 
   #facets
     %table
@@ -25,37 +25,34 @@
             %legend Content Languages
             .fix-scroll-height
               %table
-                - @search.facet(:content_language_ids).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
-                  - language = row.instance
-                  - params_with_facet = @params.merge(:language_code => language.code)
+                - @search.aggs['content_languages']['buckets'].sort_by {|bucket| bucket['key'] }.each do |bucket|
+                  - params_with_agg = @params.merge(:content_languages => bucket['key'])
                   %tr
                     %td
-                      = link_to language.name, params_with_facet
-                      == (#{row.count})
+                      = link_to bucket['key'], params_with_agg
+                      == (#{bucket['doc_count']})
         %td
           %fieldset
             %legend Countries
             .fix-scroll-height
               %table
-                - @search.facet(:country_ids).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.name <=> b.instance.name }.each do |row|
-                  - country = row.instance
-                  - params_with_facet = @params.merge(:country_code => country.code)
+                - @search.aggs['countries']['buckets'].sort_by { |bucket| bucket['key'] }.each do |bucket|
+                  - params_with_agg = @params.merge(:countries => bucket['key'])
                   %tr
                     %td
-                      = link_to country.name, params_with_facet
-                      == (#{row.count})
+                      = link_to bucket['key'], params_with_agg
+                      == (#{bucket['doc_count']})
         %td
           %fieldset
             %legend Top 100 Collectors
             .fix-scroll-height
               %table
-                - @search.facet(:collector_id).rows.reject{|r| r.instance.nil?}.sort {|a,b| a.instance.sortname <=> b.instance.sortname }.each do |row|
-                  - collector = row.instance
-                  - params_with_facet = @params.merge(:collector_id => collector.id)
+                - @search.aggs['collector_name']['buckets'].sort_by { |bucket| bucket['key'].split(' ').reverse.join(' ') }.each do |bucket|
+                  - params_with_agg = @params.merge(:collector_name => bucket['key'])
                   %tr
                     %td
-                      = link_to collector.name, params_with_facet
-                      == (#{row.count})
+                      = link_to bucket['key'], params_with_agg
+                      == (#{bucket['doc_count']})
 
   = render partial: 'items/search_results', locals: {show_exclusions: false}
 

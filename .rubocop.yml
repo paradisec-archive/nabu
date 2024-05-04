@@ -21,7 +21,13 @@ Metrics/BlockLength:
   CountAsOne: ['array', 'heredoc', 'method_call']
 
 Metrics/AbcSize:
-  Max: 30
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 16
 
 Rails/I18nLocaleTexts:
   Enabled: false

@@ -36,7 +36,7 @@ gem "stimulus-rails"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data", platforms: %i[ mswin jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -49,7 +49,7 @@ gem "sassc-rails"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-ge
-  gem "debug", platforms: %i[ mri windows ]
+  gem "debug", platforms: %i[ mri mswin ]
 end
 
 group :development do
@@ -112,8 +112,8 @@ gem "graphiql-rails" , "1.8.0" # https://github.com/rmosolgo/graphiql-rails/issu
 gem "delayed-web"
 
 # Search
-gem "sunspot_rails"
-gem "progress_bar" # progress bar for indexing
+gem "searchkick"
+gem "opensearch-ruby"
 
 # Other
 gem "roo" # Spreadsheet interface
@@ -146,6 +146,7 @@ group :development do
   gem "rubocop-graphql", :require => false
 
   gem "solargraph"
+  gem "sorbet"
 end
 
 group :test do
