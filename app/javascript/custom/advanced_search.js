@@ -2,12 +2,6 @@ $(function () {
   const existingExclusions = $('#existing_exclusions');
   const hiddenExclusions = $('.exclusions');
 
-  $('.drawer-toggle').on('click', function () {
-    $('.drawer').toggleClass('closed');
-    $('.drawer-toggle').toggleClass('hidden');
-    return false;
-  });
-
   $('[name="exclude[]"]').on('click', function () {
     let ids = [];
     $('[name="exclude[]"]:checked').each(function () {
@@ -27,7 +21,7 @@ $(function () {
   });
 
   $('#update_exclusions').on('click', function () {
-    $('.drawer:not(.closed) form').submit();
+    $('form').submit();
     return false;
   });
 });

@@ -38,7 +38,6 @@ If we give tokens to more than paragest we need to rethink this
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Should we use authenticate_users on dashboard or should cancan just do it?
-* items_query_builder - here be dragons? Is this SQL injections safe, or is it building a SOLR query? Is there a better way?
 * Should we use active job and let it use delayed_job
 * DB is all latin1 can we move to utf8mb4
 * SHoudl we add has_paper_trail to party_identifier

@@ -146,12 +146,7 @@ class ItemsController < ApplicationController
 
     build_advanced_search
 
-    # TODO: Ditch new builder??
-    @search = if params[:clause].present?
-                build_query(params)
-              else
-                build_advanced_search
-              end
+    @search = build_advanced_search
 
     @result_ids = @search.map(&:full_identifier)
 

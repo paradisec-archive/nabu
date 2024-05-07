@@ -47,15 +47,6 @@ body.bp .input-inline {
   }
 }
 
-
-.drawer {
-  overflow: hidden;
-
-  &.closed {
-    height: 0;
-  }
-}
-
 .pagination-container {
   > * {
     display: inline-block;
@@ -99,11 +90,6 @@ body.bp .input-inline {
 }
 .ui-datepicker-trigger {
   vertical-align: middle;
-}
-
-.drawer-toggle {
-  display: inline-block;
-  clear: both;
 }
 
 .codeblock {
