@@ -113,7 +113,9 @@ gem "delayed-web"
 
 # Search
 gem "searchkick"
+gem "searchjoy"
 gem "opensearch-ruby"
+gem "faraday_middleware-aws-sigv4"
 
 # Other
 gem "roo" # Spreadsheet interface

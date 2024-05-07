@@ -9,6 +9,9 @@ class CsvDownloader
 
   CSV_OPTIONS = { quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map { |f| f.to_s.titleize }, write_headers: true }.freeze
 
+  include HasSearch
+  self.search_model = Collection
+
   def initialize(search_type, params, current_user)
     @search_type = search_type
     @params = params
@@ -16,28 +19,23 @@ class CsvDownloader
     @csv_requested_time = DateTime.now
   end
 
+  attr_reader :params, :current_user
+
   def email
     generation_start = DateTime.now
-    search = if @search_type == :basic
-               ItemSearchService.build_solr_search(@params, @current_user)
-             else
-               ItemSearchService.build_advanced_search(@params, @current_user)
-             end
+    search = @search_type == :basic ? build_basic_search : build_advanced_search
 
     Rails.logger.info { "#{generation_start} Generating CSV for download" }
 
     path = Rails.root.join('tmp', "nabu_items_#{Time.zone.today}.csv").to_s
 
     CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
-      search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+      search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       # if the user requested all results, iterate over the remaining pages
       while @params[:export_all] && search.results.next_page
-        search = if @search_type == :basic
-                   ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
-                 else
-                   ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
-                 end
-        search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+        @params.merge!(page: search.results.next_page)
+        search = @search_type == :basic ? build_basic_search : build_advanced_search
+        search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end
     end
 
@@ -81,13 +79,10 @@ class CsvDownloader
       search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
 
       # if the user requested all results, iterate over the remaining pages
-      while @params[:export_all] && search.results.next_page
-        search = if @search_type == :basic
-                   ItemSearchService.build_solr_search(@params.merge(page: search.results.next_page), @current_user)
-                 else
-                   ItemSearchService.build_advanced_search(@params.merge(page: search.results.next_page), @current_user)
-                 end
-        search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+      while @params[:export_all] && search.next_page
+        @params.merge!(page: search.results.next_page)
+        search = @search_type == :basic ? build_basic_search : build_advanced_search
+        search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end
     }
 

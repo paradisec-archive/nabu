@@ -4,6 +4,9 @@ module Types
     include GraphQL::Types::Relay::HasNodeField
     include GraphQL::Types::Relay::HasNodesField
 
+    include HasSearch
+    self.search_model = Collection
+
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
@@ -146,15 +149,14 @@ module Types
       search_params = {
         # 500 seems to be the hard limit without server timing out
         # this is hard to optimise as it's more on Ruby memory/object allocation not db query optimisation
-        per_page: args[:limit] > 500 ? 500 : args[:limit]
+        per_page: [args[:limit], 500].min
       }.merge(args.to_h).symbolize_keys
 
-      search = ItemSearchService.build_advanced_search(search_params, context[:current_user])
-      results = search.results
+      search = build_advanced_search(search_params, context[:current_user])
       ItemResult.new(
-        search.total,
-        results.next_page,
-        results
+        search.total_count,
+        search.next_page,
+        search
       )
     end
 

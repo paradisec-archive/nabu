@@ -259,6 +259,7 @@ ActiveAdmin.setup do |config|
   config.namespace :admin do |admin|
     admin.build_menu :default do |menu|
       menu.add label: 'Jobs', url: '/jobs'
+      menu.add label: 'Search', url: '/searchjoy'
       menu.add label: 'OAUTH Tokens', url: '/oauth/applications'
     end
   end
@@ -353,12 +354,12 @@ ActiveAdmin.setup do |config|
 end
 
 # https://github.com/paper-trail-gem/paper_trail/blob/master/doc/pt_13_yaml_safe_load.md
-::ActiveRecord.yaml_column_permitted_classes = [
-  ::ActiveRecord::Type::Time::Value,
-  ::ActiveSupport::TimeWithZone,
-  ::ActiveSupport::TimeZone,
-  ::BigDecimal,
-  ::Date,
-  ::Symbol,
-  ::Time
+ActiveRecord.yaml_column_permitted_classes = [
+  ActiveRecord::Type::Time::Value,
+  ActiveSupport::TimeWithZone,
+  ActiveSupport::TimeZone,
+  BigDecimal,
+  Date,
+  Symbol,
+  Time
 ]

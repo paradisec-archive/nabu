@@ -107,6 +107,7 @@ Rails.application.routes.draw do
 
   authenticated :user, ->(user) { user.admin? } do
     mount Delayed::Web::Engine, at: '/jobs'
+    mount Searchjoy::Engine, at: '/searchjoy'
   end
 
   namespace :api do

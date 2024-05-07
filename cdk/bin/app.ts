@@ -58,8 +58,10 @@ environments.forEach((environment) => {
     env: { account: environment.account, region: environment.region },
   });
   NagSuppressions.addStackSuppressions(stack, [
+    { id: 'AwsSolutions-IAM4', reason: 'Managed Policies are fine for us, we can live with the resource wildcard' },
     { id: 'AwsSolutions-IAM5', reason: 'Too many false positives' },
     { id: 'AwsSolutions-EC26', reason: 'Too many false positives' },
+    { id: 'AwsSolutions-L1', reason: 'This is almost always a CDK created thing with an older runtime' },
   ]);
 });
 

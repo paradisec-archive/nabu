@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_04_204243) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_07_135750) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -380,6 +380,30 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_04_204243) do
     t.string "identifier", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+  end
+
+  create_table "searchjoy_conversions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "search_id"
+    t.string "convertable_type"
+    t.bigint "convertable_id"
+    t.datetime "created_at"
+    t.index ["convertable_type", "convertable_id"], name: "index_searchjoy_conversions_on_convertable"
+    t.index ["search_id"], name: "index_searchjoy_conversions_on_search_id"
+  end
+
+  create_table "searchjoy_searches", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "search_type"
+    t.string "query"
+    t.string "normalized_query"
+    t.string "search_family"
+    t.integer "results_count"
+    t.datetime "created_at"
+    t.datetime "converted_at"
+    t.index ["created_at"], name: "index_searchjoy_searches_on_created_at"
+    t.index ["search_type", "created_at"], name: "index_searchjoy_searches_on_search_type_and_created_at"
+    t.index ["search_type", "normalized_query", "created_at"], name: "index_searchjoy_searches_on_search_type_query"
+    t.index ["user_id"], name: "index_searchjoy_searches_on_user_id"
   end
 
   create_table "universities", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

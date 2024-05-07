@@ -1,4 +1,5 @@
-# syntax = docker/dockerfile:1
+# syntax = docker/dockerfile:1.7-labs
+## NOTE: Above so we can use exclude
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.2.2
@@ -46,8 +47,7 @@ RUN echo $GIT_SHA > REVISION
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 PROXYIST_URL=dummy ./bin/rails assets:precompile
-
+RUN ASSET_PRECOMPILE=1 SECRET_KEY_BASE_DUMMY=1 PROXYIST_URL=dummy ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
@@ -64,7 +64,7 @@ RUN apt-get update -qq && \
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+COPY --from=build --exclude=tmp/cache/* --exclude=vendor/bundle /rails /rails
 
 RUN ln -nfs /dev/stdout log/delayed_job.log
 

@@ -6,11 +6,6 @@ module HasSearch
 
   included do
     class_attribute :search_model, instance_accessor: false, instance_predicate: false
-    class_attribute :search_includes, instance_accessor: false, instance_predicate: false
-    class_attribute :search_agg_fields, instance_accessor: false, instance_predicate: false
-    class_attribute :search_user_fields, instance_accessor: false, instance_predicate: false
-    class_attribute :search_text_fields, instance_accessor: false, instance_predicate: false
-    class_attribute :search_filter_fields, instance_accessor: false, instance_predicate: false
 
     private
 
@@ -27,17 +22,19 @@ module HasSearch
 
         order:,
         page: params[:page],
-        per_page: params[:per_page] || 10
+        per_page: params[:per_page] || 10,
+        track: { user_id: current_user.id, search_family: 'basic' }
       )
     end
 
-      def build_advanced_search
+    def build_advanced_search
       @search = model.search(
         body:,
         includes: model.search_includes,
 
         page: params[:page],
-        per_page: params[:per_page] || 10
+        per_page: params[:per_page] || 10,
+        track: { user_id: current_user.id, search_family: 'advanced' }
       )
     end
   end
@@ -65,7 +62,7 @@ module HasSearch
   def filter
     filter = []
     filter.push({ bool: { should: user_filter } }) if user_filter&.any?
-      filter += model.search_filter_fields.map { |name| where_exact(name, params[name]) if params[name].present? }.compact
+    filter += model.search_filter_fields.map { |name| where_exact(name, params[name]) if params[name].present? }.compact
 
     filter.push(where_geo) if params[:north_limit]
 
@@ -175,7 +172,6 @@ module HasSearch
       }
     }
   end
-
 
   def where_geo
     {

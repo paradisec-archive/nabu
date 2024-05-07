@@ -146,6 +146,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
+    chartkick (5.0.6)
     chronic (0.10.2)
     coderay (1.1.3)
     concurrent-ruby (1.2.2)
@@ -205,6 +206,9 @@ GEM
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
+    faraday_middleware-aws-sigv4 (1.0.1)
+      aws-sigv4 (~> 1.0)
+      faraday (>= 2.0, < 3)
     ffi (1.16.3)
     formatador (1.1.0)
     formtastic (5.0.0)
@@ -220,6 +224,8 @@ GEM
       sprockets-rails
     graphql (2.1.7)
       racc (~> 1.4)
+    groupdate (6.4.0)
+      activesupport (>= 6.1)
     guard (2.18.1)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
@@ -500,6 +506,10 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    searchjoy (1.1.0)
+      activerecord (>= 6)
+      chartkick (>= 3.2)
+      groupdate (>= 3)
     searchkick (5.3.1)
       activemodel (>= 6.1)
       hashie
@@ -603,6 +613,7 @@ DEPENDENCIES
   doorkeeper
   dotenv-rails
   factory_bot_rails
+  faraday_middleware-aws-sigv4
   graphiql-rails (= 1.8.0)
   graphql
   guard
@@ -635,6 +646,7 @@ DEPENDENCIES
   rubyzip
   rufus-scheduler
   sassc-rails
+  searchjoy
   searchkick
   selenium-webdriver
   sentry-delayed_job

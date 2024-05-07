@@ -1,12 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
-import { Environment } from './types';
+import type { Environment } from './types';
 import { NagSuppressions } from 'cdk-nag';
 
 export class MainStack extends cdk.Stack {
@@ -80,10 +80,9 @@ export class MainStack extends cdk.Stack {
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-    NagSuppressions.addResourceSuppressions(
-      metaBucket,
-      [{ id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" }],
-    );
+    NagSuppressions.addResourceSuppressions(metaBucket, [
+      { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
+    ]);
 
     // ////////////////////////
     // Catalog bucket
@@ -97,30 +96,35 @@ export class MainStack extends cdk.Stack {
       // TODO: Do we want tiering?
       // intelligentTieringConfigurations: [ ],
       // TODO: Decide on lifecycle rules
-      // lifecycleRules: [],
+      lifecycleRules: [{ abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
       versioned: env === 'prod',
-      inventories: [{
-        destination: {
-          bucket: metaBucket,
-          prefix: 'inventories/catalog',
+      inventories: [
+        {
+          destination: {
+            bucket: metaBucket,
+            prefix: 'inventories/catalog',
+          },
+          frequency: s3.InventoryFrequency.WEEKLY,
+          includeObjectVersions: s3.InventoryObjectVersion.ALL,
+          optionalFields: [
+            'Size',
+            'LastModifiedDate',
+            'StorageClass',
+            'ReplicationStatus',
+            'IntelligentTieringAccessTier',
+            'ChecksumAlgorithm',
+            'ETag',
+          ],
         },
-        frequency: s3.InventoryFrequency.WEEKLY,
-        includeObjectVersions: s3.InventoryObjectVersion.ALL,
-        optionalFields: ['Size', 'LastModifiedDate', 'StorageClass', 'ReplicationStatus', 'IntelligentTieringAccessTier', 'ChecksumAlgorithm', 'ETag'],
-      }],
+      ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      cors: [{
-        allowedMethods: [
-          s3.HttpMethods.GET,
-        ],
-        allowedOrigins: [
-          'https://catalog.paradisec.org.au',
-          `https:catalog.${zoneName}`,
-        ],
-        allowedHeaders: [
-          '*',
-        ],
-      }],
+      cors: [
+        {
+          allowedMethods: [s3.HttpMethods.GET],
+          allowedOrigins: ['https://catalog.paradisec.org.au', `https:catalog.${zoneName}`],
+          allowedHeaders: ['*'],
+        },
+      ],
       serverAccessLogsBucket: metaBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
     });
