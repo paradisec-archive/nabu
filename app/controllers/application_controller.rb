@@ -11,7 +11,13 @@ class ApplicationController < ActionController::Base
     fields.each do |name|
       next unless params[name]
 
-      params[name] = params[name].to_i
+      begin
+        params[name] = params[name].to_i
+      rescue StandardError
+        params.delete(param)
+        next
+      end
+
       params[name] = 1000 if params[name] && params[name] > 1000
 
       params.delete(param) if params[name].zero?
