@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_action :find_item, only: :show
+  before_action :find_item, only: %i[show edit]
   load_and_authorize_resource :collection, find_by: :identifier,
                                            except: %i[search advanced_search bulk_update bulk_edit new_report send_report report_sent]
   load_and_authorize_resource :item, find_by: :identifier, through: :collection,
@@ -342,12 +342,15 @@ class ItemsController < ApplicationController
     @item = @collection.items
                        .includes([
                                    { item_agents: %i[agent_role user] },
-                                   { item_admins: %i[user] },
+                                   :data_types,
+                                   :data_categories,
+                                   :admins,
+                                   :users,
                                    :collection,
                                    :essences,
-                                   :item_countries,
-                                   :item_subject_languages,
-                                   :item_content_languages
+                                   :countries,
+                                   :subject_languages,
+                                   :content_languages
                                  ])
                        .find_by!(identifier: params[:id])
   end
