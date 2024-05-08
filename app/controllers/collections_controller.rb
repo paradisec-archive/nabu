@@ -3,6 +3,7 @@ require 'nabu/nabu_spreadsheet'
 
 # rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 class CollectionsController < ApplicationController
+  before_action :find_item, only: %i[show edit]
   before_action :tidy_params, only: %i[create update bulk_update]
   load_and_authorize_resource find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit]
   authorize_resource only: %i[advanced_search bulk_update bulk_edit]
@@ -51,7 +52,7 @@ class CollectionsController < ApplicationController
 
     @items = @collection.items.includes(:access_condition, :collection, :essences).page(params[:items_page]).per(params[:items_per_page])
 
-    @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier)
+    @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier).load
 
     @page_title = "Nabu - #{@collection.title}"
 
@@ -305,6 +306,24 @@ class CollectionsController < ApplicationController
   end
 
   private
+
+  # So we can include things and solve N + 1 queries
+  def find_item
+    @collection = Collection
+                  .includes(
+                    :access_condition,
+                    :admins,
+                    :collector,
+                    :countries,
+                    :field_of_research,
+                    :grants,
+                    :languages,
+                    :operator,
+                    :university,
+                    :items
+                  )
+                  .find_by!(identifier: params[:id])
+  end
 
   def tidy_params
     return unless params[:collection]
