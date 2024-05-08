@@ -366,6 +366,7 @@ export class AppStack extends cdk.Stack {
         resources: ['*'],
       }),
     );
+    searchDomain.grantReadWrite(jobsTaskDefinition.taskRole);
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
