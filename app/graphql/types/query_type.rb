@@ -5,7 +5,10 @@ module Types
     include GraphQL::Types::Relay::HasNodesField
 
     include HasSearch
-    self.search_model = Collection
+    self.search_model = Item
+
+    # So we can use HasSearch
+    attr_reader :params, :current_user
 
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
@@ -146,13 +149,14 @@ module Types
     end
 
     def items(**args)
-      search_params = {
+      @params = {
         # 500 seems to be the hard limit without server timing out
         # this is hard to optimise as it's more on Ruby memory/object allocation not db query optimisation
         per_page: [args[:limit], 500].min
       }.merge(args.to_h).symbolize_keys
+      @current_user = context[:current_user]
 
-      search = build_advanced_search(search_params, context[:current_user])
+      search = build_advanced_search
       ItemResult.new(
         search.total_count,
         search.next_page,
