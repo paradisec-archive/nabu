@@ -3,11 +3,15 @@
     = simple_format comment.body
     - if can? :destroy, comment
       = button_to 'Delete', comment_path(comment), :method => :delete
-  %p.comment_who
-    = 'by '
-    - if can? :manage, comment.owner
-      = link_to comment.owner_name, admin_user_path(comment.owner)
-    - else
-      = comment.owner_name
-    == - #{comment.created_at.strftime("on %d/%m/%Y at %I:%M %p")}
+  - if comment.owner
+    %p.comment_who
+      = 'by '
+      - if can? :manage, comment.owner
+        = link_to comment.owner_name, admin_user_path(comment.owner)
+      - else
+        = comment.owner_name
+      == - #{comment.created_at.strftime("on %d/%m/%Y at %I:%M %p")}
+  - else
+    %p.comment_who
+      by deleted user
   %hr

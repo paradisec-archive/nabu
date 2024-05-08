@@ -3,6 +3,10 @@ class CommentsController < ApplicationController
 
   # respond_to :js
 
+  def index
+    @comments = @comments.page(params[:page])
+  end
+
   def create
     resource = params[:commentable_type].constantize.find(params[:commentable_id])
     @comment = resource.comments.build(comment_params)
