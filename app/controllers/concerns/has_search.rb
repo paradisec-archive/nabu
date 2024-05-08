@@ -23,7 +23,7 @@ module HasSearch
         order:,
         page: params[:page],
         per_page: params[:per_page] || 10,
-        track: { user_id: current_user.id, search_family: 'basic' }
+        track: { user_id: current_user&.id, search_family: 'basic' }
       )
     end
 
@@ -34,7 +34,7 @@ module HasSearch
 
         page: params[:page],
         per_page: params[:per_page] || 10,
-        track: { user_id: current_user.id, search_family: 'advanced' }
+        track: { user_id: current_user&.id, search_family: 'advanced' }
       )
     end
   end
