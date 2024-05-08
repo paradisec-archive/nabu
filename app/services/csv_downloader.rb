@@ -39,7 +39,7 @@ class CsvDownloader
       end
     end
 
-    total = @params[:export_all] ? search.total : (@params[:per_page] || 10)
+    total = @params[:export_all] ? search.total_count : (@params[:per_page] || 10)
 
     generation_end = DateTime.now
     Rails.logger.info { "#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds" }

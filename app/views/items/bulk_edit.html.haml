@@ -4,7 +4,7 @@
   = link_to 'Advanced Search', advanced_search_items_path(@params)
 .clear
 
-%p== #{@search.total} search results
+%p== #{@search.total_count} search results (#{@search.took} ms)
 
 = render partial: 'search_results', locals: {show_exclusions: true}
 

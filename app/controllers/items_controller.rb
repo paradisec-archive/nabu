@@ -368,7 +368,7 @@ class ItemsController < ApplicationController
     # TODO: fix CSV stream for builder method
 
     # only stream CSV if small enough
-    if @search.total <= 5_000 || (!export_all && @params[:per_page] <= 5_000)
+    if @search.total_count <= 5_000 || (!export_all && @params[:per_page] <= 5_000)
       filename, body = downloader.stream(@search)
 
       headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
