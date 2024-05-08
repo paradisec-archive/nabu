@@ -139,7 +139,7 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search
-    search_params = params[:export_all] ? advanced_search_params.merge(per_page: 50_000, start_page: 1) : advanced_search_params
+    search_params = params[:export_all] ? advanced_search_params.merge(per_page: 10_000, start_page: 1) : advanced_search_params
 
     @page_title = 'Nabu - Advanced Item Search'
     @params = search_params
