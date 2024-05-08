@@ -198,6 +198,4 @@ nabu_run bin/importmap outdated
 # Sentry
 # https://docs.sentry.io/platforms/javascript/install/cdn/
 vi app/views/layouts/application.html.haml
-
-
 ```
