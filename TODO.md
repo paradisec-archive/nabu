@@ -6,7 +6,6 @@ Do we need dotenv rails?
 
 ## Migration
 * Monitoring
-* Clean up SPF records
 * Remove checksum files from the repository
 * Clean up Media::New
 * FIx DB and S3 filenames and extensions
@@ -14,10 +13,6 @@ Do we need dotenv rails?
 * Check with nick about removing pfsx
 * Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
 * Remove old ids3 and bwf xml creation
-
-## Search
-* Explore searchjoy
-* https://github.com/ankane/searchkick?tab=readme-ov-file#partial-matches
 
 ## API
 We are using Doorkeeper to provide oauth tokens
@@ -34,7 +29,6 @@ If we give tokens to more than paragest we need to rethink this
 * Should some of the stuff we do as jobs be live?
 
 ## Stuff to replace
-* Add storage to NABU so we don't lose anything when containers die
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Should we use authenticate_users on dashboard or should cancan just do it?
@@ -43,9 +37,6 @@ If we give tokens to more than paragest we need to rethink this
 * SHoudl we add has_paper_trail to party_identifier
 * set set_paper_trail_whodunnit - check live db to see if it's empty for users
 * Move enabling paper trail to base model and then disable on users specifically
-* streamio-ffmpeg replace with something more modern
-* ditch timeliness - overkill and outdated
-* Test CSRF on graphql
 * CHeck f.submmit :confirm should this be data?
 * Can we move paper_trail to ApplicationRecord?
 * permit! used for search is bad
@@ -55,13 +46,11 @@ If we give tokens to more than paragest we need to rethink this
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
 * Add everything needed to search_params
-* The item clause builder should probably use solr and not sql
 * language.retired to language.retired?
 * Fix comments so they are ajax again
 
 # CRON
 paper-trail can we move to JSON serialzer
-*transform_images looks like it checks everything and then skips if it exists we should keep track
 
 # OAI
 
@@ -83,6 +72,3 @@ Write tests for
 /oai/item?resumptionToken=oai_dc.f%282023-01-17T13%3A00%3A00Z%29.u%282023-02-23T15%3A00%3A30Z%29%3A18640&verb=ListRecords
 /oai/item?verb=ListIdentifiers&metadataPrefix=oai_dc
 ```
-
-
-
