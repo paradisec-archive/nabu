@@ -48,3 +48,7 @@
 /solr/production/data
 /solr/staging/data
 /solr/pids
+
+#sorbet
+# They recommend you commit these but I'm not convinced
+sorbet/rbi
