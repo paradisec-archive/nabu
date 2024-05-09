@@ -13,8 +13,13 @@ module HasSearch
       @search = model.search(
         params[:search] || '*',
         includes: model.search_includes,
-        fields: ['full_identifier^20', 'identifier^20', 'title^10', 'description'], # Boost
-        match: :word_start,
+        fields: [
+          { 'full_identifier^20': :word_start },
+          { 'identifier^20': :word_start },
+          'title^10',
+          'description',
+          '*'
+        ],
 
         aggs: model.search_agg_fields,
 

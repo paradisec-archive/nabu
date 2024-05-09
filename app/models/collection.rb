@@ -214,6 +214,7 @@ class Collection < ApplicationRecord
       field_of_research: field_of_research_name,
       languages: languages.map(&:name),
       countries: countries.map(&:name),
+      language_codes: languages.map(&:code),
 
       # Full text plus advanced search
       identifier:,
