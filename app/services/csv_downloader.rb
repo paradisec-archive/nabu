@@ -10,7 +10,7 @@ class CsvDownloader
   CSV_OPTIONS = { quote_char: '"', col_sep: ',', row_sep: "\n", headers: INCLUDED_CSV_FIELDS.map { |f| f.to_s.titleize }, write_headers: true }.freeze
 
   include HasSearch
-  self.search_model = Collection
+  self.search_model = Item
 
   def initialize(search_type, params, current_user)
     @search_type = search_type
