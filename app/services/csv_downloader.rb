@@ -32,8 +32,8 @@ class CsvDownloader
     CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
       search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       # if the user requested all results, iterate over the remaining pages
-      while @params[:export_all] && search.results.next_page
-        @params.merge!(page: search.results.next_page)
+      while @params[:export_all] && search.next_page
+        @params.merge!(page: search.next_page)
         search = @search_type == :basic ? build_basic_search : build_advanced_search
         search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end
@@ -76,11 +76,11 @@ class CsvDownloader
     streamed_csv = lambda { |output|
       # wrap the IO output so that CSV pushes writes directly into it
       csv = CSV.new(output, **CSV_OPTIONS)
-      search.results.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+      search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
 
       # if the user requested all results, iterate over the remaining pages
       while @params[:export_all] && search.next_page
-        @params.merge!(page: search.results.next_page)
+        @params.merge!(page: search.next_page)
         search = @search_type == :basic ? build_basic_search : build_advanced_search
         search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
       end

@@ -74,7 +74,7 @@ end
 ###################
 
 # Needs to be as early as possible to do it's job
-gem 'dotenv-rails', require: 'dotenv/rails-now' # , groups: [:development, :test] # Load env variables in dev
+gem 'dotenv-rails', require: 'dotenv/load' # , groups: [:development, :test] # Load env variables in dev
 
 # Views
 gem 'haml-rails', '~> 2.0' # We use HAML for templates instead of erb

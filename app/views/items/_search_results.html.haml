@@ -6,8 +6,7 @@
   :javascript
     sessionStorage.removeItem('item_result_ids');
 
--if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
-  = render partial: 'items/pagination', locals: {results: @search}
+= paginate @search
 
 %table.table
   %tr
@@ -22,8 +21,7 @@
     - if show_exclusions
       %th Exclude?
 
-    - res = @search.respond_to?(:results) ? @search.results : @search
-    - res.each do |item|
+    - @search.each do |item|
       %tr
         %td= item.full_identifier
         %td= item.title
@@ -41,10 +39,10 @@
           %td
             %label{style: 'width: 100%; display: block; text-align:center'}= check_box_tag('exclude[]', item.id, false, id: "exclude_#{item.id}")
 
-- if @search.respond_to?(:any?) ? @search.any? : (@search.hits.count > 0)
+- if @search.respond_to?(:any?)
   = paginate @search
 - else
-  %p.bold There were NO results for your search.
+  %p.bold There were no results for your search.
 
 %div
   - if @params

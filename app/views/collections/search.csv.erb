@@ -21,6 +21,6 @@
   ]
 -%>
 <%= CSV.generate_line headers.map(&:to_s).map(&:humanize) -%>
-<%- @search.results.each do |line| -%>
+<%- @search.each do |line| -%>
 <%= CSV.generate_line(headers.map {|header| line.send(header) }).html_safe -%>
 <%- end -%>
