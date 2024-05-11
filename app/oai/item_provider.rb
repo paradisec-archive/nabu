@@ -5,11 +5,10 @@ class ItemProvider < ApplicationProvider
   sample_id 'AA1-001'
 
   source_model OAI::Provider::ActiveRecordWrapper.new(
-    # FIXME: We should have collection to fix a N+1 query but it makes the query take 14 seconds
     ::Item.public_items.includes(
       :essences, :subject_languages, :content_languages, :countries, :access_condition,
       :collector, :data_types, :data_categories, item_agents: %i[user agent_role]
-    ),
+    ).preload(:collection),
     limit: 100
   )
 
