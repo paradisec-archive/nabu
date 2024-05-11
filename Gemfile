@@ -115,6 +115,7 @@ gem 'faraday_middleware-aws-sigv4'
 gem 'opensearch-ruby'
 gem 'searchjoy'
 gem 'searchkick'
+gem 'rails-reverse-proxy' # so we can get to opensearch dashboard
 
 # Other
 gem 'curb' # Download CSVs for import
