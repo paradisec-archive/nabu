@@ -27,7 +27,7 @@ Metrics/CyclomaticComplexity:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 16
+  Max: 20
 
 Rails/I18nLocaleTexts:
   Enabled: false

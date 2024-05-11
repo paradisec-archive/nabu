@@ -14,20 +14,23 @@ class RepositoryController < ApplicationController
     params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split('-') if params[:full_identifier]
 
     collection = Collection.find_by(identifier: params[:collection_identifier])
-
     raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
 
     item = collection.items.find_by(identifier: params[:item_identifier])
-
-    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}" if item.nil?
+    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:collection_identifier]}" if item.nil?
 
     redirect_to [collection, item], status: :moved_permanently
   end
 
   def essence
     collection = Collection.find_by(identifier: params[:collection_identifier])
+    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
+
     item = collection.items.find_by(identifier: params[:item_identifier])
+    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:collection_identifier]}" if item.nil?
+
     essence = item.essences.find_by(filename: params[:essence_filename])
+    raise ActionController::RoutingError, "Essence not found: #{params[:essence_filename]}" if essence.nil?
 
     # if a standard essence file was found, return that as usual
     if essence.present?
