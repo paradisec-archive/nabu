@@ -81,8 +81,7 @@ export class AppStack extends cdk.Stack {
       vpcSubnets: {
         subnets: dataSubnets,
       },
-      // NOTE: Not allowed on t4.micro
-      //enablePerformanceInsights: true,
+      enablePerformanceInsights: true,
       deletionProtection: true,
     });
     NagSuppressions.addResourceSuppressions(
