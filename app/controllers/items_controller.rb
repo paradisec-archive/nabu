@@ -186,6 +186,8 @@ class ItemsController < ApplicationController
 
   def display
     location = Proxyist.get_object(@item.full_identifier, "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml")
+    raise ActionController::RoutingError, 'PDSC file not found' unless location
+
     redirect_to location, allow_other_host: true
   end
 

@@ -27,12 +27,14 @@ class EssencesController < ApplicationController
     Download.create! user: current_user, essence: @essence
 
     location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename, download: true)
+    raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
   end
 
   def display
     location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename)
+    raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
   end

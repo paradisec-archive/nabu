@@ -43,6 +43,8 @@ module Proxyist
 
     response = Net::HTTP.get_response(URI.parse(url))
 
+    return if response.is_a?(Net::HTTPNotFound)
+
     raise 'Proxyist is misonfigured, we only support redirects' unless response.is_a?(Net::HTTPRedirection)
 
     response['Location']

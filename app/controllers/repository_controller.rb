@@ -36,12 +36,14 @@ class RepositoryController < ApplicationController
     if essence.present?
       authorize! :read, essence
       location = Proxyist.get_object(essence.item.full_identifier, essence.filename, download: true)
+      raise ActionController::RoutingError, 'Essence file not found' unless location
 
       redirect_to location, allow_other_host: true
 
       return
     elsif params[:essence_filename].include?('PDSC_ADMIN') # otherwise look up to see if there is a hidden admin file (thumbnails, soundimage file, etc.)
       location = admin_essence_location(collection, item, params[:essence_filename])
+      raise ActionController::RoutingError, 'Essence file not found' unless location
 
       redirect_to location, allow_other_host: true if location
 
