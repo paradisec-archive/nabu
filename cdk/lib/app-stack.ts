@@ -198,6 +198,7 @@ export class AppStack extends cdk.Stack {
       image: ecs.ContainerImage.fromAsset('..', {
         file: 'docker/proxyist.Dockerfile',
       }),
+      stopTimeout: cdk.Duration.seconds(5),
       portMappings: [{ name: 'proxyist', containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ProxyistService' }),
       environment: {
