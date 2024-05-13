@@ -7,7 +7,7 @@ class OpensearchDashboardController < ApplicationController
     opensearch_domain = ENV.fetch('OPENSEARCH_URL', nil).sub('https://', '')
 
     # NOTE: Signing wouldn;t work unless we escapes things like *
-    uri = URI.parse(request.fullpath).gsub(/[&]+/, '&')
+    uri = URI.parse(request.fullpath.gsub(/[&]+/, '&'))
     if uri.query
       encoded_query = URI.decode_www_form(uri.query).map do |key, value|
         "#{URI.encode_www_form_component(key)}=#{CGI.escape(value)}"
