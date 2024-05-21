@@ -125,8 +125,8 @@ module HasSearch
                 bool: {
                   should: [
                     { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } },
-                    { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
-                                                       prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
+                    # { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
+                    #                                    prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
                   ]
                 }
               },
