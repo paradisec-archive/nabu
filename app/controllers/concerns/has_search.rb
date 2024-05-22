@@ -28,7 +28,9 @@ module HasSearch
         order:,
         page: params[:page],
         per_page: params[:per_page] || 10,
-        track: { user_id: current_user&.id, search_family: 'basic' }
+        track: { user_id: current_user&.id, search_family: 'basic' },
+
+        misspellings: false
       )
     end
 
@@ -124,7 +126,7 @@ module HasSearch
               must: {
                 bool: {
                   should: [
-                    { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } },
+                    { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } }
                     # { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
                     #                                    prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
                   ]
