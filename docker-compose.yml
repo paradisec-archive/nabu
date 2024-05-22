@@ -53,8 +53,8 @@ services:
       discovery.type: single-node
       plugins.security.ssl.http.enabled: false
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: fqo6bzr27*6Rdsshgsa7
-    # volumes:
-    #   - ./solr:/var/solr/data
+    volumes:
+      - search-data:/usr/share/opensearch/data
     restart:
       unless-stopped
 
@@ -80,8 +80,9 @@ services:
       initialBuckets: nabu
       retainFilesOnExit: true
     volumes:
-      - ./tmp/s3:/s3mockroot
+      - s3-data:/s3mockroot
 
 volumes:
+  s3-data:
   db-data:
   search-data:
