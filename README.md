@@ -72,8 +72,10 @@ bin/aws/ecs_rake searchkick:reindex
 
 ``` bash
 bin/aws/ecs_shell app -c 'mysqldump -u nabu -h "$NABU_DATABASE_HOSTNAME" --password "$NABU_DATABASE_PASSWORD" nabu | bzip2 | base64 > /tmp/nabu.sql.bz2'
+nabu_run bundle exec rake db:drop db:create
 bzip2 -dc ../nabu.sql.bz2 | mysql -h 127.0.0.1 -u root nabu_devel
-nabu_run bundle exec rake searchkick:reindex
+nabu_run bundle exec rake db:migrate
+nabu_run bundle exec rake searchkick:reindex:all
 ```
 
 ## Production Tasks
