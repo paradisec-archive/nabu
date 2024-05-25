@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_07_135750) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_25_092531) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -64,7 +64,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_07_135750) do
   end
 
   create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "identifier", null: false
+    t.string "identifier", null: false, collation: "utf8mb4_bin"
     t.string "title", null: false
     t.text "description", size: :medium, null: false
     t.integer "collector_id", null: false
@@ -266,7 +266,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_07_135750) do
 
   create_table "items", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
-    t.string "identifier", null: false
+    t.string "identifier", null: false, collation: "utf8mb4_bin"
     t.boolean "private"
     t.string "title", null: false
     t.string "url"
