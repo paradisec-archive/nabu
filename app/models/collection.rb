@@ -194,7 +194,7 @@ class Collection < ApplicationRecord
   def self.search_filter_fields
     %i[
       complete private created_at updated_at deposit_form_received
-      collector_id operator_id university_id country_ids language_ids admin_ids access_condition_id field_of_research_id funding_id
+      collector_id operator_id university_id country_ids language_ids admin_ids access_condition_id field_of_research_id funding_body_id
       title_blank description_blank access_narative_blank region_blank metadata_source_blank orthographic_notes_blank
       media_blank comments_blank tape_location_blank grant_identifier_blank
       created_at_blank updated_at_blank
@@ -242,7 +242,7 @@ class Collection < ApplicationRecord
       item_user_ids: items.flat_map(&:user_ids).uniq,
       access_condition_id:,
       field_of_research_id:,
-      funding_body_ids: grants.map(&:funding_body_id),
+      funding_body_id: grants.map(&:funding_body_id),
       deposit_form_received:,
 
       created_at: created_at.to_date,
