@@ -294,7 +294,7 @@ export class AppStack extends cdk.Stack {
         PROXYIST_URL: 'http://proxyist.nabu:3000',
         SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
         DOI_PREFIX: '10.26278',
-        DATACITE_BASE_URL: 'https://mds.datacite.org',
+        DATACITE_BASE_URL: env === 'prod' ? 'https://api.datacite.org' : 'https://api.test.datacite.org',
         AWS_REGION: region,
       },
       secrets: {

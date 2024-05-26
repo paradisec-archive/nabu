@@ -78,7 +78,7 @@ gem 'dotenv-rails', require: 'dotenv/load' # , groups: [:development, :test] # L
 
 # Views
 gem 'haml-rails', '~> 2.0' # We use HAML for templates instead of erb
-gem 'jb' # for json templates, simploer and faster than jbuilder
+gem 'jb' # for json templates, simpler and faster than jbuilder
 gem 'kaminari' # Pagination
 gem 'oai' # OAI-PMH
 gem 'rexml' # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
@@ -113,9 +113,9 @@ gem 'graphql'
 # Search
 gem 'faraday_middleware-aws-sigv4'
 gem 'opensearch-ruby'
+gem 'rails-reverse-proxy' # so we can get to opensearch dashboard
 gem 'searchjoy'
 gem 'searchkick'
-gem 'rails-reverse-proxy' # so we can get to opensearch dashboard
 
 # Other
 gem 'curb' # Download CSVs for import

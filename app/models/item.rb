@@ -186,11 +186,6 @@ class Item < ApplicationRecord
     "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
   end
 
-  # for DOI relationship linking: nil <- Collection <- Item <- Essence
-  def parent
-    collection
-  end
-
   def xml_key
     "paradisec.org.au/item/#{full_identifier}"
   end

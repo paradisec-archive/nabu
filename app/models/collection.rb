@@ -297,11 +297,6 @@ class Collection < ApplicationRecord
     "paradisec.org.au/collection/#{identifier}"
   end
 
-  # for DOI relationship linking: nil <- Collection <- Item <- Essence
-  def parent
-    nil
-  end
-
   def citation
     cite = ''
     cite += "#{collector.name} (collector)" if collector

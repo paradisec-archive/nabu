@@ -114,11 +114,6 @@ class Essence < ApplicationRecord
     "#{item.full_path}/essences/#{id}"
   end
 
-  # for DOI relationship linking: nil <- Collection <- Item <- Essence
-  def parent
-    item
-  end
-
   def self.ransackable_attributes(_ = nil)
     %w[bitrate channels created_at derived_files_generated doi duration filename fps id item_id mimetype samplerate size updated_at]
   end
