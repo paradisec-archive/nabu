@@ -16,7 +16,7 @@ module IdentifiableByDoi
              end
 
     resource_type_general = if is_a?(Item)
-                              'Dataset'
+                              'Collection'
                             elsif is_a?(Essence)
                               essence_resource_type
                             else
