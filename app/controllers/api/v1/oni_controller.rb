@@ -87,7 +87,7 @@ module Api
         md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
         if md
           @collection = Collection.find_by(identifier: md[1])
-          @data = @collection.items.find_by(identifier: md[2])
+          @data = @collection.items.includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
           @is_item = true
         else
           md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
