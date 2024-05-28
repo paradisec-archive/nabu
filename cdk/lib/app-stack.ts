@@ -45,25 +45,23 @@ export class AppStack extends cdk.Stack {
       vpcId: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/vpc-id'),
     });
 
-    const dataSubnetIds = ['a', 'b', 'c'].map((az) =>
-      ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/isolated/apse2${az}-id`),
-    );
-    const dataSubnets = dataSubnetIds.map((subnetId, index) =>
-      ec2.Subnet.fromSubnetAttributes(this, `DataSubnet${index}`, { subnetId }),
-    );
-    dataSubnets.forEach((subnet) =>
-      cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId'),
-    );
+    const dataSubnets = ['a', 'b', 'c'].map((az, index) => {
+      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/isolated/apse2${az}-id`);
+      const availabilityZone = `ap-southeast-2${az}`;
+      const subnet = ec2.Subnet.fromSubnetAttributes(this, `DataSubnet${index}`, { subnetId, availabilityZone });
+      cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
 
-    const appSubnetIds = ['a', 'b', 'c'].map((az) =>
-      ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/public/apse2${az}-id`),
-    );
-    const appSubnets = appSubnetIds.map((subnetId, index) =>
-      ec2.Subnet.fromSubnetAttributes(this, `AppSubnet${index}`, { subnetId }),
-    );
-    appSubnets.forEach((subnet) =>
-      cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId'),
-    );
+      return subnet;
+    });
+
+    const appSubnets = ['a', 'b', 'c'].map((az, index) => {
+      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/public/apse2${az}-id`);
+      const availabilityZone = `ap-southeast-2${az}`;
+      const subnet = ec2.Subnet.fromSubnetAttributes(this, `AppSubnet${index}`, { subnetId, availabilityZone });
+      cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
+
+      return subnet;
+    });
 
     // ////////////////////////
     // Database
@@ -101,7 +99,7 @@ export class AppStack extends cdk.Stack {
     const searchDomain = new opensearch.Domain(this, 'SearchDomain', {
       capacity: {
         dataNodeInstanceType: 'c6g.large.search', // t3's have some limitations
-        dataNodes: 1,
+        dataNodes: 3,
         multiAzWithStandbyEnabled: false, // We don't need that much HA
       },
       version: opensearch.EngineVersion.OPENSEARCH_2_11,
@@ -115,12 +113,12 @@ export class AppStack extends cdk.Stack {
       },
       vpc,
       vpcSubnets: [{
-        // https://github.com/aws/aws-cdk/issues/29346
-        subnets: [dataSubnets[0]],
+        subnets: dataSubnets,
       }],
-      // zoneAwareness: {
-      //   enabled: true,
-      // },
+      zoneAwareness: {
+        enabled: true,
+        availabilityZoneCount: 3,
+      },
       logging: {
         slowSearchLogEnabled: true,
         appLogEnabled: true,
@@ -131,7 +129,6 @@ export class AppStack extends cdk.Stack {
       { id: 'AwsSolutions-OS3', reason: 'We are indise a VPC, not on the Internet' },
       { id: 'AwsSolutions-OS4', reason: "We don't want to pay for dedicated data nodes" },
       { id: 'AwsSolutions-OS5', reason: "Should not trigger as anonymous disabled" },
-      { id: 'AwsSolutions-OS7', reason: "We don't want to pay for multi-AZ" },
     ]);
 
     // ////////////////////////
