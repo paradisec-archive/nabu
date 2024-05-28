@@ -202,6 +202,11 @@ class User < ApplicationRecord
     ]
   end
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[collection_admins collections item_admins item_agents item_users items owned_collections
+       owned_items party_identifiers rights_transferred_to]
+  end
+
   private
 
   def ok_to_destroy?
