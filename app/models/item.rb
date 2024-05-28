@@ -255,7 +255,7 @@ class Item < ApplicationRecord
     %w[full_identifier title collector_sortname updated_at language sort_country essences_count]
   end
 
-  searchkick geo_shape: [:bounds], word_start: %i[identifier full_identifier collection_identifier]
+  searchkick geo_shape: [:bounds], word_start: %i[identifier full_identifier collection_identifier], deep_paging: true
 
   def self.search_includes
     includes = %i[
