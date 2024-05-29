@@ -104,12 +104,12 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
     const searchDomain = new opensearch.Domain(this, 'SearchDomain', {
       capacity: {
-        dataNodeInstanceType: 'c6g.large.search', // t3's have some limitations
+        dataNodeInstanceType: 'c6g.xlarge.search', // t3's have some limitations
         dataNodes: 3,
         multiAzWithStandbyEnabled: false, // We don't need that much HA
       },
       ebs: {
-        volumeSize: 30,
+        volumeSize: 20,
         volumeType: ec2.EbsDeviceVolumeType.GP3,
         throughput: 125, // These are the minimums
         iops: 3000, // These are the minimums
