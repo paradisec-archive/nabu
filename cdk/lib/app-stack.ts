@@ -46,7 +46,10 @@ export class AppStack extends cdk.Stack {
     });
 
     const dataSubnets = ['a', 'b', 'c'].map((az, index) => {
-      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/isolated/apse2${az}-id`);
+      const subnetId = ssm.StringParameter.valueForStringParameter(
+        this,
+        `/usyd/resources/subnets/isolated/apse2${az}-id`,
+      );
       const availabilityZone = `ap-southeast-2${az}`;
       const subnet = ec2.Subnet.fromSubnetAttributes(this, `DataSubnet${index}`, { subnetId, availabilityZone });
       cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
@@ -55,7 +58,10 @@ export class AppStack extends cdk.Stack {
     });
 
     const appSubnets = ['a', 'b', 'c'].map((az, index) => {
-      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/public/apse2${az}-id`);
+      const subnetId = ssm.StringParameter.valueForStringParameter(
+        this,
+        `/usyd/resources/subnets/public/apse2${az}-id`,
+      );
       const availabilityZone = `ap-southeast-2${az}`;
       const subnet = ec2.Subnet.fromSubnetAttributes(this, `AppSubnet${index}`, { subnetId, availabilityZone });
       cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
@@ -102,6 +108,12 @@ export class AppStack extends cdk.Stack {
         dataNodes: 3,
         multiAzWithStandbyEnabled: false, // We don't need that much HA
       },
+      ebs: {
+        volumeSize: 30,
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        throughput: 125, // These are the minimums
+        iops: 3000, // These are the minimums
+      },
       version: opensearch.EngineVersion.OPENSEARCH_2_11,
       tlsSecurityPolicy: opensearch.TLSSecurityPolicy.TLS_1_2_PFS,
       enableVersionUpgrade: true,
@@ -112,9 +124,11 @@ export class AppStack extends cdk.Stack {
         enabled: true,
       },
       vpc,
-      vpcSubnets: [{
-        subnets: dataSubnets,
-      }],
+      vpcSubnets: [
+        {
+          subnets: dataSubnets,
+        },
+      ],
       zoneAwareness: {
         enabled: true,
         availabilityZoneCount: 3,
@@ -128,7 +142,7 @@ export class AppStack extends cdk.Stack {
     NagSuppressions.addResourceSuppressions(searchDomain, [
       { id: 'AwsSolutions-OS3', reason: 'We are indise a VPC, not on the Internet' },
       { id: 'AwsSolutions-OS4', reason: "We don't want to pay for dedicated data nodes" },
-      { id: 'AwsSolutions-OS5', reason: "Should not trigger as anonymous disabled" },
+      { id: 'AwsSolutions-OS5', reason: 'Should not trigger as anonymous disabled' },
     ]);
 
     // ////////////////////////
