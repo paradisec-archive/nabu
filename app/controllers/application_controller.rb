@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
 
       params[name] = 1000 if params[name] && params[name] > 1000
 
-      params.delete(param) if params[name].zero?
+      params.delete(name) if params[name].zero?
     end
   end
 
