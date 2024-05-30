@@ -166,7 +166,7 @@ class ItemsController < ApplicationController
     @page_title = 'Nabu - Items Bulk Update'
     @params = advanced_search_params
 
-    build_advanced_search
+    @items = build_advanced_search
     build_deletable_params(@item, @items)
   end
 
