@@ -49,7 +49,7 @@ class DoiMintingService
     response = connection.request(request)
 
     if response.code != '201'
-      Sentry.capture_message 'DOI creation failed', extra: { code: response.code, body: response.body }
+      Sentry.capture_message 'DOI creation failed', extra: { code: response.code, body: response.body, request: body }
       Rails.logger.error "DOI code: #{response.code}"
       Rails.logger.error "DOI response: #{response.body}"
 
