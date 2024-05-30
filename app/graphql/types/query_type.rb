@@ -30,6 +30,8 @@ module Types
     def item(full_identifier:)
       collection_identifier, item_identifier = full_identifier.split('-')
       collection = Collection.find_by(identifier: collection_identifier)
+      raise GraphQL::ExecutionError, 'Not found' unless collection
+
       collection.items.find_by(identifier: item_identifier)
     end
 
@@ -42,20 +44,18 @@ module Types
 
       collection_identifier, item_identifier = full_identifier.split('-')
       collection = Collection.find_by(identifier: collection_identifier)
-      raise(GraphQL::ExecutionError, 'Not found') unless collection
+      raise GraphQL::ExecutionError, 'Not found'  unless collection
 
       item = collection.items.find_by(identifier: item_identifier)
-      raise(GraphQL::ExecutionError, 'Not found') unless item
+      raise GraphQL::ExecutionError, 'Not found'  unless item
 
       desc = [
         '# Notes',
         '',
-        "Reference: https://catalog.paradisec.org.au/repository/#{collection.identifier}/#{item.identifier}",
+        "Reference: https://catalog.paradisec.org.au/repository/#{collection.identifier}/#{item.identifier}"
       ]
 
-      unless item.subject_languages.empty?
-        desc << "Language: #{item.subject_languages.first.name}\" #{item.subject_languages.first.code}"
-      end
+      desc << "Language: #{item.subject_languages.first.name}\" #{item.subject_languages.first.code}" unless item.subject_languages.empty?
 
       desc << "Country: #{item.countries.first.code}" unless item.countries.empty?
       desc << "Description: #{item.description}"
@@ -93,10 +93,10 @@ module Types
 
       collection_identifier, item_identifier = full_identifier.split('-')
       collection = Collection.find_by(identifier: collection_identifier)
-      raise(GraphQL::ExecutionError, 'Not found') unless collection
+      raise GraphQL::ExecutionError, 'Not found' unless collection
 
       item = collection.items.find_by(identifier: item_identifier)
-      raise(GraphQL::ExecutionError, 'Not found') unless item
+      raise GraphQL::ExecutionError, 'Not found' unless item
 
       warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
         i.set_user(context[:current_user], scope: :user)
@@ -172,7 +172,10 @@ module Types
     def essence(full_identifier:, filename:)
       collection_identifier, item_identifier = full_identifier.split('-')
       collection = Collection.find_by(identifier: collection_identifier)
+      raise GraphQL::ExecutionError, 'Not found' unless collection
+
       item = collection.items.find_by(identifier: item_identifier)
+      raise GraphQL::ExecutionError, 'Collection not found' unless item
 
       item.essences.find_by(filename:)
     end
