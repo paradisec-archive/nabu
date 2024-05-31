@@ -105,7 +105,7 @@ gem 'delayed_job_active_record' # Delay jobs and queue them in the database
 
 # Frameworks
 gem 'activeadmin'
-gem 'country_select'
+gem 'country_select', '~> 8.0' # 9.0 breaks active admin
 gem 'delayed-web'
 gem 'graphiql-rails', '1.8.0' # https://github.com/rmosolgo/graphiql-rails/issues/106
 gem 'graphql'
