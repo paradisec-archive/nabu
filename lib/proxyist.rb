@@ -28,9 +28,9 @@ end
 
 module Proxyist
   def self.list(identifier)
-    url = "#{BASE_URL}/object/#{identifier}"
+    url = generate_url(identifier)
 
-    response = Net::HTTP.get_response(URI.parse(url))
+    response = Net::HTTP.get_response(url)
 
     raise 'Proxyist request failed' unless response.is_a?(Net::HTTPOK)
 
@@ -38,10 +38,10 @@ module Proxyist
   end
 
   def self.get_object(identifier, filename, params = {})
-    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
-    url += '?disposition=attachment' if params[:download]
+    is_downloadable = params[:download]
+    url = generate_url(identifier, filename, is_downloadable:)
 
-    response = Net::HTTP.get_response(URI.parse(url))
+    response = Net::HTTP.get_response(url)
 
     return if response.is_a?(Net::HTTPNotFound)
 
@@ -51,20 +51,33 @@ module Proxyist
   end
 
   def self.upload_object(identifier, filename, data, headers = nil)
-    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
+    url = generate_url(identifier, filename)
 
-    Net::HTTP.put(URI.parse(url), data, headers)
+    Net::HTTP.put(url, data, headers)
   end
 
   def self.delete_object(identifier, filename)
-    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
+    url = generate_url(identifier, filename)
 
-    Net::HTTP.delete(URI.parse(url))
+    Net::HTTP.delete(url)
   end
 
   def self.exists?(identifier, filename)
-    url = "#{BASE_URL}/object/#{identifier}/#{filename}"
+    url = generate_url(identifier, filename)
 
-    Net::HTTP.head(URI.parse(url))
+    Net::HTTP.head(url)
+  end
+
+  def self.generate_url(identifier, filename = nil, is_downloadable: false)
+    query = {}
+    query[:disposition] = 'attachment' if is_downloadable
+
+    path = "/object/#{URI.encode_uri_component(identifier)}"
+    path += "/#{URI.encode_uri_component(filename)}" if filename
+
+    uri = URI.join(BASE_URL, path)
+    uri.query = URI.encode_www_form(query) unless query.empty?
+
+    uri
   end
 end
