@@ -252,7 +252,7 @@ class Item < ApplicationRecord
   end
 
   def self.sortable_columns
-    %w[full_identifier title collector_sortname updated_at language sort_country essences_count]
+    %w[full_identifier title collector_sortname updated_at language countries essences_count]
   end
 
   searchkick geo_shape: [:bounds], word_start: %i[identifier full_identifier collection_identifier], deep_paging: true
