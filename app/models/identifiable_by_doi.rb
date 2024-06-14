@@ -24,7 +24,7 @@ module IdentifiableByDoi
                             end
 
     contributors = [{ name: collector_name, contributorType: 'DataCollector' }]
-    contributors.push({ name: university_name, contributorType: 'DataCollector' }) if respond_to?(:university_name)
+    contributors.push({ name: university_name, contributorType: 'DataCollector' }) if respond_to?(:university_name) && university_name.present?
 
     attributes = {
       event: 'publish',
