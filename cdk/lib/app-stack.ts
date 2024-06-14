@@ -170,6 +170,7 @@ export class AppStack extends cdk.Stack {
 
       minCapacity: 1,
       maxCapacity: 1,
+      requireImdsv2: true,
 
       // keyName: 'nabu',
     });
