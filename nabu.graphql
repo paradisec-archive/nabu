@@ -10,6 +10,12 @@ type Agent {
   user_name: String
 }
 
+"""
+Represents non-fractional signed whole numeric values. Since the value may
+exceed the size of a 32-bit integer, it's encoded as a string.
+"""
+scalar BigInt
+
 type Boundary {
   east_limit: Float!
   north_limit: Float!
@@ -72,6 +78,12 @@ type DiscourseType {
   name: String!
 }
 
+type EmailUser {
+  email: String
+  firstName: String
+  lastName: String
+}
+
 type Essence {
   bitrate: Int
   channels: Int
@@ -91,7 +103,7 @@ type Essence {
   mimetype: String
   permalink: String
   samplerate: Int
-  size: Int
+  size: BigInt
   updatedAt: ISO8601DateTime
 }
 
@@ -183,7 +195,7 @@ type Grant {
 """
 An ISO 8601-encoded datetime
 """
-scalar ISO8601DateTime
+scalar ISO8601DateTime @specifiedBy(url: "https://tools.ietf.org/html/rfc3339")
 
 type Item {
   access_class: String
@@ -197,6 +209,7 @@ type Item {
   collector: Person!
   content_languages: [Language]
   countries: [Country]
+  created_at: ISO8601DateTime
   data_categories: [DataCategory]
   data_types: [DataType]
   description: String
@@ -213,6 +226,7 @@ type Item {
   ingest_notes: String
   item_agents: [Agent]
   language: String
+  metadata_exportable: Boolean!
   operator: Person
   original_media: String
   originated_on: String
@@ -226,6 +240,25 @@ type Item {
   title: String
   tracking: String
   university: University
+  updated_at: ISO8601DateTime
+}
+
+type ItemBwfCsv {
+  collectionIdentifier: String!
+  createdAt: ISO8601DateTime
+  csv: String!
+  fullIdentifier: String!
+  itemIdentifier: String!
+  updatedAt: ISO8601DateTime
+}
+
+type ItemId3 {
+  collectionIdentifier: String!
+  createdAt: ISO8601DateTime
+  fullIdentifier: String!
+  itemIdentifier: String!
+  txt: String!
+  updatedAt: ISO8601DateTime
 }
 
 type ItemResult {
@@ -292,7 +325,22 @@ type Query {
   Find an item by full identifier. e.g. NT1-009
   """
   item(fullIdentifier: ID!): Item
+
+  """
+  Get the BWF CSV for an item
+  """
+  itemBwfCsv(filename: String!, fullIdentifier: ID!): ItemBwfCsv
+
+  """
+  Get the ID3 XML for an item
+  """
+  itemId3(fullIdentifier: ID!): ItemId3
   items(access_class: String, access_condition_name: String, access_narrative: String, born_digital: Boolean, collection_identifier: String, collector_name: String, description: String, dialect: String, digitised_on: String, discourse_type_name: String, doi: String, essences_count: Int, full_identifier: String, id: ID, identifier: String, ingest_notes: String, language: String, limit: Int = 10, operator_name: String, original_media: String, originated_on: String, originated_on_narrative: String, page: Int = 1, private: Boolean, received_on: String, region: String, title: String, tracking: String, university_name: String): ItemResult
+
+  """
+  Find a user by their unikey
+  """
+  userByUnikey(unikey: String!): EmailUser
 }
 
 type University {
