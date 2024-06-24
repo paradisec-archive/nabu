@@ -117,7 +117,7 @@ input EssenceAttributes {
   fps: Int
   mimetype: String!
   samplerate: Int
-  size: Int!
+  size: BigInt!
 }
 
 """
