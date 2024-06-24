@@ -4,7 +4,7 @@ module Types
   class EssenceAttributes < Types::BaseInputObject
     description 'Attributes for creating or updating an essence'
     argument :mimetype, String
-    argument :size, Integer
+    argument :size, GraphQL::Types::BigInt
     argument :bitrate, Integer, required: false
     argument :samplerate, Integer, required: false
     argument :duration, Float, required: false
