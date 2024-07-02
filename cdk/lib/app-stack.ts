@@ -316,6 +316,7 @@ export class AppStack extends cdk.Stack {
     });
     loadBalancer.connections.allowTo(autoScalingGroup, ec2.Port.allTcp(), 'Allow from LB to ECS service');
     searchDomain.grantReadWrite(appTaskDefinition.taskRole);
+    catalogBucket.grantReadWrite(appTaskDefinition.taskRole);
     searchDomain.connections.allowDefaultPortFrom(autoScalingGroup, 'Allow from ECS service');
 
     // ////////////////////////
@@ -339,6 +340,7 @@ export class AppStack extends cdk.Stack {
       }),
     );
     searchDomain.grantReadWrite(jobsTaskDefinition.taskRole);
+    catalogBucket.grantReadWrite(appTaskDefinition.taskRole);
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
