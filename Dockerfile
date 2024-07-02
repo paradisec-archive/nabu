@@ -26,10 +26,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
 
 # App specific
-RUN apt-get install --no-install-recommends -y \
-      libcurl4-openssl-dev \
-      libmagic-dev \
-      libmagickwand-dev
+# RUN apt-get install --no-install-recommends -y libcurl4-openssl-dev
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -55,11 +52,6 @@ FROM base
 # Install packages needed for deployment
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl default-mysql-client libvips && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install app packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y libmagic1 libmagickwand-6.q16-6 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

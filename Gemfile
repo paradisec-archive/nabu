@@ -119,7 +119,6 @@ gem 'searchkick'
 
 # Other
 gem 'curb' # Download CSVs for import
-gem 'rmagick' # Image processing
 gem 'roo' # Spreadsheet interface
 gem 'roo-xls' # Add excel support to roo
 gem 'ruby-filemagic' # Detect file types

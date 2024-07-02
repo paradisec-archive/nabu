@@ -1,4 +1,4 @@
-class ItemCatalogService
+class CatalogMetadataService
   def initialize(item)
     @item = item
     @template = OfflineController.new

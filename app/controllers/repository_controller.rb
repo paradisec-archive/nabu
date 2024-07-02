@@ -1,5 +1,4 @@
 require 'ostruct'
-require 'nabu/media'
 
 class RepositoryController < ApplicationController
   def collection
