@@ -122,10 +122,8 @@ gem 'searchkick'
 gem 'curb' # Download CSVs for import
 gem 'roo' # Spreadsheet interface
 gem 'roo-xls' # Add excel support to roo
-gem 'ruby-filemagic' # Detect file types
 gem 'rubyzip' # Zip the large CSV files before emailing
 gem 'rufus-scheduler' # Cron
-gem 'streamio-ffmpeg' # ffmpeg interface
 gem 'whenever', require: false # scheduling
 
 group :development, :test do
