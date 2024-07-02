@@ -36,7 +36,7 @@ module Nabu
     config.assets.precompile << 'delayed/web/application.css'
 
     config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET')
-    throw 'Must set NABU_CATALOG_BUCKET' unless config.catalog_bucket
+    throw 'Must set NABU_CATALOG_BUCKET' if !defined?(Rake) && Rake.application.top_level_tasks.exclude?('assets:precompile') && !config.catalog_bucket
   end
 end
 
