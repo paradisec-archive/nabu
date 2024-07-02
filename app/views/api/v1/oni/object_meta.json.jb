@@ -1,7 +1,5 @@
 # frozen_string_literal: truemeta
 
-# rubocop:disable Metrics/MethodLength,
-
 def id
   @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
 end
@@ -15,21 +13,9 @@ def rocrate_json
     },
     about: {
       '@id': id
-      # '@id': api_v1_oni_object_meta({ id: })
     }
   }
 end
-
-# def contact_json
-#   {
-#     '@id': 'admin@paradisec.org.au',
-#     '@type': 'ContactPoint',
-#     contactType: 'customer service',
-#     email: 'admin@paradisec.org.au',
-#     identifier: 'admin@paradisec.org.au',
-#     url: 'https://paradisec.org.au'
-#   }
-# end
 
 @people = Set.new
 def person_json(user)
@@ -63,10 +49,12 @@ def essence_json(essence)
     doi: essence.doi
     # essenceId: essence.id # Should we expose this????,
   }
-  json[:bitrate] = essence.bitrate if essence.bitrate
-  json[:duration] = essence.duration if essence.duration
-  json[:channels] = essence.channels if essence.channels
-  json[:sampleRate] = essence.samplerate if essence.samplerate
+  json[:bitrate] = essence.bitrate
+  json[:duration] = essence.duration
+  json[:channels] = essence.channels
+  json[:sampleRate] = essence.samplerate
+
+  json.compact!
 
   @essences.add(json)
 
@@ -171,20 +159,47 @@ def access_condition_json(access_condition)
   id
 end
 
-def organisation_id(organisation)
-  organisation.party_identifier
+@fields_of_research = Set.new
+def field_of_research_json(field_of_research)
+  id = "https://linked.data.gov.au/def/anzsrc-for/2020/#{field_of_research.identifier}"
+  json = {
+    '@id': id,
+    '@type': 'DefinedTerm',
+    name: field_of_research.name
+  }
+  @fields_of_research.add(json)
+
+  id
 end
 
+@organisations = Set.new
 def organisation_json(organisation)
-  {
-    '@id': organisation_id(organisation),
+  id = organisation.party_identifier
+
+  json = {
+    '@id': id,
     '@type': 'Organisation',
     name: organisation.name
   }
+  @organisations.add(json)
+
+  id
 end
 
-# starts: here,
-graph = []
+@funders = Set.new
+def funder_json(grant)
+  id = "#grant-#{grant.id}"
+
+  json = {
+    '@id': id,
+    '@type': 'Organisation',
+    name: grant.funding_body.name,
+    description: "#{grant.grant_identifier} (#{grant.funding_body.name})"
+  }
+  @funders.add(json)
+
+  id
+end
 
 # The item or collection
 data = {
@@ -215,38 +230,77 @@ data = {
 
   publisher: { '@id': person_json(@data.collector) },
 
-  private: @data.private,
-
   inLanguage: (@is_item ? @data.content_languages : @data.languages).map { |language| { '@id': language_json(language) } },
   subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
   countries: @data.countries.map { |country| { '@id': country_json(country) } }
 }
 
+if @admin_rocrate
+  data[:comment] = @is_item ? @data.admin_comment : @data.comments
+  data[:usageinfo] = data[:access_narrative]
+  data[:private] = @data.private
+  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': person_json(admin) } }
+end
+
 data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
+data[:operator] = { '@id': person_json(@data.operator) } if @data.operator
+data[:sourceOrganization] = organisation_json(@data.university) if @data.university
 
 if @is_item
   data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
   data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
   data[:bornDigital] = @data.born_digital
   data[:digitisedOn] = @data.digitised_on.to_date if @data.digitised_on
+  data[:receivedOn] = @data.received_on.to_date if @data.received_on
   data[:external] = @data.external
   data[:languageAsGiven] = @data.language
-  data[:metadataExportable] = @data.metadata_exportable
   data[:originalMedia] = @data.original_media if @data.original_media
   data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
-  data[:tapesReturned] = @data.tapes_returned
   data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
+  data[:languageGenre] = @data.discourse_type.name if @data.discourse_type
+  if @data.data_categories
+    data[:communicationMode] = @data.data_categories.map do |data_category|
+      { '@id': "https://w3id.org/ldac/terms##{data_category.name}" }
+    end
+  end
+
+  if @data.data_types
+    data['paradisec:dataType'] = @data.data_types.map do |data_type|
+      { '@id': "#datatype-#{data_type.id}", name: data_type.name }
+    end
+  end
 
   @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
     data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
   end
+
+  if @admin_rocrate
+    data[:metadataExportable] = @data.metadata_exportable
+    data[:tapesReturned] = @data.tapes_returned
+    data['paradisec:users'] = @data.users.map { |user| { '@id': person_json(user) } }
+    data['paradisec:dialect'] = @data.dialect
+    data['paradisec:ingestNotes'] = @data.ingest_notes
+    data['paradisec:originatedOnNarrative'] = @data.originated_on_narrative
+    data['paradisec:tracking'] = @data.tracking
+    data['paradisec:url'] = @data.url
+  end
+else
+  data[:material] = @data.media
+  data[:orthographic_notes] = @data.orthographic_notes
+  data['paradisec:metadataSource'] = @data.metadata_source
+  data[:itemLocation] = @data.tape_location
+  data[:about] = field_of_research_json(@data.field_of_research) if @data.field_of_research
+
+  data[:funder] = @grants.map { |grant| { '@id': funder_json(grant) } } if @grants.any?
 end
+
+@data.compact!
+
+# starts: here,
+graph = []
 
 graph << data
 graph << rocrate_json
-
-# TODO: need to workout where this goes and then reimplemrnt like below
-graph << organisation_json(@data.university) if @data.university
 
 # Add all the references
 graph.concat(@property_values.to_a)
@@ -257,6 +311,9 @@ graph.concat(@essences.to_a) if @is_item
 graph.concat(@geos.to_a)
 graph.concat(@places.to_a)
 graph.concat(@languages.to_a)
+graph.concat(@fields_of_research.to_a)
+graph.concat(@organisations.to_a)
+graph.concat(@funders.to_a)
 
 {
   '@context': [
@@ -268,5 +325,3 @@ graph.concat(@languages.to_a)
   ],
   '@graph': graph
 }
-
-# rubocop:enable Metrics/MethodLength,

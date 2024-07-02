@@ -99,6 +99,13 @@ module Api
           @is_item = false
         end
 
+        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
+        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
+        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
+        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
+        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
+        @admin_rocrate = true
+
         raise ActiveRecord::RecordNotFound unless @data
       end
     end
