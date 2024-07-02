@@ -6,10 +6,6 @@ class OfflineController < ActionController::Base
 
   append_view_path ActionView::FileSystemResolver.new('app/views')
 
-  def initialize(*args)
-    super()
-  end
-
   def request
     ActionDispatch::Request.new({})
   end

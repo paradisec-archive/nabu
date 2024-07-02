@@ -147,7 +147,7 @@ class Item < ApplicationRecord
 
   before_save :propagate_collector
   after_save :update_collection_countries_and_languages
-  after_save :update_catalog_file
+  after_save :update_catalog_metadata
 
   scope :public_items, -> { joins(:collection).where(private: false, collection: { private: false }) }
 
@@ -629,8 +629,8 @@ class Item < ApplicationRecord
     @bulk_deleteable ||= {}
   end
 
-  def update_catalog_file
-    ItemCatalogService.new(self).delay.save_file
+  def update_catalog_metadata
+    CatalogMetadataService.new(self, true).delay.save_file
   end
 
   def center_coordinate

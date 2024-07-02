@@ -81,9 +81,6 @@ class ItemsController < ApplicationController
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     if @item.update(item_params)
-      # update xml file of the item
-      save_item_catalog_file(@item)
-
       flash[:notice] = 'Item was successfully updated.'
       redirect_to [@collection, @item]
     else
@@ -355,12 +352,6 @@ class ItemsController < ApplicationController
                                    :content_languages
                                  ])
                        .find_by!(identifier: params[:id])
-  end
-
-  def save_item_catalog_file(item)
-    return if item.nil?
-
-    ItemCatalogService.new(item).delay.save_file
   end
 
   def stream_csv(search_type)

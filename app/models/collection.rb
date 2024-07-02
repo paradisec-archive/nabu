@@ -117,6 +117,7 @@ class Collection < ApplicationRecord
 
   before_save :check_complete
   before_save :propagate_collector
+  after_save :update_catalog_metadata
 
   def default_map_boundaries?
     return false unless north_limit && south_limit && east_limit && west_limit
@@ -167,6 +168,10 @@ class Collection < ApplicationRecord
     else
       "#{grant.funding_body&.key_prefix}#{grant.grant_identifier}"
     end
+  end
+
+  def update_catalog_metadata
+    CatalogMetadataService.new(self, false).delay.save_file
   end
 
   searchkick geo_shape: [:bounds], word_start: [:identifier]

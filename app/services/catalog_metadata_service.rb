@@ -1,15 +1,20 @@
 class CatalogMetadataService
-  def initialize(item)
-    @item = item
-    @template = OfflineController.new
+  def initialize(data, is_item)
+    @data = data
+    @is_item = is_item
   end
 
   def save_file
-    data = @template.render_to_string template: 'items/catalog_export', formats: [:xml], handlers: [:haml], locals: { item: @item }
+    local_data = {
+      data: @data,
+      is_item: @is_item,
+      admin_rocrate: true
+    }
+    data = Api::V1::OniController.render :object_meta, assigns: local_data
 
-    identifier = @item.full_identifier
-    filename = "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml"
+    identifier = @data.full_identifier
+    filename = 'pdsc_admin/ro-crate-metadata.json'
 
-    Proxyist.upload_object identifier, filename, data, 'Content-Type' => 'text/xml'
+    Proxyist.upload_object identifier, filename, data, 'Content-Type' => 'application/json'
   end
 end

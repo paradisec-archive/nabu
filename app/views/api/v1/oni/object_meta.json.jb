@@ -1,6 +1,9 @@
 # frozen_string_literal: truemeta
 
 def id
+  p 'STIX'
+  p @is_item
+  p @data
   @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
 end
 
@@ -291,10 +294,10 @@ else
   data[:itemLocation] = @data.tape_location
   data[:about] = field_of_research_json(@data.field_of_research) if @data.field_of_research
 
-  data[:funder] = @grants.map { |grant| { '@id': funder_json(grant) } } if @grants.any?
+  data[:funder] = @data.grants.map { |grant| { '@id': funder_json(grant) } } if @data.grants.any?
 end
 
-@data.compact!
+data.compact!
 
 # starts: here,
 graph = []

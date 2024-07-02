@@ -54,8 +54,8 @@ class Essence < ApplicationRecord
   # ensure that the item catalog gets updated when essences are added/removed
 
   before_save :round_duration
-  after_create :update_catalog_file
-  before_destroy :update_catalog_file
+  after_create :update_catalog_metadata
+  before_destroy :update_catalog_metadata
 
   def allowed_zero_file_size?
     filename =~ /\.(annis)$/
@@ -124,8 +124,8 @@ class Essence < ApplicationRecord
 
   private
 
-  def update_catalog_file
-    ItemCatalogService.new(item).delay.save_file
+  def update_catalog_metadata
+    item.update_catalog_metadata
   end
 
   def round_duration
