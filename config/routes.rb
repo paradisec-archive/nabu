@@ -47,7 +47,9 @@ Rails.application.routes.draw do
     end
     resources :items, except: %i[index] do
       member do
-        get :display
+        get :s3_rocrate
+        get :private_rocrate
+        get :public_rocrate
         get :data
         patch :inherit_details
       end

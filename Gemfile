@@ -100,6 +100,7 @@ gem 'paper_trail' # Keep an audit trail of all the changes
 
 # Background processing
 gem 'aws-sdk-rails' # Send emails via SES
+gem 'aws-sdk-s3' # Talk to the catalog
 gem 'daemons' # Needed by delayed_job
 gem 'delayed_job_active_record' # Delay jobs and queue them in the database
 

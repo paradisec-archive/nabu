@@ -1,9 +1,6 @@
 # frozen_string_literal: truemeta
 
 def id
-  p 'STIX'
-  p @is_item
-  p @data
   @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
 end
 

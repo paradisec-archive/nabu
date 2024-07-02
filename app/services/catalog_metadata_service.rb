@@ -12,9 +12,12 @@ class CatalogMetadataService
     }
     data = Api::V1::OniController.render :object_meta, assigns: local_data
 
-    identifier = @data.full_identifier
-    filename = 'pdsc_admin/ro-crate-metadata.json'
+    filename = 'ro-crate-metadata.json'
 
-    Proxyist.upload_object identifier, filename, data, 'Content-Type' => 'application/json'
+    if @is_item
+      Nabu::Catalog.instance.upload_item_admin(@data, filename, data, 'application/json')
+    else
+      Nabu::Catalog.instance.upload_collection_admin(@data, filename, data, 'application/json')
+    end
   end
 end

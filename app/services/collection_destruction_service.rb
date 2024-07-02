@@ -1,7 +1,5 @@
 class CollectionDestructionService
   def self.destroy(collection)
-    item_identifiers = collection.items.map(&:full_identifier)
-
     essences = collection.items.map(&:essences).flatten
     essence_ids = essences.map(&:id)
 
@@ -15,17 +13,14 @@ class CollectionDestructionService
       collection.destroy
 
       # Remove The items just in case
-      item_identifiers.each do |item_identifier|
-        files = Proxyist.list(item_identifier)
-        files.each { |file| Proxyist.delete_object(item_identifier, file) }
-
-        Rails.logger.info "[DELETE] Removed entire item directory at [#{item_identifier}] #{files.size} files"
+      collection.items.each do |item|
+        count = Nabu::Catalog.instance.delete_item(item)
+        Rails.logger.info "[DELETE] Removed entire item directory at [#{item.identifier}] #{count} files"
       end
 
-      files = Proxyist.list(collection.identifier)
-      files.each { |file| Proxyist.delete_object(collection.identifier, file) }
-      Rails.logger.info "[DELETE] Removed entire collection directory at [#{collection.identifier}] #{files.size} files"
-    rescue => e
+      count = Nabu::Catalog.instance.delete_collection(collection)
+      Rails.logger.info "[DELETE] Removed entire collection directory at [#{collection.identifier}] #{count} files"
+    rescue StandardError => e
       return {
         success: false,
         messages: {

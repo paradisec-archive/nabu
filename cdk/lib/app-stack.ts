@@ -198,46 +198,6 @@ export class AppStack extends cdk.Stack {
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // ////////////////////////
-    // Proxyist
-    // ////////////////////////
-
-    const proxyistTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ProxyistTaskDefinition');
-    NagSuppressions.addResourceSuppressions(proxyistTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
-    proxyistTaskDefinition.addContainer('ProxyistContainer', {
-      memoryLimitMiB: 256,
-      image: ecs.ContainerImage.fromAsset('..', {
-        file: 'docker/proxyist.Dockerfile',
-      }),
-      stopTimeout: cdk.Duration.seconds(5),
-      portMappings: [{ name: 'proxyist', containerPort: 3000 }],
-      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ProxyistService' }),
-      environment: {
-        AWS_REGION: region,
-        BUCKET_NAME: catalogBucket.bucketName,
-      },
-    });
-    catalogBucket.grantReadWrite(proxyistTaskDefinition.taskRole);
-
-    new ecs.Ec2Service(this, 'ProxyistService', {
-      serviceName: 'proxyist',
-      cluster,
-      taskDefinition: proxyistTaskDefinition,
-      enableExecuteCommand: true,
-      serviceConnectConfiguration: {
-        logDriver: ecs.LogDrivers.awsLogs({
-          streamPrefix: 'sc-traffic',
-        }),
-        services: [
-          {
-            portMappingName: 'proxyist',
-          },
-        ],
-      },
-    });
-
-    // ////////////////////////
     // Viewer
     // ////////////////////////
 
@@ -303,7 +263,7 @@ export class AppStack extends cdk.Stack {
         RAILS_SERVE_STATIC_FILES: 'true', // TODO: do we need nginx in production??
         RAILS_ENV: railsEnv,
         OPENSEARCH_URL: `https://${searchDomain.domainEndpoint}`,
-        PROXYIST_URL: 'http://proxyist.nabu:3000',
+        NABU_CATALOG_BUCKET: catalogBucket.bucketName,
         SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
         DOI_PREFIX: '10.26278',
         DATACITE_BASE_URL: env === 'prod' ? 'https://api.datacite.org' : 'https://api.test.datacite.org',

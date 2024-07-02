@@ -1,6 +1,4 @@
 class CatalogDbSyncValidatorService
-  # TODO: Make this support proxyist
-
   attr_reader :catalog_dir, :verbose
 
   def initialize(verbose: false)

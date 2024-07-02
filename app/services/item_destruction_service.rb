@@ -8,11 +8,9 @@ class ItemDestructionService
 
     item.destroy
 
-    # remove directory and PDSC_ADMIN files on disk
-    files = Proxyist.list(item.full_identifier)
-    files.each { |file| Proxyist.delete_object(item.full_identifier, file) }
+    count = Nabu::Catalog.instance.delete_item(item)
 
-    Rails.logger.info "[DELETE] Removed entire item directory at [#{item.full_identifier}]: #{files.size} files"
+    Rails.logger.info "[DELETE] Removed entire item directory at [#{item.full_identifier}]: #{count} files"
 
     if deleted_essence_count.positive?
       response[:messages][:notice] = 'Item and all its contents removed permanently (no undo possible)'

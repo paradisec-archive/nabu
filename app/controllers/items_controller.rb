@@ -181,11 +181,27 @@ class ItemsController < ApplicationController
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
   end
 
-  def display
-    location = Proxyist.get_object(@item.full_identifier, "#{@item.full_identifier}-CAT-PDSC_ADMIN.xml")
+  def s3_rocrate
+    location = Nabu::Catalog.instance.item_admin_url(@item, 'ro-crate-metadata.json')
     raise ActionController::RoutingError, 'PDSC file not found' unless location
 
     redirect_to location, allow_other_host: true
+  end
+
+  def private_rocrate
+    @data = @item
+    @is_item = true
+    @admin_rocrate = true
+
+    render template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb]
+  end
+
+  def public_rocrate
+    @data = @item
+    @is_item = true
+    @admin_rocrate = false
+
+    render template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb]
   end
 
   def new_report
@@ -252,17 +268,10 @@ class ItemsController < ApplicationController
         video_values[essence_basename] ||= []
         video_values[essence_basename] << repository_essence_url
       when 'jpg', 'jpeg', 'png'
-        thumbnail_url = repository_essence_url.gsub(".#{essence_extension}", '-thumb-PDSC_ADMIN.jpg')
-
-        # Copied from Essence#path and Essence#full_identifier.
-        thumbnail_exists = Proxyist.exists?(essence.item.identifier, File.basename(thumbnail_url))
-        thumbnail_url = nil unless thumbnail_exists
-
         # REQUIREMENTS: There are scenarios where multiple originals have the same essence basename. Is that ok as far as the player is concerned?
         unless images_values.key?(essence_basename)
           images_values[essence_basename] = {
-            'originals' => [],
-            'thumbnail' => thumbnail_url
+            'originals' => []
           }
         end
         images_values[essence_basename]['originals'] << repository_essence_url

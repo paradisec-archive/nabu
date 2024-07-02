@@ -28,16 +28,15 @@ module Nabu
     # Out Stuff
     ###################
 
-    ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'app', 'services')
-    ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib')
+    ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/services')
+    ActiveSupport::Dependencies.autoload_paths << Rails.root.join('lib')
 
     config.viewer_url = '/viewer'
 
     config.assets.precompile << 'delayed/web/application.css'
 
-    ## Proxyist
-    config.proxyist_url = ENV.fetch('PROXYIST_URL')
-    throw 'Must set PROXYIST_URL' unless config.proxyist_url
+    config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET')
+    throw 'Must set NABU_CATALOG_BUCKET' unless config.catalog_bucket
   end
 end
 

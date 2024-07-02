@@ -1,6 +1,3 @@
-upstream proxyist {
-    server proxyist:3000;
-}
 server {
   server_name catalog.paradisec.org.au;
 
@@ -23,13 +20,6 @@ server {
     proxy_set_header Connection "Upgrade";
     proxy_pass  http://app:3000;
     proxy_set_header X-Sendfile-Type X-Accel-Redirect;
-    proxy_set_header X-Accel-Mapping /proxyist/=/proxyist/;
-  }
-
-  location /proxyist/ {
-    internal;
-    set $stored_real_location $upstream_http_x_real_location;
-    proxy_pass http://proxyist$stored_real_location;
   }
 
   listen 443 ssl;

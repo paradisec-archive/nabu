@@ -15,7 +15,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-      PROXYIST_URL: http://proxyist:3000
+      NABU_CATALOG_BUCKET: nabu
       OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
     volumes:
       - .:/rails
@@ -64,13 +64,6 @@ services:
       - '5601:5601'
     environment:
       OPENSEARCH_HOSTS: '["http://search:9200"]'
-
-  proxyist:
-    image: ghcr.io/paradisec-archive/proxyist
-    volumes:
-      - ./docker/proxyist.config.js:/usr/src/app/proxyist.config.js
-    environment:
-      PROXYIST_ADAPTER_NAME: '@paradisec/proxyist-adapter-s3'
 
   s3:
     image: adobe/s3mock

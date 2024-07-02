@@ -1,5 +1,3 @@
-require 'proxyist'
-
 class EssencesController < ApplicationController
   load_and_authorize_resource :collection, find_by: :identifier, except: [:list_mimetypes]
   load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: [:list_mimetypes]
@@ -26,14 +24,14 @@ class EssencesController < ApplicationController
   def download
     Download.create! user: current_user, essence: @essence
 
-    location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename, download: true)
+    location = Nabu::Catalog.instance.essence_url(@essence, as_attachment: true)
     raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
   end
 
   def display
-    location = Proxyist.get_object(@essence.item.full_identifier, @essence.filename)
+    location = Nabu::Catalog.instance.essence_url(@essence)
     raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
