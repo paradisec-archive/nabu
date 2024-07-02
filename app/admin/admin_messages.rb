@@ -8,7 +8,7 @@
 # ----------------- | ------------------ | ---------------------------
 # **`id`**          | `integer`          | `not null, primary key`
 # **`finish_at`**   | `datetime`         | `not null`
-# **`message`**     | `text(65535)`      | `not null`
+# **`message`**     | `text(16777215)`   | `not null`
 # **`start_at`**    | `datetime`         | `not null`
 # **`created_at`**  | `datetime`         | `not null`
 # **`updated_at`**  | `datetime`         | `not null`

@@ -6,7 +6,7 @@
 #
 # Name                            | Type               | Attributes
 # ------------------------------- | ------------------ | ---------------------------
-# **`id`**                        | `integer`          | `not null, primary key`
+# **`id`**                        | `bigint`           | `not null, primary key`
 # **`address`**                   | `string(255)`      |
 # **`address2`**                  | `string(255)`      |
 # **`admin`**                     | `boolean`          | `default(FALSE), not null`
@@ -27,7 +27,6 @@
 # **`last_sign_in_ip`**           | `string(255)`      |
 # **`locked_at`**                 | `datetime`         |
 # **`party_identifier`**          | `string(255)`      |
-# **`password_salt`**             | `string(255)`      |
 # **`phone`**                     | `string(255)`      |
 # **`remember_created_at`**       | `datetime`         |
 # **`reset_password_sent_at`**    | `datetime`         |
@@ -35,6 +34,7 @@
 # **`rights_transfer_reason`**    | `string(255)`      |
 # **`sign_in_count`**             | `integer`          | `default(0)`
 # **`unconfirmed_email`**         | `string(255)`      |
+# **`unikey`**                    | `string(255)`      |
 # **`unlock_token`**              | `string(255)`      |
 # **`created_at`**                | `datetime`         | `not null`
 # **`updated_at`**                | `datetime`         | `not null`
@@ -50,10 +50,11 @@
 #     * **`reset_password_token`**
 # * `index_users_on_rights_transferred_to_id`:
 #     * **`rights_transferred_to_id`**
+# * `index_users_on_unikey` (_unique_):
+#     * **`unikey`**
 # * `index_users_on_unlock_token` (_unique_):
 #     * **`unlock_token`**
 #
-# rubocop:disable Metrics/BlockLength
 ActiveAdmin.register User do
   # show scoped buttons on index page
   scope :users

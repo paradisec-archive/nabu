@@ -18,6 +18,7 @@
 #
 # * `index_latlon_boundaries_on_country_id`:
 #     * **`country_id`**
+#
 
 ActiveAdmin.register LatlonBoundary, as: 'CountryBoundary' do
   menu parent: 'Other Entities'
