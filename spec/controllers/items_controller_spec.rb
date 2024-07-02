@@ -161,18 +161,4 @@ describe ItemsController, type: :controller do
       expect(assigns(:files)).to eq([essence])
     end
   end
-  context 'when viewing an item as xml' do
-    context 'with a specific type' do
-      it 'should render the specific template' do
-        get :show, params: params.merge(format: :xml, xml_type: :id3)
-        expect(response).to render_template('items/show_id3')
-      end
-    end
-    context 'with no type' do
-      it 'should render the default template' do
-        get :show, params: params.merge(format: :xml)
-        expect(response).to render_template('items/show')
-      end
-    end
-  end
 end

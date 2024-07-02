@@ -16,17 +16,6 @@ class ItemsController < ApplicationController
     @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
 
     @files = @files.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :filename)
-
-    respond_to do |format|
-      format.html
-      format.xml do
-        if params[:xml_type]
-          render template: "items/show_#{params[:xml_type]}", formats: [:xml], handlers: [:haml]
-        else
-          render template: 'items/show', formats: [:xml], handlers: [:haml]
-        end
-      end
-    end
   end
 
   def new

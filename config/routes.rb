@@ -76,14 +76,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :collections do
-    resources :items, only: %i[] do
-      member do
-        get 'ro-crate-metadata.json', to: 'items#show', as: 'rocrate', defaults: { format: :rocrate }
-      end
-    end
-  end
-
   get '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
   get '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
   get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence',
