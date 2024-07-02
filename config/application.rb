@@ -1,6 +1,6 @@
-require_relative "boot"
+require_relative 'boot'
 
-require "rails/all"
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -14,7 +14,7 @@ module Nabu
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w(assets tasks))
+    config.autoload_lib(ignore: %w[assets tasks])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -36,7 +36,7 @@ module Nabu
     config.assets.precompile << 'delayed/web/application.css'
 
     config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET')
-    throw 'Must set NABU_CATALOG_BUCKET' if !defined?(Rake) && Rake.application.top_level_tasks.exclude?('assets:precompile') && !config.catalog_bucket
+    throw 'Must set NABU_CATALOG_BUCKET' unless config.catalog_bucket
   end
 end
 

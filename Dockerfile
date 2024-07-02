@@ -41,7 +41,7 @@ RUN echo $GIT_SHA > REVISION
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN ASSET_PRECOMPILE=1 SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN ASSET_PRECOMPILE=1 SECRET_KEY_BASE_DUMMY=1 NABU_CATALOG_BUCKET=dummy ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
