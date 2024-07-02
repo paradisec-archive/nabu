@@ -119,7 +119,6 @@ gem 'searchjoy'
 gem 'searchkick'
 
 # Other
-gem 'curb' # Download CSVs for import
 gem 'roo' # Spreadsheet interface
 gem 'roo-xls' # Add excel support to roo
 gem 'rubyzip' # Zip the large CSV files before emailing

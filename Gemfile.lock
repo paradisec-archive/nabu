@@ -165,7 +165,6 @@ GEM
       countries (~> 5.0)
     crass (1.0.6)
     csv (3.3.0)
-    curb (1.0.5)
     daemons (1.4.1)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
@@ -644,7 +643,6 @@ DEPENDENCIES
   cancancan
   capybara
   country_select (~> 8.0)
-  curb
   daemons
   database_cleaner
   debug

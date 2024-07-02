@@ -1,19 +1,7 @@
 # frozen_string_literal: true
 
-require 'curb'
+require 'open-uri'
 require 'zip'
-
-def fetch(url)
-  curl = Curl.get(url) do |http|
-    http.follow_location = true
-    http.enable_cookies = true
-    http.max_redirects = 3
-    http.encoding = 'UTF-8'
-    # http.verbose = true
-  end
-
-  curl.body_str.force_encoding('UTF-8')
-end
 
 # rubocop:disable Metrics/BlockLength Rails/Output
 namespace :import do
@@ -25,7 +13,7 @@ namespace :import do
     puts '# Importing countries from Ethnologue'
     puts
 
-    data = fetch('https://www.ethnologue.com/codes/CountryCodes.tab')
+    data = URI.open('https://www.ethnologue.com/codes/CountryCodes.tab', 'r:utf-8').read
 
     data.each_line do |line|
       next if line =~ /CountryID/
@@ -53,7 +41,7 @@ namespace :import do
     puts '# Importing languages from Ethnologue'
     puts
 
-    data = fetch('https://www.ethnologue.com/codes/LanguageCodes.tab')
+    data = URI.open('https://www.ethnologue.com/codes/LanguageCodes.tab', 'r:utf-8').read
 
     data.each_line do |line|
       next if line =~ /LangID/
@@ -85,7 +73,7 @@ namespace :import do
     puts '# Importing country languages from Ethnologue'
     puts
 
-    data = fetch('https://www.ethnologue.com/codes/LanguageIndex.tab')
+    data = URI.open('https://www.ethnologue.com/codes/LanguageIndex.tab', 'r:utf-8').read
 
     data.each_line do |line|
       next if line =~ /LangID/
@@ -118,7 +106,7 @@ namespace :import do
     puts '# Importing retired languages'
     puts
 
-    zip = Curl.get('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3_Code_Tables_20230123.zip').body_str
+    zip = URI.open('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3_Code_Tables_20230123.zip').read
 
     data = ''
     Zip::File.open_buffer(zip) do |zip_file|

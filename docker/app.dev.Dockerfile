@@ -15,9 +15,6 @@ ENV RAILS_ENV="development" \
 RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
 
-# App specific
-# RUN apt-get install --no-install-recommends -y libcurl4-openssl-dev
-
 # So rubocop works
 RUN mkdir -p /home/johnf/work/nabu; ln -s /rails /home/johnf/work/nabu/nabu
 

@@ -25,9 +25,6 @@ FROM base as build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
 
-# App specific
-# RUN apt-get install --no-install-recommends -y libcurl4-openssl-dev
-
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
