@@ -114,6 +114,8 @@ module Nabu
 
       Rails.logger.debug { "Deleting #{keys.join(',')} files" }
 
+      throw "Too many files to delete: #{keys.size}" if keys.size > 50
+
       del_response = @s3.delete_objects(
         bucket: bucket_name,
         delete: {
