@@ -22,6 +22,12 @@ module Nabu
         )
       end
 
+      Aws.config.update({
+                          region: 'ap-southeast-2',
+                          log_level: :debug,
+                          logger: Logger.new($stdout)
+                        })
+
       @s3 = Aws::S3::Client.new(params)
       @presigner = Aws::S3::Presigner.new(client: @s3)
     end
