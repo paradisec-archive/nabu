@@ -87,6 +87,7 @@ module Nabu
     end
 
     def upload(key, data, content_type)
+      puts "MOO #{key}, #{content_type}, #{bucket_name}"
       @s3.put_object(
         bucket: bucket_name,
         key:,
