@@ -340,7 +340,7 @@ export class AppStack extends cdk.Stack {
       }),
     );
     searchDomain.grantReadWrite(jobsTaskDefinition.taskRole);
-    catalogBucket.grantReadWrite(appTaskDefinition.taskRole);
+    catalogBucket.grantReadWrite(jobsTaskDefinition.taskRole);
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',

@@ -22,12 +22,6 @@ module Nabu
         )
       end
 
-      Aws.config.update({
-                          region: 'ap-southeast-2',
-                          log_level: :debug,
-                          logger: Logger.new($stdout)
-                        })
-
       @s3 = Aws::S3::Client.new(params)
       @presigner = Aws::S3::Presigner.new(client: @s3)
     end
@@ -93,7 +87,6 @@ module Nabu
     end
 
     def upload(key, data, content_type)
-      puts "MOO #{key}, #{content_type}, #{bucket_name}"
       @s3.put_object(
         bucket: bucket_name,
         key:,
