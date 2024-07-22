@@ -3,11 +3,11 @@
 
   data: @data.map do |data|
     class_name = data.class.name
-    is_collection = class_name == 'Collection'
+    is_item = class_name == 'Item'
 
     {
-      conformsTo: "https://purl.archive.org/language-data-commons/profile##{class_name}",
-      crateId: is_collection ? repository_collection_url(data) : repository_item_url(data.collection, data),
+      conformsTo: "https://purl.archive.org/language-data-commons/profile##{is_item ? 'Object' : 'Collection'}",
+      crateId: is_item ? repository_item_url(data.collection, data) : repository_collection_url(data),
       record: {
         name: data.title,
         license: data.access_condition_name,
