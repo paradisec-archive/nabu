@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
       begin
         params[name] = params[name].to_i
       rescue StandardError
-        params.delete(param)
+        params.delete(name)
         next
       end
 
