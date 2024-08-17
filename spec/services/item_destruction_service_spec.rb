@@ -2,15 +2,15 @@ require 'rails_helper'
 
 describe ItemDestructionService do
   before do
-    allow(EssenceDestructionService).to receive(:destroy).and_return({error: 'test fail'})
+    allow(EssenceDestructionService).to receive(:destroy).and_return({ error: 'test fail' })
 
-    #so there are no surprise directory deletions from the service tests
+    # so there are no surprise directory deletions from the service tests
     allow(FileUtils).to receive(:rm_f).and_return(nil)
     allow(FileUtils).to receive(:rmdir).and_return(nil)
   end
 
   context 'when item has no files' do
-    let(:item_with_no_files) {create(:item, essences: [])}
+    let(:item_with_no_files) { create(:item, essences: []) }
     it 'should proceed without errors when not deleting files' do
       response = ItemDestructionService.destroy(item_with_no_files)
       expect(response[:success]).to eq(true)
@@ -25,8 +25,8 @@ describe ItemDestructionService do
     end
   end
   context 'when item has files' do
-    let(:essence) {create(:sound_essence)}
-    let(:item_with_files) {create(:item, essences: [essence])}
+    let(:essence) { create(:sound_essence) }
+    let(:item_with_files) { create(:item, essences: [essence]) }
 
     # FIXME: JF: The code doesn't do this anymore, should it?
     # it 'should fail when attempting to leave files' do
@@ -51,7 +51,7 @@ describe ItemDestructionService do
 
     context 'when essence files are present on the server' do
       before do
-        allow(EssenceDestructionService).to receive(:destroy).and_return({notice: 'test success'})
+        allow(EssenceDestructionService).to receive(:destroy).and_return({ notice: 'test success' })
       end
       it 'should proceed without errors when attempting to delete files' do
         response = ItemDestructionService.destroy(item_with_files)

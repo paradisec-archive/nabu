@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :collection do
-    sequence(:identifier) {|n| "AA#{n}"}
+    sequence(:identifier) { |n| "AA#{n}" }
     title { 'Collection Title' }
     description { 'The awesome collection' }
     # countries {[build(:country)]}
@@ -21,7 +21,13 @@ FactoryBot.define do
     end
 
     trait :with_doi do
-      sequence(:doi) {|n| "doi:COLLECTION#{n}"}
+      sequence(:doi) { |n| "doi:COLLECTION#{n}" }
+    end
+
+    trait :reindex do
+      after(:create) do |collection, _evaluator|
+        collection.reindex(refresh: true)
+      end
     end
   end
 end

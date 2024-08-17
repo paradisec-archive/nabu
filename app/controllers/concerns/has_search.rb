@@ -9,6 +9,21 @@ module HasSearch
 
     private
 
+    def create_aggs
+      aggs = {}
+
+      model.search_agg_fields.each do |field|
+        if params[field]
+          # Only show the selected filter in the dropdown
+          aggs[field] = { where: { field => params[field] } }
+        else
+          aggs[field] = {}
+        end
+      end
+
+      aggs
+    end
+
     def build_basic_search
       @search = model.search(
         params[:search] || '*',
@@ -21,7 +36,7 @@ module HasSearch
           '*'
         ],
 
-        aggs: model.search_agg_fields,
+        aggs: create_aggs,
 
         where: basic_search_where,
 
@@ -113,10 +128,10 @@ module HasSearch
   # rubocop:disable Metrics/MethodLength
   def build_should(name, value)
     boost = case name
-            when :title then 10
-            when :identifier then 20
-            else 1
-            end
+    when :title then 10
+    when :identifier then 20
+    else 1
+    end
 
     {
       dis_max: {

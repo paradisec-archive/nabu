@@ -11,14 +11,13 @@
 #    end
 
 module CapybaraExt
-
-  def select2_ajax value, options={}
+  def select2_ajax(value, options = {})
     raise "Must pass a hash containing 'from'" if not options.is_a?(Hash) or not options.has_key?(:from)
 
     placeholder = options[:from]
     minlength = options[:minlength] || 4
 
-    #click_link placeholder
+    # click_link placeholder
 
     js = %Q|
       var label = $('label:contains("#{placeholder}")');
@@ -37,7 +36,6 @@ module CapybaraExt
     |
     page.execute_script(js)
   end
-
 end
 
 RSpec.configure do |c|

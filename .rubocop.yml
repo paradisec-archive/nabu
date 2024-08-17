@@ -1,5 +1,7 @@
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
 require:
-  - rubocop-rails
   - rubocop-rake
   - rubocop-rspec
   - rubocop-capybara
@@ -8,8 +10,16 @@ require:
 
 AllCops:
   NewCops: enable
-  TargetRailsVersion: 7.0
+  TargetRailsVersion: 7.2
   TargetRubyVersion: 3.1
+  Exclude:
+    - cdk/**/*
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: no_space
 
 Style/Documentation:
   Enabled: false

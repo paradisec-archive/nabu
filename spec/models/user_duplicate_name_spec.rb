@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 describe User do
-  let!(:duplicate_user) {create(:user, first_name: 'Joe', last_name: 'Bloggs')}
-  let!(:duplicate_user2) {create(:user, first_name: 'Joe', last_name: 'Bloggs')}
+  let!(:duplicate_user) { create(:user, first_name: 'Joe', last_name: 'Bloggs') }
+  let!(:duplicate_user2) { create(:user, first_name: 'Joe', last_name: 'Bloggs') }
 
   describe '#all_duplicates' do
     it 'should find multiple entries' do
-      expect(User.all_duplicates.count).to have_key(%w(Joe Bloggs))
+      expect(User.all_duplicates.count).to have_key(%w[Joe Bloggs])
     end
   end
 

@@ -142,16 +142,6 @@ Individual item:
 RIF-CS available at:
   * http://catalog.paradisec.org.au/oai/collection
 
-testing:
-  * install localtunnel to port forward your local webserver
-  * http://progrium.com/localtunnel/
-
-``` bash
-gem install localtunnel
-rbenv rehash
-localtunnel 3000
-```
-
   use resulting server on an OAI repository explorer:
   * http://www.language-archives.org/register/register.php (OLAC)
   * http://re.cs.uct.ac.za/

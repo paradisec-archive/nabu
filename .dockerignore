@@ -2,6 +2,7 @@
 
 # Ignore git directory.
 /.git/
+/.gitignore
 
 # Ignore bundler config.
 /.bundle
@@ -36,6 +37,16 @@
 !/app/assets/builds/.keep
 /public/assets
 
+# Ignore CI service files.
+/.github
+
+# Ignore development files
+/.devcontainer
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
+
 ##################
 # NABU
 ##################
@@ -47,14 +58,12 @@
 /*.md
 
 # Docker
-/Dockerfile
 /docker-compose.yml
 # /docker
 
 # Tests
 /Guardfile
 /spec
-
 
 # # Convoluted because cdk has a bug https://github.com/aws/aws-cdk/issues/20712
 !/solr

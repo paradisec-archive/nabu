@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :item do
-    sequence(:identifier) {|n| "%03d" % n}
+    sequence(:identifier) { |n| "%03d" % n }
     title { 'Title of item' }
     description { 'The awesome item' }
     region { 'East Africa' }
@@ -23,7 +23,13 @@ FactoryBot.define do
     end
 
     trait :with_doi do
-      sequence(:doi) {|n| "doi:ITEM#{n}"}
+      sequence(:doi) { |n| "doi:ITEM#{n}" }
+    end
+
+    trait :reindex do
+      after(:create) do |item, _evaluator|
+        item.reindex(refresh: true)
+      end
     end
   end
 end
