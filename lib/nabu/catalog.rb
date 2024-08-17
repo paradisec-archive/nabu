@@ -11,7 +11,7 @@ module Nabu
         region: 'ap-southeast-2'
       }
 
-      if Rails.env.development?
+      if Rails.env.development? || Rails.env.test?
         # s3 mock
         params.merge!(
           region: 'us-east-1',
@@ -111,6 +111,10 @@ module Nabu
       )
 
       keys = response.contents.map(&:key)
+      if keys.empty?
+        Rails.logger.debug { 'No files to delete' }
+        return 0
+      end
 
       Rails.logger.debug { "Deleting #{keys.join(',')} files" }
 

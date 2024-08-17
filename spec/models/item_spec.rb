@@ -65,29 +65,8 @@
 #
 
 require 'rails_helper'
+require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
-describe Item do
-  let(:item) { build(:item, doi: doi) }
-
-  # FIXME: JF bring this back later - issue with stubbing
-  # describe '#citation' do
-  #   context 'DOI exists' do
-  #     let(:doi) { 'something' }
-  #
-  #     it 'uses DOI, not URI' do
-  #       expect(item).to receive(:doi) { doi }.twice
-  #       item.citation
-  #     end
-  #   end
-  #
-  #   context 'DOI nil' do
-  #     let(:doi) { nil }
-  #
-  #     it 'uses URI' do
-  #       expect(item).to receive(:doi) { doi }.once
-  #       expect(item).to receive(:full_path) { '' }
-  #       item.citation
-  #     end
-  #   end
-  # end
+describe Item, type: :model do
+  include_examples "identifiable by doi", "collection"
 end

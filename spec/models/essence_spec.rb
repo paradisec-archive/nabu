@@ -31,8 +31,11 @@
 #
 
 require 'rails_helper'
+require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
-describe Essence do
+describe Essence, type: :model do
+  include_examples 'identifiable by doi', 'item'
+
   let(:item) { create(:item) }
 
   describe 'no zero size files' do
@@ -50,37 +53,6 @@ describe Essence do
     it 'does allow zero size files for annis' do
       essence = described_class.new(filename: 'item.annis', size: 0, mimetype: 'image/jpg', item: item)
       expect(essence).to be_valid
-    end
-  end
-
-  describe '#citation' do
-    let(:essence) { create(:sound_essence, doi: doi) }
-
-    context 'DOI exists' do
-      let(:doi) { 'something' }
-
-      it 'uses DOI, not URI' do
-        expect(essence).to receive(:doi) { doi }.twice
-        essence.citation
-      end
-
-      it 'does not blow up' do
-        essence.citation
-      end
-    end
-
-    context 'DOI nil' do
-      let(:doi) { nil }
-
-      it 'uses URI' do
-        expect(essence).to receive(:doi) { doi }.once
-        expect(essence).to receive(:full_path) { '' }
-        essence.citation
-      end
-
-      it 'does not blow up' do
-        essence.citation
-      end
     end
   end
 end

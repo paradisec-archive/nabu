@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe User do
+describe User, type: :model do
   let!(:duplicate_user) { create(:user, first_name: 'Joe', last_name: 'Bloggs') }
   let!(:duplicate_user2) { create(:user, first_name: 'Joe', last_name: 'Bloggs') }
 
