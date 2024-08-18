@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  # allow_browser versions: :modern
+  # NOTE: nabu needs to support old browsers due to regional context
 
   before_action :set_timezone
   before_action :set_access_headers
