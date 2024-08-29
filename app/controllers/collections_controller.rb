@@ -316,7 +316,7 @@ class CollectionsController < ApplicationController
                     :collector,
                     :countries,
                     :field_of_research,
-                    :grants,
+                    { :grants => %i[funding_body] },
                     :languages,
                     :operator,
                     :university,
