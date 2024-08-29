@@ -215,6 +215,7 @@ class Collection < ApplicationRecord
       # Extra things for basic full text search
       university_name:,
       collector_name:,
+      collector_sortname:,
       operator_name:,
       field_of_research: field_of_research_name,
       languages: languages.map(&:name),

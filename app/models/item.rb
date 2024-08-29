@@ -327,6 +327,7 @@ class Item < ApplicationRecord
 
       # Extra things for basic full text search
       collector_name:,
+      collector_sortname:,
       university_name:,
       operator_name:,
       content_languages: content_languages.map(&:name),
