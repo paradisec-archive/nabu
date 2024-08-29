@@ -1,8 +1,8 @@
-$(function () {
+$(() => {
   const existingExclusions = $('#existing_exclusions');
   const hiddenExclusions = $('.exclusions');
 
-  $('[name="exclude[]"]').on('click', function () {
+  $('[name="exclude[]"]').on('click', () => {
     let ids = [];
     $('[name="exclude[]"]:checked').each(function () {
       ids.push($(this).val());
@@ -20,8 +20,9 @@ $(function () {
     hiddenExclusions.val(ids)
   });
 
-  $('#update_exclusions').on('click', function () {
-    $('form').submit();
+  $('#update_exclusions').on('click', () => {
+    $('form').trigger('submit');
+
     return false;
   });
 });

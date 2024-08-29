@@ -47,7 +47,7 @@
             = text_field_tag :title, params[:title], {:placeholder => 'Please enter a title'}
             %br
             Blank
-            = check_box_tag :title_blank, 1, params[:title_blank]
+            = check_box_tag :title_blank, true, params[:title_blank]
 
         %tr
           %th
@@ -58,7 +58,7 @@
             = text_field_tag :description, params[:description]
             %br
             Blank
-            = check_box_tag :description_blank, 1, params[:description_blank]
+            = check_box_tag :description_blank, true, params[:description_blank]
 
         %tr
           %th= label_tag :collector_id
@@ -88,7 +88,7 @@
             = text_field_tag :region, params[:region]
             %br
             Blank
-            = check_box_tag :region_blank, 1, params[:region_blank]
+            = check_box_tag :region_blank, true, params[:region_blank]
 
     %fieldset
       %legend Access Information
@@ -108,7 +108,7 @@
             = text_area_tag :access_narrative, params[:access_narrative], :rows => 5
             %br
             Blank
-            = check_box_tag :access_narrative_blank, 1, params[:access_narrative_blank]
+            = check_box_tag :access_narrative_blank, true, params[:access_narrative_blank]
 
 
   .twoup-2.column.span-12.last
@@ -132,7 +132,7 @@
             = text_field_tag :metadata_source, params[:metadata_source]
             %br
             Blank
-            = check_box_tag :metadata_source_blank, 1, params[:metadata_source_blank]
+            = check_box_tag :metadata_source_blank, true, params[:metadata_source_blank]
 
         %tr
           %th= label_tag :orthographic_notes
@@ -140,7 +140,7 @@
             = text_field_tag :orthographic_notes, params[:orthographic_notes]
             %br
             Blank
-            = check_box_tag :orthographic_notes_blank, 1, params[:orthographic_notes_blank]
+            = check_box_tag :orthographic_notes_blank, true, params[:orthographic_notes_blank]
 
         %tr
           %th= label_tag :media
@@ -148,7 +148,7 @@
             = text_field_tag :media, params[:media]
             %br
             Blank
-            = check_box_tag :media_blank, 1, params[:media_blank]
+            = check_box_tag :media_blank, true, params[:media_blank]
 
         %tr
           %th Date created:
@@ -156,7 +156,7 @@
             = text_field_tag :created_at, params[:created_at], :class => 'dateinput short', :value => params[:created_at]
             %br
             Blank
-            = check_box_tag :created_at_blank, 1, params[:created_at_blank]
+            = check_box_tag :created_at_blank, true, params[:created_at_blank]
 
         %tr
           %th Date modified:
@@ -164,7 +164,7 @@
             = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short', :value => params[:updated_at]
             %br
             Blank
-            = check_box_tag :updated_at_blank, 1, params[:updated_at_blank]
+            = check_box_tag :updated_at_blank, true, params[:updated_at_blank]
 
         %tr
           %th= label_tag :comments
@@ -172,7 +172,7 @@
             = text_field_tag :comments, params[:comments]
             %br
             Blank
-            = check_box_tag :comments_blank, 1, params[:comments_blank]
+            = check_box_tag :comments_blank, true, params[:comments_blank]
 
     %fieldset
       %legend Admin Information
@@ -187,7 +187,7 @@
             = text_field_tag :tape_location, params[:tape_location]
             %br
             Blank
-            = check_box_tag :tape_location_blank, 1, params[:tape_location_blank]
+            = check_box_tag :tape_location_blank, true, params[:tape_location_blank]
 
         %tr
           %th= label_tag :field_of_research_id, 'Field of research'

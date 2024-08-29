@@ -70,7 +70,7 @@ bin/aws/ecs_rake searchkick:reindex
 ## Importing a production database into your development environment
 
 ``` bash
-bin/aws/ecs_shell app -c 'mysqldump -u nabu -h "$NABU_DATABASE_HOSTNAME" --password "$NABU_DATABASE_PASSWORD" nabu | bzip2 | base64 > /tmp/nabu.sql.bz2'
+AWS_PROFILE=nabu-prod bin/aws/ecs_shell jobs -c 'mysqldump -u nabu -h "$NABU_DATABASE_HOSTNAME" -p"$NABU_DATABASE_PASSWORD" --single-transaction nabu | bzip2 | base64' | base64 -d > /tmp/nabu.sql.bz2
 nabu_run bundle exec rake db:drop db:create
 bzip2 -dc ../nabu.sql.bz2 | mysql -h 127.0.0.1 -u root nabu_devel
 nabu_run bin/rails db:environment:set RAILS_ENV=development
