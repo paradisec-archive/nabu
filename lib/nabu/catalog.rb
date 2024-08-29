@@ -74,7 +74,7 @@ module Nabu
     end
 
     def essence_url(essence, as_attachment: false)
-      Rails.logger.debug { "Nabu::Catalog: Get essence URL #{item.full_identifier}:#{essence.filename}" }
+      Rails.logger.debug { "Nabu::Catalog: Get essence URL #{essence.item.full_identifier}:#{essence.filename}" }
       parts = [essence.item.collection.identifier, essence.item.identifier, essence.filename]
 
       download(parts.join('/'), as_attachment:)

@@ -1,4 +1,5 @@
 class EssencesController < ApplicationController
+  before_action :find_essence, only: %i[show]
   load_and_authorize_resource :collection, find_by: :identifier, except: [:list_mimetypes]
   load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: [:list_mimetypes]
   load_and_authorize_resource :essence, through: :item, except: [:list_mimetypes]
@@ -66,5 +67,10 @@ class EssencesController < ApplicationController
   def essence_params
     params.require(:essence)
           .permit(:item, :item_id, :filename, :mimetype, :bitrate, :samplerate, :size, :duration, :channels, :fps, :derived_files_generated)
+  end
+
+
+  def find_essence
+    @essence = Essence.includes(:item => { item_agents: %i[agent_role user] }).find(params[:id])
   end
 end
