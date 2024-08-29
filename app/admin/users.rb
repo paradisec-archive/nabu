@@ -147,7 +147,7 @@ ActiveAdmin.register User do
 
       @primary_user ||= resource || User.find(params[:id])
       # get the updated parameters from the form merge
-      @primary_user.assign_attributes(params[:user], as: :admin)
+      @primary_user.assign_attributes(params[:user])
 
       if ids_to_merge.present? && UserMergerService.new(@primary_user, User.find(ids_to_merge)).call
         redirect_to edit_admin_user_path, notice: "Successfully merged user! [#{@primary_user.name}]"
