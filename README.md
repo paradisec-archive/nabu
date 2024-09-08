@@ -50,14 +50,20 @@ ACCOUNT=$(aws sts get-caller-identity | jq -r .Account)
 cdk bootstrap aws://$ACCOUNT/$REGION
 ```
 
+If ECR complains about access
+```bash
+ACCOUNT=$(AWS_PROFILE=nabu-stage aws sts get-caller-identity | jq -r .Account)
+AWS_PROFILE=nabu-stage aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.ap-southeast-2.amazonaws.com
+```
+
+
 ## Deployment
 
 Use CDK to deploy new code via docker as well as any infrastructure changes
 
 ``` bash
-cd cdk
-cdk --profile nabu-stage diff nabu-appstack-stage
-cdk --profile nabu-stage deploy nabu-appstack-stage
+bin/release stage
+bin/release prod
 ```
 
 If necessary:
