@@ -28,6 +28,9 @@ module Nabu
     # Out Stuff
     ###################
 
+    # We don't want to unnecessarily log all the poll requests
+    config.solid_queue.silence_polling = true
+
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/services')
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('lib')
 
