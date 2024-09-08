@@ -95,7 +95,7 @@ gem 'aws-sdk-s3' # Talk to the catalog
 # Frameworks
 gem 'activeadmin'
 gem 'country_select', '~> 8.0' # 9.0 breaks active admin
-gem 'graphiql-rails', '1.8.0' # https://github.com/rmosolgo/graphiql-rails/issues/106
+gem 'graphiql-rails', '1.10.1' # https://github.com/rmosolgo/graphiql-rails/issues/106
 gem 'graphql'
 
 # Search
