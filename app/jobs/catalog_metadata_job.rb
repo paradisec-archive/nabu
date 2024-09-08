@@ -2,7 +2,6 @@ class CatalogMetadataJob < ApplicationJob
   queue_as :default
 
   def perform(data, is_item)
-    throw 'Moo'
     local_data = { data:, is_item:, admin_rocrate: true }
 
     rocrate = Api::V1::OniController.render :object_meta, assigns: local_data
