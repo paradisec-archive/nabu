@@ -56,7 +56,6 @@ ACCOUNT=$(AWS_PROFILE=nabu-stage aws sts get-caller-identity | jq -r .Account)
 AWS_PROFILE=nabu-stage aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.ap-southeast-2.amazonaws.com
 ```
 
-
 ## Deployment
 
 Use CDK to deploy new code via docker as well as any infrastructure changes
@@ -83,32 +82,6 @@ nabu_run bin/rails db:environment:set RAILS_ENV=development
 nabu_run bin/rake db:migrate
 nabu_run bin/rake searchkick:reindex:all
 ```
-
-## Production Tasks
-
-import archive files
-
-``` bash
-RAILS_ENV=production bundle exec rake archive:update_files
-```
-
-check if all files that have been uploaded are ok:
-``` bash
-cd /srv/www/nabu/current
-RAILS_ENV=production bundle exec rake --trace archive:update_files > log/update_files.log
-```
-
-check if all *-CAT-PDSC_ADMIN.xml files exist and create if necessary:
-``` bash
-cd /srv/www/nabu/current
-RAILS_ENV=production bundle exec rake --trace archive:admin_files > log/admin_files.log
-```
-
-delete a collection with all its items:
-``` bash
-cd /srv/www/nabu/current
-RAILS_ENV=production bundle exec rake archive:delete_collection[PA1]
-
 
 # New Ethnologue data
 

@@ -37,6 +37,8 @@ namespace :rocrate do
 
   desc 'Generate ro-crate for all collections and save to S3'
   task collections: :environment do
+    ActiveJob::Base.logger = Logger.new(nil)
+
     total = 0
     Collection.find_each do |collection|
       collection.update_catalog_metadata
@@ -48,6 +50,8 @@ namespace :rocrate do
 
   desc 'Generate ro-crate for all items and save to S3'
   task items: :environment do
+    ActiveJob::Base.logger = Logger.new(nil)
+
     total = 0
     Item.find_each do |item|
       item.update_catalog_metadata
