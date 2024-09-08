@@ -40,8 +40,9 @@ namespace :rocrate do
     ActiveJob::Base.logger = Logger.new(nil)
 
     total = 0
-    Collection.find_each do |collection|
-      collection.update_catalog_metadata
+    Collection.find_in_batches do |batch|
+      jobs = batch.map { |collection| CatalogMetadataJob.new(collection, false) }
+      ActiveJob.perform_all_later(jobs)
       total += 1
     end
 
@@ -53,9 +54,10 @@ namespace :rocrate do
     ActiveJob::Base.logger = Logger.new(nil)
 
     total = 0
-    Item.find_each do |item|
-      item.update_catalog_metadata
-      total += 1
+    Item.find_in_batches do |batch|
+      jobs = batch.map { |item| CatalogMetadataJob.new(item, true) }
+      ActiveJob.perform_all_later(jobs)
+      total += batch.size
     end
 
     puts "Generated ro-crate metadata jobs for #{total} items and saved to S3"
