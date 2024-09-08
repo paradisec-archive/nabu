@@ -10,8 +10,6 @@ CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep nabu)
 
 if [ -z "$TASK_NAME" ]; then
   TASKS=$(aws ecs list-services --cluster "$CLUSTER")
-  # | jq -r '.taskDefinitionArns | .[]' \
-  # | sed 's/.*task-definition\/StageCdkStack//;s/Definition.*//')
 
   echo "Please specify a task to run"
   echo Select from "$TASKS" | tr '' '\n'

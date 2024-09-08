@@ -2,33 +2,32 @@
 
 export AWS_OUTPUT="json"
 
-TASK_NAME=App
+TASK_NAME="${1^}"
+shift
 
 echo "Getting cluster..."
-CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
+CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep nabu)
 
 if [ -z "$TASK_NAME" ]; then
-  TASKS=$(aws ecs list-services --cluster $CLUSTER)
-    # | jq -r '.taskDefinitionArns | .[]' \
-    # | sed 's/.*task-definition\/StageCdkStack//;s/Definition.*//')
+  TASKS=$(aws ecs list-services --cluster "$CLUSTER")
 
   echo "Please specify a task to run"
-  echo Select from $TASKS | tr '' '\n'
+  echo Select from "$TASKS" | tr '' '\n'
   exit 1
 fi
 
 echo "Getting service..."
-SERVICE=$(aws ecs list-services --cluster $CLUSTER | jq  -r '.serviceArns | .[]' | grep -i -- $TASK_NAME | tail -1)
+SERVICE=$(aws ecs list-services --cluster "$CLUSTER" | jq -r '.serviceArns | .[]' | grep -i -- "$TASK_NAME" | tail -1)
 
 echo "Getting service name..."
-SERVICE_NAME=$(aws ecs describe-services --services $SERVICE --cluster $CLUSTER | jq -r .services[0].serviceName)
+SERVICE_NAME=$(aws ecs describe-services --services "$SERVICE" --cluster "$CLUSTER" | jq -r .services[0].serviceName)
 
 echo "Getting task..."
-TASK=$(aws ecs list-tasks --cluster $CLUSTER --service-name $SERVICE_NAME | jq -r .taskArns[0])
+TASK=$(aws ecs list-tasks --cluster "$CLUSTER" --service-name "$SERVICE_NAME" | jq -r .taskArns[0])
 
 aws ecs execute-command \
-  --cluster $CLUSTER \
-  --task $TASK \
+  --cluster "$CLUSTER" \
+  --task "$TASK" \
   --interactive \
   --container "${TASK_NAME}Container" \
   --command "bundle exec rake $@"
