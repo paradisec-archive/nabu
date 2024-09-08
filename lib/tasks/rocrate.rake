@@ -43,7 +43,7 @@ namespace :rocrate do
     Collection.find_in_batches do |batch|
       jobs = batch.map { |collection| CatalogMetadataJob.new(collection, false) }
       ActiveJob.perform_all_later(jobs)
-      total += 1
+      total += batch.size
     end
 
     puts "Generated ro-crate metadata jobs for #{total} collections and saved to S3"
