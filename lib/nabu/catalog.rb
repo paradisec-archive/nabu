@@ -45,13 +45,6 @@ module Nabu
       delete_by_prefix(parts.join('/'))
     end
 
-    def upload_item_admin(item, filename, data, content_type)
-      Rails.logger.debug { "Nabu::Catalog: Uploading item admin file #{item.full_identifier}:#{filename}" }
-      parts = [item.collection.identifier, item.identifier, 'pdsc_admin', filename]
-
-      upload(parts.join('/'), data, content_type)
-    end
-
     def upload_collection_admin(collection, filename, data, content_type)
       Rails.logger.debug { "Nabu::Catalog: Uploading collection admin file #{collection.identifier}:#{filename}" }
       parts = [collection.identifier, 'pdsc_admin', filename]
@@ -59,16 +52,23 @@ module Nabu
       upload(parts.join('/'), data, content_type)
     end
 
-    def item_admin_url(item, filename)
-      Rails.logger.debug { "Nabu::Catalog: Downloading item admin file #{item.full_identifier}:#{filename}" }
+    def upload_item_admin(item, filename, data, content_type)
+      Rails.logger.debug { "Nabu::Catalog: Uploading item admin file #{item.full_identifier}:#{filename}" }
       parts = [item.collection.identifier, item.identifier, 'pdsc_admin', filename]
 
-      download(parts.join('/'))
+      upload(parts.join('/'), data, content_type)
     end
 
     def collection_admin_url(collection, filename)
       Rails.logger.debug { "Nabu::Catalog: Downloading collection admin file #{collection.identifier}:#{filename}" }
       parts = [collection.identifier, 'pdsc_admin', filename]
+
+      download(parts.join('/'))
+    end
+
+    def item_admin_url(item, filename)
+      Rails.logger.debug { "Nabu::Catalog: Downloading item admin file #{item.full_identifier}:#{filename}" }
+      parts = [item.collection.identifier, item.identifier, 'pdsc_admin', filename]
 
       download(parts.join('/'))
     end

@@ -82,6 +82,8 @@ Rails.application.configure do
   ########################
   # Our Stuff
   ########################
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Show emails in the browser
   config.action_mailer.delivery_method = :letter_opener

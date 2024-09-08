@@ -162,9 +162,9 @@ class ItemsController < ApplicationController
     accessible_items = Item.accessible_by(current_ability)
                            .where(id: params[:item_ids].split)
                            .pluck(:id)
-    BulkUpdateItemsService.new(item_ids: accessible_items,
+    BulkUpdateItemsJob.perform_later(item_ids: accessible_items,
                                current_user_email: current_user.try(:email),
-                               updates: item_params).delay.update_items
+                               updates: item_params)
 
     flash[:notice] = "Items will be updated shortly, you'll be notified once it's completed"
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
@@ -354,7 +354,7 @@ class ItemsController < ApplicationController
 
   def stream_csv(search_type)
     export_all = params[:export_all] || false
-    downloader = CsvDownloader.new(search_type, @params, current_user)
+    downloader = CsvDownloaderService.new(search_type, @params, current_user)
 
     # TODO: fix CSV stream for builder method
 
@@ -372,8 +372,8 @@ class ItemsController < ApplicationController
       return
     end
 
-    # otherwise use delayed_job to email a CSV
-    downloader.delay.email
+    # otherwise use actove job to email a CSV
+    downloader.email
 
     flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
     redirect_back fallback_location: root_path

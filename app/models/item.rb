@@ -631,7 +631,7 @@ class Item < ApplicationRecord
   end
 
   def update_catalog_metadata
-    CatalogMetadataService.new(self, true).delay.save_file
+    CatalogMetadataJob.perform_later(self, true)
   end
 
   def center_coordinate

@@ -104,7 +104,7 @@ Rails.application.routes.draw do
   end
 
   authenticated :user, ->(user) { user.admin? } do
-    mount Delayed::Web::Engine, at: '/jobs'
+    mount MissionControl::Jobs::Engine, at: "/jobs"
     mount Searchjoy::Engine, at: '/searchjoy'
     match '/_dashboards/*path' => 'opensearch_dashboard#index', via: %i[get post put patch delete]
   end

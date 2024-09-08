@@ -1,6 +1,6 @@
 require 'zip'
 
-class CsvDownloader
+class CsvDownloaderService
   INCLUDED_CSV_FIELDS = %i[full_identifier title external description url collector_sortname operator_name csv_item_agents
                            csv_filenames csv_mimetypes csv_fps_values csv_samplerates csv_channel_counts
                            university_name language dialect csv_subject_languages csv_content_languages csv_countries region csv_data_categories csv_data_types
@@ -21,7 +21,20 @@ class CsvDownloader
 
   attr_reader :params, :current_user
 
+  def create_csv(search, csv)
+    search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+
+    # if the user requested all results, iterate over the remaining pages
+    while @params[:export_all] && search.next_page
+      @params.merge!(page: search.next_page)
+      search = @search_type == :basic ? build_basic_search : build_advanced_search
+      search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
+    end
+  end
+
   def email
+    return unless @current_user.email.present?
+
     generation_start = DateTime.now
     search = @search_type == :basic ? build_basic_search : build_advanced_search
 
@@ -30,13 +43,7 @@ class CsvDownloader
     path = Rails.root.join('tmp', "nabu_items_#{Time.zone.today}.csv").to_s
 
     CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
-      search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
-      # if the user requested all results, iterate over the remaining pages
-      while @params[:export_all] && search.next_page
-        @params.merge!(page: search.next_page)
-        search = @search_type == :basic ? build_basic_search : build_advanced_search
-        search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
-      end
+      create_csv(search, csv)
     end
 
     total = @params[:export_all] ? search.total_count : (@params[:per_page] || 10)
@@ -51,39 +58,26 @@ class CsvDownloader
       zipfile.add(File.basename(path), path)
     end
 
-    if @current_user.email.present?
-      CsvDownloadMailer.csv_download_email(
-        @current_user.email,
-        # default just first name, but fall back to last in case of only one name
-        @current_user.first_name || @current_user.last_name,
-        total,
-        @csv_requested_time.in_time_zone('Australia/Sydney'),
-        filename,
-        zip_path
-      ).deliver
-    end
+    CsvDownloadMailer.csv_download_email(
+      @current_user.email,
+      # default just first name, but fall back to last in case of only one name
+      @current_user.first_name || @current_user.last_name,
+      total,
+      @csv_requested_time.in_time_zone('Australia/Sydney'),
+      filename,
+      zip_path
+    ).deliver_later
 
     File.delete(path)
-    File.delete(zip_path)
   end
 
-  def stream(orig_search)
+  def stream(search)
     filename = "nabu_items_#{Time.zone.today}.csv"
-
-    search = orig_search
 
     # use enumerator to customise streaming the response
     streamed_csv = lambda { |output|
-      # wrap the IO output so that CSV pushes writes directly into it
       csv = CSV.new(output, **CSV_OPTIONS)
-      search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
-
-      # if the user requested all results, iterate over the remaining pages
-      while @params[:export_all] && search.next_page
-        @params.merge!(page: search.next_page)
-        search = @search_type == :basic ? build_basic_search : build_advanced_search
-        search.each { |r| csv << INCLUDED_CSV_FIELDS.map { |f| r.public_send(f) } }
-      end
+      create_csv(search, csv)
     }
 
     [filename, streamed_csv]

@@ -11,5 +11,7 @@ class CsvDownloadMailer < ApplicationMailer
     puts "Sending CSV download to #{@user_name} [#{@email}] with attachment #{@filename} containing #{@total} results"
 
     mail(to: email, subject: "Nabu - CSV export started on #{start_time.strftime('%a %e %b %Y %l:%M %P')} has been completed")
+
+    File.delete(path)
   end
 end

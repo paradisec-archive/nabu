@@ -331,7 +331,7 @@ export class AppStack extends cdk.Stack {
       ...commonAppImageOptions,
       memoryLimitMiB: 1024,
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
-      command: ['bin/delayed_job', 'run'],
+      command: ['bin/jobs'],
     });
     jobsTaskDefinition.addToTaskRolePolicy(
       new iam.PolicyStatement({

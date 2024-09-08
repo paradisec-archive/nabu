@@ -18,8 +18,13 @@ default: &default
   host: <%= ENV.fetch("DB_HOST") { "db" } %>
 
 development:
-  <<: *default
-  database: nabu_devel
+  primary: &primary_development
+    <<: *default
+    database: nabu_devel
+  queue:
+    <<: *primary_development
+    database: nabu_devel_queue
+    migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -49,11 +54,16 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production: &production
-  <<: *default
-  database: nabu
-  username: nabu
-  password: <%= ENV['NABU_DATABASE_PASSWORD'] %>
-  host: <%= ENV['NABU_DATABASE_HOSTNAME'] %>
+  primary: &primary_production
+    <<: *default
+    database: nabu
+    username: nabu
+    password: <%= ENV['NABU_DATABASE_PASSWORD'] %>
+    host: <%= ENV['NABU_DATABASE_HOSTNAME'] %>
+  queue:
+    <<: *primary_production
+    database: nabu_queue
+    migrations_paths: db/queue_migrate
 
 staging:
   <<: *production

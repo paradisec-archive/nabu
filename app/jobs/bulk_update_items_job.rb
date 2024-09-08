@@ -1,10 +1,16 @@
-class BulkUpdateItemsService
-  def initialize(item_ids:, updates:, current_user_email:)
+class BulkUpdateItemsJob < ApplicationJob
+  queue_as :default
+
+  def perform(item_ids:, updates:, current_user_email:)
     @item_ids = item_ids
     @current_user_email = current_user_email
     @start_time = Time.current
+
     process_updates(updates)
+    update_items
   end
+
+  private
 
   def update_items
     Rails.logger.info { "#{DateTime.now} BEFORE Bulk update with #{items.size} items" }

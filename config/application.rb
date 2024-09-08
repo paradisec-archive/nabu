@@ -33,8 +33,6 @@ module Nabu
 
     config.viewer_url = '/viewer'
 
-    config.assets.precompile << 'delayed/web/application.css'
-
     config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET')
     throw 'Must set NABU_CATALOG_BUCKET' unless config.catalog_bucket
   end

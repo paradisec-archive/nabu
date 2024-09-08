@@ -171,7 +171,7 @@ class Collection < ApplicationRecord
   end
 
   def update_catalog_metadata
-    CatalogMetadataService.new(self, false).delay.save_file
+    CatalogMetadataJob.perform_later(self, false)
   end
 
   searchkick geo_shape: [:bounds], word_start: [:identifier]

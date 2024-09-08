@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_25_092531) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_07_221842) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -135,21 +135,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_25_092531) do
 
   create_table "data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
-  end
-
-  create_table "delayed_jobs", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "priority", default: 0, null: false
-    t.integer "attempts", default: 0, null: false
-    t.text "handler", size: :long, null: false
-    t.text "last_error", size: :long
-    t.datetime "run_at", precision: nil
-    t.datetime "locked_at", precision: nil
-    t.datetime "failed_at", precision: nil
-    t.string "locked_by"
-    t.string "queue"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "discourse_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

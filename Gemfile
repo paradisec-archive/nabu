@@ -60,6 +60,9 @@ end
 # Our stuff
 ###################
 
+gem 'solid_queue' # New queue system coming to Rails 8
+gem "mission_control-jobs" # Admin backend for jobs
+
 # Needs to be as early as possible to do it's job
 gem 'dotenv-rails', require: 'dotenv/load' # , groups: [:development, :test] # Load env variables in dev
 
@@ -72,7 +75,6 @@ gem 'oai' # OAI-PMH
 gem 'rexml' # OAI needs it https://github.com/code4lib/ruby-oai/issues/68
 
 # Analytics and instrumentation
-gem 'sentry-delayed_job'
 gem 'sentry-rails'
 gem 'sentry-ruby'
 
@@ -89,13 +91,10 @@ gem 'paper_trail' # Keep an audit trail of all the changes
 # Background processing
 gem 'aws-sdk-rails' # Send emails via SES
 gem 'aws-sdk-s3' # Talk to the catalog
-gem 'daemons' # Needed by delayed_job
-gem 'delayed_job_active_record' # Delay jobs and queue them in the database
 
 # Frameworks
 gem 'activeadmin'
 gem 'country_select', '~> 8.0' # 9.0 breaks active admin
-gem 'delayed-web'
 gem 'graphiql-rails', '1.8.0' # https://github.com/rmosolgo/graphiql-rails/issues/106
 gem 'graphql'
 
