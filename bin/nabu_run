@@ -4,12 +4,12 @@ docker compose run \
   --rm \
   -v "$PWD":/rails \
   -v "$PWD"/vendor/bundle:/bundler \
-  -v "$HOME"/.aws:/root/.aws \
+  -v "$HOME"/.aws:/home/rails/.aws \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -e ELASTICSEARCH_URL="$(grep ^ELASTICSEARCH_URL .env | sed 's/^.*=//')" \
-  -e AWS_PROFILE=nabu-prod \
+  -e AWS_PROFILE="$AWS_PROFILE" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
-  -v "$HOME"/.irb_history:/rails/.irb_history \
+  -v "$HOME"/.irb_history:/home/rails/.irb_history \
   app \
   "$@"
