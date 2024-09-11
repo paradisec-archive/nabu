@@ -43,7 +43,7 @@ module HasSearch
         order:,
         page: params[:page],
         per_page: params[:per_page] || 10,
-        track: params[:search] ? { user_id: current_user&.id, search_family: 'basic' } : nil,
+        track: params[:search].blank? ? nil : { user_id: current_user&.id, search_family: 'basic' },
 
         misspellings: false
       )
