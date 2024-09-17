@@ -66,7 +66,7 @@ class CsvDownloaderService
       @csv_requested_time.in_time_zone('Australia/Sydney'),
       filename,
       zip_path
-    ).deliver_later
+    ).deliver_now
 
     File.delete(path)
   end
