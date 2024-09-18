@@ -97,7 +97,6 @@ export class MainStack extends cdk.Stack {
       // intelligentTieringConfigurations: [ ],
       // TODO: Decide on lifecycle rules
       lifecycleRules: [{ abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
-      versioned: env === 'prod',
       inventories: [
         {
           destination: {
