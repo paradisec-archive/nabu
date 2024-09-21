@@ -12,6 +12,7 @@ export type Environment = {
   readonly zoneName: string,
   readonly acmeValue: string,
   readonly cloudflare: string,
+  readonly drBucket?: IBucket,
 };
 
 export type AppProps = Environment & {

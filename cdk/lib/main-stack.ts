@@ -2,12 +2,14 @@ import * as cdk from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 import type { Environment } from './types';
 import { NagSuppressions } from 'cdk-nag';
+import { CfnBucket } from 'aws-cdk-lib/aws-s3';
 
 export class MainStack extends cdk.Stack {
   public catalogBucket: s3.IBucket;
@@ -26,6 +28,7 @@ export class MainStack extends cdk.Stack {
       // account,
       // region,
       // railsEnv,
+      drBucket,
       env,
       acmeValue,
       zoneName,
@@ -97,6 +100,7 @@ export class MainStack extends cdk.Stack {
       // intelligentTieringConfigurations: [ ],
       // TODO: Decide on lifecycle rules
       lifecycleRules: [{ abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
+      versioned: env === 'prod',
       inventories: [
         {
           destination: {
@@ -127,6 +131,80 @@ export class MainStack extends cdk.Stack {
       serverAccessLogsBucket: metaBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
     });
+
+    if (env === 'prod') {
+      if (!drBucket) {
+        throw new Error('DR bucket is required in prod environment');
+      }
+
+      const replicationRole = new iam.Role(this, 'CatalogBucketReplicationRole', {
+        roleName: 'catalog-bucket-replication-role',
+        assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      });
+
+      replicationRole.addToPolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+          resources: [this.catalogBucket.bucketArn],
+        }),
+      );
+
+      replicationRole.addToPolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            's3:GetObjectVersionForReplication',
+            's3:GetObjectVersionAcl',
+            's3:GetObjectVersionTagging',
+            's3:GetObjectVersion',
+            's3:GetObjectLegalHold',
+            's3:GetObjectRetention',
+          ],
+          resources: [this.catalogBucket.arnForObjects('*')],
+        }),
+      );
+
+      NagSuppressions.addResourceSuppressions(
+        replicationRole,
+        [
+          {
+            id: 'AwsSolutions-IAM5',
+            reason: 'All wildcard permission are on purpose for replication',
+          },
+        ],
+        true,
+      );
+
+      replicationRole.addToPolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:GetObjectVersionTagging'],
+          resources: [`${drBucket.bucketArn}/*`],
+        }),
+      );
+
+      const cfnBucket = this.catalogBucket.node.defaultChild as CfnBucket;
+      cfnBucket.replicationConfiguration = {
+        role: replicationRole.roleArn,
+        rules: [
+          {
+            id: drBucket.bucketArn,
+            status: 'Enabled',
+            priority: 1,
+            filter: {},
+            destination: {
+              bucket: drBucket.bucketArn,
+              storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL.toString(),
+            },
+
+            deleteMarkerReplication: {
+              status: 'Enabled',
+            },
+          },
+        ],
+      };
+    }
 
     cdk.Tags.of(this).add('uni:billing:application', 'para');
   }

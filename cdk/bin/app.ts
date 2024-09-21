@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
 import { MainStack } from '../lib/main-stack';
+import { DrStack } from '../lib/dr-stack';
 import { AppStack } from '../lib/app-stack';
 import type { AppProps, Environment } from '../lib/types';
 
@@ -42,10 +43,28 @@ if (!prod) {
 
 const app = new cdk.App();
 
+const prodEnvironment = environments.find((env) => env.env === 'prod');
+if (!prodEnvironment) {
+  throw new Error('No prod environment found');
+}
+const drStack = new DrStack(
+  app,
+  `${prodEnvironment.appName}-drstack-${prodEnvironment.env}`,
+  { ...prodEnvironment, region: 'ap-southeast-4' },
+  {
+    env: { account: prodEnvironment.account, region: 'ap-southeast-4' },
+  },
+);
+
 environments.forEach((environment) => {
-  const mainStack = new MainStack(app, `${environment.appName}-stack-${environment.env}`, environment, {
-    env: { account: environment.account, region: environment.region },
-  });
+  const mainStack = new MainStack(
+    app,
+    `${environment.appName}-stack-${environment.env}`,
+    { drBucket: environment.env === 'prod' ? drStack.drBucket : undefined, ...environment },
+    {
+      env: { account: environment.account, region: environment.region },
+    },
+  );
 
   const props: AppProps = {
     ...environment,
