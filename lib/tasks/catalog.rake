@@ -111,5 +111,53 @@ namespace :catalog do
     puts "Files in S3 but missing from database:\n +#{missing_in_db[0, 100].join("\n")}"
   end
 
-
+  # desc 'Delete all PDSC files from S3 bucket'
+  # task delete_cat_pdsc_admin_xml: :environment do
+  #   bucket_name = 'nabu-catalog-prod'
+  #
+  #   puts "Deleting pdsc_admin files from bucket: #{bucket_name}"
+  #
+  #   continuation_token = nil
+  #   objects_to_delete = []
+  #   total = 0
+  #
+  #   loop do
+  #     response = S3_CLIENT.list_objects_v2(
+  #       bucket: bucket_name,
+  #       continuation_token: continuation_token
+  #     )
+  #     total += response.contents.size
+  #
+  #     response.contents.each do |object|
+  #       if object.key.end_with?('CAT-PDSC_ADMIN.xml') or object.key.end_with?('checksum-PDSC_ADMIN.txt') or object.key.end_with?('thumb-PDSC_ADMIN.jpg')
+  #         objects_to_delete << { key: object.key }
+  #       end
+  #
+  #       if objects_to_delete.size == 1000
+  #         delete_objects(bucket_name, objects_to_delete)
+  #         objects_to_delete.clear
+  #       end
+  #     end
+  #
+  #     break unless response.is_truncated
+  #
+  #     continuation_token = response.next_continuation_token
+  #     puts "#{total} objects processed"
+  #   end
+  #
+  #   # Delete any remaining objects
+  #   delete_objects(bucket_name, objects_to_delete) unless objects_to_delete.empty?
+  #
+  #   puts 'Finished deleting PDSC files'
+  #   puts "Total objects: #{total}"
+  # end
+  #
+  # def delete_objects(bucket_name, objects)
+  #   response = S3_CLIENT.delete_objects(
+  #     bucket: bucket_name,
+  #     delete: { objects: objects }
+  #   )
+  #   puts "Deleted #{response.deleted.size} objects"
+  #   puts "Errors: #{response.errors.size}" if response.errors.any?
+  # end
 end
