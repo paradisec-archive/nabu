@@ -6,15 +6,19 @@ import type { Construct } from 'constructs';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecrAssets from 'aws-cdk-lib/aws-ecr-assets';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as eventbridge from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 import { NagSuppressions } from 'cdk-nag';
 
@@ -473,6 +477,86 @@ export class AppStack extends cdk.Stack {
       resources: [backup.BackupResource.fromRdsDatabaseInstance(db)],
     });
 
+    // ////////////////////////
+    // S3 Event Handling
+    // ////////////////////////
+
+    if (env === 'prod') {
+      const image = new ecrAssets.DockerImageAsset(this, 'CopyToMediafluxImage', {
+        directory: 'docker/mediaflux',
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(this, 'CopyToMediaFluxTaskDefinition', {
+        cpu: 16384,
+        memoryLimitMiB: 32768,
+        ephemeralStorageGiB: 200,
+      });
+      NagSuppressions.addResourceSuppressions(searchDomain, [
+        { id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' },
+      ]);
+
+      const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
+        secretName: '/nabu/mediaflux',
+        secretObjectValue: {
+          username: cdk.SecretValue.unsafePlainText('secret'),
+          password: cdk.SecretValue.unsafePlainText('secret'),
+        },
+      });
+      NagSuppressions.addResourceSuppressions(mediafluxSecrets, [
+        { id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' },
+      ]);
+
+      taskDefinition.addContainer('MediafluxContainer', {
+        image: ecs.ContainerImage.fromDockerImageAsset(image),
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'copy-to-mediaflux' }),
+        pseudoTerminal: true,
+        secrets: {
+          MFLUX_USER: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'username'),
+          MFLUX_PASSWORD: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'password'),
+        },
+      });
+      catalogBucket.grantRead(taskDefinition.taskRole);
+
+      const cluster = new ecs.Cluster(this, 'NabuCluster', {
+        vpc,
+        containerInsights: true,
+      });
+
+      const mediaFluxTask = new targets.EcsTask({
+        cluster,
+        enableExecuteCommand: true,
+        subnetSelection: {
+          subnets: appSubnets,
+        },
+        taskDefinition,
+        containerOverrides: [
+          {
+            containerName: 'MediafluxContainer',
+            environment: [
+              { name: 'S3_BUCKET', value: events.EventField.fromPath('$.detail.bucket.name') },
+              { name: 'S3_KEY', value: events.EventField.fromPath('$.detail.object.key') },
+            ],
+          },
+        ],
+      });
+
+      new events.Rule(this, 'S3PutEventRule', {
+        description: 'Rule to trigger Fargate task on S3 put event',
+        eventPattern: {
+          source: ['aws.s3'],
+          detailType: ['Object Created'],
+          detail: {
+            bucket: {
+              name: [catalogBucket.bucketName],
+            },
+            object: {
+              key: [{ prefix: '' }],
+            },
+          },
+        },
+        targets: [mediaFluxTask],
+      });
+    }
     cdk.Tags.of(this).add('uni:billing:application', 'para');
   }
 }

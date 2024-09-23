@@ -6,7 +6,7 @@ TASK_NAME="${1^}"
 shift
 
 echo "Getting cluster..."
-CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep nabu)
+CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep 'nabu$')
 
 if [ -z "$TASK_NAME" ]; then
   TASKS=$(aws ecs list-services --cluster "$CLUSTER")

@@ -7,9 +7,9 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
-import type { Environment } from './types';
 import { NagSuppressions } from 'cdk-nag';
-import { CfnBucket } from 'aws-cdk-lib/aws-s3';
+
+import type { Environment } from './types';
 
 export class MainStack extends cdk.Stack {
   public catalogBucket: s3.IBucket;
@@ -130,7 +130,12 @@ export class MainStack extends cdk.Stack {
       ],
       serverAccessLogsBucket: metaBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
+      eventBridgeEnabled: true,
     });
+    NagSuppressions.addStackSuppressions(this, [
+      { id: 'AwsSolutions-IAM4', reason: 'OK with * resources' },
+      { id: 'AwsSolutions-IAM5', reason: 'OK with * resources' },
+    ]);
 
     if (env === 'prod') {
       if (!drBucket) {
@@ -184,7 +189,7 @@ export class MainStack extends cdk.Stack {
         }),
       );
 
-      const cfnBucket = this.catalogBucket.node.defaultChild as CfnBucket;
+      const cfnBucket = this.catalogBucket.node.defaultChild as s3.CfnBucket;
       cfnBucket.replicationConfiguration = {
         role: replicationRole.roleArn,
         rules: [
