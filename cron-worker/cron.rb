@@ -13,6 +13,19 @@ ses = Aws::SES::Client.new(region: 'ap-southeast-2')
 
 scheduler = Rufus::Scheduler.new
 
+scheduler.cron '27 4 * * 2'  do
+  name = 'DB/S3 Sync'
+  task = 'catalog:check_db_s3_sync'
+
+  puts "#{Time.current}: Starting task #{name}"
+
+  begin
+    Rake::Task[task].invoke
+  ensure
+    Rake::Task[task].reenable
+  end
+end
+
 scheduler.cron '10 1 * * *'  do
   name = 'Mint Dois'
   task = 'archive:mint_dois'

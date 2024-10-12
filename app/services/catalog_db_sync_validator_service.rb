@@ -1,116 +1,118 @@
+require 'csv'
+require 'aws-sdk-s3'
+
 class CatalogDbSyncValidatorService
   attr_reader :catalog_dir, :verbose
 
-  def initialize(verbose: false)
-    @catalog_dir = '/srv/catalog'
-    @verbose = verbose
+  def initialize(env)
+    @bucket = "nabu-meta-#{env}"
+    @prefix = "inventories/catalog/nabu-catalog-#{env}/CatalogBucketInventory0/"
+
+    # Strange bug in dev docker
+    ENV.delete('AWS_SECRET_ACCESS_KEY')
+    ENV.delete('AWS_ACCESS_KEY_ID')
+    ENV.delete('AWS_SESSION_TOKEN')
+
+    @s3 = Aws::S3::Client.new(region: 'ap-southeast-2')
   end
 
   def run
-    process_collections
+    inventory_dir = find_recent_inventory_dir
+    inventory_csv = fetch_inventory_csv(inventory_dir)
+
+    s3_files = extract_s3_files(inventory_csv)
+
+    essence_files = Essence
+      .includes(item: [:collection])
+      .map(&:full_identifier)
+
+    db_only = essence_files - s3_files
+    s3_only = s3_files - essence_files
+
+    AdminMailer.with(db_only:, s3_only:).catalog_s3_sync_report.deliver_now
   end
 
   private
 
-  def process_items(collection, db_items)
-    item_ids(collection.identifier).each do |item_id|
-      item = db_items.find { |i| i.identifier == item_id }
-      unless item
-        # FIXME: Put this back
-        # puts "WARNING: ITEM LEVEL: #{collection.identifier}/#{item_id} does not exist in the database"
-        next
-      end
+  def extract_s3_files(inventory_csv)
+    s3_files = []
 
-      db_essences = item.essences.to_a.each { | essence | essence.filename = essence.filename.downcase }
-      process_essences(collection, item, db_essences)
+    CSV.parse(inventory_csv, headers: false) do |row|
+      _bucket_name, filename, _version_id, is_latest, delete_marker, _size, _last_modified, _etag,
+        storage_class,  multiple_upload,  multipart_upload_flag, replication_status, checksum_algo = row
+
+      next if is_latest == 'false' || delete_marker == 'true'
+
+      s3_files << CGI.unescape(filename)
     end
+
+    s3_files = s3_files.reject { |filename| filename.ends_with?('pdsc_admin/ro-crate-metadata.json') }
+      .reject { |filename| filename.starts_with?('pdsc_admin/') && filename.ends_with?('-deposit.pdf') }
+      # TODO: Remove this after we migrate all the df files
+      .reject { |filename| filename.ends_with?('df-PDSC_ADMIN.pdf') }
+
+    if s3_files.size != s3_files.uniq.size
+      raise 'Duplicate files in S3 inventory'
+    end
+
+    s3_files
   end
 
-  def process_essences(collection, item, db_essences)
-    essences = essence_ids(collection.identifier, item.identifier)
-    files = essences.map { |essence| essence.sub(/\.*[a-zA-Z0-9]+$/, '') }.uniq
+  def fetch_inventory_csv(inventory_dir)
+    manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
+    manifest = JSON.parse(manifest_json)
 
-    essences.each do |essence_id|
-      next if essence_id =~ /#{collection.identifier}-#{item.identifier}-(CAT|LIST|df|df_revised|df_ammended)-PDSC_ADMIN.(xml|pdf|html|html|rtf)/
-
-      if essence_id =~ /PDSC_ADMIN/
-        fileprefix = essence_id.sub(/-(spectrum|thumb|checksum|soundimage|preview|sjo01df|ind01df|asfdf|mwfdf|amhdf|ban01df|ropdf|jpn04df|jpn02df|tcidf|mjkdf|jpndf|kac01df)-PDSC_ADMIN\.(jpg|json|txt|pdf|ogg|htm|jpgf.tif)$/, '')
-        next if files.include?(fileprefix)
-
-        puts "WARNING: ITEM LEVEL: #{collection.identifier}/#{item.identifier}/#{essence_id} is unknown PDSC_ADMIN file"
-        next
-      end
-
-      essence = db_essences.find { |i| i.filename == essence_id.downcase }
-      unless essence
-        puts "WARNING: ITEM LEVEL: #{collection.identifier}/#{item.identifier}/#{essence_id} does not exist in the database"
-        next
-      end
+    files = manifest['files']
+    if files.size > 1
+      raise 'Multiple files in manifest'
     end
+
+    file = files.first['key']
+
+    # Download the S3 Inventory CSV file
+    inventory_gzipped = @s3.get_object(bucket: @bucket, key: file).body.read
+    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
   end
 
-  def process_collections
-    collection_ids.each do |collection_id|
-      puts "## #{collection_id}" if verbose
+  def find_recent_inventory_dir
+    inventory_files = fetch_inventory_files
 
-      collection = Collection.find_by(identifier: collection_id)
-      unless collection
-        puts "WARNING: COLLECTION LEVEL: #{collection_id} does not exist in the database"
-        next
+    # Extract the timestamp part from each key and convert it to Time object
+    timestamped_files = inventory_files.map do |key|
+      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
+      if match
+        year, month, day, hour, minute = match.captures
+        time = Time.new(year, month, day, hour, minute)
+        { key: key, time: time }
       end
+    end.compact
 
-      process_items(collection, collection.items.to_a)
-    end
+    # Find the most recent file
+    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
+
+    most_recent_dir[:key]
   end
 
-  def essence_ids(collection_id, item_id)
-    ids = []
+  def fetch_inventory_files
+    inventory_files = []
+    next_token = nil
 
-    Dir.entries(File.join(catalog_dir, collection_id, item_id)).each do |dir|
-      next if ['.', '..'].include?(dir)
+    loop do
+      response = @s3.list_objects_v2(
+        bucket: @bucket,
+        prefix: @prefix,
+        delimiter: '/',
+        continuation_token: next_token
+      )
 
-      unless File.file?(File.join(catalog_dir, collection_id, item_id, dir))
-        puts "WARNING: ITEM LEVEL: #{collection_id}/#{item_id}/#{dir} is not a file"
-        next
-      end
+      # Collect all object keys
+      inventory_files += response.common_prefixes.map(&:prefix)
 
-      ids << dir
+      break unless response.is_truncated
+
+      next_token = response.next_continuation_token
     end
 
-    ids
-  end
-
-  def item_ids(collection_id)
-    ids = []
-
-    Dir.entries(File.join(catalog_dir, collection_id)).each do |dir|
-      next if ['.', '..'].include?(dir)
-
-      unless File.directory?(File.join(catalog_dir, collection_id, dir))
-        puts "WARNING: ITEM LEVEL: #{collection_id}/#{dir} is not a directory"
-        next
-      end
-
-      ids << dir
-    end
-
-    ids
-  end
-
-  def collection_ids
-    ids = []
-
-    Dir.entries(catalog_dir).each do |dir|
-      next if ['.', '..', '.afm', '0001-Backups', '0002-Migration'].include?(dir)
-
-      unless File.directory?(File.join(catalog_dir, dir))
-        puts "WARNING: COLLECTION LEVEL: #{dir} is not a directory"
-        next
-      end
-
-      ids << dir
-    end
-
-    ids
+    inventory_files
   end
 end
