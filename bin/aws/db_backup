@@ -4,37 +4,27 @@ set -e
 
 export AWS_OUTPUT="json"
 
-TASK_NAME="App"
-shift
-
-echo "Getting cluster..."
-CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
-
-if [ -z "$TASK_NAME" ]; then
-  TASKS=$(aws ecs list-services --cluster "$CLUSTER")
-  # | jq -r '.taskDefinitionArns | .[]' \
-  # | sed 's/.*task-definition\/StageCdkStack//;s/Definition.*//')
-
-  echo "Please specify a task to run"
-  echo Select from "$TASKS" | tr '' '\n'
-  exit 1
-fi
-
-echo "Getting service..."
-SERVICE=$(aws ecs list-services --cluster "$CLUSTER" | jq -r '.serviceArns | .[]' | grep -i -- "$TASK_NAME" | tail -1)
-
-echo "Getting service name..."
+CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep 'nabu$')
+SERVICE=$(aws ecs list-services --cluster "$CLUSTER" | jq -r '.serviceArns | .[]' | grep -i -- App | tail -1)
 SERVICE_NAME=$(aws ecs describe-services --services "$SERVICE" --cluster "$CLUSTER" | jq -r .services[0].serviceName)
-
-echo "Getting task..."
 TASK=$(aws ecs list-tasks --cluster "$CLUSTER" --service-name "$SERVICE_NAME" | jq -r .taskArns[0])
 
-aws ecs execute-command \
-  --cluster "$CLUSTER" \
-  --task "$TASK" \
-  --interactive \
-  --container "${TASK_NAME}Container" \
-  --command '/bin/bash -c "mysqldump -u nabu -h $NABU_DATABASE_HOSTNAME --password=$NABU_DATABASE_PASSWORD nabu | bzip2 | base64"' >|../nabu.sql.bz2.b64
+execute_command() {
+        aws ecs execute-command \
+                --cluster "$CLUSTER" \
+                --task "$TASK" \
+                --interactive \
+                --container "AppContainer" \
+                --command "/bin/bash -c \"$1\""
+}
 
-tail -n +6 ../nabu.sql.bz2.b64 | head -n -4 | base64 -id >|../nabu.sql.bz2
-rm ../nabu.sql.bz2.b64
+execute_command "mysqldump -u nabu -h \$NABU_DATABASE_HOSTNAME --password=\$NABU_DATABASE_PASSWORD --no-data nabu | bzip2 | base64" >|../schema.sql.bz2.b64
+execute_command "mysqldump -u nabu -h \$NABU_DATABASE_HOSTNAME --password=\$NABU_DATABASE_PASSWORD --ignore-table=nabu.versions nabu | bzip2 | base64" >|../data.sql.bz2.b64
+
+tail -n +6 ../schema.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../schema.sql
+tail -n +6 ../data.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../data.sql
+rm ../*.b64
+
+echo "Now run"
+echo "mysql -h 127.0.0.1 -u root nabu_devel < ../schema.sql"
+echo "pv data.sql | mysql -h 127.0.0.1 -u root nabu_devel"
