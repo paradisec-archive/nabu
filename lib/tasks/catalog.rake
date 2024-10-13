@@ -1,9 +1,9 @@
 namespace :catalog do
   desc 'Validate S3 vs DB'
   task check_db_s3_sync: :environment do
-    env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')
+    exit unless Rails.env.production?
 
-    validator = CatalogDbSyncValidatorService.new(env)
+    validator = CatalogDbSyncValidatorService.new('prod')
     validator.run
   end
 

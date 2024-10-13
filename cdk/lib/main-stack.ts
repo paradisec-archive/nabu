@@ -14,6 +14,8 @@ import type { Environment } from './types';
 export class MainStack extends cdk.Stack {
   public catalogBucket: s3.IBucket;
 
+  public metaBucket: s3.IBucket;
+
   public certificate: acm.ICertificate;
 
   public zone: route53.IHostedZone;
@@ -76,14 +78,14 @@ export class MainStack extends cdk.Stack {
     // ////////////////////////
     // Meta Bucket
     // ////////////////////////
-    const metaBucket = new s3.Bucket(this, 'MetaBucket', {
+    this.metaBucket = new s3.Bucket(this, 'MetaBucket', {
       bucketName: `${appName}-meta-${env}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-    NagSuppressions.addResourceSuppressions(metaBucket, [
+    NagSuppressions.addResourceSuppressions(this.metaBucket, [
       { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
     ]);
 
@@ -104,7 +106,7 @@ export class MainStack extends cdk.Stack {
       inventories: [
         {
           destination: {
-            bucket: metaBucket,
+            bucket: this.metaBucket,
             prefix: 'inventories/catalog',
           },
           frequency: s3.InventoryFrequency.WEEKLY,
@@ -128,7 +130,7 @@ export class MainStack extends cdk.Stack {
           allowedHeaders: ['*'],
         },
       ],
-      serverAccessLogsBucket: metaBucket,
+      serverAccessLogsBucket: this.metaBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
       eventBridgeEnabled: true,
     });

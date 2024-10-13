@@ -36,6 +36,7 @@ export class AppStack extends cdk.Stack {
       zoneName,
 
       catalogBucket,
+      metaBucket,
       zone,
       tempCertificate,
       cloudflare,
@@ -361,16 +362,20 @@ export class AppStack extends cdk.Stack {
       ]);
       cronTaskDefinition.addContainer('CronContainer', {
         ...commonAppImageOptions,
-        memoryLimitMiB: 512,
+        memoryReservationMiB: 128,
         logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'CronService' }),
         command: ['bundle', 'exec', 'cron-worker/cron.rb'],
       });
       cronTaskDefinition.addToTaskRolePolicy(
         new iam.PolicyStatement({
-          actions: ['ses:SendEmail'],
+          actions: ['ses:SendEmail', 'ses:SendRawEmail'],
           resources: ['*'],
         }),
       );
+
+      catalogBucket.grantReadWrite(cronTaskDefinition.taskRole);
+      metaBucket.grantRead(cronTaskDefinition.taskRole);
+      searchDomain.grantReadWrite(cronTaskDefinition.taskRole);
 
       const cronService = new ecs.Ec2Service(this, 'CronService', {
         serviceName: 'cron',
@@ -379,6 +384,7 @@ export class AppStack extends cdk.Stack {
         enableExecuteCommand: true,
       });
       cronService.enableServiceConnect();
+
     }
 
     // ////////////////////////

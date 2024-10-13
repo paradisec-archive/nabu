@@ -69,6 +69,7 @@ environments.forEach((environment) => {
   const props: AppProps = {
     ...environment,
     catalogBucket: mainStack.catalogBucket,
+    metaBucket: mainStack.metaBucket,
     zone: mainStack.zone,
     tempCertificate: mainStack.tempCertificate,
   };
