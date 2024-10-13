@@ -223,9 +223,8 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    graphiql-rails (1.8.0)
+    graphiql-rails (1.10.1)
       railties
-      sprockets-rails
     graphql (2.3.14)
       base64
       fiber-storage
@@ -676,7 +675,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faraday_middleware-aws-sigv4
-  graphiql-rails (= 1.8.0)
+  graphiql-rails (= 1.10.1)
   graphql
   guard
   guard-rails
