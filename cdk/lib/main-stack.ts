@@ -98,7 +98,10 @@ export class MainStack extends cdk.Stack {
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
-      lifecycleRules: [{ abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
+      lifecycleRules: [
+        { abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) },
+        { transitions: [{ storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) }], tagFilters: [{ key: 'archive', value: 'true' }] },
+      ],
       versioned: env === 'prod',
       inventories: [
         {
