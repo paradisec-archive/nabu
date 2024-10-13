@@ -18,6 +18,8 @@ export type Environment = {
 export type AppProps = Environment & {
   readonly catalogBucket: IBucket,
   readonly metaBucket: IBucket,
+  readonly drBucket: IBucket,
+  readonly metaDrBucket: IBucket,
   readonly zone: IHostedZone,
   readonly tempCertificate: ICertificate,
 };

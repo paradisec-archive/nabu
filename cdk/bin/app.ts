@@ -70,6 +70,8 @@ environments.forEach((environment) => {
     ...environment,
     catalogBucket: mainStack.catalogBucket,
     metaBucket: mainStack.metaBucket,
+    drBucket: drStack.drBucket,
+    metaDrBucket: drStack.metaDrBucket,
     zone: mainStack.zone,
     tempCertificate: mainStack.tempCertificate,
   };

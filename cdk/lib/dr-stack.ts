@@ -9,6 +9,8 @@ import { NagSuppressions } from 'cdk-nag';
 export class DrStack extends cdk.Stack {
   public drBucket: s3.IBucket;
 
+  public metaDrBucket: s3.IBucket;
+
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -30,14 +32,14 @@ export class DrStack extends cdk.Stack {
     // ////////////////////////
     // DR Meta Bucket
     // ////////////////////////
-    const metaDrBucket = new s3.Bucket(this, 'MetaBucket', {
+    this.metaDrBucket = new s3.Bucket(this, 'MetaBucket', {
       bucketName: `${appName}-metadr-${env}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-    NagSuppressions.addResourceSuppressions(metaDrBucket, [
+    NagSuppressions.addResourceSuppressions(this.metaDrBucket, [
       { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
     ]);
 
@@ -55,7 +57,7 @@ export class DrStack extends cdk.Stack {
       inventories: [
         {
           destination: {
-            bucket: metaDrBucket,
+            bucket: this.metaDrBucket,
             prefix: 'inventories/catalogdr',
           },
           frequency: s3.InventoryFrequency.WEEKLY,
@@ -72,7 +74,7 @@ export class DrStack extends cdk.Stack {
         },
       ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      serverAccessLogsBucket: metaDrBucket,
+      serverAccessLogsBucket: this.metaDrBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalogdr-${env}`,
     });
 

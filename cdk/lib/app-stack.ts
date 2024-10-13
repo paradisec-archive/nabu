@@ -36,6 +36,7 @@ export class AppStack extends cdk.Stack {
 
       catalogBucket,
       metaBucket,
+      metaDrBucket,
       zone,
       tempCertificate,
       cloudflare,
@@ -374,6 +375,7 @@ export class AppStack extends cdk.Stack {
 
       catalogBucket.grantReadWrite(cronTaskDefinition.taskRole);
       metaBucket.grantRead(cronTaskDefinition.taskRole);
+      metaDrBucket.grantRead(cronTaskDefinition.taskRole);
       searchDomain.grantReadWrite(cronTaskDefinition.taskRole);
 
       const cronService = new ecs.Ec2Service(this, 'CronService', {

@@ -3,11 +3,11 @@ This report runs weekly and compares the files in the S3 bucket with the files i
 ## Files in database but missing from S3
 
 <% @db_only.each do |file| -%>
-  = <%= file %>
+  - <%= file %>
 <% end -%>
 
 ## Files in S3 but missing from the database
 
 <% @s3_only.each do |file| -%>
-  = <%= file %>
+  - <%= file %>
 <% end -%>
