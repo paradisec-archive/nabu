@@ -1,0 +1,16 @@
+This report validates that the Sydney bucket is fully synced with the Melbourne bucket.
+
+## Files in Sydney but not Melbourne
+
+<% @prod_only.each do |file| -%>
+  = <%= file %>
+<% end -%>
+
+## Files in Melbourne but not Sydney
+
+<% @dr_only.each do |file| -%>
+  = <%= file %>
+<% end -%>
+
+NOTE: It is normal to see a handful of files here as this report is based of an inventory of Sydney and Melbourne created by AWS at different times.
+you shouldn't see this list grow though or the same files week to week

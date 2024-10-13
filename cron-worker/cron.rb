@@ -14,8 +14,21 @@ ses = Aws::SES::Client.new(region: 'ap-southeast-2')
 scheduler = Rufus::Scheduler.new
 
 scheduler.cron '27 4 * * 2'  do
-  name = 'DB/S3 Sync'
+  name = 'Check DB S3 Sync'
   task = 'catalog:check_db_s3_sync'
+
+  puts "#{Time.current}: Starting task #{name}"
+
+  begin
+    Rake::Task[task].invoke
+  ensure
+    Rake::Task[task].reenable
+  end
+end
+
+scheduler.cron '27 5 * * 2'  do
+  name = 'Check Replication'
+  task = 'catalog:check_replication'
 
   puts "#{Time.current}: Starting task #{name}"
 

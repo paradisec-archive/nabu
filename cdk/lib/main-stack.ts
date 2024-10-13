@@ -98,9 +98,6 @@ export class MainStack extends cdk.Stack {
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
-      // TODO: Do we want tiering?
-      // intelligentTieringConfigurations: [ ],
-      // TODO: Decide on lifecycle rules
       lifecycleRules: [{ abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
       versioned: env === 'prod',
       inventories: [
