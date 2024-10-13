@@ -23,6 +23,13 @@ class EssencesController < ApplicationController
   end
 
   def download
+    if !@current_user.admin? && @essence.is_archived?
+      flash[:error] = 'This file is archived and can only be downloaded by admins'
+      redirect_to [@collection, @item, @essence]
+
+      return
+    end
+
     Download.create! user: current_user, essence: @essence
 
     location = Nabu::Catalog.instance.essence_url(@essence, as_attachment: true)
@@ -32,6 +39,13 @@ class EssencesController < ApplicationController
   end
 
   def display
+    if !@current_user.admin? && @essence.is_archived?
+      flash[:error] = 'This file is archived and can only be displayed to admins'
+      redirect_to [@collection, @item, @essence]
+
+      return
+    end
+
     location = Nabu::Catalog.instance.essence_url(@essence)
     raise ActionController::RoutingError, 'Essence file not found' unless location
 
@@ -71,6 +85,6 @@ class EssencesController < ApplicationController
 
 
   def find_essence
-    @essence = Essence.includes(:item => { item_agents: %i[agent_role user] }).find(params[:id])
+    @essence = Essence.includes(item: { item_agents: %i[agent_role user] }).find(params[:id])
   end
 end

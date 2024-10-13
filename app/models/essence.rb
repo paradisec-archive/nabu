@@ -109,6 +109,10 @@ class Essence < ApplicationRecord
     filename
   end
 
+  def is_archived?
+    filename.ends_with?('.mxf') || filename.ends_with?('.mkv')
+  end
+
   def full_path
     # TODO: probably want to change this to be filename at some point, non-urgent though
     "#{item.full_path}/essences/#{id}"
