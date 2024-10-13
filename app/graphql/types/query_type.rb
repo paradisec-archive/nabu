@@ -62,7 +62,7 @@ module Types
 
       bwf = {
         'FileName' => filename,
-        'Description' => desc.join('\n').truncate(250),
+        'Description' => desc.join('\n').truncate(240),
         'Originator' => item.collector_name,
         'OriginationDate' => item.originated_on,
         'BextVersion' => 1,
