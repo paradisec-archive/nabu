@@ -1,5 +1,5 @@
 class AdminMailer < ApplicationMailer
-  default to: 'admin@paradisec.org.au'
+  default to: ['admin@paradisec.org.au', 'johnf@inodes.org']
 
   def catalog_s3_sync_report
     @s3_only = params[:s3_only]
