@@ -6,4 +6,10 @@ namespace :catalog do
     validator = CatalogDbSyncValidatorService.new(env)
     validator.run
   end
+
+  desc "Mint DOIs for objects that don't have one"
+  task mint_dois: :environment do
+    dry_run = ENV['DRY_RUN'] ? true : false
+    BatchDoiMintingService.run(dry_run)
+  end
 end

@@ -2,13 +2,13 @@
 # For an individual minting, see DoiMintingService.
 
 class BatchDoiMintingService
-  def self.run(batch_size, dry_run)
-    batch_doi_minting_service = new(batch_size, dry_run)
+  def self.run(dry_run)
+    batch_doi_minting_service = new(dry_run)
     batch_doi_minting_service.run
   end
 
-  def initialize(batch_size, dry_run)
-    @batch_size = batch_size
+  def initialize(dry_run)
+    @batch_size = 100
     @dry_run = dry_run
     @doi_minting_service = create_doi_minting_service
     @unminted_objects = find_unminted_objects

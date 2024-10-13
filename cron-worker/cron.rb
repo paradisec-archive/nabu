@@ -28,7 +28,7 @@ end
 
 scheduler.cron '10 1 * * *'  do
   name = 'Mint Dois'
-  task = 'archive:mint_dois'
+  task = 'catalog:mint_dois'
 
   puts "#{Time.current}: Starting task #{name}"
 
