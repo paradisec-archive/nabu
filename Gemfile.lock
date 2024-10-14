@@ -331,9 +331,10 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.1)
-    mission_control-jobs (0.3.1)
+    mission_control-jobs (0.3.2)
       importmap-rails
       irb (~> 1.13)
+      propshaft
       rails (>= 7.1)
       stimulus-rails
       turbo-rails
@@ -343,7 +344,7 @@ GEM
     nenv (0.3.0)
     net-http (0.4.1)
       uri
-    net-imap (0.4.16)
+    net-imap (0.4.17)
       date
       net-protocol
     net-pop (0.1.2)
@@ -378,6 +379,11 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.2.0)
+    propshaft (1.1.0)
+      actionpack (>= 7.0.0)
+      activesupport (>= 7.0.0)
+      rack
+      railties (>= 7.0.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -388,7 +394,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.1.7)
+    rack (3.1.8)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -687,7 +693,7 @@ DEPENDENCIES
   json_schemer
   kaminari
   letter_opener
-  mission_control-jobs (= 0.3.1)
+  mission_control-jobs (= 0.3.2)
   mysql2 (~> 0.5)
   nilify_blanks
   oai
