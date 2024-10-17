@@ -170,13 +170,6 @@ class ItemsController < ApplicationController
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
   end
 
-  def s3_rocrate
-    location = Nabu::Catalog.instance.item_admin_url(@item, 'ro-crate-metadata.json')
-    raise ActionController::RoutingError, 'PDSC file not found' unless location
-
-    redirect_to location, allow_other_host: true
-  end
-
   def private_rocrate
     @data = @item
     @is_item = true

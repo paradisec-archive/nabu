@@ -236,6 +236,24 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def private_rocrate
+    @data = @collection
+    @is_item = false
+    @admin_rocrate = true
+
+    json_data = render_to_string(template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb])
+    send_data json_data, filename: "#{@collection.identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
+  end
+
+  def public_rocrate
+    @data = @collection
+    @is_item = false
+    @admin_rocrate = false
+
+    json_data = render_to_string(template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb])
+    send_data json_data, filename: "#{@collection.identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
+  end
+
   def new_from_metadata
     @collection = Collection.new
   end
@@ -316,7 +334,7 @@ class CollectionsController < ApplicationController
                     :collector,
                     :countries,
                     :field_of_research,
-                    { :grants => %i[funding_body] },
+                    { grants: %i[funding_body] },
                     :languages,
                     :operator,
                     :university,

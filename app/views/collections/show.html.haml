@@ -193,6 +193,17 @@
           %th #Essence objects in items of collection
           %td= number_to_human @num_essences
 
+    %fieldset
+      %legend Metadata
+
+      %table.form.show
+        %tr
+          %th RO-Crate Metadata
+          %td
+            %ul
+              %li= link_to 'Download', public_rocrate_collection_path(@collection)
+              - if admin_user_signed_in?
+                %li= link_to 'Download (with private metadata)', private_rocrate_collection_path(@collection)
 
   .right
     - if can? :destroy, Collection

@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   get '/up' => 'rails/health#show', as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
+  get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
 
   # Graphql
   get '/paradisec.graphql', to: 'graphql#schema', as: 'graphql_schema'
@@ -49,9 +49,12 @@ Rails.application.routes.draw do
       post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
+    member do
+      get :private_rocrate
+      get :public_rocrate
+    end
     resources :items, except: %i[index] do
       member do
-        get :s3_rocrate
         get :private_rocrate
         get :public_rocrate
         get :data
@@ -104,7 +107,7 @@ Rails.application.routes.draw do
   end
 
   authenticated :user, ->(user) { user.admin? } do
-    mount MissionControl::Jobs::Engine, at: "/jobs"
+    mount MissionControl::Jobs::Engine, at: '/jobs'
     mount Searchjoy::Engine, at: '/searchjoy'
     match '/_dashboards/*path' => 'opensearch_dashboard#index', via: %i[get post put patch delete]
   end
