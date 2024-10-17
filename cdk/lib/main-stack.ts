@@ -100,7 +100,7 @@ export class MainStack extends cdk.Stack {
       enforceSSL: true,
       lifecycleRules: [
         { abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) },
-        { transitions: [{ storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) }], tagFilters: { key: 'archive', value: 'true' } },
+        { transitions: [{ storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) }], tagFilters: { archive: 'true' } },
       ],
       versioned: env === 'prod',
       inventories: [
