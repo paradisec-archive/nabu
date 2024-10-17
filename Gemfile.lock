@@ -331,7 +331,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.1)
-    mission_control-jobs (0.3.1)
+    mission_control-jobs (0.3.3)
       importmap-rails
       irb (~> 1.13)
       rails (>= 7.1)
@@ -343,7 +343,7 @@ GEM
     nenv (0.3.0)
     net-http (0.4.1)
       uri
-    net-imap (0.4.16)
+    net-imap (0.5.0)
       date
       net-protocol
     net-pop (0.1.2)
@@ -388,7 +388,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.1.7)
+    rack (3.1.8)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-session (2.0.0)
@@ -689,7 +689,7 @@ DEPENDENCIES
   json_schemer
   kaminari
   letter_opener
-  mission_control-jobs (= 0.3.1)
+  mission_control-jobs (= 0.3.3)
   mysql2 (~> 0.5)
   nilify_blanks
   oai
