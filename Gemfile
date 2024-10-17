@@ -62,7 +62,7 @@ end
 
 gem 'solid_queue' # New queue system coming to Rails 8
 # TODO: Remove the version when we upgrade to Rails 8
-gem 'mission_control-jobs', '0.3.1'  # Admin backend for jobs
+gem 'mission_control-jobs', '0.3.3'  # Admin backend for jobs
 
 # Needs to be as early as possible to do it's job
 gem 'dotenv-rails', require: 'dotenv/load' # , groups: [:development, :test] # Load env variables in dev

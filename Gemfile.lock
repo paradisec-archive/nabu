@@ -331,7 +331,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.1)
-    mission_control-jobs (0.3.1)
+    mission_control-jobs (0.3.3)
       importmap-rails
       irb (~> 1.13)
       rails (>= 7.1)
@@ -689,7 +689,7 @@ DEPENDENCIES
   json_schemer
   kaminari
   letter_opener
-  mission_control-jobs (= 0.3.1)
+  mission_control-jobs (= 0.3.3)
   mysql2 (~> 0.5)
   nilify_blanks
   oai
