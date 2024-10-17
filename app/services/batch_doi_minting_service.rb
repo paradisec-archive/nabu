@@ -8,7 +8,7 @@ class BatchDoiMintingService
   end
 
   def initialize(dry_run)
-    @batch_size = 100
+    @batch_size = 1000
     @dry_run = dry_run
     @doi_minting_service = create_doi_minting_service
     @unminted_objects = find_unminted_objects
