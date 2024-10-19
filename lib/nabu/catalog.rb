@@ -81,7 +81,7 @@ module Nabu
     end
 
     def deposit_form_url(collection, as_attachment: false)
-      filename = "#{collection.identifier}-deposit.pdf}"
+      filename = "#{collection.identifier}-deposit.pdf"
       Rails.logger.debug { "Nabu::Catalog: Get despoit form URL #{collection.identifier}:#{filename}" }
       parts = [collection.identifier, 'pdsc_admin', filename]
 
