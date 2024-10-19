@@ -12,6 +12,8 @@ module Mutations
     argument :attributes, Types::EssenceAttributes, required: true
 
     def resolve(item_identifier:, collection_identifier:, filename:, attributes:)
+      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
+
       collection = Collection.find_by(identifier: collection_identifier)
 
       item = collection.items.find_by(identifier: item_identifier)
