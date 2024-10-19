@@ -23,12 +23,17 @@ class JunkService
 
     s3_files = extract_s3_files(inventory_csv)
 
-    s3_files.select! { |filename| filename.end_with?('mxf') }
+    s3_files.select! { |filename| filename.ends_with?('-deposit.pdf') }
 
-    puts "Found #{s3_files.size} MXF files"
+    puts "Found #{s3_files.size} df files"
 
     s3_files.each do |filename|
-      puts "nabu-catalog-prod,#{filename}"
+      puts "Marking #{filename}"
+      identifier = filename.split('/')[0]
+      collection = Collection.find_by(identifier: identifier)
+      throw "Could not find collection for #{identifier}" unless collection
+      collection.has_deposit_form = true
+      collection.save!
     end
   end
 

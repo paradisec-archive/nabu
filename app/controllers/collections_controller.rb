@@ -236,6 +236,15 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def deposit_form
+    raise ActiveRecord::RecordNotFound unless @collection.has_deposit_form?
+
+    location = Nabu::Catalog.instance.deposit_form_url(@collection, as_attachment: true)
+    raise ActionController::RoutingError, 'Essence file not found' unless location
+
+    redirect_to location, allow_other_host: true
+  end
+
   def private_rocrate
     @data = @collection
     @is_item = false

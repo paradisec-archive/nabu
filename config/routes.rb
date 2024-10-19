@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     member do
       get :private_rocrate
       get :public_rocrate
+      get :deposit_form
     end
     resources :items, except: %i[index] do
       member do

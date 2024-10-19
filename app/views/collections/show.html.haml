@@ -133,6 +133,11 @@
           %th Media
           %td= @collection.media
 
+        - if @collection.has_deposit_form?
+          %tr
+            %th Deposit form
+            %td= link_to 'Download', deposit_form_collection_path(@collection)
+
         %tr
           %th Date created
           %td= @collection.created_at

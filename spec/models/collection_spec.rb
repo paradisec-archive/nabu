@@ -14,6 +14,7 @@
 # **`description`**            | `text(16777215)`   | `not null`
 # **`doi`**                    | `string(255)`      |
 # **`east_limit`**             | `float(24)`        |
+# **`has_deposit_form`**       | `boolean`          |
 # **`identifier`**             | `string(255)`      | `not null`
 # **`media`**                  | `string(255)`      |
 # **`metadata_source`**        | `string(255)`      |

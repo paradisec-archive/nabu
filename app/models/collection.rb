@@ -14,6 +14,7 @@
 # **`description`**            | `text(16777215)`   | `not null`
 # **`doi`**                    | `string(255)`      |
 # **`east_limit`**             | `float(24)`        |
+# **`has_deposit_form`**       | `boolean`          |
 # **`identifier`**             | `string(255)`      | `not null`
 # **`media`**                  | `string(255)`      |
 # **`metadata_source`**        | `string(255)`      |
@@ -94,6 +95,9 @@ class Collection < ApplicationRecord
   validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
   validates :west_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
   validates :east_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
+
+  # Set some defaults
+  attribute :has_deposit_form, :boolean, default: false
 
   bulk = [
     :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
@@ -259,7 +263,7 @@ class Collection < ApplicationRecord
       # TODO: SHould this be allowed in the data?
       data[:bounds] = if north_limit == south_limit && east_limit == west_limit
                         { type: 'point', coordinates: [west_limit, north_limit] }
-                      else
+      else
                         {
                           type: 'polygon',
                           coordinates: [[
@@ -270,7 +274,7 @@ class Collection < ApplicationRecord
                             [west_limit, north_limit]
                           ]]
                         }
-                      end
+      end
     end
 
     # Things we want to check blankness of
@@ -332,9 +336,9 @@ class Collection < ApplicationRecord
 
     long = if east_limit < west_limit
              180 + ((west_limit + east_limit) / 2)
-           else
+    else
              (west_limit + east_limit) / 2
-           end
+    end
 
     {
       lat: (north_limit + south_limit) / 2,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_07_221842) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_19_010838) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -89,6 +89,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_07_221842) do
     t.float "west_limit"
     t.float "east_limit"
     t.string "doi"
+    t.boolean "has_deposit_form"
     t.index ["access_condition_id"], name: "index_collections_on_access_condition_id"
     t.index ["collector_id"], name: "index_collections_on_collector_id"
     t.index ["field_of_research_id"], name: "index_collections_on_field_of_research_id"
