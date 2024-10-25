@@ -1,18 +1,26 @@
 {
-  total: @data.size,
+  total: @total,
 
   data: @data.map do |data|
     class_name = data.class.name
     is_item = class_name == 'Item'
 
-    {
-      conformsTo: "https://purl.archive.org/language-data-commons/profile##{is_item ? 'Object' : 'Collection'}",
+    response = {
       crateId: is_item ? repository_item_url(data.collection, data) : repository_collection_url(data),
+      conformsTo: "https://purl.archive.org/language-data-commons/profile##{is_item ? 'Object' : 'Collection'}",
+      types: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
       record: {
         name: data.title,
         license: data.access_condition_name,
-        description: data.description
+        description: data.description.truncate(256),
+        inLanguage: (is_item ? data.content_languages : data.languages).map { |language| { name: language.name, code: language.code } }
       }
     }
+
+    if is_item
+      response[:memberOf] = repository_collection_url(data.collection)
+    end
+
+    response
   end
 }

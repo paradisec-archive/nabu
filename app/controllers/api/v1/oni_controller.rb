@@ -4,16 +4,29 @@ module Api
       def objects
         limit = (params[:limit] || 5_000).to_i # FIXME: Better way for all record
         offset = (params[:offset] || 0).to_i
+        sortBy = params[:sortBy] || 'identifier'
+        unless %w[identifier title created_at].include?(sortBy)
+          orderBy = 'identifier'
+        end
+        sortDirection = (params[:sortDirection] || '').upcase === 'DESC' ? 'DESC' : 'ASC'
         conforms_to = params[:conformsTo]
-
-        collection_label = Arel::Nodes::SqlLiteral.new("'collection'")
-        item_label = Arel::Nodes::SqlLiteral.new("'item'")
 
         collections_table = Collection.where(private: false).arel_table
         items_table = Item.where(private: false).arel_table
 
+        collection_label = Arel::Nodes::SqlLiteral.new("'collection'")
+        item_label = Arel::Nodes::SqlLiteral.new("'item'")
+
+        item_identifier = Arel::Nodes::NamedFunction.new(
+          'CONCAT',
+          [collections_table[:identifier], Arel::Nodes.build_quoted('-'), items_table[:identifier]]
+        ).as('identifier')
+
         collections_query = collections_table.where(collections_table[:private].eq(false))
-        items_query = items_table.project(:id, :created_at, item_label.as('type')).where(items_table[:private].eq(false))
+        items_query = items_table
+          .join(collections_table).on(items_table[:collection_id].eq(collections_table[:id]))
+          .project(items_table[:id], items_table[:created_at], item_identifier, items_table[:title], item_label.as('type'))
+          .where(items_table[:private].eq(false))
 
         if params[:memberOf]
           md = params[:memberOf].match(repository_collection_url(collection_identifier: '(.*)'))
@@ -25,19 +38,27 @@ module Api
           collections_query = collections_query.where(collections_table[:identifier].eq(md[1])).project(:id)
           combined_query = items_query.where(items_table[:collection_id].in(collections_query))
         else
-          collections_query = collections_query.project(:id, :created_at, collection_label.as('type'))
+          collections_query = collections_query.project(:id, :created_at, :identifier, :title, collection_label.as('type'))
           combined_query = case conforms_to
-                           when 'https://purl.archive.org/language-data-commons/profile#Collection'
-                             collections_query
-                           when 'https://purl.archive.org/language-data-commons/profile#Item'
-                             items_query
-                           else
-                             collections_query.union(items_query)
-                           end
+          when 'https://purl.archive.org/language-data-commons/profile#Collection'
+            collections_query
+          when 'https://purl.archive.org/language-data-commons/profile#Item'
+            items_query
+          else
+            collections_query.union(items_query)
+          end
         end
 
+        # Count query to get the total number of records
+        count_query = Arel::SelectManager.new(Arel::Table.engine)
+        count_query.from(combined_query.as('combined')).project(Arel.star.count.as('total_count'))
+
+        total_count_result = ActiveRecord::Base.connection.select_all(count_query.to_sql)
+        @total = total_count_result.first['total_count']
+
+        # Final query with limit and offset
         final_query = Arel::SelectManager.new(Arel::Table.engine)
-        final_query.from(combined_query.as('combined')).project(Arel.star).order('created_at ASC').skip(offset).take(limit)
+        final_query.from(combined_query.as('combined')).project(Arel.star).order("#{sortBy} #{sortDirection}").skip(offset).take(limit)
 
         ids = ActiveRecord::Base.connection.select_all(final_query.to_sql)
 
@@ -99,12 +120,7 @@ module Api
           @is_item = false
         end
 
-        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
-        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
-        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
-        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
-        # FIXME: Temp for ONI team to validate our crates this should be false and only true when we write to catalog
-        @admin_rocrate = true
+        @admin_rocrate = false
 
         raise ActiveRecord::RecordNotFound unless @data
       end
