@@ -230,6 +230,34 @@ export class AppStack extends cdk.Stack {
       enableExecuteCommand: true,
     });
 
+    // ////////////////////////
+    // Oni
+    // ////////////////////////
+
+    const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
+    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
+      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
+    ]);
+    oniTaskDefinition.addContainer('OniContainer', {
+      memoryLimitMiB: 128,
+      image: ecs.ContainerImage.fromAsset('..', {
+        file: 'docker/oni.Dockerfile',
+      }),
+      portMappings: [{ name: 'oni', containerPort: 80 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
+      environment: {
+        AWS_REGION: region,
+        BUCKET_NAME: catalogBucket.bucketName,
+      },
+    });
+
+    const oniService = new ecs.Ec2Service(this, 'OniService', {
+      serviceName: 'viewer',
+      cluster,
+      taskDefinition: viewerTaskDefinition,
+      enableExecuteCommand: true,
+    });
+
     // //////////////////////
     // Secrets
     // ////////////////////////
@@ -436,6 +464,21 @@ export class AppStack extends cdk.Stack {
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
         elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
+      ],
+    });
+
+    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
+      targets: [oniService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('OniTargetGroups', {
+      targetGroups: [oniTargetGroup],
+      priority: 5,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/oni/*']),
       ],
     });
 
