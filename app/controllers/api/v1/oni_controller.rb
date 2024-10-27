@@ -112,25 +112,61 @@ module Api
           return
         end
 
-        md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
-        if md
-          @collection = Collection.where(private: false).find_by(identifier: md[1])
-          @data = @collection.items.where(private: false).includes(:content_languages, :subject_languages,
-item_agents: %i[agent_role user]).find_by(identifier: md[2])
-          @is_item = true
-        else
-          md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
-          unless md
-            render json: { error: 'Invalid id parameter' }, status: :bad_request
-            return
-          end
-          @data = Collection.where(private: false).find_by(identifier: md[1])
-          @is_item = false
-        end
-
         @admin_rocrate = false
 
-        raise ActiveRecord::RecordNotFound unless @data
+        if check_for_essence
+          render 'object_meta_essence'
+          return
+        end
+
+        if check_for_item
+          render 'object_meta_item'
+          return
+        end
+
+        if check_for_collection
+          render 'object_meta_collection'
+          return
+        end
+
+        raise ActiveRecord::RecordNotFound
+      end
+
+      private
+      def check_for_essence
+        md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
+        return false unless md
+
+        @collection = Collection.where(private: false).find_by(identifier: md[1])
+        @item = @collection.items
+          .where(private: false)
+          .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
+
+        @data = @item.essences.find_by(filename: md[3])
+
+        true
+      end
+
+      def check_for_item
+        md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
+        return false unless md
+
+        @collection = Collection.where(private: false).find_by(identifier: md[1])
+        @data = @collection.items
+          .where(private: false)
+          .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
+
+        true
+      end
+
+      def check_for_collection
+        md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
+        return false unless md
+
+        @data = Collection.where(private: false).find_by(identifier: md[1])
+        @is_item = false
+
+        true
       end
     end
   end

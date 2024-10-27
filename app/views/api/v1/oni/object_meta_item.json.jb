@@ -1,7 +1,7 @@
 # frozen_string_literal: truemeta
 
 def id
-  @is_item ? repository_item_url(@data.collection, @data) : repository_collection_url(@data)
+  repository_item_url(@data.collection, @data)
 end
 
 def rocrate_json
@@ -46,13 +46,12 @@ def essence_json(essence)
     dateModified: essence.updated_at.to_date,
     encodingFormat: essence.mimetype,
     name: essence.filename,
-    doi: essence.doi
-    # essenceId: essence.id # Should we expose this????,
+    doi: essence.doi,
+    bitrate: essence.bitrate,
+    duration: essence.duration,
+    channels: essence.channels,
+    sampleRate: essence.samplerate
   }
-  json[:bitrate] = essence.bitrate
-  json[:duration] = essence.duration
-  json[:channels] = essence.channels
-  json[:sampleRate] = essence.samplerate
 
   json.compact!
 
@@ -205,10 +204,10 @@ end
 data = {
   '@id': id,
 
-  '@type': ['Data', 'Object', @is_item ? 'RepositoryObject' : 'RepositoryCollection'],
-  conformsTo: { '@id': "https://w3id.org/ldac/profile##{@is_item ? 'Object' : 'Collection'}" },
+  '@type': ['Data', 'Object', 'RepositoryObject'],
+  conformsTo: { '@id': 'https://w3id.org/ldac/profile#Object' },
 
-  additionalType: @is_item ? 'item' : 'collection',
+  additionalType: 'item',
 
   identifier: [
     property_value_json('domain', 'paradisec.org.au'),
@@ -230,13 +229,13 @@ data = {
 
   publisher: { '@id': person_json(@data.collector) },
 
-  inLanguage: (@is_item ? @data.content_languages : @data.languages).map { |language| { '@id': language_json(language) } },
+  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
   subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
   countries: @data.countries.map { |country| { '@id': country_json(country) } }
 }
 
 if @admin_rocrate
-  data[:comment] = @is_item ? @data.admin_comment : @data.comments
+  data[:comment] = @data.admin_comment
   data[:usageinfo] = data[:access_narrative]
   data[:private] = @data.private
   data['paradisec:admins'] = @data.admins.map { |admin| { '@id': person_json(admin) } }
@@ -246,52 +245,43 @@ data[:license] = { '@id': access_condition_json(@data.access_condition) } if @da
 data[:operator] = { '@id': person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = organisation_json(@data.university) if @data.university
 
-if @is_item
-  data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
-  data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
-  data[:bornDigital] = @data.born_digital
+data[:memberOf] = { '@id': repository_collection_url(@data.collection) }
+data[:root] = { '@id': repository_collection_url(@data.collection) }
+data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
+data[:languageAsGiven] = @data.language
+data[:originalMedia] = @data.original_media if @data.original_media
+data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
+data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
+data[:languageGenre] = @data.discourse_type.name if @data.discourse_type
+if @data.data_categories
+  data[:communicationMode] = @data.data_categories.map do |data_category|
+    { '@id': "https://w3id.org/ldac/terms##{data_category.name}" }
+  end
+end
+
+if @data.data_types
+  data['paradisec:dataType'] = @data.data_types.map do |data_type|
+    { '@id': "#datatype-#{data_type.id}", name: data_type.name }
+  end
+end
+
+@data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
+  data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
+end
+
+if @admin_rocrate
   data[:digitisedOn] = @data.digitised_on.to_date if @data.digitised_on
   data[:receivedOn] = @data.received_on.to_date if @data.received_on
+  data[:bornDigital] = @data.born_digital
   data[:external] = @data.external
-  data[:languageAsGiven] = @data.language
-  data[:originalMedia] = @data.original_media if @data.original_media
-  data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
-  data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
-  data[:languageGenre] = @data.discourse_type.name if @data.discourse_type
-  if @data.data_categories
-    data[:communicationMode] = @data.data_categories.map do |data_category|
-      { '@id': "https://w3id.org/ldac/terms##{data_category.name}" }
-    end
-  end
-
-  if @data.data_types
-    data['paradisec:dataType'] = @data.data_types.map do |data_type|
-      { '@id': "#datatype-#{data_type.id}", name: data_type.name }
-    end
-  end
-
-  @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
-    data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
-  end
-
-  if @admin_rocrate
-    data[:metadataExportable] = @data.metadata_exportable
-    data[:tapesReturned] = @data.tapes_returned
-    data['paradisec:users'] = @data.users.map { |user| { '@id': person_json(user) } }
-    data['paradisec:dialect'] = @data.dialect
-    data['paradisec:ingestNotes'] = @data.ingest_notes
-    data['paradisec:originatedOnNarrative'] = @data.originated_on_narrative
-    data['paradisec:tracking'] = @data.tracking
-    data['paradisec:url'] = @data.url
-  end
-else
-  data[:material] = @data.media
-  data[:orthographic_notes] = @data.orthographic_notes
-  data['paradisec:metadataSource'] = @data.metadata_source
-  data[:itemLocation] = @data.tape_location
-  data[:about] = field_of_research_json(@data.field_of_research) if @data.field_of_research
-
-  data[:funder] = @data.grants.map { |grant| { '@id': funder_json(grant) } } if @data.grants.any?
+  data[:metadataExportable] = @data.metadata_exportable
+  data[:tapesReturned] = @data.tapes_returned
+  data['paradisec:users'] = @data.users.map { |user| { '@id': person_json(user) } }
+  data['paradisec:dialect'] = @data.dialect
+  data['paradisec:ingestNotes'] = @data.ingest_notes
+  data['paradisec:originatedOnNarrative'] = @data.originated_on_narrative
+  data['paradisec:tracking'] = @data.tracking
+  data['paradisec:url'] = @data.url
 end
 
 data.compact!
@@ -307,7 +297,7 @@ graph.concat(@property_values.to_a)
 graph.concat(@countries.to_a)
 graph.concat(@access_conditions.to_a)
 graph.concat(@people.to_a)
-graph.concat(@essences.to_a) if @is_item
+graph.concat(@essences.to_a)
 graph.concat(@geos.to_a)
 graph.concat(@places.to_a)
 graph.concat(@languages.to_a)

@@ -1,0 +1,259 @@
+# frozen_string_literal: truemeta
+
+def id
+  repository_collection_url(@data)
+end
+
+def rocrate_json
+  {
+    '@id': 'ro-crate-metadata.json',
+    '@type': 'CreativeWork',
+    conformsTo: {
+      '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
+    },
+    about: {
+      '@id': id
+    }
+  }
+end
+
+@people = Set.new
+def person_json(user)
+  id = user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
+  json = {
+    '@id': id,
+    '@type': 'Person',
+    familyName: user.last_name,
+    givenName: user.first_name,
+    name: user.name
+  }
+
+  json[:email] = user.email if user.email
+  @people.add(json)
+
+  id
+end
+
+@geos = Set.new
+def geometry_json(shape)
+  id = "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
+  coords = [
+    "#{shape.west_limit} #{shape.north_limit}",
+    "#{shape.east_limit} #{shape.north_limit}",
+    "#{shape.east_limit} #{shape.south_limit}",
+    "#{shape.west_limit} #{shape.south_limit}",
+    "#{shape.west_limit} #{shape.north_limit}"
+  ]
+
+  json = {
+    '@id': id,
+    '@type': 'Geometry',
+    asWKT: "POLYGON((#{coords.join(', ')}))"
+  }
+
+  @geos.add(json)
+
+  id
+end
+
+@places = Set.new
+def place_json(place, name = nil)
+  id = name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
+  json = {
+    '@id': id,
+    '@type': 'Place',
+    geo: {
+      '@id': geometry_json(place)
+    }
+  }
+  json[:name] = name if name
+
+  @places.add(json)
+
+  id
+end
+
+@countries = Set.new
+def country_json(country)
+  id = "#country-#{country.name}"
+  country = {
+    '@id': id,
+    '@type': 'Country',
+    code: country.code,
+    name: country.name
+  }
+  @countries.add(country)
+
+  id
+end
+
+@property_values = Set.new
+def property_value_json(name, value)
+  id = "#identifier_#{name}"
+
+  property_value = {
+    '@id': id,
+    '@type': 'PropertyValue',
+    name:,
+    value:
+  }
+  @property_values.add(property_value)
+
+  { '@id': id }
+end
+
+@languages = Set.new
+def language_json(language)
+  id = "#language-#{language.code}"
+  json = {
+    '@id': id,
+    '@type': 'Language',
+    code: language.code,
+    location: {
+      '@id': geometry_json(language)
+    },
+    name: language.name
+  }
+  @languages.add(json)
+
+  id
+end
+
+@access_conditions = Set.new
+def access_condition_json(access_condition)
+  id = "#license-#{access_condition.id}"
+  json = {
+    '@id': id,
+    '@type': 'CreativeWork',
+    name: access_condition.name
+  }
+  @access_conditions.add(json)
+
+  id
+end
+
+@fields_of_research = Set.new
+def field_of_research_json(field_of_research)
+  id = "https://linked.data.gov.au/def/anzsrc-for/2020/#{field_of_research.identifier}"
+  json = {
+    '@id': id,
+    '@type': 'DefinedTerm',
+    name: field_of_research.name
+  }
+  @fields_of_research.add(json)
+
+  id
+end
+
+@organisations = Set.new
+def organisation_json(organisation)
+  id = organisation.party_identifier
+
+  json = {
+    '@id': id,
+    '@type': 'Organisation',
+    name: organisation.name
+  }
+  @organisations.add(json)
+
+  id
+end
+
+@funders = Set.new
+def funder_json(grant)
+  id = "#grant-#{grant.id}"
+
+  json = {
+    '@id': id,
+    '@type': 'Organisation',
+    name: grant.funding_body.name,
+    description: "#{grant.grant_identifier} (#{grant.funding_body.name})"
+  }
+  @funders.add(json)
+
+  id
+end
+
+# The item or collection
+data = {
+  '@id': id,
+
+  '@type': ['Data', 'Object', 'RepositoryCollection'],
+  conformsTo: { '@id': 'https://w3id.org/ldac/profile#Collection' },
+
+  additionalType: 'collection',
+
+  identifier: [
+    property_value_json('domain', 'paradisec.org.au'),
+    property_value_json('id', @data.full_identifier),
+    property_value_json('itemIdentifier', @data.identifier),
+    property_value_json('doi', @data.doi)
+  ],
+
+  name: @data.title,
+  description: @data.description,
+
+  contentLocation: [{
+    '@id': place_json(@data, @data.region)
+  }],
+
+  dateCreated: @data.created_at.to_date,
+  dateModified: @data.updated_at.to_date,
+  datePublished: @data.updated_at.to_date,
+
+  publisher: { '@id': person_json(@data.collector) },
+
+  inLanguage: @data.languages.map { |language| { '@id': language_json(language) } },
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
+  countries: @data.countries.map { |country| { '@id': country_json(country) } }
+}
+
+if @admin_rocrate
+  data[:comment] = @data.comments
+  data[:usageinfo] = data[:access_narrative]
+  data[:private] = @data.private
+  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': person_json(admin) } }
+end
+
+data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
+data[:operator] = { '@id': person_json(@data.operator) } if @data.operator
+data[:sourceOrganization] = organisation_json(@data.university) if @data.university
+
+data[:material] = @data.media
+data[:orthographic_notes] = @data.orthographic_notes
+data['paradisec:metadataSource'] = @data.metadata_source
+data[:itemLocation] = @data.tape_location
+data[:about] = field_of_research_json(@data.field_of_research) if @data.field_of_research
+
+data[:funder] = @data.grants.map { |grant| { '@id': funder_json(grant) } } if @data.grants.any?
+
+data.compact!
+
+# starts: here,
+graph = []
+
+graph << data
+graph << rocrate_json
+
+# Add all the references
+graph.concat(@property_values.to_a)
+graph.concat(@countries.to_a)
+graph.concat(@access_conditions.to_a)
+graph.concat(@people.to_a)
+graph.concat(@geos.to_a)
+graph.concat(@places.to_a)
+graph.concat(@languages.to_a)
+graph.concat(@fields_of_research.to_a)
+graph.concat(@organisations.to_a)
+graph.concat(@funders.to_a)
+
+{
+  '@context': [
+    'https://w3id.org/ro/crate/1.2-DRAFT/context',
+    { '@vocab': 'http://schema.org/' },
+    'http://purl.archive.org/language-data-commons/context.json',
+    { Geometry: 'http://www.opengis.net/ont/geosparql#Geometry', asWKT: 'http://www.opengis.net/ont/geosparql#asWKT' },
+    'https://w3id.org/ldac/context'
+  ],
+  '@graph': graph
+}

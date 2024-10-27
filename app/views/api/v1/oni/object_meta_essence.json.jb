@@ -1,0 +1,52 @@
+# frozen_string_literal: truemeta
+
+def id
+  repository_essence_url(@data.collection, @data.item, @data.filename)
+end
+
+def rocrate_json
+  {
+    '@id': 'ro-crate-metadata.json',
+    '@type': 'CreativeWork',
+    conformsTo: {
+      '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
+    },
+    about: {
+      '@id': id
+    }
+  }
+end
+
+data = {
+  '@id': id,
+  '@type': 'File',
+  contentSize: @data.size,
+  dateCreated: @data.created_at.to_date,
+  dateModified: @data.updated_at.to_date,
+  encodingFormat: @data.mimetype,
+  name: @data.filename,
+  doi: @data.doi
+}
+data[:bitrate] = @data.bitrate
+data[:duration] = @data.duration
+data[:channels] = @data.channels
+data[:sampleRate] = @data.samplerate
+
+data.compact!
+
+# starts: here,
+graph = []
+
+graph << data
+graph << rocrate_json
+
+{
+  '@context': [
+    'https://w3id.org/ro/crate/1.2-DRAFT/context',
+    { '@vocab': 'http://schema.org/' },
+    'http://purl.archive.org/language-data-commons/context.json',
+    { Geometry: 'http://www.opengis.net/ont/geosparql#Geometry', asWKT: 'http://www.opengis.net/ont/geosparql#asWKT' },
+    'https://w3id.org/ldac/context'
+  ],
+  '@graph': graph
+}
