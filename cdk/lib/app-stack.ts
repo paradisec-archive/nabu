@@ -234,6 +234,10 @@ export class AppStack extends cdk.Stack {
     // Oni
     // ////////////////////////
 
+    if (!process.env.ONI_API_CLIENTID || !process.env.ONI_API_CLIENTSECRET) {
+      throw new Error('Missing ONI_API_CLIENTID or ONI_API_CLIENTSECRET');
+    }
+
     const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
     NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
       { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
@@ -242,6 +246,10 @@ export class AppStack extends cdk.Stack {
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', {
         file: 'docker/oni.Dockerfile',
+        buildArgs: {
+          ONI_API_CLIENTID: process.env.ONI_API_CLIENTID,
+          ONI_API_CLIENTSECRET: process.env.ONI_API_CLIENTSECRET,
+        },
       }),
       portMappings: [{ name: 'oni', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
@@ -252,9 +260,9 @@ export class AppStack extends cdk.Stack {
     });
 
     const oniService = new ecs.Ec2Service(this, 'OniService', {
-      serviceName: 'viewer',
+      serviceName: 'oni',
       cluster,
-      taskDefinition: viewerTaskDefinition,
+      taskDefinition: oniTaskDefinition,
       enableExecuteCommand: true,
     });
 
@@ -475,7 +483,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
-      priority: 5,
+      priority: 6,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
         elbv2.ListenerCondition.pathPatterns(['/oni/*']),
