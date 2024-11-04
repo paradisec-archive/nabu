@@ -353,25 +353,15 @@ class ItemsController < ApplicationController
 
     # TODO: fix CSV stream for builder method
 
-    # only stream CSV if small enough
-    if @search.total_count <= 5_000 || (!export_all && @params[:per_page] <= 5_000)
-      filename, body = downloader.stream(@search)
+    filename, body = downloader.stream(@search)
 
-      headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
-      headers['Content-Disposition'] = "attachment; filename=#{filename}"
-      headers['Last-Modified'] = Time.now.httpdate
+    headers['Content-Type'] = 'text/csv; charset=utf-8; header=present'
+    headers['Content-Disposition'] = "attachment; filename=#{filename}"
+    headers['Last-Modified'] = Time.now.httpdate
 
-      response.status = 200
+    response.status = 200
 
-      self.response_body = Enumerator.new(&body)
-      return
-    end
-
-    # otherwise use actove job to email a CSV
-    downloader.email
-
-    flash[:notice] = 'Your CSV file was too large to download directly. It will be generated and sent to you via email.'
-    redirect_back fallback_location: root_path
+    self.response_body = Enumerator.new(&body)
   end
 
   def build_deletable_params(item, items)

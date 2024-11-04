@@ -32,45 +32,6 @@ class CsvDownloaderService
     end
   end
 
-  def email
-    return unless @current_user.email.present?
-
-    generation_start = DateTime.now
-    search = @search_type == :basic ? build_basic_search : build_advanced_search
-
-    Rails.logger.info { "#{generation_start} Generating CSV for download" }
-
-    path = Rails.root.join('tmp', "nabu_items_#{Time.zone.today}.csv").to_s
-
-    CSV.open(path, 'wb', **CSV_OPTIONS) do |csv|
-      create_csv(search, csv)
-    end
-
-    total = @params[:export_all] ? search.total_count : (@params[:per_page] || 10)
-
-    generation_end = DateTime.now
-    Rails.logger.info { "#{generation_end} CSV generation completed after #{generation_end.to_i - generation_start.to_i} seconds" }
-
-    filename = "nabu_items_#{Time.zone.today}.zip"
-    zip_path = Rails.root.join('tmp', filename).to_s
-
-    Zip::File.open(zip_path, create: true) do |zipfile|
-      zipfile.add(File.basename(path), path)
-    end
-
-    CsvDownloadMailer.csv_download_email(
-      @current_user.email,
-      # default just first name, but fall back to last in case of only one name
-      @current_user.first_name || @current_user.last_name,
-      total,
-      @csv_requested_time.in_time_zone('Australia/Sydney'),
-      filename,
-      zip_path
-    ).deliver_now
-
-    File.delete(path)
-  end
-
   def stream(search)
     filename = "nabu_items_#{Time.zone.today}.csv"
 
