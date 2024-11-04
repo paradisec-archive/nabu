@@ -391,7 +391,7 @@ class ItemsController < ApplicationController
     params.permit(
       :format,
       :search, :page, :per_page, :sort, :direction,
-      :language_code, :country_code, :collector_id,
+      :countries, :content_languages, :collector_name,
       :export_all
     )
   end

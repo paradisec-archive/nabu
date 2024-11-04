@@ -378,7 +378,7 @@ class CollectionsController < ApplicationController
   def search_params
     params.permit(
       :search, :page, :per_page, :sort, :direction,
-      :language_code, :country_code, :collector_id
+      :countries, :content_languages, :collector_name,
     )
   end
 
