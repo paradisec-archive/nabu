@@ -18,13 +18,16 @@ execute_command() {
                 --command "/bin/bash -c \"$1\""
 }
 
+echo "Getting schema..."
 execute_command "mysqldump -u nabu -h \$NABU_DATABASE_HOSTNAME --password=\$NABU_DATABASE_PASSWORD --no-data nabu | bzip2 | base64" >|../schema.sql.bz2.b64
+echo "Getting data..."
 execute_command "mysqldump -u nabu -h \$NABU_DATABASE_HOSTNAME --password=\$NABU_DATABASE_PASSWORD --ignore-table=nabu.versions nabu | bzip2 | base64" >|../data.sql.bz2.b64
 
+echo "Decompressing..."
 tail -n +6 ../schema.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../schema.sql
 tail -n +6 ../data.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../data.sql
 rm ../*.b64
 
 echo "Now run"
 echo "mysql -h 127.0.0.1 -u root nabu_devel < ../schema.sql"
-echo "pv data.sql | mysql -h 127.0.0.1 -u root nabu_devel"
+echo "pv ../data.sql | mysql -h 127.0.0.1 -u root nabu_devel"

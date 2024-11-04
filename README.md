@@ -75,7 +75,7 @@ bin/aws/ecs_rake searchkick:reindex
 ## Importing a production database into your development environment
 
 ``` bash
-AWS_PROFILE=nabub-prod bin/aws/db_backup
+AWS_PROFILE=nabu-prod bin/aws/db_backup
 mysql -h 127.0.0.1 -u root nabu_devel < ../schema.sql
 pv ../data.sql | mysql -h 127.0.0.1 -u root nabu_devel
 nabu_run bin/rails db:environment:set RAILS_ENV=development
