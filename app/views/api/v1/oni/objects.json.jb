@@ -7,14 +7,12 @@
 
     response = {
       crateId: is_item ? repository_item_url(data.collection, data) : repository_collection_url(data),
-      conformsTo: "https://purl.archive.org/language-data-commons/profile##{is_item ? 'Object' : 'Collection'}",
-      types: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
-      record: {
-        name: data.title,
-        license: data.access_condition_name,
-        description: data.description.truncate(256),
-        inLanguage: (is_item ? data.content_languages : data.languages).map { |language| { name: language.name, code: language.code } }
-      }
+      conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
+      recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
+      name: data.title,
+      license: data.access_condition_name,
+      description: data.description.truncate(256),
+      inLanguage: (is_item ? data.content_languages : data.languages).map { |language| { name: language.name, code: language.code } }
     }
 
     if is_item

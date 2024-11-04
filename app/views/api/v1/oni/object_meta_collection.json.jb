@@ -109,7 +109,7 @@ def language_json(language)
     '@id': id,
     '@type': 'Language',
     code: language.code,
-    location: {
+    geo: {
       '@id': geometry_json(language)
     },
     name: language.name
