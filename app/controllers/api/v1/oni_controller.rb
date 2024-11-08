@@ -2,16 +2,11 @@ module Api
   module V1
     class OniController < ApplicationController
       def objects
-        limit = (params[:limit] || 100).to_i
-        offset = (params[:offset] || 0).to_i
-        sortBy = params[:sortBy] || 'identifier'
-        memberOf = params[:memberOf]
-        unless %w[identifier title created_at].include?(sortBy)
-          orderBy = 'identifier'
-        end
-        sortDirection = (params[:sortDirection] || '').upcase === 'DESC' ? 'DESC' : 'ASC'
-        conforms_to = params[:conformsTo]
+        query = Oni::ObjectsValidator.new(params)
 
+        render json: { errors: query.errors.full_messages }, status: :unprocessable_entity unless query.valid?
+
+        # TODO: Expand this once we have an authenticated version of this endpoint
         collections_table = Collection.where(private: false).arel_table
         items_table = Item.where(private: false).arel_table
 
@@ -26,11 +21,11 @@ module Api
         collections_query = collections_table.where(collections_table[:private].eq(false))
         items_query = items_table
           .join(collections_table).on(items_table[:collection_id].eq(collections_table[:id]))
-          .project(items_table[:id], items_table[:created_at], item_identifier, items_table[:title], item_label.as('type'))
+          .project(items_table[:id], items_table[:created_at], items_table[:updated_at], item_identifier, items_table[:title], item_label.as('type'))
           .where(items_table[:private].eq(false))
 
-        if memberOf
-          md = params[:memberOf].match(repository_collection_url(collection_identifier: '(.*)'))
+        if query.member_of
+          md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
           unless md
             render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
             return
@@ -40,17 +35,17 @@ module Api
           items_query = items_query.where(items_table[:collection_id].in(collections_query.clone.project(collections_table[:id])))
         end
 
-        collections_query = collections_query.project(:id, :created_at, :identifier, :title, collection_label.as('type'))
+        collections_query = collections_query.project(:id, :created_at, :updated_at, :identifier, :title, collection_label.as('type'))
 
-        combined_query = case conforms_to
-        when 'https://w3id.org/ldac/profile#Collection'
+        combined_query = case query.conforms_to
+        when ['https://w3id.org/ldac/profile#Collection']
           # A bit hacky but we dont' have colletctions of collections
-          if memberOf
+          if query.member_of
             collections_query.where(collections_table[:identifier].eq('DUMMYsajkdhakshfvksfslkj'))
           else
             collections_query
           end
-        when 'https://w3id.org/ldac/profile#Item'
+        when ['https://w3id.org/ldac/profile#Object']
           items_query
         else
             collections_query.union(items_query)
@@ -65,7 +60,7 @@ module Api
 
         # Final query with limit and offset
         final_query = Arel::SelectManager.new(Arel::Table.engine)
-        final_query.from(combined_query.as('combined')).project(Arel.star).order("#{sortBy} #{sortDirection}").skip(offset).take(limit)
+        final_query.from(combined_query.as('combined')).project(Arel.star).order("#{query.sort} #{query.order}").skip(query.offset).take(query.limit)
 
         ids = ActiveRecord::Base.connection.select_all(final_query.to_sql)
 
@@ -75,7 +70,7 @@ module Api
         collections = Collection.where(id: collection_ids).includes(:access_condition)
         items = Item.where(id: item_ids).includes(:collection, :access_condition, :content_languages)
 
-        @data = ids.map do |id|
+        @objects = ids.map do |id|
           if id['type'] == 'collection'
             collections.find { |c| c.id == id['id'] }
           else

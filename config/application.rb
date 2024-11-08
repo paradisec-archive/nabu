@@ -32,6 +32,7 @@ module Nabu
     config.solid_queue.silence_polling = true
 
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/services')
+    ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/validators')
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('lib')
 
     config.viewer_url = '/viewer'

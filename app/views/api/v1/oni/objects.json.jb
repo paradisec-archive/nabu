@@ -1,22 +1,24 @@
 {
   total: @total,
 
-  data: @data.map do |data|
+  objects: @objects.map do |object|
     class_name = data.class.name
     is_item = class_name == 'Item'
 
     response = {
-      crateId: is_item ? repository_item_url(data.collection, data) : repository_collection_url(data),
+      id: is_item ? repository_item_url(object.collection, object) : repository_collection_url(object),
+      name: object.title,
+      description: object.description.truncate(256),
       conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
       recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
-      name: data.title,
-      license: data.access_condition_name,
-      description: data.description.truncate(256),
-      inLanguage: (is_item ? data.content_languages : data.languages).map { |language| { name: language.name, code: language.code } }
+      # FIXME: Outside of current API spec and subject to change
+      inLanguage: (is_item ? object.content_languages : object.languages).map { |language| { name: language.name, code: language.code } }[0]
     }
 
     if is_item
-      response[:memberOf] = repository_collection_url(data.collection)
+      response[:memberOf] = repository_collection_url(object.collection)
+      response[:parent] = repository_collection_url(object.collection)
+      response[:root] = repository_collection_url(object.collection)
     end
 
     response
