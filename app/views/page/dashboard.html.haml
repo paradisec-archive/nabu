@@ -8,11 +8,9 @@
 
     .right
       %p
-        - if can? :create, Collection
-          = link_to 'Add new collection', new_collection_path, :class => 'button'
-          = link_to 'Upload metadata file', metadata_collections_path, :class => 'button'
-        - if can? :create, Item
-          = link_to 'Depositor Report', new_report_items_path, :class => 'button'
+        = link_to 'Add new collection', new_collection_path, :class => 'button'
+        = link_to 'Upload metadata file', metadata_collections_path, :class => 'button'
+        = link_to 'Depositor Report', new_report_items_path, :class => 'button'
 
     .left
       = paginate @collections, :param_name => :collections_page
@@ -40,8 +38,8 @@
               %td= collection.title
               %td= collection.created_at.to_date
               %td
-                = link_to 'View', collection if can? :read, collection
-                = link_to 'Edit', edit_collection_path(collection) if can? :update, collection
+                = link_to 'View', collection
+                = link_to 'Edit', edit_collection_path(collection)
 
     = paginate @collections, :param_name => :collections_page
 
@@ -123,7 +121,7 @@
               %td= item.title
               %td= item.created_at.to_date
               %td
-                = link_to 'View', [item.collection, item] if can? :read, item
-                = link_to 'Edit', edit_collection_item_path(item.collection, item) if can? :update, item
+                = link_to 'View', [item.collection, item]
+                = link_to 'Edit', edit_collection_item_path(item.collection, item)
 
 
