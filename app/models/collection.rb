@@ -185,7 +185,7 @@ class Collection < ApplicationRecord
   end
 
   def self.search_includes
-    %i[collector countries languages university]
+    %i[collector countries languages university admins]
   end
 
   def self.search_user_fields
