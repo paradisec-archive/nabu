@@ -172,19 +172,17 @@ class ItemsController < ApplicationController
 
   def private_rocrate
     @data = @item
-    @is_item = true
     @admin_rocrate = true
 
-    json_data = render_to_string(template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb])
+    json_data = render_to_string(template: 'api/v1/oni/object_meta_item', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@item.full_identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
   def public_rocrate
     @data = @item
-    @is_item = true
     @admin_rocrate = false
 
-    json_data = render_to_string(template: 'api/v1/oni/object_meta', formats: [:json], handlers: [:jb])
+    json_data = render_to_string(template: 'api/v1/oni/object_meta_item', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@item.full_identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
