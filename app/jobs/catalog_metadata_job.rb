@@ -2,7 +2,7 @@ class CatalogMetadataJob < ApplicationJob
   queue_as :default
 
   def perform(data, is_item)
-    local_data = { data:, is_item:, admin_rocrate: true }
+    local_data = { data:, admin_rocrate: true }
 
 
     filename = 'ro-crate-metadata.json'
