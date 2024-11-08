@@ -2,7 +2,7 @@ module Api
   module V1
     class OniController < ApplicationController
       def objects
-        limit = (params[:limit] || 5_000).to_i # FIXME: Better way for all record
+        limit = (params[:limit] || 100).to_i
         offset = (params[:offset] || 0).to_i
         sortBy = params[:sortBy] || 'identifier'
         memberOf = params[:memberOf]
