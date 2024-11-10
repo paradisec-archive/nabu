@@ -67,8 +67,16 @@ module Api
         collection_ids = ids.select { |id| id['type'] == 'collection' }.pluck('id')
         item_ids = ids.select { |id| id['type'] == 'item' }.pluck('id')
 
-        collections = Collection.where(id: collection_ids).includes(:access_condition)
-        items = Item.where(id: item_ids).includes(:collection, :access_condition, :content_languages)
+        collections = Collection.where(id: collection_ids)
+                                .select('collections.*, COUNT(DISTINCT items.id) AS items_count, COUNT(essences.id) AS essences_count')
+                                .left_joins(items: :essences)
+                                .group('collections.id')
+                                .includes(:access_condition, :languages)
+        items = Item.where(id: item_ids)
+                     .select('items.*, COUNT(essences.id) AS essences_count')
+                     .left_joins(:essences)
+                     .group('items.id')
+                     .includes(:collection, :access_condition, :content_languages)
 
         @objects = ids.map do |id|
           if id['type'] == 'collection'

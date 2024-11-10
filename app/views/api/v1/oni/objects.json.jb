@@ -2,7 +2,7 @@
   total: @total,
 
   objects: @objects.map do |object|
-    class_name = data.class.name
+    class_name = object.class.name
     is_item = class_name == 'Item'
 
     response = {
@@ -19,6 +19,16 @@
       response[:memberOf] = repository_collection_url(object.collection)
       response[:parent] = repository_collection_url(object.collection)
       response[:root] = repository_collection_url(object.collection)
+    end
+
+    if object.has_attribute?(:items_count)
+      response[:metadata] ||= {}
+      response[:metadata][:objectsCount] = object.items_count
+    end
+
+    if object.has_attribute?(:essences_count)
+      response[:metadata] ||= {}
+      response[:metadata][:filesCount] = object.essences_count
     end
 
     response
