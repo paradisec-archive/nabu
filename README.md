@@ -168,5 +168,5 @@ nabu_run yarn upgrade-interactive
 vi app/views/layouts/application.html.haml
 
 # New rails version
-rails new nabu --database=mysql --javascript=esbuild --css=sass
+rails new nabu --database=mysql --javascript=esbuild --css=sass --skip-action-cable
 ```
