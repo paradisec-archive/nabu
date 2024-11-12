@@ -62,11 +62,11 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= hidden_field_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', :url => users_path}, :class => 'select2'
+          %td= select_tag :collector_id, params[:collector_id], { :data => {:placeholder => 'Choose a collector...', 'ajax--url' => users_path}, :class => 'select2' }
 
         %tr
           %th= label_tag :operator_id
-          %td= hidden_field_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+          %td= select_tag :operator_id, params[:operator_id], { :data => {:placeholder => 'Choose an operator...', 'ajax--url' => users_path}, :class => 'select2' }
 
         %tr
           %th= label_tag :university_id, 'Originating university'
@@ -75,12 +75,12 @@
         %tr
           %th
             = label_tag :country_ids, 'Countries'
-          %td= hidden_field_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+          %td= select_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', 'ajax--url' => countries_path, :multiple => true}, :class => 'select2 country', multiple: true
 
         %tr
           %th
             = label_tag :language_ids, 'Languages'
-          %td= hidden_field_tag :language_ids, params[:language_ids], :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          %td= select_tag :language_ids, params[:language_ids], :data => {:placeholder => 'Choose a language...', 'ajax--url' => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language', :multiple => true
 
         %tr
           %th= label_tag :region, 'Region / village'
@@ -96,7 +96,7 @@
         %tr
           %th
             = label_tag :admin_ids, 'Edit access'
-          %td= hidden_field_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', :url => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
+          %td= select_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', 'ajax--url' => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'

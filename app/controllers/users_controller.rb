@@ -15,12 +15,12 @@ class UsersController < ApplicationController
 
     @users = @users.limit(100)
 
-    render :json => @users.map {|u| {:id => u.id, :name => u.display_label}}
+    render json: { results: @users.map { |u| { id: u.id, text: u.display_label } } }
   end
 
   def show
     @user = User.find params[:id]
 
-    render :json => {:id => @user.id, :name => @user.display_label}
+    render json: { id: @user.id, text: @user.display_label }
   end
 end

@@ -1,25 +1,25 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
-import "@hotwired/turbo-rails"
-import "controllers"
+// Entry point for the build script in your package.json
+import '@hotwired/turbo-rails';
+import './controllers';
+
+///////////////////
+// Our Stuff
+///////////////////
+
+// NOTE: This must only contain imports, any code added here runs after all the imports happen
 
 // Vendor Stuff
-import 'jquery';
+import './custom/add_jquery'; // Add jQuery to the window
 import 'jquery-ui';
+import 'jquery-query-object';
+import '@googlemaps/markerclusterer';
 
-import 'vendor/jquery-query';
-import 'vendor/select2';
-import 'vendor/markerclusterer';
-
-import 'custom/select2_setup';
-import 'custom/datepicker';
-import 'custom/sortable';
-import 'custom/remove_empty_fields';
-import 'custom/add_university';
-import 'custom/copy_language';
-import 'custom/items_and_collections';
-import 'custom/dynamic_grant_identifiers';
-import 'custom/item_prev_next';
-import 'custom/confirm_delete';
-
-// window.$ = document.querySelector.bind(document)
-// window.$$ = document.querySelectorAll.bind(document)
+import './custom/maps';
+import './custom/sortable';
+import './custom/remove_empty_fields';
+import './custom/add_university';
+import './custom/copy_language';
+import './custom/items_and_collections';
+import './custom/dynamic_grant_identifiers';
+import './custom/item_prev_next';
+import './custom/confirm_delete';

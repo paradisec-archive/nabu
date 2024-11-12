@@ -75,7 +75,7 @@ class EssencesController < ApplicationController
 
   def list_mimetypes
     # list distinct mimetypes from the db
-    render json: Essence.where('mimetype like ?', "%#{params[:q]}%").distinct.order(:mimetype).pluck(:mimetype).map { |m| { id: m, name: m } }
+    render json: { results: Essence.where('mimetype like ?', "%#{params[:q]}%").distinct.order(:mimetype).pluck(:mimetype).map { |m| { id: m, text: m } } }
   end
 
   def essence_params

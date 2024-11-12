@@ -6,7 +6,7 @@ class CountriesController < ApplicationController
   def index
     @countries = @countries.order('name').where('name like ? OR code like ?', "%#{params[:q]}%", "%#{params[:q]}%").limit(10)
 
-    respond_with @countries
+    render json: { results: @countries.map { |c| { id: c.id, text: c.name } } }
   end
 
   def show

@@ -37,8 +37,7 @@ module Nabu
 
     config.viewer_url = '/viewer'
 
-    config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET')
-    throw 'Must set NABU_CATALOG_BUCKET' unless config.catalog_bucket
+    config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET', 'nabu')
   end
 end
 

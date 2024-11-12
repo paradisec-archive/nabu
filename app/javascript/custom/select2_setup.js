@@ -1,94 +1,43 @@
-export const setup_select2 = (element, noinit=false) => { // eslint-disable-line no-unused-vars
-  const options = {};
+import select2 from 'select2';
+// NOTE: It's not autoloading into jquery for some reason
+select2($);
 
-  if ($(element).data('required')) {
-    options['allowClear'] = false;
-  } else {
-    options['allowClear'] = true;
-  }
+export const setup_select2 = (element) => {
+  const options = {
+    allowClear: !$(element).data('required'),
+  };
 
-  options['placeholder'] = $(element).data('placeholder');
-
-  if ($(element).data('multiple')) {
-    options['multiple'] = true;
-    let val = $(element).val();
-    val = val.replace(/ /g, ',');
-    $(element).val(val);
-  }
-
-  if ($(element).data('url')) {
-    const extra_name = $(element).data('extra-name');
-    const extra_selector = $(element).data('extra-selector');
-    const url = $(element).data('url');
-    options['ajax'] = {
+  const extra_name = $(element).data('extra-name');
+  const extra_selector = $(element).data('extra-selector');
+  if (extra_name && extra_selector) {
+    const url = $(element).data('ajax--url');
+    options.ajax = {
       url: url,
-      dataType: 'json',
-      delay: 250,
-      data: (term, page) => {
-        const params = { q: term, page: page }
-        if (extra_name) {
-          params[extra_name] = $(extra_selector).val();
-        }
-        return params;
+      data: (params) => {
+        return {
+          ...params,
+          [extra_name]: $(extra_selector).val(),
+        };
       },
-      results: (data) => {
-        const results = [];
-        data.forEach((d) => {
-          let text = d.name;
-          if (d.code) {
-            text = text + " (" + d.code + ")";
-          }
-          results.push({ id: d.id, text: text });
-        });
+    };
+  }
 
-        return { results };
+  const tags = $(element).data('tags');
+  if (tags) {
+    options.tags = true;
+    options.createTag = (params) => {
+      const term = params.term.trim();
+
+      if (term === '') {
+        return null;
       }
-    }
 
-    if (noinit) {
-      options['initSelection'] = (element, callback) => {
-        callback.call(null, {id: $(element).val(), text: $(element).val()})
+      return {
+        id: `NEWCONTACT:${term}`,
+        text: term,
+        newTag: true, // add additional parameters
       };
-    } else {
-      options['initSelection'] = (element, callback) => {
-        let results = [];
-        const ids = $(element).val().split(/, ?/);
-        ids.forEach((id) => {
-          let data = {};
-          $.ajax({
-            url: url + '/' + id,
-            dataType: 'json',
-            async: false,
-            success: (object) => {
-              data = object;
-            }
-          });
-          let text = data.name;
-          if (data.code) {
-            text = text + " (" + data.code + ")";
-          }
-          if (options['multiple']) {
-            results.push({ id: data.id, text: text });
-          } else {
-            results = { id: data.id, text: text };
-          }
-        });
-
-        callback.call(null, results);
-      };
-    }
-  }
-
-  const createable = $(element).data('createable')
-  if (createable) {
-    options['createSearchChoice'] = (term) => {
-      return {id: 'NEWCONTACT:'+term, text: term};
-    }
-  }
-
-  const data = $(element).data('data');
-  if (data) {
-    options['data'] = data;
+    };
   }
 
   $(element).select2(options);

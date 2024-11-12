@@ -79,7 +79,7 @@
 
       %tr
         %th= f.label :collector_id
-        %td= f.hidden_field :collector_id, :data => {:placeholder => 'Choose a collector...', :required => true, :url => users_path, :createable => true}, :class => 'select2'
+        %td= f.user_select :collector_id, placeholder: 'Choose a collector...', :required => true, :tags => true
 
       %tr
         %th
@@ -88,7 +88,7 @@
           %small
             = link_to 'Ethnologue list', 'http://www.ethnologue.com/country_index_bibl.asp', :target => '_blank'
 
-        %td= f.hidden_field :country_ids, :data => {:placeholder => 'Choose a country...', :url => countries_path, :multiple => true}, :class => 'select2 country'
+        %td= f.country_select :country_ids
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -109,7 +109,7 @@
       %tr
         %th= f.label :subject_language_ids, 'Subject languages'
         %td
-          = f.hidden_field :subject_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          = f.language_select :subject_language_ids
           = link_to 'Copy from Content language', '#', :id => 'copy-subject-language'
         - if params[:action] == 'bulk_edit'
           %td.append
@@ -119,7 +119,7 @@
       %tr
         %th= f.label :content_language_ids, 'Content language'
         %td
-          = f.hidden_field :content_language_ids, :data => {:placeholder => 'Choose a language...', :url => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          = f.language_select :content_language_ids
           = link_to 'Copy from Subject language', '#', :id => 'copy-content-language'
         - if params[:action] == 'bulk_edit'
           %td.append
@@ -170,12 +170,12 @@
 
       %tr
         %th= f.label :operator_id
-        %td= f.hidden_field :operator_id, :data => {:placeholder => 'Choose an operator...', :url => users_path}, :class => 'select2'
+        %td= f.user_select :operator_id, placeholder: 'Choose an operator...'
 
       %tr
         %th= f.label :data_category_ids, 'Data Categories'
         -# REVIEW: Why is data_category a class here?
-        %td= f.hidden_field :data_category_ids, :data => {:placeholder => 'Choose a category...', :url => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+        %td= f.select :data_category_ids, [], {}, { :data => {:placeholder => 'Choose a category...', 'ajax--url' => data_categories_path, :multiple => true}, :class => 'select2 data_category' }
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -183,7 +183,7 @@
 
       %tr
         %th= f.label :data_type_ids, 'Data Types'
-        %td= f.hidden_field :data_type_ids, :data => {:placeholder => 'Choose a type...', :url => data_types_path, :multiple => true}, :class => 'select2'
+        %td= f.select :data_type_ids, [], {}, { :data => {:placeholder => 'Choose a type...', 'ajax--url' => data_types_path, :multiple => true}, :class => 'select2' }
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -217,7 +217,7 @@
           - ia = ItemAgent.new
           - id = ia.object_id
           - fields = f.fields_for :item_agents, ia, :child_index => id do |c|
-            = c.hidden_field :user_id, :data => {:placeholder => 'Choose a user...', :url => users_path, :createable => true}, :class => 'select2'
+            = c.select :user_id, [], {}, { :data => {:placeholder => 'Choose a user...', 'ajax--url' => users_path, :createable => true}, :class => 'select2' }
             = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'select2'
 
           = link_to 'Add new role', '#', :class => 'add_fields', :data => {:id => id, :fields => fields.gsub("\n", "")}
@@ -296,7 +296,7 @@
     %table.form
       %tr
         %th= f.label :admin_ids, 'Edit access'
-        %td= f.hidden_field :admin_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
+        %td= f.user_select :admin_ids, placeholder: 'Choose a user...', multiple: true
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -304,7 +304,7 @@
 
       %tr
         %th= f.label :user_ids, 'Read/Download access'
-        %td= f.hidden_field :user_ids, :data => {:placeholder => 'Choose a user...', :url => users_path, :multiple => true}, :class => 'select2'
+        %td= f.user_select :user_ids, placeholder: 'Choose a user...', multiple: true
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -337,29 +337,29 @@
         - if @item.bulk_deleteable[:countries].present?
           %tr
             %th= f.label :bulk_delete_country_ids, 'Countries'
-            %td= f.hidden_field :bulk_delete_country_ids,
-              data: { placeholder: 'Choose countries to delete', data: @item.bulk_deleteable[:countries].to_json, multiple: true }, class: 'select2'
+            %td= f.select :bulk_delete_country_ids, [], {},
+              { data: { placeholder: 'Choose countries to delete', data: @item.bulk_deleteable[:countries].to_json, multiple: true }, class: 'select2' }
 
         - if @item.bulk_deleteable[:subject_languages].present?
           %tr
             %th= f.label :bulk_delete_subject_language_ids, 'Subject Languages'
-            %td= f.hidden_field :bulk_delete_subject_language_ids,
-              data: { placeholder: 'Choose subject languages to delete', data: @item.bulk_deleteable[:subject_languages].to_json, multiple: true }, class: 'select2'
+            %td= f.select :bulk_delete_subject_language_ids, [], {},
+              { data: { placeholder: 'Choose subject languages to delete', data: @item.bulk_deleteable[:subject_languages].to_json, multiple: true }, class: 'select2' }
 
         - if @item.bulk_deleteable[:content_languages].present?
           %tr
             %th= f.label :bulk_delete_content_language_ids, 'Content Languages'
-            %td= f.hidden_field :bulk_delete_content_language_ids,
-              data: { placeholder: 'Choose content languages to delete', data: @item.bulk_deleteable[:content_languages].to_json, multiple: true }, class: 'select2'
+            %td= f.select :bulk_delete_content_language_ids, [], {},
+              { data: { placeholder: 'Choose content languages to delete', data: @item.bulk_deleteable[:content_languages].to_json, multiple: true }, class: 'select2' }
 
         - if @item.bulk_deleteable[:data_categories].present?
           %tr
             %th= f.label :bulk_delete_data_category_ids, 'Data Categories'
-            %td= f.hidden_field :bulk_delete_data_category_ids,
-              data: { placeholder: 'Choose data categories to delete', data: @item.bulk_deleteable[:data_categories].to_json, multiple: true }, class: 'select2'
+            %td= f.select :bulk_delete_data_category_ids, [], {},
+              { data: { placeholder: 'Choose data categories to delete', data: @item.bulk_deleteable[:data_categories].to_json, multiple: true }, class: 'select2' }
 
         - if @item.bulk_deleteable[:data_types].present?
           %tr
             %th= f.label :bulk_delete_data_type_ids, 'Data Types'
-            %td= f.hidden_field :bulk_delete_data_type_ids,
-              data: { placeholder: 'Choose data types to delete', data: @item.bulk_deleteable[:data_types].to_json, multiple: true }, class: 'select2'
+            %td= f.select :bulk_delete_data_type_ids, [], {},
+              { data: { placeholder: 'Choose data types to delete', data: @item.bulk_deleteable[:data_types].to_json, multiple: true }, class: 'select2' }

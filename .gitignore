@@ -7,9 +7,8 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files (except templates).
+# Ignore all environment files.
 /.env*
-!/.env*.erb
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -34,20 +33,26 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+/node_modules
+
 ##################
 # Our Stuff
 ##################
 
 /vendor/bundle
 
-# solr
-/solr/data
-/solr/test/data
-/solr/development/data
-/solr/default/data
-/solr/production/data
-/solr/staging/data
-/solr/pids
+# Yarn v4
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+**/.yarn/install-state.gz
 
 #sorbet
 # They recommend you commit these but I'm not convinced

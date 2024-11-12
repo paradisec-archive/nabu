@@ -21,10 +21,18 @@ development:
   primary: &primary_development
     <<: *default
     database: nabu_devel
+  cache:
+    <<: *primary_development
+    database: nabu_devel_cache
+    migrations_paths: db/cache_migrate
   queue:
     <<: *primary_development
     database: nabu_devel_queue
     migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_development
+    database: nabu_devel_cable
+    migrations_paths: db/cable_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -33,10 +41,18 @@ test:
   primary: &primary_test
     <<: *default
     database: nabu_test
+  cache:
+    <<: *primary_test
+    database: nabu_test_cache
+    migrations_paths: db/cache_migrate
   queue:
     <<: *primary_test
     database: nabu_test_queue
     migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_test
+    database: nabu_test_cable
+    migrations_paths: db/cable_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -65,10 +81,18 @@ production: &production
     username: nabu
     password: <%= ENV['NABU_DATABASE_PASSWORD'] %>
     host: <%= ENV['NABU_DATABASE_HOSTNAME'] %>
+  cache:
+    <<: *primary_production
+    database: nabu_cache
+    migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
     database: nabu_queue
     migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: nabu_cable
+    migrations_paths: db/cable_migrate
 
 staging:
   <<: *production

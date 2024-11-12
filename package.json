@@ -1,0 +1,24 @@
+{
+  "name": "nabu",
+  "private": true,
+  "packageManager": "yarn@4.5.1",
+  "dependencies": {
+    "@activeadmin/activeadmin": "^3.2.5",
+    "@googlemaps/markerclusterer": "^2.5.3",
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.12",
+    "jquery": "^3.7.1",
+    "jquery-query-object": "^2.2.3",
+    "jquery-ui": "^1.14.1",
+    "sass": "^1.80.6",
+    "select2": "^4.0.13"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
+    "build:css": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "build:css_active_admin": "sass ./app/assets/stylesheets/active_admin.sass.scss:./app/assets/builds/active_admin.css --no-source-map --load-path=node_modules"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

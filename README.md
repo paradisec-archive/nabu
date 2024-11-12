@@ -30,9 +30,7 @@ You can then easily run all the standard commands by prefixing with ***nabu***
 
 ``` bash
 nabu_run bundle install
-nabu_run bundle exec rake db:create
-nabu_run bundle exec rake db:schema:load
-nabu_test bundle exec rake db:schema:load
+nabu_run bundle exec rake db:prepare
 nabu_run bundle exec guard # Test runner
 ```
 
@@ -162,11 +160,13 @@ We should regularly make sure we are running the latest versions of third-party 
 nabu_run bundle outdated
 nabu_run bundle update
 
-# npm
-nabu_run bin/importmap audit
-nabu_run bin/importmap outdated
+# node modules
+nabu_run yarn upgrade-interactive
 
 # Sentry
 # https://docs.sentry.io/platforms/javascript/install/cdn/
 vi app/views/layouts/application.html.haml
+
+# New rails version
+rails new nabu --database=mysql --javascript=esbuild --css=sass
 ```

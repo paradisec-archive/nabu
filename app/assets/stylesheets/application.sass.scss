@@ -1,0 +1,20 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+@use 'jquery-ui/dist/themes/redmond/jquery-ui.css';
+@use 'select2/dist/css/select2.css';
+
+@use '../vendor/assets/stylesheets/blueprint/screen';
+@use '../vendor/assets/stylesheets/blueprint/plugins/liquid';
+@use '../vendor/assets/stylesheets/blueprint/plugins/fancy-type/screen' as screen2;
+
+@use './_layout_style';
+@use './_page_layout';

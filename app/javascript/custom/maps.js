@@ -2,22 +2,17 @@ const initMap = () => {
   const set_map_bounds_from_ajax = async (path, ids) => {
     const marker_bounds = new google.maps.LatLngBounds();
 
-    for (let id of ids) {
+    for (const id of ids) {
       // TOOD: Do we have to set data type as json?
       const response = await fetch(`${path}${id}?location_only=true`);
       const data = await response.json();
 
-      if (!data || !data['north_limit']) {
+      if (!data || !data.north_limit) {
         console.info('NO data', data);
         return;
       }
 
-      const {
-        north_limit,
-        south_limit,
-        east_limit,
-        west_limit,
-      } = data;
+      const { north_limit, south_limit, east_limit, west_limit } = data;
 
       const sw = new google.maps.LatLng(south_limit, west_limit);
       const ne = new google.maps.LatLng(north_limit, east_limit);
@@ -27,7 +22,7 @@ const initMap = () => {
 
     if (marker_bounds.isEmpty()) {
       const node = document.querySelector('.no-map-match-message');
-      node.textContent = `No matching map data found from ${path == '/countries/' ? 'country' : 'language'}`;
+      node.textContent = `No matching map data found from ${path === '/countries/' ? 'country' : 'language'}`;
 
       return;
     }
@@ -45,19 +40,19 @@ const initMap = () => {
     document.querySelector('.map').dispatchEvent(new Event('update_map'));
 
     return false;
-  }
+  };
 
-  document.querySelector('#set-map-from-country')?.addEventListener('click', function(event) {
+  document.querySelector('#set-map-from-country')?.addEventListener('click', (event) => {
     event.preventDefault();
 
     const country_ids = document.querySelector('.country').value.split(/,/);
     set_map_bounds_from_ajax('/countries/', country_ids);
   });
 
-  document.querySelector('#set-map-from-language')?.addEventListener('click', function(event) {
+  document.querySelector('#set-map-from-language')?.addEventListener('click', (event) => {
     event.preventDefault();
 
-    const language_ids = document.querySelector('.language').value.split(/,/)
+    const language_ids = document.querySelector('.language').value.split(/,/);
     set_map_bounds_from_ajax('/languages/', language_ids);
   });
 
@@ -77,17 +72,18 @@ const initMap = () => {
 
     let rect = event.target.rect;
     if (rect) {
-      rect.setBounds(bounds)
+      rect.setBounds(bounds);
     } else {
       rect = new google.maps.Rectangle({
         bounds: bounds,
         editable: editable,
-        map: map
+        map: map,
       });
       event.target.rect = rect;
     }
 
-    google.maps.event.addListener(rect, 'bounds_changed', () => { // eslint-disable-line no-undef
+    google.maps.event.addListener(rect, 'bounds_changed', () => {
+      // eslint-disable-line no-undef
       const bounds = rect.getBounds();
       const ne = bounds.getNorthEast();
       const sw = bounds.getSouthWest();
@@ -95,10 +91,10 @@ const initMap = () => {
       document.querySelector('.south_limit').value = sw.lat();
       document.querySelector('.east_limit').value = ne.lng();
       document.querySelector('.west_limit').value = sw.lng();
-    })
+    });
   });
 
-  document.querySelectorAll('.map').forEach(( element) => {
+  document.querySelectorAll('.map').forEach((element) => {
     const cw = element.getBoundingClientRect().width;
     element.style.height = `${cw}px`;
     element.style.maxHeight = '400px';
@@ -110,11 +106,11 @@ const initMap = () => {
       zoomControl: true,
       draggable: true,
       disableDoubleClickZoom: false,
-    }
+    };
 
     const map = new google.maps.Map(element, options); // eslint-disable-line no-undef
     element.map = map;
-    element.dispatchEvent(new Event('update_map'))
+    element.dispatchEvent(new Event('update_map'));
   });
 
   document.querySelectorAll('.collection_map').forEach((element) => {
@@ -166,7 +162,7 @@ const initMap = () => {
       const marker = new google.maps.Marker({
         position: latlng,
         title: coord.title,
-        clickable: true
+        clickable: true,
       });
       marker.info = new google.maps.InfoWindow({ content: content });
 

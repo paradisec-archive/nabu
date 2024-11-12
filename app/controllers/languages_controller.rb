@@ -4,13 +4,13 @@ class LanguagesController < ApplicationController
   respond_to :json
 
   def index
-    @languages = @languages.includes(:countries).order('languages.name').where('languages.name like ? OR languages.code like ?', "%#{params[:q]}%", "%#{params[:q]}%").limit(10)
-    # TODO Does ths code path even get hit anymore with the split that happens in select2?
-    if params[:country_ids]
-      country_ids = params[:country_ids].split(/,/)
-      # TODO there should be a better way of doing this
-      @languages = @languages.where(:countries_languages => {:country_id => country_ids})
-    end
+    @languages = @languages
+      .includes(:countries)
+      .order('languages.name')
+      .where('languages.name like ? OR languages.code like ?', "%#{params[:q]}%", "%#{params[:q]}%")
+      .limit(10)
+
+    @languages = @languages.where(countries_languages: { country_id: params[:country_ids] }) if params[:country_ids]
 
     @languages = @languages.to_a
 
@@ -19,7 +19,7 @@ class LanguagesController < ApplicationController
     @languages << Language.find_by_code('und')
     @languages << Language.find_by_code('zxx')
 
-    respond_with @languages
+    render json: { results: @languages.map { |l| { id: l.id, text: l.name } } }
   end
 
   def show

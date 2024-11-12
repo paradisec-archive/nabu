@@ -7,7 +7,7 @@ class DataCategoriesController < ApplicationController
     # No need for a limit, as the number of DataCategory objects is fairly small.
     @data_categories = @data_categories.order('name').where('name like ?', "%#{params[:q]}%")
 
-    respond_with @data_categories
+    render json: { results: @data_categories.map { |u| { id: u.id, text: u.name } } }
   end
 
   def show
