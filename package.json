@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
-    "build:css": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "build:css": "yarn build:css_app && yarn build:css_active_admin",
+    "build:css_app": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
     "build:css_active_admin": "sass ./app/assets/stylesheets/active_admin.sass.scss:./app/assets/builds/active_admin.css --no-source-map --load-path=node_modules"
   },
   "devDependencies": {
