@@ -11,6 +11,7 @@ class CustomFormBuilder < ActionView::Helpers::FormBuilder
     class_name = options.delete 'class'
     users = @object.send(attribute.to_s.sub('_id', '').to_sym)
     users = [users] if users.is_a? User
+    users = [] if users.nil?
 
     data[:data] = users.map { |user| { id: user.id, text: user.display_label, selected: true } }
 
