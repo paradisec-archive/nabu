@@ -60,6 +60,8 @@ class CollectionsController < ApplicationController
     rights = @collection.access_condition.name if @collection.access_condition
 
     respond_to do |format|
+      format.html
+      format.xml
       format.geo_json do
         json = {
           type: 'FeatureCollection',
@@ -85,8 +87,6 @@ class CollectionsController < ApplicationController
 
         render json:
       end
-      format.html
-      format.xml
     end
   end
 
