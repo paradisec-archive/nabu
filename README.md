@@ -163,10 +163,5 @@ nabu_run bundle update
 # node modules
 nabu_run yarn upgrade-interactive
 
-# Sentry
-# https://docs.sentry.io/platforms/javascript/install/cdn/
-vi app/views/layouts/application.html.haml
-
 # New rails version
 rails new nabu --database=mysql --javascript=esbuild --css=sass --skip-action-cable
-```

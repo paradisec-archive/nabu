@@ -1,3 +1,6 @@
+// NOTE: Add sentry as early as possible
+import './custom/sentry'; // Add jQuery to the window
+
 // Entry point for the build script in your package.json
 import '@hotwired/turbo-rails';
 import './controllers';
@@ -6,11 +9,9 @@ import './controllers';
 // Our Stuff
 ///////////////////
 
-// NOTE: This must only contain imports, any code added here runs after all the imports happen
-
 // Vendor Stuff
+// NOTE: This must only contain imports, any code added here runs after all the imports happen
 import './custom/add_jquery'; // Add jQuery to the window
-
 import 'jquery-ui';
 import 'jquery-ui/ui/widgets/datepicker';
 import 'jquery-query-object';
