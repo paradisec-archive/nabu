@@ -7,7 +7,7 @@ class LanguagesController < ApplicationController
     @languages = @languages
       .includes(:countries)
       .order('languages.name')
-      .where('languages.name like ? OR languages.code like ?', "%#{params[:q]}%", "%#{params[:q]}%")
+      .where('languages.name like ? OR languages.code like ?', "%#{params[:term] || params[:q]}%", "%#{params[:term] || params[:q]}%")
       .limit(10)
 
     @languages = @languages.where(countries_languages: { country_id: params[:country_ids] }) if params[:country_ids]
