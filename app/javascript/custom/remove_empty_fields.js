@@ -1,7 +1,7 @@
-$(function () {
-  $('form.no-empty-submit').submit(function () {
+$(() => {
+  $('form.no-empty-submit').on('submit', function () {
     $(this).find('input, select, textarea').each((_, element) => {
-      if (element.value == '') {
+      if (element.value === '') {
         element.disabled = 'disabled'
       }
     });

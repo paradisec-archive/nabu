@@ -1,4 +1,4 @@
-$(function() {
+$(() => {
   $('button[data-confirm-delete-message]').on('click', function(event) {
     event.preventDefault();
 

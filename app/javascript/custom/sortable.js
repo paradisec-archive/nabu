@@ -1,4 +1,4 @@
-$(function () {
+$(() => {
   $('.sortable').on('click', function () {
     const direction = $(this).data('direction');
     const field = $(this).data('field');

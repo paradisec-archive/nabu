@@ -1,11 +1,11 @@
 const addFundingBody = (event) => { // eslint-disable-line no-unused-vars
   const fbid = event.target.value;
   const fbname = event.target.selectedOptions[0].label;
-  if (fbid.length == 0) {
+  if (fbid.length === 0) {
     return;
   }
 
-  if ($('#funding-bodies').find('input[name="funding_body_ids[]"][value="'+fbid+'"]').length > 0) {
+  if ($('#funding-bodies').find(`input[name="funding_body_ids[]"][value="${fbid}"]`).length > 0) {
     return;
   }
 
@@ -37,7 +37,7 @@ const addGrantId = (event) => { // eslint-disable-line no-unused-vars
   const $parent = $(event.target).parent();
   const gid = $parent.find('input[name="add_grant_id"]').val();
   const fb_id = $parent.parent().find('input[name="funding_body_ids[]"]').val();
-  if (/[a-zA-Z0-9_]+/.test(gid) && $parent.find('#'+gid).length == 0) {
+  if (/[a-zA-Z0-9_]+/.test(gid) && $parent.find(`#${gid}`).length === 0) {
     const $giRow = window.$giRowTemplate.replace(/{{grant_id}}/gm, gid).replace(/{{fb_id}}/gm, fb_id);
     $parent.append($giRow);
     $parent.find('input[name="add_grant_id"]').val('');
