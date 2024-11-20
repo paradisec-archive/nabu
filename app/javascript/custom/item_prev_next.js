@@ -7,7 +7,7 @@ const getCurrentIdentifier = () => {
   const [_, collection, item] = match;
 
   return `${collection}-${item}`;
-}
+};
 
 const noSearchUpdate = () => {
   $('.next_prev_button').each((_i, button) => {
@@ -18,24 +18,19 @@ const noSearchUpdate = () => {
       return;
     }
 
-
-      console.error(identifier);
     const [collection, item] = identifier.split('-');
     $(button).attr('href', `/collections/${collection}/items/${item}`);
   });
 };
-$(function () {
+
+$(() => {
   const currentIdentifier = getCurrentIdentifier();
 
   if (!currentIdentifier) {
     return;
   }
 
-  console.info(currentIdentifier);
-  console.info('OATH');
-
   const resultIds = JSON.parse(sessionStorage.getItem('item_result_ids'));
-  console.log(resultIds);
   if (!resultIds) {
     $('#results_button').hide();
     noSearchUpdate();
