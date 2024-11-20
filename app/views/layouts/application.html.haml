@@ -2,13 +2,13 @@
 %html{ 'data-turbo' => 'false' }
   %head
     - if Rails.env.production?
-      = javascript_include_tag 'https://www.googletagmanager.com/gtag/js?id=UA-36256674-1', :async => true
+      = javascript_include_tag 'https://www.googletagmanager.com/gtag/js?id=G-G9M2J7CBHC', :async => true
       :javascript
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'UA-36256674-1');
+        gtag('config', 'G-G9M2J7CBHC');
 
     :javascript
       const calendarImagePath = "#{asset_path('calendar.png')}";
