@@ -34,7 +34,7 @@
 
     = yield :page_scripts
 
-  %body.bp{ "data-rails-env": Rails.env, "google-map-api-key": ENV['GOOGLE_MAPS_API_KEY'] || 'AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E' }
+  %body.bp{ "data-rails-env": Rails.env, "data-google-maps-api-key": ENV['GOOGLE_MAPS_API_KEY'] || 'AIzaSyAtxUAk_CHTIHR_to5xDCA2kG5YzkVcl4E' }
     #container.container
       #header.column.span-24.last
         .logo.column.span-4= link_to image_tag('paradisec.jpg', :height => 100), 'http://paradisec.org.au'

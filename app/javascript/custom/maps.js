@@ -1,7 +1,8 @@
 import { Loader } from "@googlemaps/js-api-loader"
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
-const apiKey = $("body").data('rails-env') === 'development' ? undefined : $("body").data("google-maps-api-key");
+const isProd = document.querySelector('body').dataset.railsEnv === 'production';
+const apiKey = isProd ? document.querySelector('body').dataset.googleMapsApiKey : undefined;
 const loader = new Loader({
   apiKey,
   version: "weekly",
