@@ -1,6 +1,6 @@
 import select2 from 'select2';
 // NOTE: It's not autoloading into jquery for some reason
-select2($);
+select2(window.$);
 
 export const setup_select2 = (element) => {
   const options = {

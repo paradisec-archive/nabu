@@ -184,6 +184,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@googlemaps/js-api-loader@npm:^1.16.8":
+  version: 1.16.8
+  resolution: "@googlemaps/js-api-loader@npm:1.16.8"
+  checksum: 10c0/c4159411f784253ef36c8a674756716637fcf50f7bf0600e7a5298c20229f3962f5fb73d8011dc478b60baea369c0d730db6ad13baa4e43cfc5444379a1ee75d
+  languageName: node
+  linkType: hard
+
 "@googlemaps/markerclusterer@npm:^2.5.3":
   version: 2.5.3
   resolution: "@googlemaps/markerclusterer@npm:2.5.3"
@@ -1115,6 +1122,7 @@ __metadata:
   resolution: "nabu@workspace:."
   dependencies:
     "@activeadmin/activeadmin": "npm:^3.2.5"
+    "@googlemaps/js-api-loader": "npm:^1.16.8"
     "@googlemaps/markerclusterer": "npm:^2.5.3"
     "@hotwired/stimulus": "npm:^3.2.2"
     "@hotwired/turbo-rails": "npm:^8.0.12"

@@ -1,4 +1,13 @@
-const initMap = () => {
+import { Loader } from "@googlemaps/js-api-loader"
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
+
+const apiKey = $("body").data('rails-env') === 'development' ? undefined : $("body").data("google-maps-api-key");
+const loader = new Loader({
+  apiKey,
+  version: "weekly",
+});
+
+loader.load().then(async () => {
   const set_map_bounds_from_ajax = async (path, ids) => {
     const marker_bounds = new google.maps.LatLngBounds();
 
@@ -142,13 +151,7 @@ const initMap = () => {
       map.fitBounds(bounds);
     }
 
-    // const cluster_options = {
-    //   gridSize: 15,
-    //   maxZoom: 15,
-    //   avgCenter: false,
-    //   minClusterSize: 5
-    // }
-    const clusterer = new markerClusterer.MarkerClusterer({ map });
+    const clusterer = new MarkerClusterer({ map });
 
     const coordinates = JSON.parse(element.dataset.coordinates || []);
     coordinates.forEach((coord) => {
@@ -173,6 +176,4 @@ const initMap = () => {
       clusterer.addMarker(marker);
     });
   });
-};
-
-window.initMap = initMap;
+});

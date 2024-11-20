@@ -10,9 +10,10 @@ import './controllers';
 
 // Vendor Stuff
 import './custom/add_jquery'; // Add jQuery to the window
+
 import 'jquery-ui';
+import 'jquery-ui/ui/widgets/datepicker';
 import 'jquery-query-object';
-import '@googlemaps/markerclusterer';
 
 import './custom/maps';
 import './custom/sortable';
@@ -23,3 +24,4 @@ import './custom/items_and_collections';
 import './custom/dynamic_grant_identifiers';
 import './custom/item_prev_next';
 import './custom/confirm_delete';
+import './custom/datepicker';
