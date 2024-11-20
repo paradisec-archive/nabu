@@ -149,7 +149,7 @@ class User < ApplicationRecord
   end
 
   def display_label
-    "#{name}#{contact_only? ? '' : ' <em>[user]</em>'}"
+    "#{name}#{contact_only? ? '' : ' [user]'}"
   end
 
   def identifiable_name
