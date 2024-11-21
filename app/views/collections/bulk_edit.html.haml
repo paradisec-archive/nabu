@@ -8,7 +8,7 @@
 
 = render 'search_results'
 
-= form_for @collection, :url => bulk_update_collections_path, :method => :patch do |f|
+= form_for @collection, url: bulk_update_collections_path, method: :patch, data: { turbo: true, 'turbo-confirm': "This will update #{@search.length} collections - are you sure?" } do |f|
   - if @collection.errors.any?
     #error_explanation
       %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
@@ -20,10 +20,10 @@
   = hidden_field_tag :original_search_params, @params.to_h.to_a.map {|p| "#{p[0]}=#{p[1]}" }.join('&')
 
   .right
-    = f.submit "Update #{@search.length} Collections", :confirm => "This will update #{@search.length} collections - are you sure?"
+    = f.submit "Update #{@search.length} Collections"
 
   = render :partial => 'form', :locals => {:f => f}
 
   .right
-    = f.submit "Update #{@search.length} Collections", :confirm => "This will update #{@search.length} collections - are you sure?"
+    = f.submit "Update #{@search.length} Collections"
 
