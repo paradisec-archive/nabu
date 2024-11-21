@@ -11,7 +11,7 @@ import './controllers';
 
 // Vendor Stuff
 // NOTE: This must only contain imports, any code added here runs after all the imports happen
-import './custom/add_jquery'; // Add jQuery to the window
+import './custom/jquery'; // Add jQuery to the window
 import 'jquery-ui';
 import 'jquery-ui/ui/widgets/datepicker';
 import 'jquery-query-object';

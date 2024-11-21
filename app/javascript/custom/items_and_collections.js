@@ -2,33 +2,17 @@ import { setup_select2 } from './select2_setup';
 
 $(() => {
   // Add more fields to form
-  $('form').on('click', '.add_fields', function (event) {
+  document.querySelector('a.add_fields')?.addEventListener('click', (event) => {
     const time = new Date().getTime();
-    const regexp = new RegExp($(this).data('id'), 'g');
+    const regexp = new RegExp(event.target.dataset.id, 'g');
 
-    $(this).before($(this).data('fields').replace(regexp, time));
-    setup_select2($(this).prev().prev());
-    setup_select2($(this).prev());
+    const newFields = event.target.dataset.fields.replace(regexp, time);
+    event.target.insertAdjacentHTML('beforebegin', newFields);
+    setup_select2(event.target.previousElementSibling.previousElementSibling);
+    setup_select2(event.target.previousElementSibling);
     event.preventDefault();
   });
 
   // Set up select2 elements
-  $('.select2').each(function () {
-    setup_select2(this);
-  });
-
-  // Fix _ids hidden fields for select2
-  $('form').on('submit', function () {
-    const form = $(this);
-    form.find('input[type=hidden].select2').each(function () {
-      const input = $(this);
-      if (input.attr('name').match(/_ids]$/) && $(this).val() !== '') {
-        const ids = input.val().split(/,/);
-        ids.forEach((id) => {
-          form.append($(`<input type=hidden name="${input.attr('name')}[]" value="${id}" />`));
-          input.remove();
-        });
-      }
-    });
-  });
+  document.querySelectorAll('.select2').forEach((element) => setup_select2(element));
 });

@@ -187,10 +187,8 @@ module HasSearch
 
   def where_exact(name, value)
     {
-      term: {
-        name => {
-          value:
-        }
+      terms: {
+        name => value.is_a?(Array) ? value : [value]
       }
     }
   end

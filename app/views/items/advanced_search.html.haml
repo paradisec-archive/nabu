@@ -91,11 +91,11 @@
 
         %tr
           %th= label_tag :collector_id
-          %td= select_tag :collector_id, params[:collector_id], :data => {:placeholder => 'Choose a collector...', 'ajax--url' => users_path}, :class => 'select2'
+          %td= user_select_tag :collector_id, placeholder: 'Choose a collector...'
 
         %tr
-          %th= label_tag :country_ids, 'Countries'
-          %td= select_tag :country_ids, params[:country_ids], :data => {:placeholder => 'Choose a country...', 'ajax--url' => countries_path, :multiple => true}, :class => 'select2 country'
+          %th= label_tag 'country_ids[]', 'Countries'
+          %td= country_select_tag 'country_ids[]'
 
         %tr
           %th= label_tag :language, 'Language as given'
@@ -106,14 +106,12 @@
             = check_box_tag :language_blank, true, params[:language_blank]
 
         %tr
-          %th= label_tag :subject_language_ids, 'Subject languages'
-          %td
-            = select_tag :subject_language_ids, params[:subject_language_ids], :data => {:placeholder => 'Choose a language...', 'ajax--url' => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          %th= label_tag 'subject_language_ids[]', 'Subject languages'
+          %td= language_select_tag 'subject_language_ids[]', 'extra-name': 'country_ids', 'extra-selector': '#item_country_ids', multiple: true
 
         %tr
-          %th= label_tag :content_language_ids, 'Content language'
-          %td
-            = select_tag :content_language_ids, params[:content_language_ids], :data => {:placeholder => 'Choose a language...', 'ajax--url' => languages_path, :'extra-name' => 'country_ids', :'extra-selector' => '#item_country_ids', :multiple => true}, :class => 'select2 language'
+          %th= label_tag 'content_language_ids[]', 'Content language'
+          %td= language_select_tag 'content_language_ids[]', 'extra-name': 'country_ids', 'extra-selector': '#item_country_ids', multiple: true
 
         %tr
           %th= label_tag :dialect
@@ -138,24 +136,24 @@
 
         %tr
           %th= label_tag :operator_id
-          %td= select_tag :operator_id, params[:operator_id], :data => {:placeholder => 'Choose an operator...', 'ajax--url' => users_path}, :class => 'select2'
+          %td= user_select_tag :operator_id, :placeholder => 'Choose an operator...'
 
         %tr
-          %th= label_tag :data_category_ids, 'Data Categories'
+          %th= label_tag 'data_category_ids[]', 'Data Categories'
           -# REVIEW: Why is data_category used as a class?
-          %td= select_tag :data_category_ids, params[:data_category_ids], :data => {:placeholder => 'Choose a category...', 'ajax--url' => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+          %td= select_tag 'data_category_ids[]', params[:data_category_ids], :data => {:placeholder => 'Choose a category...', 'ajax--url' => data_categories_path, :multiple => true}, :class => 'select2 data_category'
 
         %tr
-          %th= label_tag :data_type_ids, 'Data Types'
-          %td= select_tag :data_type_ids, params[:data_type_ids], :data => {:placeholder => 'Choose a type...', 'ajax--url' => data_types_path, :multiple => true}, :class => 'select2'
+          %th= label_tag 'data_type_ids[]', 'Data Types'
+          %td= select_tag 'data_type_ids[]', params[:data_type_ids], :data => {:placeholder => 'Choose a type...', 'ajax--url' => data_types_path, :multiple => true}, :class => 'select2'
 
         %tr
           %th= label_tag :discourse_type_id
           %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
 
         %tr
-          %th= label_tag :agent_id, 'Agents'
-          %td= select_tag :agent_ids, params[:agent_ids], :data => {:placeholder => 'Choose an agent...', 'ajax--url' => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#agent_ids', :multiple => true}, :class => 'select2'
+          %th= label_tag 'agent_ids[]', 'Agents'
+          %td= user_select_tag 'agent_ids[]', placeholder: 'Choose an agent...', multiple: true
 
     %fieldset
       %legend Essence Details
@@ -168,7 +166,7 @@
           %td= text_field_tag :filename, params[:filename]
         %tr
           %th= label_tag :mimetype, 'Mime Type'
-          %td= select_tag :mimetype, params[:mimetype], :data => {:placeholder => 'Choose a mimetype...', 'ajax--url' => list_mimetypes_path}, :class => 'select2'
+          %td= mimetype_select_tag :mimetype
         %tr
           %th= label_tag :framesPerSecond, 'FPS'
           %td= text_field_tag :framesPerSecond, params[:framesPerSecond]
@@ -282,12 +280,12 @@
             = check_box_tag :updated_at_blank, true, params[:updated_at_blank]
 
         %tr
-          %th= label_tag :admin_ids, 'Edit access'
-          %td= select_tag :admin_ids, params[:admin_ids], :data => {:placeholder => 'Choose an admin...', 'ajax--url' => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#admin_ids', :multiple => true}, :class => 'select2'
+          %th= label_tag 'admin_ids[]', 'Edit access'
+          %td= user_select_tag 'admin_ids[]', placeholder: 'Choose an admin...', multiple: true
 
         %tr
-          %th= label_tag :user_ids, 'Read/Download access'
-          %td= select_tag :user_ids, params[:user_ids], :data => {:placeholder => 'Choose a user...', 'ajax--url' => users_path, :'extra-name' => 'user_ids', :'extra-selector' => '#user_ids', :multiple => true}, :class => 'select2'
+          %th= label_tag 'user_ids[]', 'Read/Download access'
+          %td= user_select_tag 'user_ids[]', placeholder: 'Choose a user...', multiple: true
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
