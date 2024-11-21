@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 
-const isProd = document.querySelector('body').dataset.railsEnv === 'production';
-if (isProd) {
+const loadSentry = ['production', 'staging'].includes(document.querySelector('body').dataset.railsEnv);
+if (loadSentry) {
   Sentry.init({
     dsn: 'https://511d833c4a954b6b9f54992abe16607c@o4504801902985216.ingest.sentry.io/4504802133213184',
 
