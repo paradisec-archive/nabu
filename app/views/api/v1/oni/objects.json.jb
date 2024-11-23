@@ -11,25 +11,34 @@
       description: object.description.truncate(256),
       conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
       recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
-      # FIXME: Outside of current API spec and subject to change
-      inLanguage: (is_item ? object.content_languages : object.languages).map { |language| { name: language.name, code: language.code } }[0]
+      extra: {
+        language: (is_item ? object.content_languages : object.languages).map(&:name),
+      }
     }
 
     if is_item
       response[:memberOf] = repository_collection_url(object.collection)
-      response[:parent] = repository_collection_url(object.collection)
       response[:root] = repository_collection_url(object.collection)
     end
 
-    if object.has_attribute?(:items_count)
-      response[:metadata] ||= {}
-      response[:metadata][:objectsCount] = object.items_count
+    extra = response[:extra]
+
+    extra[:objectsCount] = object.items_count if object.has_attribute?(:items_count)
+    extra[:filesCount] = object.essences_count if object.has_attribute?(:essences_count)
+
+    if object.private?
+      extra[:accessControl] = 'AccessControlList'
+    elsif object.access_condition.nil?
+      extra[:accessControl] = 'AuthorizationByInvitation'
+    elsif object.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
+      extra[:accessControl] = 'AgreeToTerms'
+    else
+      extra[:accessControl] = 'Public'
     end
 
-    if object.has_attribute?(:essences_count)
-      response[:metadata] ||= {}
-      response[:metadata][:filesCount] = object.essences_count
-    end
+    # TODO:: add communicationMode
+
+    extra[:mediaType] = @mime_types
 
     response
   end

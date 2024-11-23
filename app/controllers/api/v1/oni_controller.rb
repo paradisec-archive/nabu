@@ -67,6 +67,10 @@ module Api
         collection_ids = ids.select { |id| id['type'] == 'collection' }.pluck('id')
         item_ids = ids.select { |id| id['type'] == 'item' }.pluck('id')
 
+        collection_mimetypes = Essence.joins(item: :collection).where(item: { collection_id: collection_ids }).distinct.pluck(:mimetype)
+        item_mimetypes = Essence.joins(:item).where(item_id: item_ids).distinct.pluck(:mimetype)
+        @mime_types = collection_mimetypes.concat(item_mimetypes).uniq
+
         collections = Collection.where(id: collection_ids)
                                 .select('collections.*, COUNT(DISTINCT items.id) AS items_count, COUNT(essences.id) AS essences_count')
                                 .left_joins(items: :essences)
@@ -84,27 +88,6 @@ module Api
           else
             items.find { |i| i.id == id['id'] }
           end
-        end
-      end
-
-      def object
-        unless params[:id]
-          render json: { error: 'id is required' }, status: :bad_request
-
-          return
-        end
-
-        md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
-        if md
-          @collection = Collection.where(private: false).find_by(identifier: md[1])
-          @data = @collection.items.where(private: false).find_by(identifier: md[2])
-        else
-          md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
-          unless md
-            render json: { error: 'Invalid id parameter' }, status: :bad_request
-            return
-          end
-          @data = Collection.find_by(identifier: md[1])
         end
       end
 

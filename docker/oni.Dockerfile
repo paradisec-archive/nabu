@@ -4,7 +4,7 @@ FROM node:lts AS builder
 
 ARG ONI_API_CLIENTID
 ARG ONI_API_CLIENTSECRET
-ARG BUMP=4
+ARG BUMP=5
 
 WORKDIR /tmp
 RUN git clone https://github.com/paradisec-archive/oni.git && cd oni && git switch paradisec
