@@ -4,12 +4,12 @@ FROM node:lts AS builder
 
 ARG ONI_API_CLIENTID
 ARG ONI_API_CLIENTSECRET
-ARG BUMP=5
+ARG BUMP=6
 
 WORKDIR /tmp
-RUN git clone https://github.com/paradisec-archive/oni.git && cd oni && git switch paradisec
+RUN git clone https://github.com/paradisec-archive/oni-ui.git && cd oni-ui && git switch paradisec
 
-WORKDIR /tmp/oni/portal
+WORKDIR /tmp/oni-ui/portal
 COPY docker/oni.json configuration.json
 RUN sed -i "s/ONI_API_CLIENTID/$ONI_API_CLIENTID/;s/ONI_API_CLIENTSECRET/$ONI_API_CLIENTSECRET/" configuration.json
 RUN sed -i "s/publicPath: .*/publicPath: '\/oni',/" webpack-production.js
