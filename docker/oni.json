@@ -80,8 +80,16 @@
     },
     "topNavItems": [
       {
-        "route": "list?conformsTo=https%3A%2F%2Fpurl.archive.org%2Flanguage-data-commons%2Fprofile%23Collection",
+        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
         "display": "Collections"
+      },
+      {
+        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Object",
+        "display": "Items"
+      },
+      {
+        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Object,https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
+        "display": "Both"
       },
       {
         "route": "search?f=%257B%2522%2540type%2522%253A%255B%2522RepositoryCollection%2522%255D%252C%2522_isTopLevel.%2540value%2522%253A%255B%2522true%2522%255D%257D",
@@ -95,9 +103,9 @@
     "search": {
       "sorting": [
         {
-          "value": "identifier",
-          "label": "Collections",
-          "field": "identifier"
+          "value": "id",
+          "label": "Id",
+          "field": "id"
         },
         {
           "value": "title",
@@ -105,9 +113,14 @@
           "field": "title"
         },
         {
-          "value": "created_at",
+          "value": "createdAt",
           "label": "Created",
-          "field": "created_at"
+          "field": "createdAt"
+        },
+        {
+          "value": "updatedAt",
+          "label": "Updated",
+          "field": "updatedAt"
         }
       ],
       "searchSorting": {
@@ -665,7 +678,7 @@
     },
     "conformsTo": {
       "collection": "https://w3id.org/ldac/profile#Collection",
-      "object": "https://w3id.org/ldac/profile#Item",
+      "object": "https://w3id.org/ldac/profile#Object",
       "notebook": "https://w3id.org/ldac/profile#Notebook"
     },
     "skipByMatch": []
