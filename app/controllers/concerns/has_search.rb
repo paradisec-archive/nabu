@@ -120,7 +120,7 @@ module HasSearch
 
     body[:query][:bool][:filter][:bool][:must_not] = [{ ids: { values: params[:exclusions].split(',').map(&:to_i) } }] if params[:exclusions].present?
 
-    body[:order] = order if order
+    body[:sort] = order if order
 
     body
   end
