@@ -376,7 +376,7 @@ class Item < ApplicationRecord
       # TODO: Should this be allowed in the data?
       data[:bounds] = if north_limit == south_limit && east_limit == west_limit
                         { type: 'point', coordinates: [west_limit, north_limit] }
-                      else
+      else
                         {
                           type: 'polygon',
                           coordinates: [[
@@ -387,7 +387,7 @@ class Item < ApplicationRecord
                             [west_limit, north_limit]
                           ]]
                         }
-                      end
+      end
     end
 
     # Things we want to check blankness of
@@ -425,16 +425,16 @@ class Item < ApplicationRecord
       cite += type
       cite += if index == last
                 '. '
-              else
+      else
                 '/'
-              end
+      end
     end
     cite += " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
     cite += if doi
               " https://dx.doi.org/#{doi}"
-            else
+    else
               " #{full_path}"
-            end
+    end
     cite
   end
 
@@ -639,9 +639,9 @@ class Item < ApplicationRecord
 
     lng = if east_limit < west_limit
             180 + ((west_limit + east_limit) / 2)
-          else
+    else
             (west_limit + east_limit) / 2
-          end
+    end
 
     lat = (north_limit + south_limit) / 2
 

@@ -5,118 +5,168 @@ require 'aws-sdk-s3'
 class JunkService
   attr_reader :catalog_dir, :verbose
 
-  def initialize(env)
-    @bucket = "nabu-meta-#{env}"
-    @prefix = "inventories/catalog/nabu-catalog-#{env}/CatalogBucketInventory0/"
-
-    # Strange bug in dev docker
-    ENV.delete('AWS_SECRET_ACCESS_KEY')
-    ENV.delete('AWS_ACCESS_KEY_ID')
-    ENV.delete('AWS_SESSION_TOKEN')
-
-    @s3 = Aws::S3::Client.new(region: 'ap-southeast-2')
+  def initialize(env, verbose: false)
   end
 
   def run
-    inventory_dir = find_recent_inventory_dir
-    inventory_csv = fetch_inventory_csv(inventory_dir)
+    filenames = Essence.pluck(:id, :filename)
+    filenames_hash = {}
 
-    s3_files = extract_s3_files(inventory_csv)
-
-    s3_files.select! { |filename| filename.ends_with?('-deposit.pdf') }
-
-    puts "Found #{s3_files.size} df files"
-
-    s3_files.each do |filename|
-      puts "Marking #{filename}"
-      identifier = filename.split('/')[0]
-      collection = Collection.find_by(identifier: identifier)
-      throw "Could not find collection for #{identifier}" unless collection
-      collection.has_deposit_form = true
-      collection.save!
-    end
-  end
-
-  private
-
-  def extract_s3_files(inventory_csv)
-    s3_files = []
-
-    CSV.parse(inventory_csv, headers: false) do |row|
-      _bucket_name, filename, _version_id, is_latest, delete_marker, _size, _last_modified, _etag,
-        storage_class,  multiple_upload,  multipart_upload_flag, replication_status, checksum_algo = row
-
-      next if is_latest == 'false' || delete_marker == 'true'
-
-      s3_files << CGI.unescape(filename)
+    filenames.each do |id, filename|
+      item_name, extension = filename.split('.', 2)
+      filenames_hash[item_name] ||= { extensions: [], errors: [] }
+      filenames_hash[item_name][:extensions] << extension.downcase
     end
 
-    if s3_files.size != s3_files.uniq.size
-      raise 'Duplicate files in S3 inventory'
+    ext_map = {
+      audio_ok: [
+       'mp3',
+       'wav'
+      ],
+       audio: [
+       'mpg'
+      ],
+      video_ok: [
+        'mp4',
+        'mxf',
+        'mkv'
+      ],
+      video: [
+        'dv',
+        'mov',
+        'webm',
+        'm4v',
+        'avi',
+        'mts'
+      ],
+      image_ok: [
+        'jpg',
+        'tif'
+      ],
+      image: [
+        'png'
+      ],
+      lang: [
+        'eaf',
+        'trs',
+        'xml',
+        'cha',
+        'fwbackup',
+        'pfsx',
+        'ixt',
+        'cmdi',
+        'lbl',
+        'textgrid',
+        'srt',
+        'flextext',
+        'tex',
+        'imdi',
+        'version',
+        'annis',
+        'opex'
+      ],
+      standalone: [
+        'txt',
+        'pdf',
+        'rtf',
+        'xlsx',
+        'docx',
+        'img',
+        'tab',
+        'odt',
+        'html',
+        'csv',
+        'ods',
+        'kml',
+        'zip'
+      ],
+      broken: [
+        'mov.eaf',
+        'eopas1.ixt',
+        'eopas2.ixt',
+        'mp4_good_audio.mp3',
+        'mp4_good_audio.mp4',
+        'mp4_good_audio.mxf',
+        'mp4_good_audio.wav',
+        'masing.pdf',
+        'masing.rtf',
+        'masing.txt',
+        '5.mp3',
+        '5.wav',
+        'txt.txt',
+        'wav.eaf',
+        'wav.mp3',
+        'wav.wav'
+      ]
+    }
+
+    filenames_hash.each do |item_name, data|
+      filenames_hash[item_name][:extensions] = data[:extensions].sort
     end
 
-    s3_files
-  end
+    filenames_hash.each do |item_name, data|
+      extensions = data[:extensions].clone
 
-  def fetch_inventory_csv(inventory_dir)
-    manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
-    manifest = JSON.parse(manifest_json)
-
-    files = manifest['files']
-    if files.size > 1
-      raise 'Multiple files in manifest'
-    end
-
-    file = files.first['key']
-
-    # Download the S3 Inventory CSV file
-    puts "Downloading S3 Inventory CSV file: #{file}"
-    inventory_gzipped = @s3.get_object(bucket: @bucket, key: file).body.read
-    puts "Unzipping file: #{file}\n\n"
-    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
-  end
-
-  def find_recent_inventory_dir
-    inventory_files = fetch_inventory_files
-
-    # Extract the timestamp part from each key and convert it to Time object
-    timestamped_files = inventory_files.map do |key|
-      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
-      if match
-        year, month, day, hour, minute = match.captures
-        time = Time.new(year, month, day, hour, minute)
-        { key: key, time: time }
+      # Audio
+      if extensions.include?('mp3') && !extensions.include?('wav')
+        data[:errors] << '+MP3-WAV'
       end
-    end.compact
+      if extensions.include?('wav') && !extensions.include?('mp3')
+        data[:errors] << '+WAV-MP3'
+      end
+      extensions = extensions - ext_map[:audio_ok]
+      if (extensions & ext_map[:audio]).any?
+        data[:errors] << '+AUDIO'
+      end
+      extensions = extensions - ext_map[:audio]
 
-    # Find the most recent file
-    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
+      # Normal Paragest Video (plus old video)
+      if extensions.include?('mkv') && !extensions.include?('mp4')
+        data[:errors] << '+MKV-MP4'
+      end
+      if extensions.include?('mxf') && !extensions.include?('mp4')
+        data[:errors] << '+MXF-MP4'
+      end
+      if extensions.include?('mp4') && !(extensions.include?('mkv') || extensions.include?('mxf'))
+        data[:errors] << '+MP4-MKV'
+      end
+      extensions = extensions - ext_map[:video_ok]
+      if (extensions & ext_map[:video]).any?
+        data[:errors] << '+VIDEO'
+      end
+      extensions = extensions - ext_map[:video]
 
-    puts "Most recent inventory file: #{most_recent_dir[:key]}"
+      # Image
+      if extensions.include?('jpg') && !extensions.include?('tif')
+        data[:errors] << '+JPG-TIF'
+      end
+      if extensions.include?('tif') && !extensions.include?('jpg')
+        data[:errors] << '+TIF-JPG'
+      end
+      extensions = extensions - ext_map[:image_ok]
+      if (extensions & ext_map[:image]).any?
+        data[:errors] << '+IMAGE'
+      end
+      extensions = extensions - ext_map[:image]
 
-    most_recent_dir[:key]
-  end
+      extensions = extensions - ext_map[:lang]
+      extensions = extensions - ext_map[:standalone]
+      if (extensions & ext_map[:broken]).any?
+        data[:errors] << '+BROKEN'
+      end
+      extensions = extensions - ext_map[:broken]
 
-  def fetch_inventory_files
-    inventory_files = []
-    next_token = nil
 
-    loop do
-      response = @s3.list_objects_v2(
-        bucket: @bucket,
-        prefix: @prefix,
-        delimiter: '/',
-        continuation_token: next_token
-      )
-
-      # Collect all object keys
-      inventory_files += response.common_prefixes.map(&:prefix)
-
-      break unless response.is_truncated
-
-      next_token = response.next_continuation_token
+      if extensions.any?
+        abort "Item: #{item_name}, Extensions: #{extensions.join(', ')}"
+      end
     end
 
-    inventory_files
+    puts '# Error Summary'
+    filenames_hash.each do |item_name, data|
+      next if data[:errors].empty?
+
+      puts "Item: #{item_name}, Extensions: #{data[:extensions].join(', ')}, Errors: #{data[:errors].join(', ')}"
+    end
   end
 end
