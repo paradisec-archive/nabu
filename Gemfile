@@ -98,7 +98,7 @@ gem 'aws-sdk-s3' # Talk to the catalog
 # Admin Dashboard
 gem 'activeadmin'
 gem 'mission_control-jobs' # Jobs dashboard
-gem 'country_select' # , '~> 8.0' # 9.0 breaks active admin
+gem 'country_select'
 
 # Graphql
 gem 'graphiql-rails' # , '1.8.0' # https://github.com/rmosolgo/graphiql-rails/issues/106
