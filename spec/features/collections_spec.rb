@@ -5,7 +5,7 @@ describe 'Collections' do
   let(:admin_user) { create :admin_user }
   let!(:university) { create :university }
   let!(:country) { create :country }
-  let!(:language) { create :language}
+  let!(:language) { create :language }
   let!(:field_of_research) { create :field_of_research }
 
   describe 'Creating' do

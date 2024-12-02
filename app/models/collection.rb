@@ -373,6 +373,7 @@ class Collection < ApplicationRecord
 
   # OAI-MPH mappings for RIF-CS
   # TODO: should this be in a view of some sort, could we use HAML?
+  # rubocop:disable Metrics/MethodLength,Metrics/BlockLength
   def to_rif
     xml = ::Builder::XmlMarkup.new
     xml.registryObjects OAI::Provider::Metadata::Rif.instance.header_specification do
@@ -398,8 +399,11 @@ class Collection < ApplicationRecord
                 xml.value full_path
               end
               xml.physical 'type' => 'postalAddress' do
-                xml.addressPart 'PARADISEC Sydney Unit: Sydney Conservatorium of Music, Rm 3019, Building C41, The University of Sydney, NSW, 2006, Phone +61 2 9351 1279. PARADISEC Melbourne Unit: School of Languages and Linguistics, University of Melbourne, +61 2 8344 8952 | PARADISEC Canberra Unit: College of Asia and the Pacific, The Australian National University, +61 2 6125 6115',
-                                'type' => 'text'
+                address = 'PARADISEC Sydney Unit: Sydney Conservatorium of Music, Rm 3019, Building C41, '
+                address += 'The University of Sydney, NSW, 2006, Phone +61 2 9351 1279. PARADISEC Melbourne Unit: '
+                address += 'School of Languages and Linguistics, University of Melbourne, +61 2 8344 8952 | '
+                address += 'PARADISEC Canberra Unit: College of Asia and the Pacific, The Australian National University, +61 2 6125 6115'
+                xml.addressPart address, 'type' => 'text'
               end
             end
           end
@@ -535,6 +539,7 @@ class Collection < ApplicationRecord
     end
     xml.target!
   end
+  # rubocop:enable Metrics/MethodLength,Metrics/BlockLength
 
   def as_geo_json(url)
     center = center_coordinate({})

@@ -16,7 +16,7 @@
 class FundingBody < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true
+  validates :name, presence: true
   validates :name, :key_prefix, uniqueness: true
 
   scope :alpha, -> { order(:name) }

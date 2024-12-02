@@ -1,24 +1,24 @@
 require 'rails_helper'
 
 describe ItemsController, type: :controller do
-  let(:user) {create(:user)}
-  let(:manager) {create(:user, admin: true)}
+  let(:user) { create(:user) }
+  let(:manager) { create(:user, admin: true) }
 
-  let(:languages) {create_list(:language, 2)}
-  let(:subject_languages) {create_list(:language, 2)}
-  let(:collection) {create(:collection, languages: languages)}
-  let(:item) {create(
+  let(:languages) { create_list(:language, 2) }
+  let(:subject_languages) { create_list(:language, 2) }
+  let(:collection) { create(:collection, languages: languages) }
+  let(:item) { create(
     :item,
     collection: collection,
-    access_condition: AccessCondition.new({name: 'Open (subject to agreeing to PDSC access conditions)'}),
+    access_condition: AccessCondition.new({ name: 'Open (subject to agreeing to PDSC access conditions)' }),
     subject_languages: subject_languages,
-    item_users: [ItemUser.new({user: user})]
+    item_users: [ItemUser.new({ user: user })]
   )}
-  let(:private_item) {create(:item, collection: collection, private: true)}
-  let(:essence) {create(:sound_essence)}
-  let(:item_with_essences) {create(:item, collection: collection, essences: [essence])}
+  let(:private_item) { create(:item, collection: collection, private: true) }
+  let(:essence) { create(:sound_essence) }
+  let(:item_with_essences) { create(:item, collection: collection, essences: [essence]) }
 
-  let(:params) { {collection_id: collection.identifier, id: item.identifier} }
+  let(:params) { { collection_id: collection.identifier, id: item.identifier } }
 
   before(:all) do
     # allow test user to access everything
@@ -65,7 +65,7 @@ describe ItemsController, type: :controller do
     context 'when creating an item' do
       context 'that is invalid' do
         it 'should fail and show create page' do
-          post :create, params: { collection_id: collection.identifier, item: {title: 'title goes here'} }
+          post :create, params: { collection_id: collection.identifier, item: { title: 'title goes here' } }
           expect(response).to render_template(:new)
         end
       end
@@ -81,7 +81,7 @@ describe ItemsController, type: :controller do
       end
       context 'with an admin user' do
         before do
-          allow(ItemDestructionService).to receive(:destroy).and_return({success: true, messages: {notice: 'yay'}})
+          allow(ItemDestructionService).to receive(:destroy).and_return({ success: true, messages: { notice: 'yay' } })
 
           @request.env['devise.mapping'] = Devise.mappings[:user]
           # log in as test user
@@ -104,7 +104,7 @@ describe ItemsController, type: :controller do
           end
           context 'and flag set to false' do
             before do
-              allow(ItemDestructionService).to receive(:destroy).and_return({success: false, messages: {error: 'boo'}})
+              allow(ItemDestructionService).to receive(:destroy).and_return({ success: false, messages: { error: 'boo' } })
             end
             it 'should fail and redirect with error' do
               delete :destroy, params: params

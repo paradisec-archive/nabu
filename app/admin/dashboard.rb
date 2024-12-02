@@ -1,16 +1,15 @@
-ActiveAdmin.register_page "Dashboard" do
-
-  menu priority: 1, label: proc { I18n.t("active_admin.dashboard") }
+ActiveAdmin.register_page 'Dashboard' do
+  menu priority: 1, label: proc { I18n.t('active_admin.dashboard') }
 
   action_item :cron do
     if File.exist? "#{Rails.root}/tmp/pids/disable_cron"
-      link_to 'Enable Cron Jobs!', admin_dashboard_cron_path(:state => 'on'), :class => 'red'
+      link_to 'Enable Cron Jobs!', admin_dashboard_cron_path(state: 'on'), class: 'red'
     else
-      link_to 'Disable Cron Jobs!', admin_dashboard_cron_path(:state => 'off'), :class => 'green'
+      link_to 'Disable Cron Jobs!', admin_dashboard_cron_path(state: 'off'), class: 'green'
     end
   end
 
-  page_action :cron, :method => :get do
+  page_action :cron, method: :get do
     if params[:state] == 'on'
       FileUtils.rm_f "#{Rails.root}/tmp/pids/disable_cron"
       flash[:notice] = 'Enabled Cron Jobs'
@@ -22,14 +21,12 @@ ActiveAdmin.register_page "Dashboard" do
     redirect_to admin_root_path
   end
 
-  content :title => 'Dashboard' do
-
+  content title: 'Dashboard' do
     columns do
-
       column do
         panel 'Statistics' do
           div do
-            render :partial => 'admin/dashboard/statistics', :locals => {:date => Date.today}
+            render partial: 'admin/dashboard/statistics', locals: { date: Date.today }
           end
         end
       end
@@ -38,7 +35,8 @@ ActiveAdmin.register_page "Dashboard" do
         panel '10 Newest Collections' do
           insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Collection.order('id desc').limit(10) do
             column :identifier do |collection|
-              link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection) # Have to call the full path here as activeadmin has a collection_path
+              # Have to call the full path here as activeadmin has a collection_path
+              link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection)
             end
             column :title
             actions
@@ -60,7 +58,6 @@ ActiveAdmin.register_page "Dashboard" do
     end
 
     columns do
-
       column do
         panel '10 Newest Comments' do
           insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, Comment.order('id desc').limit(10) do
@@ -92,11 +89,11 @@ ActiveAdmin.register_page "Dashboard" do
             column :body
             column :owner
             actions
-            column '', :sortable => false do |comment|
-              link_to 'Approve', approve_comment_path(comment), :method => :post
+            column '', sortable: false do |comment|
+              link_to 'Approve', approve_comment_path(comment), method: :post
             end
-            column '', :sortable => false do |comment|
-              link_to 'Spam',    spam_comment_path(comment), :method => :post
+            column '', sortable: false do |comment|
+              link_to 'Spam',    spam_comment_path(comment), method: :post
             end
           end
         end

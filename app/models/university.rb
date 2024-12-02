@@ -16,10 +16,10 @@
 class University < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true, :uniqueness => { case_sensitive: false }
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
 
-  has_many :collections, :dependent => :restrict_with_exception
-  has_many :items, :dependent => :restrict_with_exception
+  has_many :collections, dependent: :restrict_with_exception
+  has_many :items, dependent: :restrict_with_exception
 
   scope :alpha, -> { order(:name) }
 
@@ -42,7 +42,7 @@ class University < ApplicationRecord
 
   def ok_to_destroy?
     errors.clear
-    errors.add(:base, "University used in items or collection - cannot be removed.") if items.count > 0 || collections.count > 0
+    errors.add(:base, 'University used in items or collection - cannot be removed.') if items.count > 0 || collections.count > 0
     errors.empty?
   end
 

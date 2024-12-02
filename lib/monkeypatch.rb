@@ -19,9 +19,11 @@ module RecordResponseExtensions
   def validate_identifier
     return if @options[:identifier].nil?
 
+    # rubocop:disable Layout/LineLength
     if @options[:identifier] !~ /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/
       raise OAI::ArgumentException.new
     end
+    # rubocop:enable Layout/LineLength
   end
 end
 
@@ -70,7 +72,7 @@ module Formtastic
       CountrySelectPluginMissing = Class.new(StandardError)
 
       def to_html
-        raise CountrySelectPluginMissing, 'To use the :country input, please install a country_select plugin, like this one: https://github.com/stefanpenner/country_select' unless builder.respond_to?(:country_select)
+        raise CountrySelectPluginMissing, 'To use the :country input, please install a country_select plugin' unless builder.respond_to?(:country_select)
 
         input_wrapping do
           label_html <<

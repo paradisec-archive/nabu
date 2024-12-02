@@ -54,7 +54,8 @@
 #     * **`unikey`**
 # * `index_users_on_unlock_token` (_unique_):
 #     * **`unlock_token`**
-#
+
+# rubocop:disable Metrics/BlockLength
 ActiveAdmin.register User do
   # show scoped buttons on index page
   scope :users

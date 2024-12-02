@@ -13,8 +13,8 @@
 # **`updated_at`**        | `datetime`         | `not null`
 #
 ActiveAdmin.register University do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
 
   permit_params :name, :party_identifier
 
@@ -29,8 +29,8 @@ ActiveAdmin.register University do
   controller do
     def check_dependent(object)
       if object.items.count > 0 || object.collections.count > 0
-        flash[:error] = "ERROR: University used in items or collections - cannot be removed."
-        return false
+        flash[:error] = 'ERROR: University used in items or collections - cannot be removed.'
+        false
       end
     end
   end

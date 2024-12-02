@@ -23,7 +23,7 @@ class ItemAdmin < ApplicationRecord
   belongs_to :user
   belongs_to :item
 
-  validates :user_id, :presence => true
-# RAILS bug - can't save item_admin without item having been saved
-#  validates :item_id, :presence => true
+  validates :user_id, presence: true
+  # RAILS bug - can't save item_admin without item having been saved
+  #  validates :item_id, :presence => true
 end

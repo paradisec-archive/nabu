@@ -1,5 +1,4 @@
 class Types::CollectionType < Types::BaseObject
-
   field :id, ID, null: false
   field :identifier, String, null: false
   field :title, String, null: false

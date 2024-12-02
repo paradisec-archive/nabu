@@ -24,7 +24,7 @@ class CollectionLanguage < ApplicationRecord
   belongs_to :collection
 
   validates :language_id, presence: true
-  #validates :collection_id, presence: true
+  # validates :collection_id, presence: true
 
   def self.ransackable_attributes(_ = nil)
     %w[collection_id id language_id]

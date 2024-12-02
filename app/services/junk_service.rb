@@ -8,6 +8,7 @@ class JunkService
   def initialize(env, verbose: false)
   end
 
+  # rubocop:disable Metrics/MethodLength,Metrics/BlockLength
   def run
     filenames = Essence.pluck(:id, :filename)
     filenames_hash = {}
@@ -169,4 +170,5 @@ class JunkService
       puts "Item: #{item_name}, Extensions: #{data[:extensions].join(', ')}, Errors: #{data[:errors].join(', ')}"
     end
   end
+  # rubocop:enable Metrics/MethodLength,Metrics/BlockLength
 end

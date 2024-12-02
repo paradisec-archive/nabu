@@ -1,8 +1,7 @@
 class AddGrantsToCollections < ActiveRecord::Migration[4.2]
   def change
-
     create_table :funding_bodies do |t|
-      t.string :name, :null => false
+      t.string :name, null: false
       t.string :key_prefix
       t.timestamps
     end
@@ -12,5 +11,4 @@ class AddGrantsToCollections < ActiveRecord::Migration[4.2]
       t.belongs_to :funding_body
     end
   end
-
 end

@@ -5,6 +5,6 @@ class AddStatusToComment < ActiveRecord::Migration[4.2]
     end
 
     Comment.reset_column_information
-    Comment.update_all :status => 'approved'
+    Comment.update_all status: 'approved'
   end
 end

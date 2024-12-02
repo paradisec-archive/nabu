@@ -7,6 +7,5 @@ class AddPartyIdentifiers < ActiveRecord::Migration[4.2]
     change_table :universities do |t|
       t.string :party_identifier
     end
-
   end
 end

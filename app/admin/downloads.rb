@@ -20,7 +20,7 @@
 #     * **`user_id`**
 #
 ActiveAdmin.register Download do
-  sidebar :paginate, :only => :index  do
+  sidebar :paginate, only: :index  do
     ['10', '50', "all #{Download.count}"].each do |n|
       para link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
     end
@@ -29,15 +29,15 @@ ActiveAdmin.register Download do
   permit_params :user, :essence
 
   # change pagination
-  before_action :only => :index do
+  before_action only: :index do
     @per_page = params[:per_page] || 30
   end
 
   # index page search sidebar
-  filter :user_first_name, :as => :string
-  filter :user_last_name, :as => :string
-  filter :essence_item_identifier, :as => :string, :label => 'Item Identifier'
-  filter :essence_item_collection_identifier, :as => :string, :label => 'Collection Identifier'
+  filter :user_first_name, as: :string
+  filter :user_last_name, as: :string
+  filter :essence_item_identifier, as: :string, label: 'Item Identifier'
+  filter :essence_item_collection_identifier, as: :string, label: 'Collection Identifier'
   filter :created_at
 
   # index page
@@ -46,7 +46,8 @@ ActiveAdmin.register Download do
     column :user
     column :essence do |download|
       if download&.essence
-        link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+        link_to download.essence.full_identifier,
+Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
       else
         "Essence #{download.essence_id}, now removed"
       end
@@ -72,7 +73,8 @@ ActiveAdmin.register Download do
       row :user
       row :essence do
         if download&.essence
-          link_to download.essence.filename, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+          link_to download.essence.filename,
+Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
         else
           "Essence #{download.essence_id}, now removed"
         end

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :country do
-    sequence(:code) {|n| "Code #{n}"}
-    sequence(:name) {|n| "Country #{n}"}
+    sequence(:code) { |n| "Code #{n}" }
+    sequence(:name) { |n| "Country #{n}" }
   end
 end

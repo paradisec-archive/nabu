@@ -30,7 +30,7 @@ module Nabu
       if first_name.blank?
         first_name, last_name = name.split(/ /, 2)
       end
-      user = User.first(:conditions => ["first_name = ? AND last_name = ?", first_name, last_name])
+      user = User.first(conditions: ['first_name = ? AND last_name = ?', first_name, last_name])
       if !user && create
         random_string = SecureRandom.base64(16)
         user = User.new()
@@ -49,17 +49,18 @@ module Nabu
       user
     end
 
+    # rubocop:disable Metrics/MethodLength
     def parse_fields(doc, current_user)
       # get collection information =======
       project_info = doc.xpath('//project_info').first
       if !project_info
-        @errors << "ERROR: Not an ExSite9 file."
+        @errors << 'ERROR: Not an ExSite9 file.'
         return
       end
 
       # is it a collection?
       collectionType = project_info['collectionType']
-      if collectionType != "Collection"
+      if collectionType != 'Collection'
         @errors << "ERROR: ExSite9 file does not contains collection information (collectionType = #{collectionType})."
         return
       end
@@ -180,7 +181,7 @@ module Nabu
         end
       end
 
-      #FIXME: add check for multiple funding bodies, and loop over them
+      # FIXME: add check for multiple funding bodies, and loop over them
 
       # fundingBody
       if project_info.xpath('fundingBody').first
@@ -189,7 +190,7 @@ module Nabu
         if funding_body.nil?
           if !coll_body.blank?
             funding_body = FundingBody.create!({
-                :name => coll_body
+                name: coll_body
             })
             @notices << "CHECK: fundingBody '#{funding_body}' created"
           end
@@ -207,9 +208,9 @@ module Nabu
       if project_info.xpath('datesOfCapture').first
         datesOfCapture = project_info.xpath('datesOfCapture').first.content
         if datesOfCapture.empty?
-          @collection.comments = ""
+          @collection.comments = ''
         else
-          @collection.comments = "Capture date: " + datesOfCapture + "; "
+          @collection.comments = 'Capture date: ' + datesOfCapture + '; '
         end
       end
 
@@ -228,7 +229,7 @@ module Nabu
         item.identifier = group['name']
         item.title = group.xpath('Title').first.content if group.xpath('Title').first
         item.description = group.xpath('Description').first.content if group.xpath('Description').first
-        if group.xpath('Private').first && group.xpath('Private').first.content == "True"
+        if group.xpath('Private').first && group.xpath('Private').first.content == 'True'
           item.private = group.xpath('Private').first.content == true
         else
           item.private = false
@@ -262,7 +263,7 @@ module Nabu
             @notices << "Note: Agent #{agent.content} (#{agent['Role']}) ignored" unless agent.content.blank?
             next
           end
-          if item.item_agents.select{|ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id}.size == 0
+          if item.item_agents.select { |ia| ia.user_id == item_agent.user_id && ia.agent_role_id == item_agent.agent_role_id }.size == 0
             item.item_agents << item_agent
           else
             @notices << "Note: Duplicate item agent #{agent} ignored"
@@ -273,17 +274,17 @@ module Nabu
         if group.xpath('Discourse_Type').first
           discourseType = group.xpath('Discourse_Type').first.content.downcase.strip
           discourseType = case discourseType
-            when "dialogue"
-              "interactive_discourse"
-            when "formulaic"
-              "formulaic_discourse"
-            when "ludic"
-              "language_play"
-            when "procedural"
-              "procedural_discourse"
-            when "unintelligible"
-              "unintelligible_speech"
-            else discourseType
+          when 'dialogue'
+              'interactive_discourse'
+          when 'formulaic'
+              'formulaic_discourse'
+          when 'ludic'
+              'language_play'
+          when 'procedural'
+              'procedural_discourse'
+          when 'unintelligible'
+              'unintelligible_speech'
+          else discourseType
           end
           discourse_type = DiscourseType.find_by_name(discourseType)
           if discourse_type.nil?
@@ -325,8 +326,8 @@ module Nabu
             item.content_languages << language
           end
         end
-
       end
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

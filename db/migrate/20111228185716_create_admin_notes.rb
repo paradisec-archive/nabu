@@ -1,8 +1,8 @@
 class CreateAdminNotes < ActiveRecord::Migration[4.2]
   def self.up
     create_table :admin_notes do |t|
-      t.references :resource, :polymorphic => true, :null => false
-      t.references :admin_user, :polymorphic => true
+      t.references :resource, polymorphic: true, null: false
+      t.references :admin_user, polymorphic: true
       t.text :body
       t.timestamps
     end

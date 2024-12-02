@@ -1,5 +1,4 @@
 class Types::PersonType < Types::BaseObject
-
   field :id, ID, null: false
   field :first_name, String, null: true, camelize: false
   field :last_name, String, null: true, camelize: false

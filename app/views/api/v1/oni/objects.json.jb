@@ -12,7 +12,7 @@
       conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
       recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
       extra: {
-        language: (is_item ? object.content_languages : object.languages).map(&:name),
+        language: (is_item ? object.content_languages : object.languages).map(&:name)
       }
     }
 

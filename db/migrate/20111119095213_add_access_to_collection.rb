@@ -14,11 +14,11 @@ class AddAccessToCollection < ActiveRecord::Migration[4.2]
     end
 
     create_table :collection_admins do |t|
-      t.belongs_to :collection, :null => false
-      t.belongs_to :user, :null => false
+      t.belongs_to :collection, null: false
+      t.belongs_to :user, null: false
     end
     add_index :collection_admins, :collection_id
     add_index :collection_admins, :user_id
-    add_index :collection_admins, [:collection_id, :user_id], :unique => true
+    add_index :collection_admins, [:collection_id, :user_id], unique: true
   end
 end

@@ -9,6 +9,6 @@ class CreateLanguages < ActiveRecord::Migration[4.2]
       t.belongs_to :collection
       t.belongs_to :language
     end
-    add_index :collection_languages, [:collection_id, :language_id], :unique => :true #, :name => 'collection_fields_of_research_idx'
+    add_index :collection_languages, [:collection_id, :language_id], unique: :true # , :name => 'collection_fields_of_research_idx'
   end
 end

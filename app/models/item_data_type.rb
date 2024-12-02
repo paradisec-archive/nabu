@@ -24,6 +24,6 @@ class ItemDataType < ApplicationRecord
   belongs_to :data_type
   belongs_to :item
 
-  validates :data_type_id, :presence => true
-  #validates :item_id, :presence => true
+  validates :data_type_id, presence: true
+  # validates :item_id, :presence => true
 end

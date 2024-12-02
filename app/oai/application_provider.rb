@@ -8,7 +8,6 @@ end
 
 module OAI::Provider::Metadata
   class Rif < Format
-
     def initialize
       @prefix = 'rif'
       @schema = 'http://services.ands.org.au/documentation/rifcs/schema/registryObjects.xsd'
@@ -19,20 +18,18 @@ module OAI::Provider::Metadata
       {
         'xmlns'              => 'http://ands.org.au/standards/rif-cs/registryObjects',
         'xmlns:xsi'          => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation' => %{
+        'xsi:schemaLocation' => %(
             http://ands.org.au/standards/rif-cs/registryObjects
             http://services.ands.org.au/documentation/rifcs/schema/registryObjects.xsd
-        }
+        )
       }
     end
-
   end
 end
 OAI::Provider::Base.register_format(OAI::Provider::Metadata::Rif.instance)
 
 module OAI::Provider::Metadata
   class Olac < Format
-
     def initialize
       @prefix = 'olac'
       @schema = 'http://www.language-archives.org/OLAC/1.1/olac.xsd'
@@ -61,7 +58,6 @@ module OAI::Provider::Metadata
         'xsi:schemaLocation' => locations.join(' ')
       }
     end
-
   end
 end
 OAI::Provider::Base.register_format(OAI::Provider::Metadata::Olac.instance)

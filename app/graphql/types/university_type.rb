@@ -1,5 +1,4 @@
 class Types::UniversityType < Types::BaseObject
-
   field :id, ID, null: false
   field :name, String, null: false
   field :party_identifier, String, null: true, camelize: false

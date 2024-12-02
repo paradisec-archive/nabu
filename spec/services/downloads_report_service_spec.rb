@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe DownloadsReportService do
-  let!(:user) {create(:user)}
-  let!(:downloader) {create(:user, country: 'Australia')}
+  let!(:user) { create(:user) }
+  let!(:downloader) { create(:user, country: 'Australia') }
 
-  let!(:collection) {create(:collection)}
-  let!(:item) {create(:item, collection: collection, access_condition: AccessCondition.new({name: 'Open (subject to agreeing to PDSC access conditions)'}), collector_id: user.id )}
-  let!(:essence) {create(:sound_essence, item: item)}
+  let!(:collection) { create(:collection) }
+  let!(:item) {
+create(:item, collection: collection, access_condition: AccessCondition.new({ name: 'Open (subject to agreeing to PDSC access conditions)' }),
+collector_id: user.id) }
+  let!(:essence) { create(:sound_essence, item: item) }
 
   let!(:download) { create(:download, essence: essence, user_id: downloader.id) }
   let!(:downloads_report_service_valid_date) { DownloadsReportService.new('21 Jan 2015', '', user) }

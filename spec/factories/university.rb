@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :university do
-    sequence(:name) {|n| "University of Awesome #{n}"}
+    sequence(:name) { |n| "University of Awesome #{n}" }
   end
 end

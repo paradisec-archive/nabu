@@ -6,7 +6,7 @@ class CreateEssences < ActiveRecord::Migration[4.2]
       t.string     :mimetype
       t.integer    :bitrate
       t.integer    :samplerate
-      t.integer    :size, :limit => 8
+      t.integer    :size, limit: 8
       t.float      :duration
       t.integer    :channels
       t.integer    :fps

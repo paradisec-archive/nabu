@@ -5,8 +5,9 @@ class CollectionProvider < ApplicationProvider
   sample_id '13900'
 
   source_model OAI::Provider::ActiveRecordWrapper.new(
-    ::Collection.where(:private => false).includes(:access_condition, :collector, :university, :languages, :field_of_research, :countries, :items, grants: [:funding_body]),
-    :limit => 100
+    ::Collection.where(private: false).includes(:access_condition, :collector, :university, :languages, :field_of_research, :countries, :items,
+grants: [:funding_body]),
+    limit: 100
   )
 
   class << self

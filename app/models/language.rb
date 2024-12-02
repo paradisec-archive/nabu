@@ -40,7 +40,7 @@ class Language < ApplicationRecord
   has_many :countries_languages
   has_many :countries, through: :countries_languages, dependent: :destroy
   accepts_nested_attributes_for :countries_languages, allow_destroy: true
-  #validates :countries, length: { :minimum => 1 }
+  # validates :countries, length: { :minimum => 1 }
 
   has_many :item_content_languages
   has_many :items_for_content, through: :item_content_languages, source: :item, dependent: :restrict_with_exception
@@ -56,6 +56,7 @@ class Language < ApplicationRecord
   end
 
   def self.ransackable_associations(_ = nil)
-    %w[collection_languages collections countries countries_languages item_content_languages item_subject_languages items_for_content items_for_subject versions]
+    %w[collection_languages collections countries countries_languages item_content_languages item_subject_languages items_for_content items_for_subject
+versions]
   end
 end

@@ -5,7 +5,7 @@ class AddFieldsToUser < ActiveRecord::Migration[4.2]
       t.string :address2
       t.string :country
       t.string :phone
-      t.boolean :operator, :default => false
+      t.boolean :operator, default: false
     end
   end
 end

@@ -26,10 +26,10 @@ class ItemAgent < ApplicationRecord
   belongs_to :agent_role
   belongs_to :item
 
-  validates :user, :presence => true
-  validates :agent_role_id, :presence => true
-  validates_uniqueness_of :item_id, :scope => [:agent_role_id, :user_id]
+  validates :user, presence: true
+  validates :agent_role_id, presence: true
+  validates_uniqueness_of :item_id, scope: [:agent_role_id, :user_id]
 
-  delegate :name, :to => :user, :prefix => true, :allow_nil => true
-  delegate :name, :to => :agent_role, :prefix => :role, :allow_nil => true
+  delegate :name, to: :user, prefix: true, allow_nil: true
+  delegate :name, to: :agent_role, prefix: :role, allow_nil: true
 end

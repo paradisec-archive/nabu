@@ -6,7 +6,7 @@ class ChangeFundingBodyToMultiple < ActiveRecord::Migration[4.2]
 
     Collection.all.each do | coll |
       unless coll.old_funding_body.nil?
-        coll.grants << Grant.new({collection_id: coll.id, funding_body_id: coll.old_funding_body.id, grant_identifier: coll.grant_identifier})
+        coll.grants << Grant.new({ collection_id: coll.id, funding_body_id: coll.old_funding_body.id, grant_identifier: coll.grant_identifier })
         coll.save
       end
     end

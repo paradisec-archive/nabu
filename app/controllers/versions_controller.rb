@@ -8,6 +8,6 @@ class VersionsController < ApplicationController
     else
       location = model
     end
-    redirect_to location, :notice => "Undid #{@version.event}"
+    redirect_to location, notice: "Undid #{@version.event}"
   end
 end

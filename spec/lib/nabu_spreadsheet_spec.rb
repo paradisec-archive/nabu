@@ -255,7 +255,7 @@ describe Nabu::NabuSpreadsheet do
       nabu_spreadsheet.parse
       item = nabu_spreadsheet.items.first
       country_codes = item.countries.map(&:code)
-      expect(country_codes).to eq(%w(AD AF))
+      expect(country_codes).to eq(%w[AD AF])
     end
 
     it 'can handle origination date' do

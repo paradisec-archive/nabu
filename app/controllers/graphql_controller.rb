@@ -5,7 +5,7 @@ class GraphqlController < ApplicationController
   # protect_from_forgery with: :null_session
 
   # avoid getting 401'd for not having a CSRF token
-  skip_before_action :verify_authenticity_token, :only => [:execute]
+  skip_before_action :verify_authenticity_token, only: [:execute]
 
   before_action :check_auth, except: [:schema]
 

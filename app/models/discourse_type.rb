@@ -18,9 +18,9 @@
 class DiscourseType < ApplicationRecord
   has_paper_trail
 
-  validates :name, :presence => true
+  validates :name, presence: true
 
   scope :alpha, -> { order(:name) }
 
-  has_many :items, :dependent => :restrict_with_exception
+  has_many :items, dependent: :restrict_with_exception
 end

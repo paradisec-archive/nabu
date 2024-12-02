@@ -1,19 +1,19 @@
 require 'rails_helper'
 
 describe EssencesController, type: :controller do
-  let(:user) {create(:user)}
-  let(:manager) {create(:user, admin: true)}
+  let(:user) { create(:user) }
+  let(:manager) { create(:user, admin: true) }
 
-  let(:collection) {create(:collection)}
-  let(:access_condition) { AccessCondition.new({name: 'Open (subject to agreeing to PDSC access conditions)'}) }
-  let(:item) {create(:item, collection: collection, access_condition: access_condition)}
-  let(:essence) {create(:sound_essence, item: item)}
+  let(:collection) { create(:collection) }
+  let(:access_condition) { AccessCondition.new({ name: 'Open (subject to agreeing to PDSC access conditions)' }) }
+  let(:item) { create(:item, collection: collection, access_condition: access_condition) }
+  let(:essence) { create(:sound_essence, item: item) }
 
-  let(:params) { {collection_id: collection.identifier, item_id: item.identifier, id: essence.id} }
+  let(:params) { { collection_id: collection.identifier, item_id: item.identifier, id: essence.id } }
 
   before(:each) do
     # allow test user to access everything
-    item.item_users << ItemUser.new({item: item, user: user})
+    item.item_users << ItemUser.new({ item: item, user: user })
   end
 
   context 'when not logged in' do
@@ -72,7 +72,7 @@ describe EssencesController, type: :controller do
         it 'should redirect to show item page with error' do
           get :show, params: params
           expect(session).to_not have_key("terms_#{collection.id}")
-          expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
+          expect(response).to redirect_to(params.reject { |x, y| x == :item_id }.merge(id: item.identifier, controller: :items, action: :show))
           expect(flash[:error]).to eq 'Item does not have data access conditions set'
         end
       end
@@ -80,7 +80,7 @@ describe EssencesController, type: :controller do
 
     context 'when shown terms' do
       before do
-        #clear session
+        # clear session
         session.delete("terms_#{collection.id}")
       end
       context 'when agreeing to terms' do
@@ -97,7 +97,7 @@ describe EssencesController, type: :controller do
         it 'should redirect to show item page with error' do
           get :agree_to_terms, params: params
           expect(session).to_not have_key("terms_#{collection.id}")
-          expect(response).to redirect_to(params.reject{|x,y| x == :item_id}.merge(id: item.identifier, controller: :items, action: :show))
+          expect(response).to redirect_to(params.reject { |x, y| x == :item_id }.merge(id: item.identifier, controller: :items, action: :show))
           expect(flash[:error]).to_not be_nil
         end
       end

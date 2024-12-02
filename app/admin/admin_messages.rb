@@ -14,8 +14,8 @@
 # **`updated_at`**  | `datetime`         | `not null`
 #
 ActiveAdmin.register AdminMessage do
-  menu :parent => "Other Entities"
-  config.sort_order = "message_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'message_asc'
   actions :all
 
   permit_params :finish_at, :message, :start_at

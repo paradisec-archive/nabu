@@ -23,6 +23,6 @@ class CollectionCountry < ApplicationRecord
   belongs_to :country
   belongs_to :collection
 
-  validates :country_id, :presence => true
-  #validates :collection_id, :presence => true
+  validates :country_id, presence: true
+  # validates :collection_id, :presence => true
 end

@@ -29,6 +29,7 @@ Style/FrozenStringLiteralComment:
 
 Metrics/BlockLength:
   CountAsOne: ['array', 'heredoc', 'method_call']
+  Max: 100
 
 Metrics/AbcSize:
   Enabled: false
@@ -37,7 +38,7 @@ Metrics/CyclomaticComplexity:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 100
 
 Rails/I18nLocaleTexts:
   Enabled: false

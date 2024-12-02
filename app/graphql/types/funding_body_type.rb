@@ -1,5 +1,4 @@
 class Types::FundingBodyType < Types::BaseObject
-
   field :id, ID, null: false
   field :name, String, null: false
   field :key_prefix, String, null: true, camelize: false

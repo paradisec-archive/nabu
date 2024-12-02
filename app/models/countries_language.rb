@@ -24,7 +24,7 @@ class CountriesLanguage < ApplicationRecord
   belongs_to :language
 
   validates :country_id, presence: true
-  #validates :language_id, presence: true
+  # validates :language_id, presence: true
 
   def self.ransackable_attributes(_ = nil)
     %w[country_id id language_id]

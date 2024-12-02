@@ -13,8 +13,8 @@
 # **`updated_at`**  | `datetime`         | `not null`
 #
 ActiveAdmin.register FundingBody do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
 
   permit_params :key_prefix, :name
 
@@ -29,8 +29,8 @@ ActiveAdmin.register FundingBody do
   controller do
     def check_dependent(object)
       if object.collections.count > 0
-        flash[:error] = "ERROR: Funding body used in collections and cannot be removed."
-        return false
+        flash[:error] = 'ERROR: Funding body used in collections and cannot be removed.'
+        false
       end
     end
   end

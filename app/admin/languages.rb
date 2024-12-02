@@ -21,9 +21,9 @@
 #     * **`code`**
 #
 ActiveAdmin.register Language do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
-  actions :all, :except => [:destroy]
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
+  actions :all, except: [:destroy]
 
   permit_params :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, countries_languages_attributes: %i[_destroy country_id]
 
@@ -50,20 +50,20 @@ ActiveAdmin.register Language do
     end
 
     table_for language.countries do
-      column "Countries" do |countries_languages|
+      column 'Countries' do |countries_languages|
         countries_languages.name
       end
     end
 
-    div :class => 'map',
-      :'data-north_limit' => language.north_limit,
-      :'data-east_limit'  => language.east_limit,
-      :'data-south_limit' => language.south_limit,
-      :'data-west_limit'  => language.west_limit
+    div class: 'map',
+      'data-north_limit': language.north_limit,
+      'data-east_limit': language.east_limit,
+      'data-south_limit': language.south_limit,
+      'data-west_limit': language.west_limit
   end
 
   form do |f|
-    f.inputs "Language Details" do # physician's fields
+    f.inputs 'Language Details' do # physician's fields
       f.input :code
       f.input :name
       f.input :retired
@@ -75,7 +75,7 @@ ActiveAdmin.register Language do
 
     f.has_many :countries_languages do |country|
       if !country.object.nil?
-        country.input :_destroy, :as => :boolean, :label => "Destroy?"
+        country.input :_destroy, as: :boolean, label: 'Destroy?'
       end
       country.input :country
     end

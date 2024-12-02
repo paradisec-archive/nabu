@@ -1,10 +1,9 @@
-ActiveAdmin.register_page "Activity Log" do
+ActiveAdmin.register_page 'Activity Log' do
   content do
-    div :class => 'dashboard_section panel' do
+    div class: 'dashboard_section panel' do
       h3 'Collection Activity'
-      div :class => 'panel_contents' do
-        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, PaperTrail::Version.where(:item_type => 'Collection').order('created_at desc').limit(10) do
-
+      div class: 'panel_contents' do
+        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, PaperTrail::Version.where(item_type: 'Collection').order('created_at desc').limit(10) do
           column 'Timestamp', :created_at
 
           column :collection_id do |v|
@@ -17,7 +16,7 @@ ActiveAdmin.register_page "Activity Log" do
           end
 
           column :changed_by do |v|
-            u = User.where(:id => v.whodunnit).first
+            u = User.where(id: v.whodunnit).first
             u.nil? ? 'NA' : u.name
           end
 
@@ -36,14 +35,12 @@ ActiveAdmin.register_page "Activity Log" do
             end
           end
         end
-
       end
     end
-    div :class => 'dashboard_section panel' do
+    div class: 'dashboard_section panel' do
       h3 'Item Activity'
-      div :class => 'panel_contents' do
-        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, PaperTrail::Version.where(:item_type => 'Item').order('created_at desc').limit(10) do
-
+      div class: 'panel_contents' do
+        insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, PaperTrail::Version.where(item_type: 'Item').order('created_at desc').limit(10) do
           column 'Timestamp', :created_at
 
           column :identifier do |v|
@@ -56,7 +53,7 @@ ActiveAdmin.register_page "Activity Log" do
           end
 
           column :changed_by do |v|
-            u = User.where(:id => v.whodunnit).first
+            u = User.where(id: v.whodunnit).first
             u.nil? ? 'NA' : u.name
           end
 

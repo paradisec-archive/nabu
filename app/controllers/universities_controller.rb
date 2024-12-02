@@ -5,7 +5,7 @@ class UniversitiesController < ApplicationController
 
   def create
     @university = University.create params[:university]
-    respond_with(@university, :location => '/')
+    respond_with(@university, location: '/')
   end
 
   def university_params

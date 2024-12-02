@@ -23,6 +23,6 @@ class ItemDataCategory < ApplicationRecord
   belongs_to :data_category
   belongs_to :item
 
-  validates :data_category_id, :presence => true
-  #validates :item_id, :presence => true
+  validates :data_category_id, presence: true
+  # validates :item_id, :presence => true
 end

@@ -15,9 +15,9 @@ class PageController < ApplicationController
     collections = Collection.where('collector_id = :user_id OR operator_id = :user_id', user_id: current_user.id)
     collections = if params[:sort]
                     collections.order("#{params[:sort]} #{params[:direction]}")
-                  else
+    else
                     collections.order('created_at desc')
-                  end
+    end
     @num_collections = collections.count
     @collections = collections.page(params[:collections_page]).per(params[:collections_per_page])
 

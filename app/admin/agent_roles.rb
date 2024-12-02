@@ -10,8 +10,8 @@
 # **`name`**  | `string(255)`      | `not null`
 #
 ActiveAdmin.register AgentRole do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
 
   before_destroy :check_dependent
 
@@ -23,8 +23,8 @@ ActiveAdmin.register AgentRole do
   controller do
     def check_dependent(object)
       if object.item_agents.count > 0
-        flash[:error] = "ERROR: Role used in items - cannot be removed."
-        return false
+        flash[:error] = 'ERROR: Role used in items - cannot be removed.'
+        false
       end
     end
   end

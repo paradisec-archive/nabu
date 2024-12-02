@@ -10,8 +10,8 @@
 # **`name`**  | `string(255)`      | `not null`
 #
 ActiveAdmin.register DataType do
-  menu :parent => "Other Entities"
-  config.sort_order = "name_asc"
+  menu parent: 'Other Entities'
+  config.sort_order = 'name_asc'
   actions :all
 
   permit_params :name
