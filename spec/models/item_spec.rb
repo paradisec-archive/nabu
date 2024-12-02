@@ -51,6 +51,10 @@
 #     * **`access_condition_id`**
 # * `index_items_on_collection_id`:
 #     * **`collection_id`**
+# * `index_items_on_collection_id_and_private_and_updated_at`:
+#     * **`collection_id`**
+#     * **`private`**
+#     * **`updated_at`**
 # * `index_items_on_collector_id`:
 #     * **`collector_id`**
 # * `index_items_on_discourse_type_id`:

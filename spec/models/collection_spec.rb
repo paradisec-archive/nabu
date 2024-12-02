@@ -46,6 +46,8 @@
 #     * **`identifier`**
 # * `index_collections_on_operator_id`:
 #     * **`operator_id`**
+# * `index_collections_on_private`:
+#     * **`private`**
 # * `index_collections_on_university_id`:
 #     * **`university_id`**
 #

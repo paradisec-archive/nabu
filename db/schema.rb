@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_19_010838) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_02_233312) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -95,6 +95,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_19_010838) do
     t.index ["field_of_research_id"], name: "index_collections_on_field_of_research_id"
     t.index ["identifier"], name: "index_collections_on_identifier", unique: true
     t.index ["operator_id"], name: "index_collections_on_operator_id"
+    t.index ["private"], name: "index_collections_on_private"
     t.index ["university_id"], name: "index_collections_on_university_id"
   end
 
@@ -289,6 +290,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_19_010838) do
     t.string "doi"
     t.integer "essences_count"
     t.index ["access_condition_id"], name: "index_items_on_access_condition_id"
+    t.index ["collection_id", "private", "updated_at"], name: "index_items_on_collection_id_and_private_and_updated_at"
     t.index ["collection_id"], name: "index_items_on_collection_id"
     t.index ["collector_id"], name: "index_items_on_collector_id"
     t.index ["discourse_type_id"], name: "index_items_on_discourse_type_id"
