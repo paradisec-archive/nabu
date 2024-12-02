@@ -260,7 +260,7 @@ class Item < ApplicationRecord
   def self.search_includes
     includes = %i[
       collection collector countries collector operator essences university content_languages
-      data_categories data_types discourse_type access_condition subject_languages
+      data_categories data_types discourse_type access_condition subject_languages item_admins
     ]
     includes << { item_agents: %i[user agent_role] }
 
