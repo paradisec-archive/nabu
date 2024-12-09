@@ -231,7 +231,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.1)
       railties
-    graphql (2.4.3)
+    graphql (2.4.7)
       base64
       fiber-storage
     groupdate (6.5.1)
