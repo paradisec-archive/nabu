@@ -1,0 +1,45 @@
+{
+  total: @total,
+
+  entities: @entities.map do |entity|
+    class_name = entity.class.name
+    is_item = class_name == 'Item'
+
+    response = {
+      id: is_item ? repository_item_url(entity.collection, entity) : repository_collection_url(entity),
+      name: entity.title,
+      description: entity.description.truncate(256),
+      conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
+      recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
+      extra: {
+        language: (is_item ? entity.content_languages : entity.languages).map(&:name)
+      }
+    }
+
+    if is_item
+      response[:memberOf] = repository_collection_url(entity.collection)
+      response[:root] = repository_collection_url(entity.collection)
+    end
+
+    extra = response[:extra]
+
+    extra[:objectCount] = entity.items_count if entity.has_attribute?(:items_count)
+    extra[:fileCount] = entity.essences_count if entity.has_attribute?(:essences_count)
+
+    if entity.private?
+      extra[:accessControl] = 'AccessControlList'
+    elsif entity.access_condition.nil?
+      extra[:accessControl] = 'AuthorizationByInvitation'
+    elsif entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
+      extra[:accessControl] = 'AgreeToTerms'
+    else
+      extra[:accessControl] = 'Public'
+    end
+
+    # TODO:: add communicationMode
+
+    extra[:mediaType] = @mime_types
+
+    response
+  end
+}

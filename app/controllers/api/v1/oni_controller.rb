@@ -1,7 +1,7 @@
 module Api
   module V1
     class OniController < ApplicationController
-      def objects
+      def entities
         query = Oni::ObjectsValidator.new(params)
 
         render json: { errors: query.errors.full_messages }, status: :unprocessable_entity unless query.valid?
@@ -82,7 +82,7 @@ module Api
                      .group('items.id')
                      .includes(:collection, :access_condition, :content_languages)
 
-        @objects = ids.map do |id|
+        @entities = ids.map do |id|
           if id['type'] == 'collection'
             collections.find { |c| c.id == id['id'] }
           else
@@ -91,7 +91,7 @@ module Api
         end
       end
 
-      def object_meta
+      def entity
         unless params[:id]
           render json: { error: 'id is required' }, status: :bad_request
 
@@ -116,6 +116,34 @@ module Api
         end
 
         raise ActiveRecord::RecordNotFound
+      end
+
+      def file
+        unless params[:id]
+          render json: { error: 'id is required' }, status: :bad_request
+
+          return
+        end
+
+        unless params[:path]
+          render json: { error: 'path is required' }, status: :bad_request
+
+          return
+        end
+
+        as_attachment = params[:disposition] == 'attachment'
+        filename = params[:filename]
+
+        raise ActiveRecord::RecordNotFound unless check_for_item
+
+        essence = @data.essences.find_by(filename: params[:path])
+
+        raise ActiveRecord::RecordNotFound unless essence
+
+        location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
+        raise ActionController::RoutingError, 'Essence file not found' unless location
+
+        redirect_to location, allow_other_host: true
       end
 
       private

@@ -73,11 +73,11 @@ module Nabu
       download(parts.join('/'))
     end
 
-    def essence_url(essence, as_attachment: false)
+    def essence_url(essence, as_attachment: false, filename:)
       Rails.logger.debug { "Nabu::Catalog: Get essence URL #{essence.item.full_identifier}:#{essence.filename}" }
       parts = [essence.item.collection.identifier, essence.item.identifier, essence.filename]
 
-      download(parts.join('/'), as_attachment:)
+      download(parts.join('/'), as_attachment:, filename:)
     end
 
     def deposit_form_url(collection, as_attachment: false)
@@ -103,12 +103,18 @@ module Nabu
       )
     end
 
-    def download(key, as_attachment: false)
+    def download(key, as_attachment: false, filename:)
+      disposition = nil
+      if as_attachment
+        disposition = 'attachment'
+        disposition += "; filename=\"#{filename}\"" if filename
+      end
+
       @presigner.presigned_url(
         :get_object,
         bucket: bucket_name,
         key:,
-        response_content_disposition: as_attachment ? 'attachment' : nil
+        response_content_disposition: disposition
       )
     end
 

@@ -18,7 +18,7 @@ module Oni
     validates :offset, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
     def initialize(params)
-      object_params = params.permit(*ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }).except(:format)
+      object_params = params.permit(*ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym })
       object_params.each do |key, value|
         snake_key = key.to_s.underscore
 
