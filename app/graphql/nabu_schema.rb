@@ -2,6 +2,8 @@ class NabuSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
 
+  max_complexity 300
+
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
 
