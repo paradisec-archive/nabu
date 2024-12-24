@@ -44,6 +44,9 @@ module Nabu
     # We don't want to unnecessarily log all the poll requests
     config.solid_queue.silence_polling = true
 
+    # We already have auth
+    config.mission_control.jobs.http_basic_auth_enabled = false
+
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/services')
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/validators')
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('lib')
