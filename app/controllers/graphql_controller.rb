@@ -16,7 +16,7 @@ class GraphqlController < ApplicationController
     context = {
       current_user:
     }
-    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 200)
+    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 300)
     render json: result
   rescue StandardError => error
     raise error unless Rails.env.development?
