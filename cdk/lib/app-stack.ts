@@ -234,37 +234,37 @@ export class AppStack extends cdk.Stack {
     // Oni
     // ////////////////////////
 
-    if (!process.env.ONI_API_CLIENTID || !process.env.ONI_API_CLIENTSECRET) {
-      throw new Error('Missing ONI_API_CLIENTID or ONI_API_CLIENTSECRET');
-    }
-
-    const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
-    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
-    oniTaskDefinition.addContainer('OniContainer', {
-      memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('..', {
-        file: 'docker/oni.Dockerfile',
-        buildArgs: {
-          ONI_API_CLIENTID: process.env.ONI_API_CLIENTID,
-          ONI_API_CLIENTSECRET: process.env.ONI_API_CLIENTSECRET,
-        },
-      }),
-      portMappings: [{ name: 'oni', containerPort: 80 }],
-      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
-      environment: {
-        AWS_REGION: region,
-        BUCKET_NAME: catalogBucket.bucketName,
-      },
-    });
-
-    const oniService = new ecs.Ec2Service(this, 'OniService', {
-      serviceName: 'oni',
-      cluster,
-      taskDefinition: oniTaskDefinition,
-      enableExecuteCommand: true,
-    });
+    // if (!process.env.ONI_API_CLIENTID || !process.env.ONI_API_CLIENTSECRET) {
+    //   throw new Error('Missing ONI_API_CLIENTID or ONI_API_CLIENTSECRET');
+    // }
+    //
+    // const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
+    // NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
+    //   { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
+    // ]);
+    // oniTaskDefinition.addContainer('OniContainer', {
+    //   memoryLimitMiB: 128,
+    //   image: ecs.ContainerImage.fromAsset('..', {
+    //     file: 'docker/oni.Dockerfile',
+    //     buildArgs: {
+    //       ONI_API_CLIENTID: process.env.ONI_API_CLIENTID,
+    //       ONI_API_CLIENTSECRET: process.env.ONI_API_CLIENTSECRET,
+    //     },
+    //   }),
+    //   portMappings: [{ name: 'oni', containerPort: 80 }],
+    //   logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
+    //   environment: {
+    //     AWS_REGION: region,
+    //     BUCKET_NAME: catalogBucket.bucketName,
+    //   },
+    // });
+    //
+    // const oniService = new ecs.Ec2Service(this, 'OniService', {
+    //   serviceName: 'oni',
+    //   cluster,
+    //   taskDefinition: oniTaskDefinition,
+    //   enableExecuteCommand: true,
+    // });
 
     // //////////////////////
     // Secrets
@@ -474,20 +474,20 @@ export class AppStack extends cdk.Stack {
       ],
     });
 
-    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
-      targets: [oniService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-    });
+    // const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
+    //   targets: [oniService],
+    //   vpc,
+    //   protocol: elbv2.ApplicationProtocol.HTTP,
+    // });
 
-    sslListener.addTargetGroups('OniTargetGroups', {
-      targetGroups: [oniTargetGroup],
-      priority: 6,
-      conditions: [
-        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/oni/*']),
-      ],
-    });
+    // sslListener.addTargetGroups('OniTargetGroups', {
+    //   targetGroups: [oniTargetGroup],
+    //   priority: 6,
+    //   conditions: [
+    //     elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+    //     elbv2.ListenerCondition.pathPatterns(['/oni/*']),
+    //   ],
+    // });
 
     // ////////////////////////
     // DNS
