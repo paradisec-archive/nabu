@@ -421,7 +421,6 @@ export class AppStack extends cdk.Stack {
         enableExecuteCommand: true,
       });
       cronService.enableServiceConnect();
-
     }
 
     // ////////////////////////
