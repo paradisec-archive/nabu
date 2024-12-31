@@ -93,5 +93,5 @@ Rails.application.configure do
   # Our Stuff
   ########################
 
-  config.action_mailer.delivery_method = :sesv2
+  config.action_mailer.delivery_method = :ses_v2
 end
