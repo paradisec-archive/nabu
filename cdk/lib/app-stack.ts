@@ -569,7 +569,8 @@ export class AppStack extends cdk.Stack {
         pseudoTerminal: true,
         secrets: {
           MFLUX_USER: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'username'),
-          MFLUX_PASSWORD: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'password'),
+          // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
+          MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
         },
       });
       catalogBucket.grantRead(taskDefinition.taskRole);
