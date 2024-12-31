@@ -92,7 +92,8 @@ gem 'nilify_blanks' # Convert empty strings to NULL in the DB where possible
 gem 'paper_trail' # Keep an audit trail of all the changes
 
 # Background processing
-gem 'aws-sdk-rails' # Send emails via SES
+gem 'aws-sdk-rails', '~> 5'  # Send emails via SES
+gem 'aws-actionmailer-ses', '~> 1'  # Send emails via SES
 gem 'aws-sdk-s3' # Talk to the catalog
 
 # Admin Dashboard
