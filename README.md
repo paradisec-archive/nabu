@@ -3,6 +3,7 @@
 ## Setting up your dev environment
 
 Use direnv to add bin to your path
+
 ```bash
 PATH_add bin
 ```
@@ -21,6 +22,7 @@ docker compose up
 ```
 
 This brings up the following containers
+
 * app - the rails app
 * search - Solr instance for search (dev + test)
 * db - mysql data base (dev + test)
@@ -49,6 +51,7 @@ cdk bootstrap aws://$ACCOUNT/$REGION
 ```
 
 If ECR complains about access
+
 ```bash
 ACCOUNT=$(AWS_PROFILE=nabu-stage aws sts get-caller-identity | jq -r .Account)
 AWS_PROFILE=nabu-stage aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ACCOUNT.dkr.ecr.ap-southeast-2.amazonaws.com
@@ -84,8 +87,9 @@ nabu_run bin/rake searchkick:reindex:all
 # New Ethnologue data
 
 We use the following source locations
-* https://www.ethnologue.com/codes/
-* https://iso639-3.sil.org/code_tables/download_tables
+
+* <https://www.ethnologue.com/codes/>
+* <https://iso639-3.sil.org/code_tables/download_tables>
 
 Run the following rake task to import everything
 
@@ -94,6 +98,7 @@ bundle exec rake import:ethnologue
 ```
 
 This will
+
 * Add new countries and update names
 * Update country names
 * Add new languages and update names (Only Living languages)
@@ -105,43 +110,60 @@ This will
 # OAI-PMH
 
 OLAC available at:
-  * http://catalog.paradisec.org.au/oai/item
+
+* <http://catalog.paradisec.org.au/oai/item>
 
 The feeds that OLAC harvests:
-  * http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac
-  * http://catalog.paradisec.org.au/oai/item?verb=Identify (Archive identification)
-  * http://catalog.paradisec.org.au/oai/item?verb=ListMetadataFormats
-  * http://catalog.paradisec.org.au/oai/item?verb=ListIdentifiers&metadataPrefix=olac
+
+* <http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac>
+* <http://catalog.paradisec.org.au/oai/item?verb=Identify> (Archive identification)
+* <http://catalog.paradisec.org.au/oai/item?verb=ListMetadataFormats>
+* <http://catalog.paradisec.org.au/oai/item?verb=ListIdentifiers&metadataPrefix=olac>
 
 Individual item:
-  * http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac
+
+* <http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac>
 
 RIF-CS available at:
-  * http://catalog.paradisec.org.au/oai/collection
+
+* <http://catalog.paradisec.org.au/oai/collection>
 
   use resulting server on an OAI repository explorer:
-  * http://www.language-archives.org/register/register.php (OLAC)
-  * http://re.cs.uct.ac.za/
-  * http://oval.base-search.net/ (OAI-PMH validator)
-  * http://validator.oaipmh.com/ (OAI-PMH validator)
-  * http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp (test protocol)
+
+* <http://www.language-archives.org/register/register.php> (OLAC)
+* <http://re.cs.uct.ac.za/>
+* <http://oval.base-search.net/> (OAI-PMH validator)
+* <http://validator.oaipmh.com/> (OAI-PMH validator)
+* <http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp> (test protocol)
 
   URLs to test:
-  * http://localhost:3000/oai/collection?verb=Identify
-  * http://localhost:3000/oai/collection?verb=ListMetadataFormats
-  * http://localhost:3000/oai/collection?verb=ListSets
-  * http://localhost:3000/oai/collection?verb=ListIdentifiers
-  * http://localhost:3000/oai/collection?verb=ListRecords
+
+* [http://localhost:3000/oai/collection?verb=Identify
+* [http://localhost:3000/oai/collection?verb=ListMetadataFormats
+* [http://localhost:3000/oai/collection?verb=ListSets
+* [http://localhost:3000/oai/collection?verb=ListIdentifiers
+* <http://localhost:3000/oai/collection?verb=ListRecords>
 
 The feed that ANDS harvests:
-  * http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif
+
+* <http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif>
 
 Test at ANDS:
-  * https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au
+
+* <https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au>
 
 Feed for a single collection:
-  * http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2
 
+* <http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2>
+
+To validate our XML output as per OLAC
+
+* Download <https://xerces.apache.org/mirrors.cgi#binary>
+* Extract it
+
+```bash
+java -cp xercesImpl.jar:xercesSamples.jar sax.Counter -n -np -v -s -f item.xml
+```
 
 ## Setup Secrets
 
