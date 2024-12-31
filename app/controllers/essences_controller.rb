@@ -32,7 +32,7 @@ class EssencesController < ApplicationController
 
     Download.create! user: current_user, essence: @essence
 
-    location = Nabu::Catalog.instance.essence_url(@essence, as_attachment: true)
+    location = Nabu::Catalog.instance.essence_url(@essence, filename: essence.filename, as_attachment: true)
     raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
