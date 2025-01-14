@@ -465,7 +465,7 @@ GEM
     rbs (2.8.4)
     rdoc (6.10.0)
       psych (>= 4.0.0)
-    recaptcha (5.18.0)
+    recaptcha (5.19.0)
     regexp_parser (2.10.0)
     reline (0.6.0)
       io-console (~> 0.5)
