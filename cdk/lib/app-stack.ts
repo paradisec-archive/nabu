@@ -345,6 +345,8 @@ export class AppStack extends cdk.Stack {
       cluster,
       taskDefinition: appTaskDefinition,
       enableExecuteCommand: true,
+      minHealthyPercent: 50,
+      desiredCount: 2,
     });
     appService.enableServiceConnect();
 
@@ -447,9 +449,10 @@ export class AppStack extends cdk.Stack {
       deregistrationDelay: cdk.Duration.seconds(5),
       healthCheck: {
         path: '/up',
-        interval: cdk.Duration.seconds(5),
+        interval: cdk.Duration.seconds(10),
         healthyThresholdCount: 2,
-        timeout: cdk.Duration.seconds(4),
+        unhealthyThresholdCount: 3,
+        timeout: cdk.Duration.seconds(5),
       },
     });
 
