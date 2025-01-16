@@ -1,5 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
+  prepend_before_action :check_bitcoin, only: [:create]
   prepend_before_action :check_captcha, only: [:create]
 
   private
@@ -14,6 +15,14 @@ class RegistrationsController < Devise::RegistrationsController
     respond_with_navigational(resource) do
       flash.discard(:recaptcha_error)
       render :new
+    end
+  end
+
+  def check_bitcoin
+    if params[:user][:first_name].match(/bitcoin/i) || params[:user][:last_name].match(/bitcoin/i)
+      flash[:error] = "You have used a banned first name, contact support if you think this is an error"
+      redirect_to root_path
+      return
     end
   end
 
