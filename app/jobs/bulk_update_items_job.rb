@@ -57,7 +57,7 @@ class BulkUpdateItemsJob < ApplicationJob
   end
 
   def process_updates(updates)
-    @updates = updates.delete_if { |_k, v| v.blank? }
+    @updates = updates.reject { |_k, v| v.blank?  || (v.is_a?(Array) && v.all?(&:blank?)) }
     @appendable = {}
     @updates.each_pair do |k, v|
       if k =~ /^bulk_edit_append_(.*)/
