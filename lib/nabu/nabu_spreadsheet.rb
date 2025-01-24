@@ -72,7 +72,7 @@ module Nabu
         row = @book.row(row_number)
         break if row[0].nil? # if first cell empty
 
-        parse_row(row, collector)
+        parse_row(row, collector, row_number)
       end
     end
 
@@ -111,7 +111,7 @@ module Nabu
       @collection.description = parse_collection_description if parse_collection_description.present?
     end
 
-    def parse_row(row, collector)
+    def parse_row(row, collector, row_number)
       item_id = case row[0]
       when Float then row[0].round.to_s
       else row[0].to_s
@@ -261,7 +261,7 @@ module Nabu
         break if row[agent_cell_range.begin].blank?
 
         agent_cells = row[agent_cell_range]
-        item_agent = parse_agent(agent_cells)
+        item_agent = parse_agent(agent_cells, row_number)
         # errors added in parse_agent, so don't need to add any more before returning
         return nil unless item_agent
 
@@ -280,7 +280,7 @@ module Nabu
       end
     end
 
-    def parse_agent(cells)
+    def parse_agent(cells, row_number)
       original_role_name = cells[0]
       first_name = cells[1]
       last_name = cells[2]
@@ -300,7 +300,7 @@ module Nabu
                              contact_only: true
                            })
         unless user.valid?
-          @errors << "Couldn't create user #{first_name} #{last_name}<br/>"
+          @errors << "Couldn't create user first_name: #{first_name} last_name: #{last_name} on row #{row_number}<br/>"
           return nil
         end
         @notices << "Note: Contact #{first_name} #{last_name} created<br/>"
@@ -310,7 +310,7 @@ module Nabu
       agent_role = AgentRole.where(name: role_name).first
 
       unless agent_role
-        @errors << "Role not valid: #{original_role_name}"
+        @errors << "Role not valid: #{original_role_name} on #{row_number}"
         return nil
       end
 
