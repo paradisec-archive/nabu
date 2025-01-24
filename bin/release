@@ -8,11 +8,55 @@ if [ -z "$ENV" ]; then
   exit 1
 fi
 
+LAST_DEPLOY_COMMIT=$(git rev-parse origin/prod)
+
 git push
-git switch $ENV
+git switch "$ENV"
 git merge --ff-only main
 git push
 git switch main
 
 cd cdk
-AWS_PROFILE=nabu-${ENV} yarn cdk deploy nabu-appstack-${ENV}
+AWS_PROFILE=nabu-${ENV} yarn cdk deploy "nabu-appstack-${ENV}"
+
+if [ "$ENV" != "prod" ]; then
+  exit
+fi
+
+echo "Last deploy was commit on prod: $LAST_DEPLOY_COMMIT"
+
+# Get commits since the last merge
+COMMITS=$(git log $LAST_DEPLOY_COMMIT..HEAD --oneline)
+if [ -z "$COMMITS" ]; then
+  echo "No new commits since the last merge to prod."
+  exit 0
+fi
+
+echo "Commits since the last merge:"
+echo "$COMMITS"
+
+# Extract GitHub issue references (e.g., #123)
+ISSUES=$(echo "$COMMITS" | grep -oE "#[0-9]+" | sort -u)
+if [ -z "$ISSUES" ]; then
+  echo "No GitHub issues referenced in commits."
+  exit 0
+fi
+
+echo "Referenced issues:"
+echo "$ISSUES"
+
+# Prompt to close each issue
+for ISSUE in $ISSUES; do
+  ISSUE_NUMBER=${ISSUE#"#"} # Remove the # symbol
+  echo "Would you like to close issue #$ISSUE_NUMBER? (y/n)"
+  read -r RESPONSE
+
+  if [[ "$RESPONSE" =~ ^[Yy]$ ]]; then
+    echo "Closing issue #$ISSUE_NUMBER..."
+    gh issue close "$ISSUE_NUMBER" --repo paradisec-archive/nabu
+  else
+    echo "Skipping issue #$ISSUE_NUMBER."
+  fi
+done
+
+echo "Done!"
