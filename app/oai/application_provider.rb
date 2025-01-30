@@ -4,6 +4,7 @@ class ApplicationProvider < OAI::Provider::Base
   repository_name 'Pacific And Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
+  update_granularity OAI::Const::Granularity::LOW
 end
 
 module OAI::Provider::Metadata
