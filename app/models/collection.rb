@@ -125,6 +125,8 @@ class Collection < ApplicationRecord
   before_save :propagate_collector
   after_save :update_catalog_metadata
 
+  after_commit :reindex_items_if_private_changed, if: :saved_change_to_private?
+
   def default_map_boundaries?
     return false unless north_limit && south_limit && east_limit && west_limit
 
@@ -587,6 +589,12 @@ class Collection < ApplicationRecord
       operator_id orthographic_notes private region south_limit tape_location title university_id
       updated_at west_limit
     ]
+  end
+
+  private
+
+  def reindex_items_if_private_changed
+    items.reindex(mode: :async)
   end
 end
 # rubocop:enable Metrics/ClassLength
