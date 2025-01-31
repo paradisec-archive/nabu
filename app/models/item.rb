@@ -345,7 +345,7 @@ class Item < ApplicationRecord
       mimetype: essences.map(&:mimetype),
 
       external:,
-      private:,
+      private: !public?,
 
       # Link models for dropdowns and aggs
       content_language_ids: content_languages.map(&:id),
