@@ -1,8 +1,8 @@
 # rubocop:disable Metrics/BlockLength
 ActiveAdmin.register_page 'Catalog Report' do
   content do
-    year = params[:date][:year] || Time.zone.today.year
-    month = params[:date][:month] || Time.zone.today.month
+    year = params.dig(:date, :year) || Time.zone.today.year
+    month = params.dig(:date, :month) || Time.zone.today.month
     month = month.to_i
     year = year.to_i
     date = Date.parse("#{year}-#{month}-01")
