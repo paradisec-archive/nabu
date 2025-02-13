@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+touch .irb_history
+
 docker compose run \
   --rm \
   -v "$PWD":/rails \
@@ -10,6 +12,6 @@ docker compose run \
   -e ELASTICSEARCH_URL="$(grep ^ELASTICSEARCH_URL .env | sed 's/^.*=//')" \
   -e AWS_PROFILE="$AWS_PROFILE" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
-  -v "$HOME"/.irb_history:/home/rails/.irb_history \
+  -v "$PWD"/.irb_history:/home/rails/.irb_history \
   app \
   "$@"

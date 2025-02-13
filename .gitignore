@@ -43,6 +43,7 @@
 ##################
 
 /vendor/bundle
+.irb_history
 
 # Yarn v4
 .pnp.*

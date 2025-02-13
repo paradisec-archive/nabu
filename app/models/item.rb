@@ -303,6 +303,10 @@ class Item < ApplicationRecord
     ]
   end
 
+  def self.search_highlight_fields
+    %i[title description]
+  end
+
   scope :search_import,
         lambda {
           # includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, items: %i[admins users])
@@ -334,6 +338,7 @@ class Item < ApplicationRecord
       collector_sortname:,
       university_name:,
       operator_name:,
+      languages: content_languages.map(&:name),
       content_languages: content_languages.map(&:name),
       content_languages_code: content_languages.map(&:code),
       subject_languages: subject_languages.map(&:name),

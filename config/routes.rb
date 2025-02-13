@@ -116,11 +116,12 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post '/graphql', to: 'graphql#execute'
-      scope '/oni', as: 'oni', defaults: { format: 'json' } do
+      scope '/oni', as: 'oni' do
         get 'entities' => 'oni#entities'
         get 'entity/:id' => 'oni#entity'
-        get 'enttity/:id/file/:path' => 'oni#file'
-        get 'stream' => 'oni#stream'
+        # get 'entity/:id/file/:path' => 'oni#file'
+        # get 'stream' => 'oni#stream'
+        post 'search' => 'oni#search'
       end
     end
   end

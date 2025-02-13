@@ -4,7 +4,11 @@ module Api
       def entities
         query = Oni::ObjectsValidator.new(params)
 
-        render json: { errors: query.errors.full_messages }, status: :unprocessable_entity unless query.valid?
+        unless query.valid?
+          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+
+          return
+        end
 
         # TODO: Expand this once we have an authenticated version of this endpoint
         collections_table = Collection.where(private: false).arel_table
@@ -146,7 +150,39 @@ module Api
         redirect_to location, allow_other_host: true
       end
 
-      private
+      def search
+        query = Oni::SearchValidator.new(params)
+
+        unless query.valid?
+          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+
+          return
+        end
+
+        order = {}
+        order[query.sort === 'relevance' ? '_score' : query.sort] = query.order
+
+        where = {
+          private: false
+        }
+        where.merge!(query.filters)
+
+        aggs = %i[memberOf root languages countries collector_name]
+
+        @search = Searchkick.search(
+          query.query,
+          models: [Collection, Item],
+          model_includes: { Collection => [:languages, :access_condition], Item => [:content_languages, :access_condition, :collection] },
+          limit: query.limit,
+          offset: query.offset,
+          order:, where:,
+          aggs:,
+          body_options: { track_total_hits: true },
+          highlight: { tag: '<mark class="font-bold">' }
+        )
+    end
+
+    private
       def check_for_essence
         md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
         return false unless md
