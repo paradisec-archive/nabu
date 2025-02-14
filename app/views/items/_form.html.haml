@@ -174,8 +174,7 @@
 
       %tr
         %th= f.label :data_category_ids, 'Data Categories'
-        -# REVIEW: Why is data_category a class here?
-        %td= f.select :data_category_ids, [], {}, { :data => {:placeholder => 'Choose a category...', 'ajax--url' => data_categories_path, :multiple => true}, :class => 'select2 data_category' }
+        %td= f.data_category_select :data_category_ids, placeholder: 'Choose a category...', multiple: true
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append
@@ -183,7 +182,7 @@
 
       %tr
         %th= f.label :data_type_ids, 'Data Types'
-        %td= f.select :data_type_ids, [], {}, { :data => {:placeholder => 'Choose a type...', 'ajax--url' => data_types_path, :multiple => true}, :class => 'select2' }
+        %td= f.data_type_select :data_type_ids, placeholder: 'Choose a type...', multiple: true
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append

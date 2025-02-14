@@ -18,6 +18,42 @@ class CustomFormBuilder < ActionView::Helpers::FormBuilder
     select(attribute, [], select_options, { data:, class: "#{class_name} select2" })
   end
 
+  def data_category_select(attribute, options = {})
+    data = options.merge({
+      'ajax--url': @template.data_categories_path
+    })
+
+    select_options = {}
+    select_options[:multiple] = options[:multiple] if options[:multiple]
+
+    class_name = options.delete 'class'
+    data_categories = @object.send(attribute.to_s.sub('y_ids', 'ies').to_sym)
+    data_categories = [data_categories] if data_categories.is_a? DataCategory
+    data_categories = [] if data_categories.nil?
+
+    data[:data] = data_categories.map { |data_category| { id: data_category.id, text: data_category.name, selected: true } }
+
+    select(attribute, [], select_options, { data:, class: "#{class_name} select2" })
+  end
+
+  def data_type_select(attribute, options = {})
+    data = options.merge({
+      'ajax--url': @template.data_types_path
+    })
+
+    select_options = {}
+    select_options[:multiple] = options[:multiple] if options[:multiple]
+
+    class_name = options.delete 'class'
+    data_types = @object.send(attribute.to_s.sub('_ids', 's').to_sym)
+    data_types = [data_types] if data_types.is_a? DataType
+    data_types = [] if data_types.nil?
+
+    data[:data] = data_types.map { |data_type| { id: data_type.id, text: data_type.name, selected: true } }
+
+    select(attribute, [], select_options, { data:, class: "#{class_name} select2" })
+  end
+
   def country_select(attribute, options = {})
     data = options.merge({
       'ajax--url': @template.countries_path,
