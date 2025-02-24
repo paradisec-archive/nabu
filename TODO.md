@@ -2,17 +2,6 @@
 
 * Do solidQ/activeJob errors get caught by sentry?
 
-## Migration
-
-* Monitoring
-* Remove checksum files from the repository
-* Clean up Media::New
-* FIx DB and S3 filenames and extensions
-* qua files are these quarantine with viruses?
-* Check with nick about removing pfsx
-* Update essence after_create :update_catalog_file efore_destroy :update_catalog_file
-* Remove old ids3 and bwf xml creation
-
 ## API
 
 We are using Doorkeeper to provide oauth tokens
@@ -23,17 +12,12 @@ If we give tokens to more than paragest we need to rethink this
 
 * Rotate the recaptcha keys and switch to v3
 
-## Security
-
-* Had to add lots of optional => true, are they really or should we fix the tests?
-
 ## General Notes
 
 * Should some of the stuff we do as jobs be live?
 
 ## Stuff to replace
 
-* Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * DB is all latin1 can we move to utf8mb4
@@ -43,9 +27,6 @@ If we give tokens to more than paragest we need to rethink this
 * CHeck f.submmit :confirm should this be data?
 * Can we move paper_trail to ApplicationRecord?
 * permit! used for search is bad
-* Do we need to drop jquery?
-* Should we be using image_processing?
-* Can we get rid of all the monkeypatches?
 * There dont' seem to be any graphql tests???
 * grpahql schema do we want all the nulls that were included in the upgrade
 * Add everything needed to search_params
