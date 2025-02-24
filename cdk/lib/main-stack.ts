@@ -42,7 +42,6 @@ export class MainStack extends cdk.Stack {
 
     this.zone = new route53.PublicHostedZone(this, 'HostedZone', {
       zoneName,
-      caaAmazon: true,
     });
 
     // Create lets encrypt txt records for cloudflare
@@ -50,6 +49,19 @@ export class MainStack extends cdk.Stack {
       zone: this.zone,
       recordName: `_acme-challenge.${zoneName}`,
       values: [acmeValue],
+    });
+
+    new route53.CaaRecord(this, 'CloudflareAndAmazonCaa', {
+      zone: this.zone,
+      values: [
+        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'amazon.com' },
+        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'pki.goog; cansignhttpexchanges=yes' },
+        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'pki.goog; cansignhttpexchanges=yes' },
+        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'letsencrypt.org' },
+        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'letsencrypt.org' },
+        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'ssl.com' },
+        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'ssl.com' },
+      ],
     });
 
     // ////////////////////////
@@ -100,7 +112,12 @@ export class MainStack extends cdk.Stack {
       enforceSSL: true,
       lifecycleRules: [
         { abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) },
-        { transitions: [{ storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) }], tagFilters: { archive: 'true' } },
+        {
+          transitions: [
+            { storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) },
+          ],
+          tagFilters: { archive: 'true' },
+        },
       ],
       versioned: env === 'prod',
       inventories: [
