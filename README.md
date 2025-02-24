@@ -186,4 +186,5 @@ nabu_run bundle update
 nabu_run yarn upgrade-interactive
 
 # New rails version
-rails new nabu --database=mysql --javascript=esbuild --css=sass --skip-action-cable
+rails new nabu --database=mysql --javascript=esbuild --css=sass --skip-action-cable --skip-kamal
+```

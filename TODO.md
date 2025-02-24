@@ -1,13 +1,9 @@
 # TODO
 
-* Set @admin_rocrate false
 * Do solidQ/activeJob errors get caught by sentry?
 
-## Rails 7.1
-Can we get rid of sassc??
-Do we need dotenv rails?
-
 ## Migration
+
 * Monitoring
 * Remove checksum files from the repository
 * Clean up Media::New
@@ -18,20 +14,25 @@ Do we need dotenv rails?
 * Remove old ids3 and bwf xml creation
 
 ## API
+
 We are using Doorkeeper to provide oauth tokens
 These are for API access not to act on behalf of users
 If we give tokens to more than paragest we need to rethink this
 
 ## Need Nick
+
 * Rotate the recaptcha keys and switch to v3
 
-# Security
+## Security
+
 * Had to add lots of optional => true, are they really or should we fix the tests?
 
-# General Notes
+## General Notes
+
 * Should some of the stuff we do as jobs be live?
 
 ## Stuff to replace
+
 * Remove to_csv in collections, and replace with standard CSV. Similar to the service used for items
 * Move to_rif in collections controller to a haml template
 * Should we use authenticate_users on dashboard or should cancan just do it?
@@ -51,10 +52,11 @@ If we give tokens to more than paragest we need to rethink this
 * language.retired to language.retired?
 * Fix comments so they are ajax again
 
-# CRON
+## CRON
+
 paper-trail can we move to JSON serialzer
 
-# OAI
+## OAI
 
 Write tests for
 

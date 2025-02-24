@@ -32,9 +32,6 @@ gem 'solid_queue'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem 'kamal', require: false
-
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem 'thruster', require: false
 
@@ -66,9 +63,6 @@ end
 ###################
 # Our stuff
 ###################
-
-# Needs to be as early as possible to do it's job
-gem 'dotenv-rails', require: 'dotenv/load' # , groups: [:development, :test] # Load env variables in dev
 
 # Views
 gem 'haml-rails', '~> 2.0' # We use HAML for templates instead of erb
