@@ -347,7 +347,7 @@ export class AppStack extends cdk.Stack {
       taskDefinition: appTaskDefinition,
       enableExecuteCommand: true,
       minHealthyPercent: 50,
-      desiredCount: 2,
+      desiredCount: 6,
     });
     appService.enableServiceConnect();
 
@@ -374,6 +374,7 @@ export class AppStack extends cdk.Stack {
     jobsTaskDefinition.addContainer('JobsContainer', {
       ...commonAppImageOptions,
       memoryLimitMiB: 1024,
+      memoryReservationMiB: 1024,
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
       command: ['bin/jobs'],
     });
