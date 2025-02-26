@@ -39,3 +39,5 @@ plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA']
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV['PIDFILE'] if ENV['PIDFILE']
+
+activate_control_app '/rails/tmp/sockets/puma_control.sock'
