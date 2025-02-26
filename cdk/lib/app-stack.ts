@@ -330,6 +330,7 @@ export class AppStack extends cdk.Stack {
       ...commonAppImageOptions,
       // NOTE: This is huge due to being able to show all 30000 items on the one page
       memoryLimitMiB: 4096,
+      memoryReservationMiB: 1024,
       portMappings: [{ containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'AppService' }),
     });
