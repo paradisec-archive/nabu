@@ -101,6 +101,20 @@ export class MainStack extends cdk.Stack {
       { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
     ]);
 
+    // Allow ALBs to log
+    const albLogBucketPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com')],
+      actions: ['s3:PutObject'],
+      resources: [`${this.metaBucket.bucketArn}/s3-access-logs/*`],
+      conditions: {
+        StringEquals: {
+          's3:x-amz-acl': 'bucket-owner-full-control',
+        },
+      },
+    });
+    this.metaBucket.addToResourcePolicy(albLogBucketPolicy);
+
     // ////////////////////////
     // Catalog bucket
     // ////////////////////////
