@@ -46,6 +46,7 @@ def essence_json(essence)
     dateModified: essence.updated_at.to_date,
     encodingFormat: essence.mimetype,
     name: essence.filename,
+    filename: essence.filename,
     doi: essence.doi,
     bitrate: essence.bitrate,
     duration: essence.duration,
