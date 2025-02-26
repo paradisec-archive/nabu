@@ -104,7 +104,7 @@ export class MainStack extends cdk.Stack {
     // Allow ALBs to log
     const albLogBucketPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      principals: [new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com')],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::783225319266:root')],
       actions: ['s3:PutObject'],
       resources: [`${this.metaBucket.bucketArn}/s3-access-logs/*`],
       conditions: {
