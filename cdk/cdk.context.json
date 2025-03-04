@@ -489,5 +489,8 @@
     "securityGroupIds": [
       "sg-02a8995547a7489b6"
     ]
-  }
+  },
+  "acknowledged-issue-numbers": [
+    32775
+  ]
 }

@@ -157,7 +157,7 @@ export class AppStack extends cdk.Stack {
     const cluster = new ecs.Cluster(this, 'Cluster', {
       clusterName: appName,
       vpc,
-      containerInsights: true,
+      containerInsightsV2: ecs.ContainerInsights.ENHANCED,
     });
     cluster.addDefaultCloudMapNamespace({
       name: 'nabu',
@@ -582,7 +582,7 @@ export class AppStack extends cdk.Stack {
 
       const cluster = new ecs.Cluster(this, 'NabuCluster', {
         vpc,
-        containerInsights: true,
+        containerInsightsV2: ecs.ContainerInsights.ENHANCED,
       });
 
       const mediaFluxTask = new targets.EcsTask({
