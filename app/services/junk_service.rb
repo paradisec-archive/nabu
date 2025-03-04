@@ -1,174 +1,146 @@
 require 'csv'
 require 'aws-sdk-s3'
 
-# NOTE: We use this service for random oneoff scripts we need over time
+# rubocop:disable Metrics/MethodLength,Metrics/BlockLength
 class JunkService
   attr_reader :catalog_dir, :verbose
 
   def initialize(env, verbose: false)
-  end
+    @meta_bucket = "nabu-meta-#{env}"
+    @prefix = "inventories/catalog/nabu-catalog-#{env}/CatalogBucketInventory0/"
+    @bucket = "nabu-catalog-#{env}"
+    @verbose = verbose
 
-  # rubocop:disable Metrics/MethodLength,Metrics/BlockLength
+    # Strange bug in dev docker
+    ENV.delete('AWS_SECRET_ACCESS_KEY')
+    ENV.delete('AWS_ACCESS_KEY_ID')
+    ENV.delete('AWS_SESSION_TOKEN')
+
+    @s3 = Aws::S3::Client.new(region: 'ap-southeast-2')
+   end
+
   def run
-    filenames = Essence.pluck(:id, :filename)
-    filenames_hash = {}
+    filenames = Essence.order(:filename).pluck(:filename, :mimetype)
 
-    filenames.each do |id, filename|
-      item_name, extension = filename.split('.', 2)
-      filenames_hash[item_name] ||= { extensions: [], errors: [] }
-      filenames_hash[item_name][:extensions] << extension.downcase
-    end
+    filenames.each do |filename, mimetype|
+      essence_name, extension = filename.split('.', 2)
 
-    ext_map = {
-      audio_ok: [
-       'mp3',
-       'wav'
-      ],
-       audio: [
-       'mpg'
-      ],
-      video_ok: [
-        'mp4',
-        'mxf',
-        'mkv'
-      ],
-      video: [
-        'dv',
-        'mov',
-        'webm',
-        'm4v',
-        'avi',
-        'mts'
-      ],
-      image_ok: [
-        'jpg',
-        'tif'
-      ],
-      image: [
-        'png'
-      ],
-      lang: [
-        'eaf',
-        'trs',
-        'xml',
-        'cha',
-        'fwbackup',
-        'pfsx',
-        'ixt',
-        'cmdi',
-        'lbl',
-        'textgrid',
-        'srt',
-        'flextext',
-        'tex',
-        'imdi',
-        'version',
-        'annis',
-        'opex'
-      ],
-      standalone: [
-        'txt',
-        'pdf',
-        'rtf',
-        'xlsx',
-        'docx',
-        'img',
-        'tab',
-        'odt',
-        'html',
-        'csv',
-        'ods',
-        'kml',
-        'zip'
-      ],
-      broken: [
-        'mov.eaf',
-        'eopas1.ixt',
-        'eopas2.ixt',
-        'mp4_good_audio.mp3',
-        'mp4_good_audio.mp4',
-        'mp4_good_audio.mxf',
-        'mp4_good_audio.wav',
-        'masing.pdf',
-        'masing.rtf',
-        'masing.txt',
-        '5.mp3',
-        '5.wav',
-        'txt.txt',
-        'wav.eaf',
-        'wav.mp3',
-        'wav.wav'
-      ]
-    }
+      next unless ['wav', 'mxf', 'mkv'].include?(extension)
 
-    filenames_hash.each do |item_name, data|
-      filenames_hash[item_name][:extensions] = data[:extensions].sort
-    end
+      md = filename.match(/([A-Za-z0-9][a-zA-Z0-9_]+)-([A-Za-z0-9][a-zA-Z0-9_]+)-(.*)\.([^.]+)$/)
+      collection = md[1]
+      item = md[2]
+      s3_path = "#{collection}/#{item}/#{filename}"
 
-    filenames_hash.each do |item_name, data|
-      extensions = data[:extensions].clone
+      begin
+        head_resp = @s3.head_object({ bucket: @bucket, key: s3_path  })
+      rescue Aws::S3::Errors::NotFound
+        puts "#{s3_path} MISSING"
+        next
+      end
 
-      # Audio
-      if extensions.include?('mp3') && !extensions.include?('wav')
-        data[:errors] << '+MP3-WAV'
-      end
-      if extensions.include?('wav') && !extensions.include?('mp3')
-        data[:errors] << '+WAV-MP3'
-      end
-      extensions = extensions - ext_map[:audio_ok]
-      if (extensions & ext_map[:audio]).any?
-        data[:errors] << '+AUDIO'
-      end
-      extensions = extensions - ext_map[:audio]
+      content_type = head_resp.content_type
+      mimetype_ok = content_type === mimetype || content_type === 'audio/x-wav'
 
-      # Normal Paragest Video (plus old video)
-      if extensions.include?('mkv') && !extensions.include?('mp4')
-        data[:errors] << '+MKV-MP4'
-      end
-      if extensions.include?('mxf') && !extensions.include?('mp4')
-        data[:errors] << '+MXF-MP4'
-      end
-      if extensions.include?('mp4') && !(extensions.include?('mkv') || extensions.include?('mxf'))
-        data[:errors] << '+MP4-MKV'
-      end
-      extensions = extensions - ext_map[:video_ok]
-      if (extensions & ext_map[:video]).any?
-        data[:errors] << '+VIDEO'
-      end
-      extensions = extensions - ext_map[:video]
+      tag_resp = @s3.get_object_tagging({ bucket: @bucket, key: s3_path  })
 
-      # Image
-      if extensions.include?('jpg') && !extensions.include?('tif')
-        data[:errors] << '+JPG-TIF'
-      end
-      if extensions.include?('tif') && !extensions.include?('jpg')
-        data[:errors] << '+TIF-JPG'
-      end
-      extensions = extensions - ext_map[:image_ok]
-      if (extensions & ext_map[:image]).any?
-        data[:errors] << '+IMAGE'
-      end
-      extensions = extensions - ext_map[:image]
+      tags = tag_resp.tag_set.map { |tag| "#{tag.key}: #{tag.value}" }
+      archive_ok = tags.include?('archive: true')
 
-      extensions = extensions - ext_map[:lang]
-      extensions = extensions - ext_map[:standalone]
-      if (extensions & ext_map[:broken]).any?
-        data[:errors] << '+BROKEN'
-      end
-      extensions = extensions - ext_map[:broken]
+      next if archive_ok && mimetype_ok
 
-
-      if extensions.any?
-        abort "Item: #{item_name}, Extensions: #{extensions.join(', ')}"
-      end
-    end
-
-    puts '# Error Summary'
-    filenames_hash.each do |item_name, data|
-      next if data[:errors].empty?
-
-      puts "Item: #{item_name}, Extensions: #{data[:extensions].join(', ')}, Errors: #{data[:errors].join(', ')}"
+      print "#{s3_path} A: #{archive_ok} "
+      print "M: #{content_type} => #{mimetype} " unless mimetype_ok
+      puts
     end
   end
-  # rubocop:enable Metrics/MethodLength,Metrics/BlockLength
+
+  private
+
+  def get_s3_files
+    inventory_dir = find_recent_inventory_dir
+    inventory_csv = fetch_inventory_csv(inventory_dir)
+    s3_files = extract_s3_files(inventory_csv)
+  end
+  def extract_s3_files(inventory_csv)
+    s3_files = []
+
+    CSV.parse(inventory_csv, headers: false) do |row|
+      p row
+      bucket_name, filename, _version_id, is_latest, delete_marker, _size, _last_modified, _etag,
+        storage_class,  multiple_upload,  multipart_upload_flag, replication_status, checksum_algo = row
+
+      next if is_latest == 'false' || delete_marker == 'true'
+
+      s3_files << CGI.unescape(filename)
+      end
+
+    if s3_files.size != s3_files.uniq.size
+      raise 'Duplicate files in S3 inventory'
+      end
+
+    s3_files
+  end
+
+  def fetch_inventory_csv(inventory_dir)
+    manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
+    manifest = JSON.parse(manifest_json)
+
+    files = manifest['files']
+    if files.size > 1
+      raise 'Multiple files in manifest'
+    end
+
+    file = files.first['key']
+
+    # Download the S3 Inventory CSV file
+    puts "Downloading S3 Inventory CSV file: #{file}"
+    inventory_gzipped = @s3.get_object(bucket: @bucket, key: file).body.read
+    puts "Unzipping file: #{file}\n\n"
+    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
+  end
+
+  def find_recent_inventory_dir
+    inventory_files = fetch_inventory_files
+
+
+    # Extract the timestamp part from each key and convert it to Time object
+    timestamped_files = inventory_files.map do |key|
+      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
+      if match
+        year, month, day, hour, minute = match.captures
+        time = Time.new(year, month, day, hour, minute)
+        { key: key, time: time }
+      end
+    end.compact
+    # Find the most recent file
+    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
+
+    puts "Most recent inventory file: #{most_recent_dir[:key]}"
+    most_recent_dir[:key]
+  end
+
+  def fetch_inventory_files
+    inventory_files = []
+    next_token = nil
+
+    loop do
+      response = @s3.list_objects_v2(
+        bucket: @bucket,
+        prefix: @prefix,
+        delimiter: '/',
+        continuation_token: next_token
+      )
+
+      # Collect all object keys
+      inventory_files += response.common_prefixes.map(&:prefix)
+
+      break unless response.is_truncated
+
+      next_token = response.next_continuation_token
+    end
+
+    inventory_files
+  end
 end
+# rubocop:enable Metrics/MethodLength,Metrics/BlockLength
