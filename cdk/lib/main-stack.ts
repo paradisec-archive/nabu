@@ -129,7 +129,7 @@ export class MainStack extends cdk.Stack {
           id: 'dr-replica-mel',
           priority: 1,
           destination: drBucket,
-          storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL,
+          storageClass: s3.StorageClass.DEEP_ARCHIVE,
           deleteMarkerReplication: true,
         },
       ];
