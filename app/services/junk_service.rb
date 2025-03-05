@@ -55,35 +55,39 @@ class JunkService
     end
   end
 
-  private
-
   def get_s3_files
     inventory_dir = find_recent_inventory_dir
     inventory_csv = fetch_inventory_csv(inventory_dir)
     s3_files = extract_s3_files(inventory_csv)
   end
+
   def extract_s3_files(inventory_csv)
-    s3_files = []
+    s3_files = {}
+
+    count = 0
+    total = 0
 
     CSV.parse(inventory_csv, headers: false) do |row|
-      p row
-      bucket_name, filename, _version_id, is_latest, delete_marker, _size, _last_modified, _etag,
+      bucket_name, filename, _version_id, is_latest, delete_marker, size, _last_modified, _etag,
         storage_class,  multiple_upload,  multipart_upload_flag, replication_status, checksum_algo = row
 
       next if is_latest == 'false' || delete_marker == 'true'
 
-      s3_files << CGI.unescape(filename)
-      end
+    if filename.match('wav$')
+        total += size.to_i
+      count += 1
+    end
 
-    if s3_files.size != s3_files.uniq.size
-      raise 'Duplicate files in S3 inventory'
-      end
+      s3_files[CGI.unescape(filename)] = { size: size }
+    end
 
+    p total
+    p count
     s3_files
   end
 
   def fetch_inventory_csv(inventory_dir)
-    manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
+    manifest_json = @s3.get_object(bucket: @meta_bucket, key: "#{inventory_dir}manifest.json").body.read
     manifest = JSON.parse(manifest_json)
 
     files = manifest['files']
@@ -95,14 +99,13 @@ class JunkService
 
     # Download the S3 Inventory CSV file
     puts "Downloading S3 Inventory CSV file: #{file}"
-    inventory_gzipped = @s3.get_object(bucket: @bucket, key: file).body.read
+    inventory_gzipped = @s3.get_object(bucket: @meta_bucket, key: file).body.read
     puts "Unzipping file: #{file}\n\n"
     inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
   end
 
   def find_recent_inventory_dir
     inventory_files = fetch_inventory_files
-
 
     # Extract the timestamp part from each key and convert it to Time object
     timestamped_files = inventory_files.map do |key|
@@ -126,7 +129,7 @@ class JunkService
 
     loop do
       response = @s3.list_objects_v2(
-        bucket: @bucket,
+        bucket: @meta_bucket,
         prefix: @prefix,
         delimiter: '/',
         continuation_token: next_token
