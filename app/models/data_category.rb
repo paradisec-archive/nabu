@@ -24,4 +24,8 @@ class DataCategory < ApplicationRecord
 
   has_many :item_data_categories
   has_many :items, through: :item_data_categories, dependent: :restrict_with_exception
+
+  def self.ransackable_attributes(_ = nil)
+    %w[id name]
+  end
 end
