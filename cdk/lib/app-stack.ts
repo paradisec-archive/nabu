@@ -163,6 +163,9 @@ export class AppStack extends cdk.Stack {
       name: 'nabu',
       useForServiceConnect: true,
     });
+    NagSuppressions.addResourceSuppressions(cluster, [
+      { id: 'AwsSolutions-ECS4', reason: 'https://github.com/cdklabs/cdk-nag/pull/1927' },
+    ]);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'EcsASG', {
       vpc,
@@ -584,6 +587,9 @@ export class AppStack extends cdk.Stack {
         vpc,
         containerInsightsV2: ecs.ContainerInsights.ENHANCED,
       });
+      NagSuppressions.addResourceSuppressions(cluster, [
+        { id: 'AwsSolutions-ECS4', reason: 'https://github.com/cdklabs/cdk-nag/pull/1927' },
+      ]);
 
       const mediaFluxTask = new targets.EcsTask({
         cluster,
