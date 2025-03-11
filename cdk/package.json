@@ -10,10 +10,10 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "22.13.9",
-    "@typescript-eslint/eslint-plugin": "^8.26.0",
-    "@typescript-eslint/parser": "^8.26.0",
-    "aws-cdk": "2.1002.0",
+    "@types/node": "22.13.10",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "aws-cdk": "2.1003.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
@@ -24,8 +24,8 @@
     "typescript": "~5.8.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.181.1",
-    "cdk-nag": "^2.35.36",
+    "aws-cdk-lib": "2.182.0",
+    "cdk-nag": "^2.35.42",
     "constructs": "^10.4.2",
     "source-map-support": "^0.5.21"
   },
