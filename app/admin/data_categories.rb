@@ -1,13 +1,18 @@
 # ## Schema Information
 #
-# Table name: `data_types`
+# Table name: `data_categories`
 #
 # ### Columns
 #
 # Name        | Type               | Attributes
 # ----------- | ------------------ | ---------------------------
 # **`id`**    | `integer`          | `not null, primary key`
-# **`name`**  | `string(255)`      | `not null`
+# **`name`**  | `string(255)`      |
+#
+# ### Indexes
+#
+# * `index_data_categories_on_name` (_unique_):
+#     * **`name`**
 #
 ActiveAdmin.register DataCategory do
   menu parent: 'Other Entities'

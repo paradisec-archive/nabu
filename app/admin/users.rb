@@ -54,6 +54,19 @@
 #     * **`unikey`**
 # * `index_users_on_unlock_token` (_unique_):
 #     * **`unlock_token`**
+#
+# * `index_users_on_confirmation_token` (_unique_):
+#     * **`confirmation_token`**
+# * `index_users_on_email` (_unique_):
+#     * **`email`**
+# * `index_users_on_reset_password_token` (_unique_):
+#     * **`reset_password_token`**
+# * `index_users_on_rights_transferred_to_id`:
+#     * **`rights_transferred_to_id`**
+# * `index_users_on_unikey` (_unique_):
+#     * **`unikey`**
+# * `index_users_on_unlock_token` (_unique_):
+#     * **`unlock_token`**
 
 # rubocop:disable Metrics/BlockLength
 ActiveAdmin.register User do

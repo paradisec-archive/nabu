@@ -117,6 +117,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       post '/graphql', to: 'graphql#execute'
       scope '/oni', as: 'oni' do
+        use_doorkeeper do
+          skip_controllers :authorized_applications, :applications
+        end
+
         get 'entities' => 'oni#entities'
         get 'entity/:id' => 'oni#entity'
         # get 'entity/:id/file/:path' => 'oni#file'
