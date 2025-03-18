@@ -109,6 +109,7 @@ ActiveAdmin.register User do
   filter :contact_only
   filter :collector
   filter :admin
+  filter :unikey
 
   action_item :merge do
     if %w[show edit].include?(params[:action]) && (User.duplicates_of(resource.first_name, resource.last_name).count > 1)

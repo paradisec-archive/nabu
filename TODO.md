@@ -2,6 +2,10 @@
 
 * Do solidQ/activeJob errors get caught by sentry?
 
+## AWS
+
+* Move the ECS to app instead of ingress subnet (MAYBE test in stage first)
+
 ## API
 
 We are using Doorkeeper to provide oauth tokens
