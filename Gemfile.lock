@@ -173,6 +173,10 @@ GEM
     diff-lcs (1.6.0)
     doorkeeper (5.8.1)
       railties (>= 5)
+    doorkeeper-openid_connect (1.8.11)
+      doorkeeper (>= 5.5, < 5.9)
+      jwt (>= 2.5)
+      ostruct (>= 0.5)
     drb (2.2.1)
     erubi (1.13.1)
     et-orbi (1.2.11)
@@ -276,6 +280,8 @@ GEM
       hana (~> 1.3)
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
+    jwt (2.10.1)
+      base64
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -682,6 +688,7 @@ DEPENDENCIES
   debug
   devise
   doorkeeper
+  doorkeeper-openid_connect
   factory_bot_rails
   faraday_middleware-aws-sigv4
   graphiql-rails

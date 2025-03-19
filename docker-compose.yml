@@ -17,6 +17,7 @@ services:
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
       NABU_CATALOG_BUCKET: nabu
       OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
+      OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
     volumes:
       - .:/rails
       - ./vendor/bundle:/usr/local/bundle
@@ -24,51 +25,50 @@ services:
   proxy:
     image: nginx
     ports:
-      - '3000:80'
-      - '3443:443'
+      - "3000:80"
+      - "3443:443"
     volumes:
       - ./docker/nginx.conf-dev:/etc/nginx/conf.d/default.conf
       - ./docker/cert.pem:/etc/nginx/certs/cert.pem
       - ./docker/key.pem:/etc/nginx/certs/key.pem
-    command: [nginx-debug, '-g', 'daemon off;']
+    command: [nginx-debug, "-g", "daemon off;"]
     logging:
       driver: none
 
   db:
     image: mysql:8
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
   search:
     image: opensearchproject/opensearch:latest
     ports:
-      - '9200:9200'
-      - '9600:9600'
+      - "9200:9200"
+      - "9600:9600"
     environment:
       discovery.type: single-node
       plugins.security.ssl.http.enabled: false
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: fqo6bzr27*6Rdsshgsa7
     volumes:
       - search-data:/usr/share/opensearch/data
-    restart:
-      unless-stopped
+    restart: unless-stopped
 
   search-dashboards:
     image: opensearchproject/opensearch-dashboards:latest
     ports:
-      - '5601:5601'
+      - "5601:5601"
     environment:
       OPENSEARCH_HOSTS: '["http://search:9200"]'
 
   s3:
     image: adobe/s3mock
     ports:
-      - '9090:9090'
+      - "9090:9090"
     environment:
       initialBuckets: nabu
       retainFilesOnExit: true

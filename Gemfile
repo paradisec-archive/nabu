@@ -79,6 +79,7 @@ gem 'sentry-ruby'
 gem 'cancancan' # Authorisation
 gem 'devise' # Authentication
 gem 'doorkeeper' # API auth/Oauth2
+gem 'doorkeeper-openid_connect' # API OpenID Connect support
 gem 'recaptcha' # Avoid fake registrations
 
 # Database improvements

@@ -9,6 +9,7 @@ docker compose run \
   -v "$HOME"/.aws:/home/rails/.aws \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
+  -e OPENID_SIGNING_KEY="$OPENID_SIGNING_KEY" \
   -e ELASTICSEARCH_URL="$(grep ^ELASTICSEARCH_URL .env | sed 's/^.*=//')" \
   -e AWS_PROFILE="$AWS_PROFILE" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \

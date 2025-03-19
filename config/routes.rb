@@ -1,5 +1,6 @@
 # rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
+  use_doorkeeper_openid_connect
   use_doorkeeper
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
