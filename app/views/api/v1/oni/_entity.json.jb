@@ -39,7 +39,7 @@ extra[:mediaType] = @mime_types
 
 searchExtra = json[:searchExtra]
 
-searchExtra[:score] = score
-searchExtra[:highlight] = highlights
+searchExtra[:score] = score if defined? score
+searchExtra[:highlight] = highlights if defined? highlights
 
 json

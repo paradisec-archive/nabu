@@ -85,6 +85,8 @@ gem 'recaptcha' # Avoid fake registrations
 # Database improvements
 gem 'nilify_blanks' # Convert empty strings to NULL in the DB where possible
 gem 'paper_trail' # Keep an audit trail of all the changes
+gem 'scenic' # Support database views like migrations
+gem 'scenic-mysql_adapter'
 
 # Background processing
 gem 'aws-sdk-rails', '~> 5'  # Send emails via SES

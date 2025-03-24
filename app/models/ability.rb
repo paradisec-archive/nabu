@@ -9,8 +9,7 @@ class Ability
 
     unless user
       can :read, Collection, private: false
-      can :read, Item, private: false
-      can :data, Item, private: false
+      can %i[read data], Item, { private: false, collection: { private: false } }
 
       return
     end
@@ -73,12 +72,9 @@ class Ability
     # Items
     #############
 
-    can :data,   Item, public?: true
-    can :data,   Item, item_users: { user_id: user.id }
-    can :data,   Item, item_admins: { user_id: user.id }
-    can :read,   Item, public?: true
-    can :read,   Item, item_users: { user_id: user.id }
-    can :read,   Item, item_admins: { user_id: user.id }
+    can %i[read data], Item, { private: false, collection: { private: false } }
+    can %i[read data], Item, item_users: { user_id: user.id }
+    can %i[read data], Item, item_admins: { user_id: user.id }
     can :manage, Item, collector_id: user.id
     can :manage, Item, operator_id: user.id
     can :manage, Item, collection: { collection_admins: { user_id: user.id } }

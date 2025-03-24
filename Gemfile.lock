@@ -551,6 +551,11 @@ GEM
     rubyzip (2.4.1)
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
+    scenic (1.8.0)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
+    scenic-mysql_adapter (1.1.0)
+      scenic (>= 1.4.0)
     searchjoy (1.3.2)
       activerecord (>= 6.1)
       chartkick (>= 5)
@@ -729,6 +734,8 @@ DEPENDENCIES
   rubocop-rspec_rails
   rubyzip
   rufus-scheduler
+  scenic
+  scenic-mysql_adapter
   searchjoy
   searchkick
   selenium-webdriver

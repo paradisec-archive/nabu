@@ -10,23 +10,17 @@ module Api
           return
         end
 
-        # TODO: Expand this once we have an authenticated version of this endpoint
-        collections_table = Collection.where(private: false).arel_table
-        items_table = Item.where(private: false).arel_table
+        sort = query.sort === 'id' ? 'entity_id' : query.sort
 
-        collection_label = Arel::Nodes::SqlLiteral.new("'collection'")
-        item_label = Arel::Nodes::SqlLiteral.new("'item'")
-
-        item_identifier = Arel::Nodes::NamedFunction.new(
-          'CONCAT',
-          [collections_table[:identifier], Arel::Nodes.build_quoted('-'), items_table[:identifier]]
-        ).as('identifier')
-
-        collections_query = collections_table.where(collections_table[:private].eq(false))
-        items_query = items_table
-          .join(collections_table).on(items_table[:collection_id].eq(collections_table[:id]))
-          .project(items_table[:id], items_table[:created_at], items_table[:updated_at], item_identifier, items_table[:title], item_label.as('type'))
-          .where(items_table[:private].eq(false))
+        entities = Entity.where(
+          entity_type: 'Collection',
+          entity_id: Collection.accessible_by(current_ability)
+        ).or(
+          Entity.where(
+            entity_type: 'Item',
+            entity_id: Item.accessible_by(current_ability)
+          )
+        )
 
         if query.member_of
           md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
@@ -35,64 +29,35 @@ module Api
             return
           end
 
-          collections_query = collections_query.where(collections_table[:identifier].eq(md[1]))
-          items_query = items_query.where(items_table[:collection_id].in(collections_query.clone.project(collections_table[:id])))
+          entities = entities.where(collection_identifier: md[1])
         end
 
-        collections_query = collections_query.project(:id, :created_at, :updated_at, :identifier, :title, collection_label.as('type'))
-
-        combined_query = case query.conforms_to
+        case query.conforms_to
         when ['https://w3id.org/ldac/profile#Collection']
-          # A bit hacky but we dont' have colletctions of collections
           if query.member_of
-            collections_query.where(collections_table[:identifier].eq('DUMMYsajkdhakshfvksfslkj'))
+            # NOTE: We don't have collections of collections so we craft a query that will return nothing
+            entities = Entity.none
           else
-            collections_query
+            entities = entities.where(entity_type: 'Collection')
           end
         when ['https://w3id.org/ldac/profile#Object']
-          items_query
+          entities = entities.where(entity_type: 'Item')
         else
-            collections_query.union(items_query)
+          # Do nothing
         end
 
-        # Count query to get the total number of records
-        count_query = Arel::SelectManager.new(Arel::Table.engine)
-        count_query.from(combined_query.as('combined')).project(Arel.star.count.as('total_count'))
+        @total = entities.count
 
-        total_count_result = ActiveRecord::Base.connection.select_all(count_query.to_sql)
-        @total = total_count_result.first['total_count']
+        entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages]).load
 
-        # Final query with limit and offset
-        final_query = Arel::SelectManager.new(Arel::Table.engine)
-        final_query.from(combined_query.as('combined')).project(Arel.star).order("#{query.sort} #{query.order}").skip(query.offset).take(query.limit)
-
-        ids = ActiveRecord::Base.connection.select_all(final_query.to_sql)
-
-        collection_ids = ids.select { |id| id['type'] == 'collection' }.pluck('id')
-        item_ids = ids.select { |id| id['type'] == 'item' }.pluck('id')
+        collection_ids = entities.select { |id| id.entity_type == 'Collection' }.map(&:entity_id)
+        item_ids = entities.select { |id| id.entity_type == 'Item' }.map(&:entity_id)
 
         collection_mimetypes = Essence.joins(item: :collection).where(item: { collection_id: collection_ids }).distinct.pluck(:mimetype)
         item_mimetypes = Essence.joins(:item).where(item_id: item_ids).distinct.pluck(:mimetype)
         @mime_types = collection_mimetypes.concat(item_mimetypes).uniq
 
-        collections = Collection.where(id: collection_ids)
-                                .select('collections.*, COUNT(DISTINCT items.id) AS items_count, COUNT(essences.id) AS essences_count')
-                                .left_joins(items: :essences)
-                                .group('collections.id')
-                                .includes(:access_condition, :languages)
-        items = Item.where(id: item_ids)
-                     .select('items.*, COUNT(essences.id) AS essences_count')
-                     .left_joins(:essences)
-                     .group('items.id')
-                     .includes(:collection, :access_condition, :content_languages)
-
-        @entities = ids.map do |id|
-          if id['type'] == 'collection'
-            collections.find { |c| c.id == id['id'] }
-          else
-            items.find { |i| i.id == id['id'] }
-          end
-        end
+        @entities = entities.map(&:entity)
       end
 
       def entity
@@ -106,16 +71,19 @@ module Api
 
         if check_for_essence
           render 'object_meta_essence'
+
           return
         end
 
         if check_for_item
           render 'object_meta_item'
+
           return
         end
 
         if check_for_collection
           render 'object_meta_collection'
+
           return
         end
 
@@ -187,12 +155,18 @@ module Api
         md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
         return false unless md
 
-        @collection = Collection.where(private: false).find_by(identifier: md[1])
-        @item = @collection.items
-          .where(private: false)
-          .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
+        @collection = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        return false unless @collection
 
-        @data = @item.essences.find_by(filename: md[3])
+        @item = @collection.items
+          .accessible_by(current_ability)
+          .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
+        return false unless @item
+
+        @data = @item.essences
+          .accessible_by(current_ability)
+          .find_by(filename: md[3])
+        return false unless @data
 
         true
       end
@@ -201,10 +175,13 @@ module Api
         md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
         return false unless md
 
-        @collection = Collection.where(private: false).find_by(identifier: md[1])
+        @collection = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        return false unless @collection
+
         @data = @collection.items
-          .where(private: false)
+          .accessible_by(current_ability)
           .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
+        return false unless @data
 
         true
       end
@@ -213,7 +190,9 @@ module Api
         md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
         return false unless md
 
-        @data = Collection.where(private: false).find_by(identifier: md[1])
+        @data = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        return false unless @data
+
         @is_item = false
 
         true
