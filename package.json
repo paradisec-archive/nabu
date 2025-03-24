@@ -3,16 +3,16 @@
   "private": true,
   "packageManager": "yarn@4.5.1",
   "dependencies": {
-    "@activeadmin/activeadmin": "^3.2.5",
+    "@activeadmin/activeadmin": "^3.3.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@googlemaps/markerclusterer": "^2.5.3",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.12",
-    "@sentry/browser": "^8.55.0",
+    "@hotwired/turbo-rails": "^8.0.13",
+    "@sentry/browser": "^9.9.0",
     "jquery": "^3.7.1",
     "jquery-query-object": "^2.2.3",
     "jquery-ui": "^1.14.1",
-    "sass": "^1.80.6",
+    "sass": "^1.86.0",
     "select2": "^4.0.13"
   },
   "scripts": {
@@ -22,6 +22,6 @@
     "build:css_active_admin": "sass ./app/assets/stylesheets/active_admin.sass.scss:./app/assets/builds/active_admin.css --no-source-map --load-path=node_modules"
   },
   "devDependencies": {
-    "esbuild": "^0.24.2"
+    "esbuild": "^0.25.1"
   }
 }
