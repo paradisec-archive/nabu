@@ -322,6 +322,7 @@ export class AppStack extends cdk.Stack {
         SENTRY_API_TOKEN: ecs.Secret.fromSecretsManager(appSecrets, 'sentry_api_token'),
         DATACITE_USER: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_user'),
         DATACITE_PASS: ecs.Secret.fromSecretsManager(appSecrets, 'datacite_pass'),
+        OPENID_SIGNING_KEY: ecs.Secret.fromSecretsManager(appSecrets, 'openid_signing_key'),
       },
     };
 

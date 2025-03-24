@@ -69,8 +69,8 @@ bin/release prod
 If necessary:
 
 ``` bash
-bin/aws/ecs_rake deploy:migrate
-bin/aws/ecs_rake searchkick:reindex
+bin/aws/ecs_rake app deploy:migrate
+bin/aws/ecs_rake app searchkick:reindex
 ```
 
 ## Importing a production database into your development environment
