@@ -1,9 +1,15 @@
 {
+  "api": {
+    "rocrate": {
+      "endpoint": "ROCRATE_API_ENDPOINT",
+      "path": "/api/v1/oni",
+      "clientId": "ROCRATE_API_CLIENTID"
+    }
+  },
   "ui": {
-    "siteName": "Pacific And Regional Archive for DIgital Sources in Endangered Cultures",
+    "siteName": "STAGE - Pacific And Regional Archive for Digital Sources in Endangered Cultures",
     "siteNameX": "Discovery",
-    "publicPath": "https://catalog.paradisec.org.au/oni/",
-    "title": "PARADISC Catalog",
+    "title": "STAGE - PARADISC Catalog",
     "shortTitle": "PARADISEC",
     "splashText": "Oni acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
     "splashTextClass": "text-5xl text-[#F4EDE4] pb-10",
@@ -11,8 +17,9 @@
     "splashEnabled": true,
     "splashLauncher": "Acknowledgement of Country",
     "showLogo": true,
-    "showEllipsis": true,
     "navHeight": "80px",
+    "showNotebooks": false,
+    "showEllipsis": true,
     "help": {
       "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>).",
       "helpUrl": "https://www.example.com",
@@ -25,21 +32,10 @@
         "target": "_blank"
       }
     ],
-    "googleForm": {
-      "takedown": "https://docs.google.com/forms/d/e/1FAIpQLSc3wWGYLgkEtba65mL46BUhMAPWiHt5EHrQ2rWiI4nJqPjpDg/viewform?usp=pp_url&entry.812577446="
-    },
-    "binderhubRegistry": {
-      "registryJson": "https://api.github.com/repos/Language-Research-Technology/BinderHub-registry/contents/BinderHub-registry.json"
-    },
     "terms": {
       "text": "Example terms of service",
       "href": "/terms",
       "title": "Terms of Service"
-    },
-    "privacy": {
-      "text": "Example privacy notice",
-      "href": "/privacy",
-      "title": "Privacy Notice"
     },
     "email": {
       "help": "help@example.com"
@@ -58,22 +54,6 @@
       "label": "REMS",
       "url": "https://rems-uat.example.com/applications"
     },
-    "loginProviders": [
-      {
-        "name": "github",
-        "text": "Sign in with Github",
-        "disabled": false,
-        "loginRoute": "/oauth/github/login",
-        "buttonStyle": "background: rgba(88 115 181)"
-      },
-      {
-        "name": "cilogon",
-        "text": "Sign in with CILogon",
-        "disabled": false,
-        "loginRoute": "/oauth/cilogon/login",
-        "buttonStyle": "background: rgba(76 60 185)"
-      }
-    ],
     "enrollment": {
       "enforced": false,
       "URL": "https://registry-test.ldaca.edu.au/registry/co_petitions/start/coef:9"
@@ -103,24 +83,24 @@
     "search": {
       "sorting": [
         {
+          "value": "relevance",
+          "label": "Relevance"
+        },
+        {
           "value": "id",
-          "label": "Id",
-          "field": "id"
+          "label": "Id"
         },
         {
           "value": "title",
-          "label": "Title",
-          "field": "title"
+          "label": "Title"
         },
         {
           "value": "createdAt",
-          "label": "Created",
-          "field": "createdAt"
+          "label": "Created"
         },
         {
           "value": "updatedAt",
-          "label": "Updated",
-          "field": "updatedAt"
+          "label": "Updated"
         }
       ],
       "searchSorting": {
@@ -141,89 +121,38 @@
         "value": "desc",
         "label": "Descending"
       },
-      "searchDetails": [{ "field": "inLanguage", "label": "Language", "name": "name" }]
+      "searchDetails": [
+        {
+          "field": "language",
+          "label": "Language"
+        }
+      ]
     },
     "main": {
       "fields": [
         {
           "display": "Language",
-          "name": "inLanguage.name.@value"
+          "name": "inLanguage"
         },
         {
           "display": "Linguistic Genre",
-          "name": "linguisticGenre.name.@value"
+          "name": "linguisticGenre"
         },
         {
-          "display": "Modality",
-          "name": "modality.name.@value"
+          "display": "Comminication Mode",
+          "name": "communicationMode"
         },
         {
           "display": "Annotation Type",
-          "name": "annotationType.@value"
+          "name": "annotationType"
         },
         {
           "display": "File Formats",
-          "name": "encodingFormat.@value"
+          "name": "encodingFormat"
         }
       ],
       "byteFields": ["size", "contentSize"],
       "expand": ["speaker", "author", "citation"]
-    },
-    "head": {
-      "meta": [
-        {
-          "name": "DC.title",
-          "content": "name"
-        },
-        {
-          "name": "DC.description",
-          "content": "description"
-        },
-        {
-          "name": "DC.creator",
-          "content": "creator"
-        },
-        {
-          "name": "DC.contributor",
-          "content": "contributor"
-        },
-        {
-          "name": "DC.date",
-          "content": "datePublished"
-        },
-        {
-          "name": "DC.coverage",
-          "content": "temporalCoverage"
-        },
-        {
-          "name": "DC.language",
-          "content": "language"
-        },
-        {
-          "name": "DC.identifier",
-          "content": "@id"
-        },
-        {
-          "name": "DC.publisher",
-          "content": "publisher"
-        },
-        {
-          "name": "DC.type",
-          "content": "@type"
-        },
-        {
-          "name": "DC.type",
-          "content": "materialType"
-        },
-        {
-          "name": "DC.license",
-          "content": "license"
-        },
-        {
-          "name": "DC.date",
-          "content": "dateCreated"
-        }
-      ]
     },
     "collection": {
       "name": {
@@ -251,23 +180,23 @@
           "datePublished",
           "license",
           "@type",
-          "_containsTypes",
-          "_crateId",
-          "_isRoot",
-          "_isTopLevel",
-          "_root",
+          "containsTypes",
+          "crateId",
+          "isRoot",
+          "isTopLevel",
+          "root",
           "hasPart",
           "hasMember",
-          "_memberOf",
-          "_isSubLevel",
           "memberOf",
-          "_access",
-          "_collectionStack",
-          "_metadataIsPublic",
-          "_metadataLicense",
+          "isSubLevel",
+          "memberOf",
+          "access",
+          "collectionStack",
+          "metadataIsPublic",
+          "metadataLicense",
           "identifier",
-          "_mainCollection",
-          "_subCollection"
+          "subCollection",
+          "mainCollection"
         ],
         "displayHasMember": false,
         "displayHasPart": true
@@ -301,30 +230,30 @@
       ],
       "meta": {
         "hide": [
-          "_memberOf",
+          "memberOf",
           "name",
           "description",
           "datePublished",
           "identifier",
           "license",
           "@type",
-          "_containsTypes",
-          "_crateId",
-          "_isRoot",
-          "_isTopLevel",
-          "_root",
+          "containsTypes",
+          "crateId",
+          "isRoot",
+          "isTopLevel",
+          "root",
           "hasPart",
           "hasMember",
           "error",
-          "_parent",
-          "_access",
+          "parent",
+          "access",
           "indexableText",
-          "_access",
-          "_collectionStack",
-          "_metadataIsPublic",
-          "_metadataLicense",
-          "_mainCollection",
-          "_subCollection"
+          "access",
+          "collectionStack",
+          "metadataIsPublic",
+          "metadataLicense",
+          "mainCollection",
+          "subCollection"
         ]
       }
     },
@@ -333,17 +262,17 @@
         "hide": [
           "name",
           "@type",
-          "_access",
-          "_crateId",
-          "_parent",
-          "_memberOf",
-          "_root",
-          "_text",
-          "_collectionStack",
-          "_metadataIsPublic",
-          "_metadataLicense",
-          "_mainCollection",
-          "_subCollection"
+          "access",
+          "crateId",
+          "parent",
+          "memberOf",
+          "root",
+          "text",
+          "collectionStack",
+          "metadataIsPublic",
+          "metadataLicense",
+          "mainCollection",
+          "subCollection"
         ]
       }
     },
@@ -377,310 +306,144 @@
           "url",
           "binderLink",
           "base64",
-          "_access",
-          "_metadataIsPublic",
-          "_metadataLicense",
-          "_mainCollection",
-          "_subCollection"
+          "access",
+          "metadataIsPublic",
+          "metadataLicense",
+          "mainCollection",
+          "subCollection"
         ],
         "displayHasMember": false,
         "displayHasPart": false
       }
     },
-    "helpers": [],
-    "baseVocab": "https://w3id.org/ldac/terms#",
     "analytics": {
       "gaMeasurementId": "G-XXX"
-    }
-  },
-  "api": {
-    "structural": {
-      "endpoint": "https://catalog.paradisec.org.au",
-      "path": "/api/v1/oni",
-      "clientId": "ONI_API_CLIENTID",
-      "clientSecret": "ONI_API_CLIENTSECRET"
     },
-    "bootstrap": false,
-    "log": {
-      "logFolder": "/opt/storage/oni/logs"
+    "googleForm": {
+      "takedown": "https://docs.google.com/forms/d/e/1FAIpQLSc3wWGYLgkEtba65mL46BUhMAPWiHt5EHrQ2rWiI4nJqPjpDg/viewform?usp=pp_url&entry.812577446="
     },
-    "rocrate": {
-      "dataTransform": {
-        "types": ["File"]
+    "binderhubRegistry": {
+      "registryJson": "https://api.github.com/repos/Language-Research-Technology/BinderHub-registry/contents/BinderHub-registry.json"
+    },
+    "aggregations": [
+      {
+        "display": "Collector",
+        "order": 0,
+        "name": "collector_name",
+        "active": true,
+        "hide": false
+      },
+      {
+        "display": "Collection",
+        "order": 1,
+        "name": "memberOf",
+        "hide": false
+      },
+      {
+        "display": "Main Collections",
+        "order": 0,
+        "name": "root",
+        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants.",
+        "hide": false
+      },
+      {
+        "display": "Collection",
+        "order": 1,
+        "name": "mainCollection",
+        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants.",
+        "hide": true
+      },
+      {
+        "display": "Country",
+        "order": 2,
+        "name": "countries",
+        "help": "The countries associated with the entity."
+      },
+      {
+        "display": "License",
+        "order": 0,
+        "name": "licenseId",
+        "hide": true,
+        "icons": true
+      },
+      {
+        "display": "Access",
+        "order": 2,
+        "name": "licenseName",
+        "help": "The access conditions associated with a resource."
+      },
+      {
+        "display": "Record Type",
+        "order": 3,
+        "name": "type",
+        "help": "The type of object a record describes, i.e. a collection, object or file. For individual files, this field also gives information about the nature of the material, i.e. primary material, transcription, annotation etc."
+      },
+      {
+        "display": "Language",
+        "order": 4,
+        "name": "languages",
+        "help": "The language(s) of the content in this resource."
+      },
+      {
+        "display": "Communication Mode",
+        "order": 5,
+        "name": "communicationMode",
+        "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource.",
+        "icons": true
+      },
+      {
+        "display": "Linguistic Genre",
+        "order": 6,
+        "name": "linguisticGenre",
+        "help": "The linguistic classification of the genre of this resource."
+      },
+      {
+        "display": "File Format",
+        "order": 7,
+        "name": "encodingFormat",
+        "help": "The media type of the resource.",
+        "icons": true
+      },
+      {
+        "display": "Annotation Type",
+        "order": 8,
+        "name": "annotationType"
       }
-    },
-    "administrators": ["admin@paradisec.org.au"],
-    "session": {
-      "lifetime": {
-        "hours": 5
+    ],
+    "searchFields": {
+      "name": {
+        "label": "Name",
+        "checked": true
       },
-      "secret": "some_secret_-_32_characters_or_longer"
-    },
-    "tokens": {
-      "secret": "XXXXXXXXXXXX",
-      "accessTokenPassword": "XXXXXXXXXXXX",
-      "admin": "1234-1234-1234-1234"
-    },
-    "services": {},
-    "authorization": {
-      "provider": "rems",
-      "enrollment": {
-        "enforced": false,
-        "groups": ["CO:Members:all"],
-        "URL": "https://registry-test.ldaca.edu.au/registry/co_petitions/start/coef:9"
+      "description": {
+        "label": "Description",
+        "checked": true
       },
-      "rems": {
-        "apiUser": "XXX",
-        "apiKey": "XXX",
-        "apiHost": "https://rems-uat.ldaca.edu.au/api"
-      }
-    },
-    "authentication": {
-      "cilogon": {
-        "clientID": "cilogon:/client_id/XXXXXXXXXXXX",
-        "clientSecret": "XXXXXXXXXXXX",
-        "redirect_uri": "http://localhost:11000/auth/cilogon/callback",
-        "authorizeHost": "https://test.cilogon.org",
-        "authorizePath": "/authorize",
-        "tokenHost": "https://test.cilogon.org",
-        "tokenPath": "/oauth2/token",
-        "user": "https://test.cilogon.org/oauth2/userinfo",
-        "bearer": "token",
-        "scope": "openid+profile+email+org.cilogon.userinfo+offline_access",
-        "use_refresh_token": true,
-        "expirationWindowSeconds": 300,
-        "prompt": "consent",
-        "state": "cilogon",
-        "oauthType": "AuthorizationCode",
-        "useFormData": true,
-        "memberOf": "isMemberOf",
-        "userid": "sub",
-        "username": "sub"
+      "inLanguage": {
+        "label": "Language",
+        "checked": true
       },
-      "github": {
-        "clientID": "XXXXXXXXXXXX",
-        "clientSecret": "XXXXXXXXXXXX",
-        "redirect_uri": "http://localhost:11000/auth/github/callback",
-        "authorizeHost": "https://github.com",
-        "authorizePath": "/login/oauth/authorize",
-        "tokenHost": "https://github.com",
-        "tokenPath": "/login/oauth/access_token",
-        "user": "https://api.github.com/user",
-        "bearer": "token",
-        "scope": "read:org, user",
-        "state": "github",
-        "oauthType": "ClientCredentials",
-        "useHeaders": true,
-        "userid": "id",
-        "username": "login"
+      "text": {
+        "label": "Text",
+        "checked": true
       }
     },
     "licenses": [
       {
-        "license": "#agreeToTerms",
-        "group": "agree-to-terms",
-        "access": "login",
-        "enrollment": {
-          "url": "https://rems-uat.example.com/application?items=999",
-          "label": "Apply for access",
-          "class": ""
-        }
-      },
-      {
         "license": "#restricted",
         "group": "restricted-users",
         "access": "loginPlus",
-        "enrollment": {}
+        "enrollment": {
+          "url": "http://localhost",
+          "label": "",
+          "class": ""
+        }
       }
     ],
-    "licenseGroup": "text-commons",
-    "license": {
-      "default": {
-        "@id": "https://choosealicense.com/no-permission/",
-        "@type": "OrganizationReuseLicense",
-        "metadataIsPublic": true,
-        "allowTextIndex": true,
-        "name": "Default LDaCA No License",
-        "description": "No License"
-      },
-      "defaultMetadata": {
-        "id": "https://creativecommons.org/licenses/by/4.0/",
-        "name": "Attribution 4.0 International (CC BY 4.0)",
-        "description": "You are free to:\nShare — copy and redistribute the material in any medium or format\nAdapt — remix, transform, and build upon the material\nfor any purpose, even commercially.\nThis license is acceptable for Free Cultural Works.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.",
-        "isPublic": true
-      }
-    },
-    "identifier": {
-      "main": "Oni"
-    },
-    "elastic": {
-      "bootstrap": false,
-      "node": "http://opensearch:9200",
-      "maxScroll": 5000,
-      "scrollTimeout": "10m",
-      "log": "debug",
-      "index": "items",
-      "indexConfiguration": {
-        "mapping": {
-          "total_fields": {
-            "limit": 10000
-          }
-        },
-        "max_result_window": 100000,
-        "highlight": {
-          "max_analyzer_offset": 1000000
-        }
-      },
-      "fields": {
-        "name.@value": {
-          "label": "Name",
-          "checked": true
-        },
-        "description.@value": {
-          "label": "Description",
-          "checked": true
-        },
-        "language.name.@value": {
-          "label": "Language",
-          "checked": true
-        },
-        "language.alternateName.@value": {
-          "label": "Alternate Language Name",
-          "checked": true
-        },
-        "contributor.@value": {
-          "label": "Contributor",
-          "checked": true
-        },
-        "creator.@value": {
-          "label": "Creator",
-          "checked": true
-        },
-        "_text": {
-          "label": "Text",
-          "checked": true
-        }
-      },
-      "aggregations": [
-        {
-          "display": "Collection",
-          "order": 0,
-          "name": "_root.name.@value",
-          "field": "_root.name.@value.keyword",
-          "active": true
-        },
-        {
-          "display": "Member Of",
-          "order": 1,
-          "name": "_memberOf.name.@value",
-          "field": "_memberOf.name.@value.keyword"
-        },
-        {
-          "display": "Access",
-          "order": 2,
-          "name": "license.name.@value",
-          "field": "license.name.@value.keyword",
-          "help": "The access conditions associated with a resource."
-        },
-        {
-          "display": "License",
-          "order": 0,
-          "name": "license.@id",
-          "field": "license.@id.keyword",
-          "hide": true,
-          "icons": true
-        },
-        {
-          "display": "Record Type",
-          "order": 3,
-          "name": "@type",
-          "field": "@type.keyword"
-        },
-        {
-          "display": "Language",
-          "order": 4,
-          "name": "inLanguage.name.@value",
-          "field": "inLanguage.name.@value.keyword"
-        },
-        {
-          "display": "Communication Mode",
-          "order": 5,
-          "name": "communicationMode.name.@value",
-          "field": "communicationMode.name.@value.keyword",
-          "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource.",
-          "icons": true
-        },
-        {
-          "display": "Linguistic Genre",
-          "order": 6,
-          "name": "linguisticGenre.name.@value",
-          "field": "linguisticGenre.name.@value.keyword",
-          "help": "The linguistic classification of the genre of this resource."
-        },
-        {
-          "display": "File Format",
-          "order": 7,
-          "name": "encodingFormat.@value",
-          "field": "encodingFormat.@value.keyword",
-          "help": "The media type of the resource.",
-          "icons": true
-        },
-        {
-          "display": "Annotation Type",
-          "order": 8,
-          "name": "annotationType.@value",
-          "field": "annotationType.@value.keyword"
-        }
-      ],
-      "highlightFields": ["_text"],
-      "test": {
-        "filters": {
-          "hasFile.language.name": ["Arabic, Standard", "Chinese, Mandarin", "Persian, Iranian", "Turkish", "Vietnames"]
-        },
-        "@type": ["TextDialogue"]
-      },
-      "mappingFieldLimit": 3000,
-      "mappings": {
-        "date_detection": false,
-        "properties": {
-          "_contentLocation": {
-            "type": "geo_shape"
-          },
-          "_centroid": {
-            "type": "geo_shape"
-          },
-          "@id": {
-            "type": "keyword"
-          },
-          "hasFile": {
-            "type": "nested",
-            "properties": {
-              "language": {
-                "type": "nested",
-                "properties": {
-                  "name": {
-                    "type": "nested",
-                    "properties": {
-                      "@value": {
-                        "type": "keyword"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "admin": {
-      "indexRoutes": true
-    },
     "conformsTo": {
       "collection": "https://w3id.org/ldac/profile#Collection",
       "object": "https://w3id.org/ldac/profile#Object",
       "notebook": "https://w3id.org/ldac/profile#Notebook"
-    },
-    "skipByMatch": []
+    }
   }
 }

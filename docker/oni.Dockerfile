@@ -2,24 +2,30 @@
 #
 FROM node:lts AS builder
 
-ARG ONI_API_CLIENTID
-ARG ONI_API_CLIENTSECRET
+ARG ROCRATE_API_ENDPOINT
+ARG ROCRATE_API_CLIENTID
 ARG BUMP=6
 
-WORKDIR /tmp
-RUN git clone https://github.com/paradisec-archive/oni-ui.git && cd oni-ui && git switch paradisec
+RUN corepack enable
 
-WORKDIR /tmp/oni-ui/portal
+WORKDIR /tmp
+
+RUN git clone https://github.com/paradisec-archive/oni-ui.git -b paradisec
+
+WORKDIR /tmp/oni-ui
+
 COPY docker/oni.json configuration.json
-RUN sed -i "s/ONI_API_CLIENTID/$ONI_API_CLIENTID/;s/ONI_API_CLIENTSECRET/$ONI_API_CLIENTSECRET/" configuration.json
-RUN sed -i "s/publicPath: .*/publicPath: '\/oni',/" webpack-production.js
-RUN npm run build
+
+RUN sed -i "s/ROCRATE_API_ENDPOINT/$ROCRATE_API_ENDPOINT/;s/ROCRATE_API_CLIENTID/$ROCRATE_API_CLIENTID/" configuration.json && \
+  yarn install && \
+  npm build --base=/oni
 
 ###############################################################################
 #
-FROM nginx
+FROM nginx:1-alpine
 
 WORKDIR /tmp
-RUN mkdir /usr/share/nginx/html/oni
-COPY --from=builder /tmp/oni-ui/portal/dist /usr/share/nginx/html/oni
-RUN sed -i '/server {/a \  location /oni/ {\n     try_files $uri $uri/ /oni/index.html;\n    alias /usr/share/nginx/html/oni/;\n    }' /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /tmp/oni-ui/dist /usr/share/nginx/html
+
+RUN sed -i '/server {/a \  location /oni/ {\n     try_files $uri $uri/ /oni/index.html;\n    alias /usr/share/nginx/html;\n    }' /etc/nginx/conf.d/default.conf
