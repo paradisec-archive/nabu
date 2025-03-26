@@ -721,7 +721,7 @@ DEPENDENCIES
   propshaft
   puma (>= 5.0)
   rack-cors
-  rails (~> 8.0.0)
+  rails (~> 8.0.2)
   rails-controller-testing
   rails-reverse-proxy
   recaptcha
