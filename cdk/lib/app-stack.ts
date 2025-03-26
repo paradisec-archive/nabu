@@ -250,8 +250,8 @@ export class AppStack extends cdk.Stack {
             env === 'prod' ? 'https://catalog.paradisec.org.au/' : 'https://catalog.nabu-stage.paradisec.org.au',
           ROCRATE_API_CLIENTID:
             env === 'prod'
-              ? '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk'
-              : '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
+              ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ'
+              : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
         },
       }),
       portMappings: [{ name: 'oni', containerPort: 80 }],
