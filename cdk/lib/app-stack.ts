@@ -238,9 +238,9 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
-    // NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
-    //   { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    // ]);
+    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
+      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
+    ]);
     oniTaskDefinition.addContainer('OniContainer', {
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', {

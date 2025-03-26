@@ -4,7 +4,7 @@ FROM node:lts AS builder
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
-ARG BUMP=6
+ARG BUMP=10
 
 RUN corepack enable
 
@@ -16,9 +16,13 @@ WORKDIR /tmp/oni-ui
 
 COPY docker/oni.json configuration.json
 
-RUN sed -i "s/ROCRATE_API_ENDPOINT/$ROCRATE_API_ENDPOINT/;s/ROCRATE_API_CLIENTID/$ROCRATE_API_CLIENTID/" configuration.json && \
+RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" configuration.json && \
   yarn install && \
-  npm build --base=/oni
+  ls scripts && \
+  node -v && \
+  node --experimental-strip-types scripts/fetch-vocabs.mts vocab.json && \
+  yarn run build-only --base /oni
+# TODO: switch back to build
 
 ###############################################################################
 #
@@ -26,6 +30,8 @@ FROM nginx:1-alpine
 
 WORKDIR /tmp
 
-COPY --from=builder /tmp/oni-ui/dist /usr/share/nginx/html
+RUN mkdir /usr/share/nginx/html/oni
 
-RUN sed -i '/server {/a \  location /oni/ {\n     try_files $uri $uri/ /oni/index.html;\n    alias /usr/share/nginx/html;\n    }' /etc/nginx/conf.d/default.conf
+COPY --from=builder /tmp/oni-ui/dist /usr/share/nginx/html/oni
+
+COPY docker/nginx-oni.conf /etc/nginx/conf.d/default.conf

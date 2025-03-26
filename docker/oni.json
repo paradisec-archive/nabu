@@ -3,6 +3,7 @@
     "rocrate": {
       "endpoint": "ROCRATE_API_ENDPOINT",
       "path": "/api/v1/oni",
+      "callbackPrefix": "/oni",
       "clientId": "ROCRATE_API_CLIENTID"
     }
   },
