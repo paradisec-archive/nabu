@@ -168,7 +168,7 @@ module Api
 
         @data = @item.essences
           .accessible_by(current_ability)
-          .find_by(filename: "#{md[3]}.#{params[:format]}")
+          .find_by(filename: md[3])
         return false unless @data
 
         true
