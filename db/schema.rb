@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_011842) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_07_031234) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -468,6 +468,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_011842) do
   add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
 
   create_view "entities", sql_definition: <<-SQL
-      select `collections`.`id` AS `entity_id`,'Collection' AS `entity_type`,`collections`.`identifier` AS `collection_identifier`,count(distinct `collection_items`.`id`) AS `items_count`,count(distinct `collection_essences`.`id`) AS `essences_count`,`collections`.`private` AS `private` from ((`collections` left join `items` `collection_items` on((`collections`.`id` = `collection_items`.`collection_id`))) left join `essences` `collection_essences` on((`collection_items`.`id` = `collection_essences`.`item_id`))) group by `collections`.`id` union select `items`.`id` AS `entity_id`,'Item' AS `searchable_type`,`item_collections`.`identifier` AS `collection_identifier`,0 AS `items_count`,count(distinct `item_essences`.`id`) AS `essences_count`,`items`.`private` AS `private` from ((`items` left join `collections` `item_collections` on((`items`.`collection_id` = `item_collections`.`id`))) left join `essences` `item_essences` on((`items`.`id` = `item_essences`.`item_id`))) group by `items`.`id`
+      select `collections`.`id` AS `entity_id`,'Collection' AS `entity_type`,`collections`.`identifier` AS `collection_identifier`,`collections`.`title` AS `collection_title`,count(distinct `collection_items`.`id`) AS `items_count`,count(distinct `collection_essences`.`id`) AS `essences_count`,`collections`.`private` AS `private` from ((`collections` left join `items` `collection_items` on((`collections`.`id` = `collection_items`.`collection_id`))) left join `essences` `collection_essences` on((`collection_items`.`id` = `collection_essences`.`item_id`))) group by `collections`.`id` union select `items`.`id` AS `entity_id`,'Item' AS `searchable_type`,`item_collections`.`identifier` AS `collection_identifier`,`item_collections`.`title` AS `collection_title`,0 AS `items_count`,count(distinct `item_essences`.`id`) AS `essences_count`,`items`.`private` AS `private` from ((`items` left join `collections` `item_collections` on((`items`.`collection_id` = `item_collections`.`id`))) left join `essences` `item_essences` on((`items`.`id` = `item_essences`.`item_id`))) group by `items`.`id`
   SQL
 end

@@ -7,6 +7,7 @@
 # Name                         | Type               | Attributes
 # ---------------------------- | ------------------ | ---------------------------
 # **`collection_identifier`**  | `string(255)`      |
+# **`collection_title`**       | `string(255)`      |
 # **`entity_type`**            | `string(10)`       | `default(""), not null`
 # **`essences_count`**         | `bigint`           | `default(0), not null`
 # **`items_count`**            | `bigint`           | `default(0), not null`
