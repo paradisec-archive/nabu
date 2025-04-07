@@ -29,7 +29,7 @@ module Api
             return
           end
 
-          entities = entities.where(collection_identifier: md[1])
+          entities = entities.where(identifier: md[1])
         end
 
         case query.conforms_to
