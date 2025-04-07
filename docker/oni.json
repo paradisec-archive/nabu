@@ -12,11 +12,13 @@
     "siteNameX": "Discovery",
     "title": "STAGE - PARADISC Catalog",
     "shortTitle": "PARADISEC",
-    "splashText": "Oni acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
-    "splashTextClass": "text-5xl text-[#F4EDE4] pb-10",
-    "splashImage": "splash-background-1.png",
-    "splashEnabled": true,
-    "splashLauncher": "Acknowledgement of Country",
+    "splash": {
+      "text": "Oni acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
+      "textClass": "text-5xl text-[#F4EDE4] pb-10",
+      "image": "splash-background-1.png",
+      "enabled": true,
+      "launcher": "Acknowledgement of Country"
+    },
     "showLogo": true,
     "navHeight": "80px",
     "showNotebooks": false,
