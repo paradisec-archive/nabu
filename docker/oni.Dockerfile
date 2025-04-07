@@ -16,7 +16,7 @@ WORKDIR /tmp/oni-ui
 
 COPY docker/oni.json src/configuration.json
 
-RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" configuration.json && \
+RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" src/configuration.json && \
   yarn install && \
   ls scripts && \
   node -v && \
