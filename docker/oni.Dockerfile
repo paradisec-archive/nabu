@@ -14,7 +14,7 @@ RUN git clone https://github.com/paradisec-archive/oni-ui.git -b paradisec
 
 WORKDIR /tmp/oni-ui
 
-COPY docker/oni.json configuration.json
+COPY docker/oni.json src/configuration.json
 
 RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" configuration.json && \
   yarn install && \
