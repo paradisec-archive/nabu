@@ -70,7 +70,8 @@ module Api
         @admin_rocrate = false
 
         if check_for_essence
-          render 'object_meta_essence'
+          # NOTE: Hard code the format as rails pick up the extension in the id
+          render 'object_meta_essence', formats: [:json]
 
           return
         end
@@ -148,10 +149,12 @@ module Api
           body_options: { track_total_hits: true },
           highlight: { tag: '<mark class="font-bold">' }
         )
-    end
+      end
 
-    private
+      private
       def check_for_essence
+        puts repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)')
+
         md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
         return false unless md
 
@@ -165,7 +168,7 @@ module Api
 
         @data = @item.essences
           .accessible_by(current_ability)
-          .find_by(filename: md[3])
+          .find_by(filename: "#{md[3]}.#{params[:format]}")
         return false unless @data
 
         true

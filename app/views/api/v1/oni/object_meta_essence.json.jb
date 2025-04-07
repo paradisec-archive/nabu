@@ -4,6 +4,10 @@ def id
   repository_essence_url(@data.collection, @data.item, @data.filename)
 end
 
+def parentId
+  repository_item_url(@data.collection, @data.item)
+end
+
 def rocrate_json
   {
     '@id': 'ro-crate-metadata.json',
@@ -25,7 +29,10 @@ data = {
   dateModified: @data.updated_at.to_date,
   encodingFormat: @data.mimetype,
   name: @data.filename,
-  doi: @data.doi
+  filename: @data.filename,
+  doi: @data.doi,
+  parentId:,
+  parentTitle: @data.item.title
 }
 data[:bitrate] = @data.bitrate
 data[:duration] = @data.duration
