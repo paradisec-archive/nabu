@@ -106,15 +106,21 @@ module Api
 
         as_attachment = params[:disposition] == 'attachment'
         filename = params[:filename]
+        puts '🪚 🟩'
 
         raise ActiveRecord::RecordNotFound unless check_for_item
+        puts '🪚 ⭐'
 
         essence = @data.essences.find_by(filename: params[:path])
+        puts '🪚 🔲'
 
         raise ActiveRecord::RecordNotFound unless essence
+        puts '🪚 ⭕'
 
         location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
+        puts '🪚 🔵'
         raise ActionController::RoutingError, 'Essence file not found' unless location
+        puts '🪚 💜'
 
         redirect_to location, allow_other_host: true
       end
