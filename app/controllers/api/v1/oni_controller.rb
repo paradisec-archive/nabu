@@ -122,7 +122,12 @@ module Api
         raise ActionController::RoutingError, 'Essence file not found' unless location
         puts '🪚 💜'
 
-        redirect_to location, allow_other_host: true
+        if params[:noRedirect] === 'true'
+          puts '🪚 💜'
+          render json: { location: }
+        else
+          redirect_to location, allow_other_host: true
+        end
       end
 
       def search
