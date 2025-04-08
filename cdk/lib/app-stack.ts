@@ -483,22 +483,20 @@ export class AppStack extends cdk.Stack {
       ],
     });
 
-    if (env === 'stage') {
-      const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
-        targets: [oniService],
-        vpc,
-        protocol: elbv2.ApplicationProtocol.HTTP,
-      });
+    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
+      targets: [oniService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
 
-      sslListener.addTargetGroups('OniTargetGroups', {
-        targetGroups: [oniTargetGroup],
-        priority: 6,
-        conditions: [
-          elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-          elbv2.ListenerCondition.pathPatterns(['/oni/*']),
-        ],
-      });
-    }
+    sslListener.addTargetGroups('OniTargetGroups', {
+      targetGroups: [oniTargetGroup],
+      priority: 6,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/oni*']),
+      ],
+    });
 
     // ////////////////////////
     // DNS
