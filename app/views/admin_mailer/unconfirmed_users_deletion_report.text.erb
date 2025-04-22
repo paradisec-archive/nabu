@@ -1,0 +1,52 @@
+NABU Unconfirmed Users Deletion Report
+=====================================
+
+Report Date: <%= @report_data[:report_date].strftime('%F %T') %>
+
+This email identifies unconfirmed users who have not confirmed their accounts after <%= @report_data[:age_days] %> days.
+
+WARNING: These accounts will be DELETED in 7 days.
+
+Summary
+-------
+
+Total unconfirmed users (older than <%= @report_data[:age_days] %> days): <%= @report_data[:total] %>
+Referenced unconfirmed users: <%= @report_data[:referenced_count] %>
+Unreferenced unconfirmed users: <%= @report_data[:unreferenced_count] %>
+
+Users Scheduled for Deletion: <%= @report_data[:unreferenced_count] %>
+
+<% if @report_data[:referenced_count] > 0 %>
+Referenced Unconfirmed Users (will NOT be deleted):
+-------------------------------------------------
+
+  <% @report_data[:referenced].each do |user| %>
+ID: <%= user[:id] %>
+Name: <%= user[:name].html_safe[0..20] %>
+Email: <%= user[:email] || 'No email' %>
+Created: <%= user[:created_at].to_date %> (<%= user[:created_days_ago] %> days ago)
+Referenced as: <%= user[:references].join(', ') %>
+
+---
+
+  <% end %>
+<% end %>
+
+List of Users to be Deleted:
+---------------------------
+<% if @report_data[:unreferenced].any? %>
+<% @report_data[:unreferenced].each do |user| %>
+ID: <%= user[:id] %>
+Name: <%= user[:name].html_safe[0..20] %>
+Email: <%= user[:email] || 'No email' %>
+Created: <%= user[:created_at].to_date %> (<%= user[:created_days_ago] %> days ago)
+
+---
+
+<% end %>
+<% else %>
+No users scheduled for deletion.
+<% end %>
+
+
+This is an automated message from NABU.

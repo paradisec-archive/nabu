@@ -1,0 +1,36 @@
+NABU Unconfirmed Users Deletion Confirmation
+=========================================
+Deletion Date: <%= Time.now.strftime('%F %T') %>
+
+This email confirms that <%= @deleted_count %> unconfirmed user accounts have been deleted.
+
+These accounts were unconfirmed for more than 14 days and were not referenced elsewhere in the system.
+
+List of Deleted Users:
+---------------------
+<% @deleted_users.each do |user| %>
+ID: <%= user[:id] %>
+Name: <%= user[:name].html_safe[0..20] %>
+Email: <%= user[:email] || 'No email' %>
+Created: <%= user[:created_at].to_date %> (<%= user[:created_days_ago] %> days ago)
+
+---
+
+<% end %>
+<% end %>
+
+<% if @failed_users && @failed_users.any? %>
+Failed Deletions (users that could not be deleted):
+-------------------------------------------------
+<% @failed_users.each do |user| %>
+ID: <%= user[:id] %>
+Name: <%= user[:name].html_safe[0..20] %>
+Email: <%= user[:email] || 'No email' %>
+Errors: <%= user[:errors].join(', ') %>
+
+---
+
+<% end %>
+<% end %>
+
+This is an automated message from NABU. Please do not reply to this email.

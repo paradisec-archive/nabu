@@ -39,6 +39,32 @@ scheduler.cron '27 5 * * 2'  do
   end
 end
 
+scheduler.cron '27 5 * * 3'  do
+  name = 'Unconfirmed User Deletion Report'
+  task = 'users:list_deletion_candidates'
+
+  puts "#{Time.current}: Starting task #{name}"
+
+  begin
+    Rake::Task[task].invoke
+  ensure
+    Rake::Task[task].reenable
+  end
+end
+
+# scheduler.cron '27 5 * * 3'  do
+#   name = 'Delete unconfirmed users'
+#   task = 'users:delete_unconfirmed'
+#
+#   puts "#{Time.current}: Starting task #{name}"
+#
+#   begin
+#     Rake::Task[task].invoke
+#   ensure
+#     Rake::Task[task].reenable
+#   end
+# end
+
 scheduler.cron '10 1 * * *'  do
   name = 'Mint Dois'
   task = 'catalog:mint_dois'

@@ -14,4 +14,22 @@ class AdminMailer < ApplicationMailer
 
     mail(subject: "[NABU Admin] Catalog Replication Report: #{Date.today.strftime('%F')}")
   end
+
+  def unconfirmed_users_deletion_report
+    @report_data = params[:report_data]
+
+    to_delete = @report_data[:unreferenced_count]
+
+    mail(subject: "[NABU Admin] Unconfirmed Users Deletion Preview: #{to_delete} users to be deleted")
+  end
+
+  def unconfirmed_users_deleted_report
+    @report_data = params[:report_data]
+
+    subject_line = "[NABU Admin] Unconfirmed Users Deleted: #{@report_data[:deleted_count]} accounts removed"
+
+    subject_line += " (#{@report_data[:total_failed]} failed)" if @total_failed > 0
+
+    mail(subject:)
+  end
 end
