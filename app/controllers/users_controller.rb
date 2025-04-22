@@ -4,7 +4,10 @@ class UsersController < ApplicationController
   respond_to :json
 
   def index
-    @users = @users.order('first_name, last_name')
+    @users = @users
+      .where(contact_only: true)
+      .or(User.where(contact_only: false).where.not(confirmed_at: nil))
+      .order('first_name, last_name')
     match = "%#{params[:q]}%"
     @users = @users.where(User.arel_table[:first_name].matches(match))
       .or(@users.where(User.arel_table[:last_name].matches(match)))
