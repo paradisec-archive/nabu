@@ -17,22 +17,22 @@ ActiveAdmin.register_page 'Catalog Report' do
       updated_essences: Essence.where('updated_at >= ? AND updated_at <= ?', date.beginning_of_month, date.end_of_month)
     }
 
-    columns do
-      column do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
+      div do
         panel "Catalog report for #{date.strftime('%B %Y')}" do
           render partial: 'form', locals: { date:, year:, month: }
         end
       end
     end
 
-    columns do
-      column do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
+      div do
         panel 'Summary' do
           render partial: 'summary', locals: { date:, data: }
         end
       end
 
-      column do
+      div do
         panel 'Statistics' do
           div do
             render partial: 'admin/dashboard/statistics', locals: { date: }
@@ -41,9 +41,9 @@ ActiveAdmin.register_page 'Catalog Report' do
       end
     end
 
-    columns do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
       %w[new updated].each do |which|
-        column do
+        div do
           panel "#{which.capitalize} Collections" do
             table_for data[:"#{which}_collections"] do
               column :identifier do |collection|
@@ -57,9 +57,9 @@ ActiveAdmin.register_page 'Catalog Report' do
       end
     end
 
-    columns do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
       %w[new updated].each do |which|
-        column do
+        div do
           panel "#{which.capitalize} Items" do
             table_for data[:"#{which}_items"] do
               column :full_identifier do |item|
@@ -72,9 +72,9 @@ ActiveAdmin.register_page 'Catalog Report' do
       end
     end
 
-    columns do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
       %w[new updated].each do |which|
-        column do
+        div do
           panel "#{which.capitalize} Files" do
             insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, data[:"#{which}_essences"] do
               column :full_identifier do |essence|
@@ -86,8 +86,8 @@ ActiveAdmin.register_page 'Catalog Report' do
       end
     end
 
-    columns do
-      column do
+    div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
+      div do
         panel 'File Type Metrics' do
           data = Essence
                  .where('created_at <= ?', date.end_of_month)
@@ -104,7 +104,7 @@ ActiveAdmin.register_page 'Catalog Report' do
         end
       end
 
-      column do
+      div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
         panel 'Collection Metrics' do
           data = Collection
                  .select('
