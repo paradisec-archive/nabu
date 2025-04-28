@@ -4,7 +4,7 @@ FROM node:lts AS builder
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
-ARG BUMP=18
+ARG BUMP=21
 
 RUN corepack enable
 
@@ -21,7 +21,7 @@ RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID
   ls scripts && \
   node -v && \
   node --experimental-strip-types scripts/fetch-vocabs.mts vocab.json && \
-  yarn run build --base=/oni
+  yarn run build-only --base=/oni
 
 ###############################################################################
 #
