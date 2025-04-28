@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "yarn@4.5.1",
   "dependencies": {
-    "@activeadmin/activeadmin": "^3.3.0",
+    "@activeadmin/activeadmin": "4.0.0-beta15",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@googlemaps/markerclusterer": "^2.5.3",
     "@hotwired/stimulus": "^3.2.2",
@@ -13,13 +13,14 @@
     "jquery-query-object": "^2.2.3",
     "jquery-ui": "^1.14.1",
     "sass": "^1.86.0",
-    "select2": "^4.0.13"
+    "select2": "^4.0.13",
+    "tailwindcss": "v3"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
     "build:css": "yarn build:css_app && yarn build:css_active_admin",
     "build:css_app": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
-    "build:css_active_admin": "sass ./app/assets/stylesheets/active_admin.sass.scss:./app/assets/builds/active_admin.css --no-source-map --load-path=node_modules"
+    "build:css_active_admin": "tailwindcss -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify -c tailwind-active_admin.config.js"
   },
   "devDependencies": {
     "esbuild": "^0.25.1"

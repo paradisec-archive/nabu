@@ -38,7 +38,7 @@ ActiveAdmin.register Language do
 
   # show page
   show do |language|
-    attributes_table  do
+    attributes_table_for(resource)  do
       row :id
       row :code
       row :name

@@ -1,15 +1,15 @@
 %h3 Added
-%ul
-  %li== #{data[:new_collections].size} Collections
-  %li== #{data[:new_items].size} Items
-  %li== #{data[:new_essences].size} Files
-  %li== #{number_to_human_size data[:new_essences].sum(:size)}
-  %li== #{number_to_human_duration data[:new_essences].sum(:duration)} Hours
+%ul{class: 'list-disc'}
+  %li{class: 'list-inside'}== #{data[:new_collections].size} Collections
+  %li{class: 'list-inside'}== #{data[:new_items].size} Items
+  %li{class: 'list-inside'}== #{data[:new_essences].size} Files
+  %li{class: 'list-inside'}== #{number_to_human_size data[:new_essences].sum(:size)}
+  %li{class: 'list-inside'}== #{number_to_human_duration data[:new_essences].sum(:duration)} Hours
 
 %h3 Updated
-%ul
-  %li== #{data[:updated_collections].size} Collections
-  %li== #{data[:updated_items].size} Items
-  %li== #{data[:updated_essences].size} Files
-  %li== #{number_to_human_size data[:updated_essences].sum(:size)}
-  %li== #{number_to_human_duration data[:updated_essences].sum(:duration)} Hours
+%ul{class: 'list-disc'}
+  %li{class: 'list-inside'}== #{data[:updated_collections].size} Collections
+  %li{class: 'list-inside'}== #{data[:updated_items].size} Items
+  %li{class: 'list-inside'}== #{data[:updated_essences].size} Files
+  %li{class: 'list-inside'}== #{number_to_human_size data[:updated_essences].sum(:size)}
+  %li{class: 'list-inside'}== #{number_to_human_duration data[:updated_essences].sum(:duration)} Hours

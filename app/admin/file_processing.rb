@@ -37,10 +37,6 @@ ActiveAdmin.register_page 'File Processing' do
         end
       end
     end
-
-    div class: 'dashboard_section panel' do
-      render 'paths'
-    end
   end
 end
 # rubocop:enable Metrics/BlockLength

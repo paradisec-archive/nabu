@@ -1,4 +1,7 @@
+- select_classes = 'w-64 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6'
+
 %form{:method => :get}
-  = select_month month, :field_name => 'month'
-  = select_year year, :field_name => 'year'
-  = submit_tag :change
+  %div{class: 'flex flex-row gap-4'}
+    = select_month month, { field_name: 'month' }, { class: select_classes }
+    = select_year year, { field_name: 'year' }, { class: select_classes }
+    = submit_tag 'Change', { class: 'action-item-button' }

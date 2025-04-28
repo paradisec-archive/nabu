@@ -24,4 +24,8 @@ class PartyIdentifier < ApplicationRecord
   def self.ransackable_attributes(_ = nil)
     %w[created_at id identifier party_type updated_at user_id]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user]
+  end
 end

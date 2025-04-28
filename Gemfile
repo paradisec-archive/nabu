@@ -94,7 +94,7 @@ gem 'aws-actionmailer-ses', '~> 1'  # Send emails via SES
 gem 'aws-sdk-s3' # Talk to the catalog
 
 # Admin Dashboard
-gem 'activeadmin'
+gem 'activeadmin', '4.0.0.beta15'
 gem 'mission_control-jobs' # Jobs dashboard
 gem 'country_select'
 

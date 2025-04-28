@@ -98,9 +98,14 @@ ActiveAdmin.register User do
     count = User.count
     count = User.public_send(params[:scope].to_sym).count if params[:scope].present?
 
+    h3 'Pagination', class: 'filters-form-title'
+    div class: 'flex flex-col gap-4 items-start' do
     ['10', '50', "all #{count}"].each do |n|
-      para link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+        text_node link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'action-item-button'
+      end
     end
+
+    nil
   end
 
   # change pagination
@@ -199,7 +204,7 @@ ActiveAdmin.register User do
 
   # show page
   show do |_user|
-    attributes_table do
+    attributes_table_for(resource) do
       row :id
       row :first_name
       row :last_name
@@ -223,7 +228,7 @@ ActiveAdmin.register User do
     end
 
     h3 'Admin information'
-    attributes_table do
+    attributes_table_for(resource) do
       row :created_at
       row :confirmation_sent_at
       row :confirmed_at

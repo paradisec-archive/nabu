@@ -1,57 +1,63 @@
-%h3 Repository Objects
-%table
-  %tr
-    %td= number_with_delimiter Collection.where('created_at <= ?', date.end_of_month).count
-    %td collections
-  %tr
-    %td= number_with_delimiter Item.where('created_at <= ?', date.end_of_month).count
-    %td items
-  %tr
-    %td= number_with_delimiter Essence.where('created_at <= ?', date.end_of_month).count
-    %td essence objects
-  %tr
-    %td= number_with_delimiter User.where('created_at <= ?', date.end_of_month).count
-    %td users
-  %tr
-    %td= number_with_delimiter University.where('created_at <= ?', date.end_of_month).count
-    %td universities
-  %tr
-    %td= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
-    %td comments
+- h3_classes = 'text-base/7 font-semibold text-gray-900'
+- dl_classes = 'divide-y divide-gray-100 mb-6'
+- div_classes = 'sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'
+- dt_classes = 'text-sm/6 font-medium text-gray-900'
+- dd_classes= 'mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0'
+
+%h3{class: h3_classes} Repository Objects
+%dl{class: dl_classes}
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Collection.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} collections
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Item.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} items
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Essence.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} essence objects
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter User.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} users
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter University.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} universities
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} comments
 
 
-%h3 Essence
-%table
-  %tr
-    %td= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
-    %td hours
-  %tr
-    %td= number_to_human_size Essence.where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of essence objects
-  %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of video files in archive
-  %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of audio files in archive
-  %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of image files in archive
-  %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of application files in archive
-  %tr
-    %td= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %td of text files in archive
+%h3{class: h3_classes} Essence
+%dl{class: dl_classes}
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
+    %dd{class: dd_classes} hours
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of essence objects
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of video files in archive
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of audio files in archive
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of image files in archive
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of application files in archive
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').where('created_at <= ?', date.end_of_month).sum(:size)
+    %dd{class: dd_classes} of text files in archive
 
-%h3 Comments
-%table
-  %tr
-    %td= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
-    %td posted comments
-  %tr
-    %td= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
-    %td approved comments
-  %tr
-    %td= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
-    %td pending comments
+%h3{class: h3_classes} Comments
+%dl{class: dl_classes}
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} posted comments
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} approved comments
+  %div{class: div_classes}
+    %dt{class: dt_classes}= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
+    %dd{class: dd_classes} pending comments

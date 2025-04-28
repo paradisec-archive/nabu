@@ -21,9 +21,14 @@
 #
 ActiveAdmin.register Download do
   sidebar :paginate, only: :index  do
-    ['10', '50', "all #{Download.count}"].each do |n|
-      para link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'button'
+    h3 'Pagination', class: 'filters-form-title'
+    div class: 'flex flex-col gap-4 items-start' do
+      ['10', '50', "all #{Download.count}"].each do |n|
+        text_node link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'action-item-button'
+      end
     end
+
+    nil
   end
 
   permit_params :user, :essence
@@ -46,8 +51,7 @@ ActiveAdmin.register Download do
     column :user
     column :essence do |download|
       if download&.essence
-        link_to download.essence.full_identifier,
-Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
+        link_to download.essence.full_identifier, Rails.application.routes.url_helpers.collection_item_essence_path(download.collection, download.item, download.essence)
       else
         "Essence #{download.essence_id}, now removed"
       end
@@ -68,7 +72,7 @@ Rails.application.routes.url_helpers.collection_item_essence_path(download.colle
 
   # show page
   show do |download|
-    attributes_table do
+    attributes_table_for(resource) do
       row :id
       row :user
       row :essence do
