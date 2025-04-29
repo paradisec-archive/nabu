@@ -14,7 +14,8 @@
     "jquery-ui": "^1.14.1",
     "sass": "^1.87.0",
     "select2": "^4.0.13",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "uuid": "^11.1.0"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
@@ -23,6 +24,8 @@
     "build:css_active_admin": "tailwindcss -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify -c tailwind-active_admin.config.js"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/select2": "^4.0.63",
     "esbuild": "^0.25.3"
   }
 }

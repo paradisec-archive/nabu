@@ -354,20 +354,19 @@ class CollectionsController < ApplicationController
     return unless params[:collection]
 
     # this is used to allow grants where there is a funding body but no grant id
-    if params[:collection][:grants_attributes]
-      # map the collection identifier to the underlying id
-      collection_id = Collection.where(identifier: params[:id]).pick(:id)
-      grants = params[:collection][:grants_attributes]
-
+    if params[:funding_body_ids]
+      params[:collection][:grants_attributes] ||= {}
+      grants = params[:collection][:grants_attributes].values
       funding_body_ids = params['funding_body_ids'] || []
 
-      fbids = funding_body_ids.reject { |x| grants.pluck(:funding_body_id).include?(x) }
+      solo_funding_body_ids = funding_body_ids.reject { |x| grants.pluck(:funding_body_id).include?(x) }
 
       # for each funding body that doesn't have grant ids, create an empty grant
-
-      params[:collection][:grants_attributes].concat(fbids.collect { |x| { 'funding_body_id' => x, 'grant_identifier' => nil } })
-      # apply the current collection to every item
-      params[:collection][:grants_attributes].each { |g| g['collection_id'] = collection_id }
+      next_index = params[:collection][:grants_attributes].keys.map(&:to_i).max.to_i + 1
+      solo_funding_body_ids.each do |x|
+        params[:collection][:grants_attributes][next_index.to_s] = { 'funding_body_id' => x, 'grant_identifier' => nil }
+        next_index +=1
+      end
     end
 
     params[:collection][:collector_id] = create_contact(params[:collection][:collector_id]) if params[:collection][:collector_id] =~ /^NEWCONTACT:/
@@ -392,7 +391,6 @@ class CollectionsController < ApplicationController
         :identifier, :title, :description, :region,
         :north_limit, :south_limit, :west_limit, :east_limit,
         :collector_id, :operator_id, :university_id, :field_of_research_id,
-        :grants_attributes,
         :access_condition_id,
         :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
         :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
@@ -403,7 +401,13 @@ class CollectionsController < ApplicationController
         :complete, :private, :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
         :deposit_form_received, :tape_location,
 
-        language_ids: [], country_ids: [], admin_ids: []
+        language_ids: [], country_ids: [], admin_ids: [],
+        grants_attributes: [
+          :id,
+          :funding_body_id,
+          :grant_identifier,
+          :_destroy
+        ]
       )
   end
 end

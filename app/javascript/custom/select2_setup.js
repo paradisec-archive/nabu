@@ -1,4 +1,7 @@
 import select2 from 'select2';
+
+import { addFundingBody } from './dynamic_grant_identifiers';
+
 // NOTE: It's not autoloading into jquery for some reason
 select2(window.$);
 
@@ -40,5 +43,11 @@ export const setup_select2 = (element) => {
     };
   }
 
-  $(element).select2(options);
+  $(element)
+    .select2(options)
+    .on('change', (event) => {
+      if (event.target.id === 'funding_body_select') {
+        addFundingBody(event);
+      }
+    });
 };

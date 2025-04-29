@@ -2,12 +2,17 @@
 -# rails will pass values for the fields, jquery will instead manually replace the mustache placeholders
 %div
   %span= fb_label || '{{label}}'
-  %a.row-action.remove{onclick: 'removeChildGrantIds(event); return false;'}= "&times;".html_safe
+  %a.row-action.delete-funding-body.remove= "&times;".html_safe
   %input{type: :hidden, name: 'funding_body_ids[]', value: fb_id || '{{id}}'}
   %span.grant-fields
     %input{name: 'add_grant_id', placeholder: 'Enter a Grant Identifier'}
-    %a.row-action{onclick: 'addGrantId(event); return false;'} Add
+    %a.row-action.add-grant-id Add
     -if fb_grants.present?
       -fb_grants.each do |g|
         -if g.grant_identifier.present?
           =render partial: 'collections/grants/grant_identifier_entry', locals: {grant: g, fb_id: fb_id}
+        - else
+          %input{type: :hidden, name: "collection[grants_attributes][#{g.id}][id]", value: g.id}
+          %input{type: :hidden, name: "collection[grants_attributes][#{g.id}][funding_body_id]", value: fb_id}
+          %input{type: :checkbox, name: "collection[grants_attributes][#{g.id}][_destroy]", value: '1', class: 'hidden'}
+

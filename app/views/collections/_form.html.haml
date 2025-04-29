@@ -207,9 +207,7 @@
       %tr
         %th Funding Bodies
         %td
-          = select_tag 'funding_body_select', options_for_select(FundingBody.alpha.collect{|f| [f.name, f.id]}),
-            onchange: 'addFundingBody(event)', class: 'select2', include_blank: true, :data => {:placeholder => 'Choose a funding body...'}
-          #funding-bodies-to-delete
+          = select_tag 'funding_body_select', options_for_select(FundingBody.alpha.collect{|f| [f.name, f.id]}), class: 'select2', include_blank: true, :data => {:placeholder => 'Choose a funding body...'}
           #funding-bodies
             - @collection.grants.group_by(&:funding_body).each do |fb, grants|
               = render partial: 'collections/grants/funding_body_entry', locals: {fb_label: fb.name, fb_id: fb.id, fb_grants: grants}
