@@ -25,7 +25,6 @@ If we give tokens to more than paragest we need to rethink this
 * Move to_rif in collections controller to a haml template
 * Should we use authenticate_users on dashboard or should cancan just do it?
 * DB is all latin1 can we move to utf8mb4
-* SHoudl we add has_paper_trail to party_identifier
 * set set_paper_trail_whodunnit - check live db to see if it's empty for users
 * Move enabling paper trail to base model and then disable on users specifically
 * CHeck f.submmit :confirm should this be data?
