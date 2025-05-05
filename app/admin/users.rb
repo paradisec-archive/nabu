@@ -78,7 +78,7 @@ ActiveAdmin.register User do
   scope :unconfirmed
   scope :never_signed_in
 
-  permit_params :party_identifiers_attributes, :email, :first_name, :last_name,
+  permit_params :email, :first_name, :last_name,
                 :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,
                 :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector, :unikey
 
@@ -193,10 +193,6 @@ ActiveAdmin.register User do
     column :contact_only
     column :admin
     column :party_identifier
-    # TODO: uncomment once this stuff is tested in staging
-    # column :party_identifiers do |user|
-    #   user.party_identifiers.map{|p| p.identifier}.join(', ')
-    # end
     actions do |user|
       link_to 'Merge', merge_admin_user_path(user)
     end
@@ -221,10 +217,6 @@ ActiveAdmin.register User do
       row :admin
       row :party_identifier
       row :unikey
-      # TODO: uncomment once this stuff is tested in staging
-      # row :party_identifiers do |user|
-      #   user.party_identifiers.map{|p| p.identifier}.join("\n")
-      # end
     end
 
     h3 'Admin information'
@@ -266,12 +258,6 @@ ActiveAdmin.register User do
       end
       f.input :party_identifier
       f.input :unikey
-      # TODO: uncomment once this stuff is tested in staging
-      # f.has_many :party_identifiers, allow_destroy: true do |p|
-      #   p.input :user_id, as: :hidden, input_html: {value: f.object.id}
-      #   p.input :party_type, as: :select, collection: PartyIdentifier::TYPES.each_with_index.map{|t,i| [t,i]}
-      #   p.input :identifier, as: :string
-      # end
     end
     f.actions
   end
@@ -292,10 +278,6 @@ ActiveAdmin.register User do
     column :contact_only
     column :admin
     column :party_identifier
-    # TODO: uncomment once this stuff is tested in staging
-    # column :party_identifiers do |user|
-    #   user.party_identifiers.map{|p| p.identifier}.join(';')
-    # end
   end
 end
 # rubocop:enable Metrics/BlockLength

@@ -17,6 +17,9 @@ class University < ApplicationRecord
   has_paper_trail
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :party_identifier, format: { with: URI::DEFAULT_PARSER.make_regexp, message: 'must be a valid URL' }, allow_nil: true
+
+  normalizes :party_identifier, with: -> { _1.presence }
 
   has_many :collections, dependent: :restrict_with_exception
   has_many :items, dependent: :restrict_with_exception

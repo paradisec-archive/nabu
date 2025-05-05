@@ -59,6 +59,7 @@
 class User < ApplicationRecord
   # Users may not want paper_trail storing a history of their account information, so don't have has_paper_trail
 
+  # TODO: Maybe move to normalises
   nilify_blanks
 
   # Include default devise modules. Others available are:
@@ -73,13 +74,11 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :email, presence: true, unless: proc { |user| user.contact_only? }
   validates :unikey, uniqueness: true, allow_nil: true
+  validates :party_identifier, format: { with: URI::DEFAULT_PARSER.make_regexp, message: 'must be a valid URL' }, allow_nil: true
 
   paginates_per 10
 
   scope :alpha, -> { order(:first_name, :last_name) }
-
-  has_many :party_identifiers
-  accepts_nested_attributes_for :party_identifiers, allow_destroy: true
 
   has_many :collection_admins
   has_many :collections, through: :collection_admins, dependent: :destroy
@@ -204,7 +203,7 @@ class User < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[collection_admins collections item_admins item_agents item_users items owned_collections
-       owned_items party_identifiers rights_transferred_to]
+       owned_items rights_transferred_to]
   end
 
   private
