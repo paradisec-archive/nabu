@@ -9,7 +9,7 @@ module Types
     field :collection, Types::CollectionType
     field :filename, String
     field :mimetype, String
-    field :bitrate, Integer
+    field :bitrate, GraphQL::Types::BigInt
     field :samplerate, Integer
     field :size, GraphQL::Types::BigInt
     field :duration, Float
