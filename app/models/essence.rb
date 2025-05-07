@@ -7,7 +7,7 @@
 # Name                           | Type               | Attributes
 # ------------------------------ | ------------------ | ---------------------------
 # **`id`**                       | `integer`          | `not null, primary key`
-# **`bitrate`**                  | `integer`          |
+# **`bitrate`**                  | `bigint`           |
 # **`channels`**                 | `integer`          |
 # **`derived_files_generated`**  | `boolean`          | `default(FALSE)`
 # **`doi`**                      | `string(255)`      |
