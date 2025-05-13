@@ -8,6 +8,9 @@ if [ -z "$ENV" ]; then
   exit 1
 fi
 
+# Make sure we have creds before merging so the close issue logic works
+AWS_PROFILE=nabu-${ENV} aws sts get-caller-identity >/dev/null
+
 LAST_DEPLOY_COMMIT=$(git rev-parse origin/prod)
 
 git push
@@ -26,7 +29,7 @@ fi
 echo "Last deploy was commit on prod: $LAST_DEPLOY_COMMIT"
 
 # Get commits since the last merge
-COMMITS=$(git log $LAST_DEPLOY_COMMIT..HEAD --oneline)
+COMMITS=$(git log "$LAST_DEPLOY_COMMIT"..HEAD --oneline)
 if [ -z "$COMMITS" ]; then
   echo "No new commits since the last merge to prod."
   exit 0
