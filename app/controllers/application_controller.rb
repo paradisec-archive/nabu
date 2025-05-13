@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
   # NOTE: nabu needs to support old browsers due to regional context
 
+  before_action :store_user_location!, if: :storable_location?
   before_action :set_timezone
   before_action :set_access_headers
   before_action :set_sentry_user
@@ -35,22 +36,41 @@ class ApplicationController < ActionController::Base
   ##########
 
   rescue_from CanCan::AccessDenied do |exception|
-    # If it's a JSON request, give a 40x rather than redirecting them
-    if request.format.symbol == :json && current_user
-      render nothing: true, status: :forbidden
-    elsif request.format.symbol == :json
-      render nothing: true, status: :unauthorized
-    elsif current_user
-      redirect_to root_url, alert: exception.message
-    else
-      session['user_return_to'] = request.fullpath
-      redirect_to new_user_session_path, alert: exception.message
+    respond_to do |format|
+      format.json do
+        if current_user
+          render nothing: true, status: :forbidden
+        else
+          render nothing: true, status: :unauthorized
+        end
+      end
+      format.html do
+        if current_user
+          redirect_to root_url, alert: exception.message
+        else
+          store_location_for(:user, request.fullpath) if storable_location?
+          redirect_to new_user_session_path, alert: exception.message
+        end
+      end
     end
   end
 
   ##########
   # Before Actions
   ##########
+
+  # Its important that the location is NOT stored if:
+  # - The request method is not GET (non idempotent)
+  # - The request is handled by a Devise controller such as Devise::SessionsController as that could cause an
+  #    infinite redirect loop.
+  # - The request is an Ajax request as this can lead to very unexpected behaviour.
+  def storable_location?
+    request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
+  end
+
+  def store_user_location!
+    store_location_for(:user, request.fullpath)
+  end
 
   def set_timezone
     Time.zone = current_user.time_zone if current_user
