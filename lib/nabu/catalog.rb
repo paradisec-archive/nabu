@@ -119,6 +119,8 @@ module Nabu
     end
 
     def delete_by_prefix(prefix)
+      prefix += '/' unless prefix.end_with?('/')
+
       response = @s3.list_objects_v2(
         bucket: bucket_name,
         prefix:
