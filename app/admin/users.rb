@@ -70,6 +70,8 @@
 
 # rubocop:disable Metrics/BlockLength
 ActiveAdmin.register User do
+  config.per_page = [10, 50, 100]
+
   # show scoped buttons on index page
   scope :users
   scope :contacts
@@ -91,26 +93,6 @@ ActiveAdmin.register User do
       flash[:error] = 'ERROR: User owns items - cannot be removed.'
       false
     end
-  end
-
-  # add pagination buttons to index page sidebar
-  sidebar :paginate, only: :index do
-    count = User.count
-    count = User.public_send(params[:scope].to_sym).count if params[:scope].present?
-
-    h3 'Pagination', class: 'filters-form-title'
-    div class: 'flex flex-col gap-4 items-start' do
-    ['10', '50', "all #{count}"].each do |n|
-        text_node link_to "Show #{n}", params.permit!.merge(per_page: n.sub('all ', ''), page: n.start_with?('all') ? 1 : params[:page]), class: 'action-item-button'
-      end
-    end
-
-    nil
-  end
-
-  # change pagination
-  before_action only: :index do
-    @per_page = params[:per_page] || 30
   end
 
   # index page search sidebar
