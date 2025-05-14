@@ -259,7 +259,7 @@ class Item < ApplicationRecord
     %w[full_identifier title collector_sortname updated_at language countries essences_count]
   end
 
-  searchkick geo_shape: [:bounds], word_start: %i[identifier full_identifier collection_identifier], deep_paging: true
+  searchkick geo_shape: [:bounds], locations: [:location], word_start: %i[identifier full_identifier collection_identifier], deep_paging: true
 
   def self.search_includes
     includes = %i[
@@ -382,11 +382,12 @@ class Item < ApplicationRecord
     }
 
     if north_limit
-      # TODO: Should this be allowed in the data?
-      data[:bounds] = if north_limit == south_limit && east_limit == west_limit
-                        { type: 'point', coordinates: [west_limit, north_limit] }
-      else
-                        {
+        data[:location] = { lng: center_coordinate[0], lat: center_coordinate[1] }
+        if north_limit == south_limit && east_limit == west_limit
+          # TODO: SHould this be allowed in the data?
+          data[:bounds] = { type: 'point', coordinates: [west_limit, north_limit] }
+        else
+         data[:bounds] = {
                           type: 'polygon',
                           coordinates: [[
                             [west_limit, north_limit],
@@ -396,7 +397,7 @@ class Item < ApplicationRecord
                             [west_limit, north_limit]
                           ]]
                         }
-      end
+        end
     end
 
     # Things we want to check blankness of

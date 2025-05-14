@@ -6,10 +6,12 @@ module Oni
     SORT_FIELDS = %w[id title created_at updated_at relevance].freeze
     ORDER_FIELDS = %w[asc desc].freeze
 
-    ATTRIBUTES = %i[search_type query filters limit offset order sort].freeze
+    ATTRIBUTES = %i[search_type query filters bounding_box geohash_precision limit offset order sort].freeze
     attr_accessor(*ATTRIBUTES)
 
     validate :validate_filters
+    validate :validate_bounding_box
+    validates :geohash_precision, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }, allow_nil: true
 
     validates :order, inclusion: { in: ORDER_FIELDS, message: '%{value} is not a valid order' }, allow_nil: true
     validates :sort, inclusion: { in: SORT_FIELDS, message: '%{value} is not a valid sort field' }, allow_nil: true
@@ -19,7 +21,9 @@ module Oni
     def initialize(params)
       permitted = ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }
       filters = { languages: [], countries: [], collector_names: [] }
-      object_params = params.permit(permitted, filters:)
+      bounding_box = { topRight: {}, bottomLeft: {} }
+      object_params = params.permit(permitted, filters:, boundingBox: bounding_box)
+
       object_params.each do |key, value|
         snake_key = key.to_s.underscore
 
@@ -66,6 +70,32 @@ module Oni
           unless item.is_a?(String)
             errors.add(:filters, "all values in '#{key}' must be strings")
           end
+        end
+      end
+    end
+
+    def validate_bounding_box
+      return if bounding_box.nil?
+
+      unless bounding_box.key?('topRight') && bounding_box.key?('bottomLeft')
+        errors.add(:boundingBox, 'must have topRight and bottomLeft keys')
+        return
+      end
+
+      %w[topRight bottomLeft].each do |corner|
+        point = bounding_box[corner]
+        unless point.key?('lat') && point.key?('lng')
+          errors.add(:boundingBox, "#{corner} must have lat and lng keys")
+          next
+        end
+
+        lat = point['lat']
+        lng = point['lng']
+        unless lat.is_a?(Numeric) && lat.between?(-90, 90)
+          errors.add(:boundingBox, "#{corner}.lat must be a number between -90 and 90")
+        end
+        unless lng.is_a?(Numeric) && lng.between?(-180, 180)
+          errors.add(:boundingBox, "#{corner}.lng must be a number between -180 and 180")
         end
       end
     end

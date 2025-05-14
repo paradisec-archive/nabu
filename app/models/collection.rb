@@ -182,7 +182,7 @@ class Collection < ApplicationRecord
     CatalogMetadataJob.perform_later(self, false)
   end
 
-  searchkick geo_shape: [:bounds], word_start: [:identifier]
+  searchkick geo_shape: [:bounds], locations: [:location], word_start: [:identifier]
 
   def self.sortable_columns
     %w[identifier title collector_sortname university_name created_at languages countries]
@@ -267,11 +267,12 @@ class Collection < ApplicationRecord
     }
 
     if north_limit
-      # TODO: SHould this be allowed in the data?
-      data[:bounds] = if north_limit == south_limit && east_limit == west_limit
-                        { type: 'point', coordinates: [west_limit, north_limit] }
-      else
-                        {
+      data[:location] = { lon: center_coordinate(0)[:lng], lat: center_coordinate(0)[:lat] }
+        if north_limit == south_limit && east_limit == west_limit
+          # TODO: SHould this be allowed in the data?
+          data[:bounds] = { type: 'point', coordinates: [west_limit, north_limit] }
+        else
+         data[:bounds] = {
                           type: 'polygon',
                           coordinates: [[
                             [west_limit, north_limit],
@@ -281,7 +282,7 @@ class Collection < ApplicationRecord
                             [west_limit, north_limit]
                           ]]
                         }
-      end
+        end
     end
 
     # Things we want to check blankness of
@@ -342,7 +343,10 @@ class Collection < ApplicationRecord
     return unless coordinates?
 
     long = if east_limit < west_limit
-             180 + ((west_limit + east_limit) / 2)
+      adjusted_east = east_limit + 360
+      center_lng = ((adjusted_east + west_limit) / 2.0) % 360
+      center_lng -= 360 if center_lng > 180  # Normalize back to [-180, 180]
+      center_lng
     else
              (west_limit + east_limit) / 2
     end

@@ -1,12 +1,20 @@
+aggs = @search.aggs.reject { |agg| agg == 'location' }
 
-{
+result = {
   total: @search.total_count,
   searchTime: @search.took,
   entities: @search.with_highlights.map.with_index do |value, index|
     entity, highlights = value
     render(partial: 'entity', locals: { entity:, highlights:, score: @search.hits[index].dig('_score') })
   end,
-  facets: @search.aggs.transform_values do |agg|
+  facets: aggs.transform_values do |agg|
     agg['buckets'].map { |bucket| ({ name: bucket['key'], count: bucket['doc_count'] }) }
   end
 }
+
+location_agg = @search.aggs.find { |agg| p agg; agg[0] == 'location' }[1]['buckets']
+if location_agg
+  result[:geohashGrid] = location_agg.to_h { |item| [item['key'], item['doc_count']] }
+end
+
+result

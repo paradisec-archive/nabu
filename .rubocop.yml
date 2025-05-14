@@ -1,7 +1,7 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
-require:
+plugins:
   - rubocop-rake
   - rubocop-rspec
   - rubocop-capybara
@@ -10,8 +10,8 @@ require:
 
 AllCops:
   NewCops: enable
-  TargetRailsVersion: 7.2
-  TargetRubyVersion: 3.1
+  TargetRailsVersion: 8.0
+  TargetRubyVersion: 3.2
   Exclude:
     - cdk/**/*
 

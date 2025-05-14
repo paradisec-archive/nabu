@@ -106,24 +106,17 @@ module Api
 
         as_attachment = params[:disposition] == 'attachment'
         filename = params[:filename]
-        puts '🪚 🟩'
 
         raise ActiveRecord::RecordNotFound unless check_for_item
-        puts '🪚 ⭐'
 
         essence = @data.essences.find_by(filename: params[:path])
-        puts '🪚 🔲'
 
         raise ActiveRecord::RecordNotFound unless essence
-        puts '🪚 ⭕'
 
         location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
-        puts '🪚 🔵'
         raise ActionController::RoutingError, 'Essence file not found' unless location
-        puts '🪚 💜'
 
         if params[:noRedirect] === 'true'
-          puts '🪚 💜'
           render json: { location: }
         else
           redirect_to location, allow_other_host: true
@@ -147,7 +140,21 @@ module Api
         }
         where.merge!(query.filters)
 
+        if query.bounding_box
+          where[:location] = {
+            top_right: { lat: query.bounding_box[:topRight][:lat], lon: query.bounding_box[:topRight][:lng] },
+            bottom_left: { lat: query.bounding_box[:bottomLeft][:lat], lon: query.bounding_box[:bottomLeft][:lng] }
+          }
+        end
+
         aggs = %i[memberOf root languages countries collector_name]
+
+        body_options = { track_total_hits: true }
+        if query.geohash_precision
+          body_options[:aggs] = {
+            location: { geohash_grid: { precision: query.geohash_precision, field: 'location' } }
+          }
+        end
 
         @search = Searchkick.search(
           query.query,
@@ -157,7 +164,7 @@ module Api
           offset: query.offset,
           order:, where:,
           aggs:,
-          body_options: { track_total_hits: true },
+          body_options:,
           highlight: { tag: '<mark class="font-bold">' }
         )
       end
