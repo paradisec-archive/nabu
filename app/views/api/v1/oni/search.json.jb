@@ -12,9 +12,9 @@ result = {
   end
 }
 
-location_agg = @search.aggs.find { |agg| p agg; agg[0] == 'location' }[1]['buckets']
+location_agg = @search.aggs.find { |agg| p agg; agg[0] == 'location' }
 if location_agg
-  result[:geohashGrid] = location_agg.to_h { |item| [item['key'], item['doc_count']] }
+  result[:geohashGrid] = location_agg[1]['buckets'].to_h { |item| [item['key'], item['doc_count']] }
 end
 
 result
