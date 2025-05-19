@@ -2,6 +2,7 @@
 
 set -e
 
+export AWS_PROFILE=${AWS_PROFILE:-nabu-prod}
 export AWS_OUTPUT="json"
 
 CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep 'nabu$')
@@ -10,12 +11,12 @@ SERVICE_NAME=$(aws ecs describe-services --services "$SERVICE" --cluster "$CLUST
 TASK=$(aws ecs list-tasks --cluster "$CLUSTER" --service-name "$SERVICE_NAME" | jq -r .taskArns[0])
 
 execute_command() {
-        aws ecs execute-command \
-                --cluster "$CLUSTER" \
-                --task "$TASK" \
-                --interactive \
-                --container "AppContainer" \
-                --command "/bin/bash -c \"$1\""
+  aws ecs execute-command \
+    --cluster "$CLUSTER" \
+    --task "$TASK" \
+    --interactive \
+    --container "AppContainer" \
+    --command "/bin/bash -c \"$1\""
 }
 
 echo "Getting schema..."
