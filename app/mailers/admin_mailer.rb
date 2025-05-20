@@ -28,7 +28,7 @@ class AdminMailer < ApplicationMailer
 
     subject_line = "[NABU Admin] Unconfirmed Users Deleted: #{@report_data[:deleted_count]} accounts removed"
 
-    subject_line += " (#{@report_data[:total_failed]} failed)" if @total_failed > 0
+    subject_line += " (#{@report_data[:total_failed]} failed)" if @report_data[:total_failed] > 0
 
     mail(subject:)
   end

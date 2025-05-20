@@ -5,7 +5,7 @@ Report Date: <%= @report_data[:report_date].strftime('%F %T') %>
 
 This email identifies unconfirmed users who have not confirmed their accounts after <%= @report_data[:age_days] %> days.
 
-WARNING: These accounts will be DELETED in 7 days.
+WARNING: These accounts in the "TO BE DELETED" section will be DELETED in 7 days.
 
 Summary
 -------
@@ -17,7 +17,7 @@ Unreferenced unconfirmed users: <%= @report_data[:unreferenced_count] %>
 Users Scheduled for Deletion: <%= @report_data[:unreferenced_count] %>
 
 <% if @report_data[:referenced_count] > 0 %>
-Referenced Unconfirmed Users (will NOT be deleted):
+Referenced Unconfirmed Users (CONVERT TO CONATCT ONLY):
 -------------------------------------------------
 
   <% @report_data[:referenced].each do |user| %>
@@ -32,7 +32,7 @@ Referenced as: <%= user[:references].join(', ') %>
   <% end %>
 <% end %>
 
-List of Users to be Deleted:
+List of Users TO BE DELETED
 ---------------------------
 <% if @report_data[:unreferenced].any? %>
 <% @report_data[:unreferenced].each do |user| %>
