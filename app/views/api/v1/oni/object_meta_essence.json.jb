@@ -22,7 +22,7 @@ def essence_rocrate_json
 end
 
 data = {
-  '@id': id,
+  '@id': essence_id,
   '@type': 'File',
   contentSize: @data.size,
   dateCreated: @data.created_at.to_date,

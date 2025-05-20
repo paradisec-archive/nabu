@@ -174,9 +174,8 @@ def collection_funder_json(grant)
   id
 end
 
-# The item or collection
 data = {
-  '@id': id,
+  '@id': collection_id,
 
   '@type': ['Data', 'Object', 'RepositoryCollection'],
   conformsTo: { '@id': 'https://w3id.org/ldac/profile#Collection' },

@@ -201,9 +201,8 @@ def item_funder_json(grant)
   id
 end
 
-# The item or collection
 data = {
-  '@id': id,
+  '@id': item_id,
 
   '@type': ['Data', 'Object', 'RepositoryObject'],
   conformsTo: { '@id': 'https://w3id.org/ldac/profile#Object' },
