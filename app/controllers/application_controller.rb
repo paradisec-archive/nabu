@@ -39,9 +39,9 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.json do
         if current_user
-          render nothing: true, status: :forbidden
+          head :forbidden
         else
-          render nothing: true, status: :unauthorized
+          head :unauthorized
         end
       end
       format.html do
