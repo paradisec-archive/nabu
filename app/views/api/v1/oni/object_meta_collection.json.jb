@@ -1,10 +1,10 @@
-# frozen_string_literal: truemeta
+# NOTE: The functions in these jb builders need to have uinique names, We should solve this in a better way then relyin
 
-def id
+def collection_id
   repository_collection_url(@data)
 end
 
-def rocrate_json
+def collection_rocrate_json
   {
     '@id': 'ro-crate-metadata.json',
     '@type': 'CreativeWork',
@@ -12,13 +12,13 @@ def rocrate_json
       '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
     },
     about: {
-      '@id': id
+      '@id': collection_id
     }
   }
 end
 
 @people = Set.new
-def person_json(user)
+def collection_person_json(user)
   id = user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
   json = {
     '@id': id,
@@ -35,7 +35,7 @@ def person_json(user)
 end
 
 @geos = Set.new
-def geometry_json(shape)
+def collection_geometry_json(shape)
   id = "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
   coords = [
     "#{shape.west_limit} #{shape.north_limit}",
@@ -57,13 +57,13 @@ def geometry_json(shape)
 end
 
 @places = Set.new
-def place_json(place, name = nil)
+def collection_place_json(place, name = nil)
   id = name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
   json = {
     '@id': id,
     '@type': 'Place',
     geo: {
-      '@id': geometry_json(place)
+      '@id': collection_geometry_json(place)
     }
   }
   json[:name] = name if name
@@ -74,7 +74,7 @@ def place_json(place, name = nil)
 end
 
 @countries = Set.new
-def country_json(country)
+def collection_country_json(country)
   id = "#country-#{country.name}"
   country = {
     '@id': id,
@@ -88,7 +88,7 @@ def country_json(country)
 end
 
 @property_values = Set.new
-def property_value_json(name, value)
+def collection_property_value_json(name, value)
   id = "#identifier_#{name}"
 
   property_value = {
@@ -103,14 +103,14 @@ def property_value_json(name, value)
 end
 
 @languages = Set.new
-def language_json(language)
+def collection_language_json(language)
   id = "#language-#{language.code}"
   json = {
     '@id': id,
     '@type': 'Language',
     code: language.code,
     geo: {
-      '@id': geometry_json(language)
+      '@id': collection_geometry_json(language)
     },
     name: language.name
   }
@@ -120,7 +120,7 @@ def language_json(language)
 end
 
 @access_conditions = Set.new
-def access_condition_json(access_condition)
+def collection_access_condition_json(access_condition)
   id = "#license-#{access_condition.id}"
   json = {
     '@id': id,
@@ -133,7 +133,7 @@ def access_condition_json(access_condition)
 end
 
 @fields_of_research = Set.new
-def field_of_research_json(field_of_research)
+def collection_field_of_research_json(field_of_research)
   id = "https://linked.data.gov.au/def/anzsrc-for/2020/#{field_of_research.identifier}"
   json = {
     '@id': id,
@@ -146,7 +146,7 @@ def field_of_research_json(field_of_research)
 end
 
 @organisations = Set.new
-def organisation_json(organisation)
+def collection_organisation_json(organisation)
   id = organisation.party_identifier
 
   json = {
@@ -160,7 +160,7 @@ def organisation_json(organisation)
 end
 
 @funders = Set.new
-def funder_json(grant)
+def collection_funder_json(grant)
   id = "#grant-#{grant.id}"
 
   json = {
@@ -184,48 +184,48 @@ data = {
   additionalType: 'collection',
 
   identifier: [
-    property_value_json('domain', 'paradisec.org.au'),
-    property_value_json('id', @data.full_identifier),
-    property_value_json('itemIdentifier', @data.identifier),
-    property_value_json('doi', @data.doi)
+    collection_property_value_json('domain', 'paradisec.org.au'),
+    collection_property_value_json('id', @data.full_identifier),
+    collection_property_value_json('itemIdentifier', @data.identifier),
+    collection_property_value_json('doi', @data.doi)
   ],
 
   name: @data.title,
   description: @data.description,
 
   contentLocation: [{
-    '@id': place_json(@data, @data.region)
+    '@id': collection_place_json(@data, @data.region)
   }],
 
   dateCreated: @data.created_at.to_date,
   dateModified: @data.updated_at.to_date,
   datePublished: @data.updated_at.to_date,
 
-  publisher: { '@id': person_json(@data.collector) },
+  publisher: { '@id': collection_person_json(@data.collector) },
 
-  inLanguage: @data.languages.map { |language| { '@id': language_json(language) } },
-  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
-  countries: @data.countries.map { |country| { '@id': country_json(country) } }
+  inLanguage: @data.languages.map { |language| { '@id': collection_language_json(language) } },
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': collection_language_json(language) } },
+  countries: @data.countries.map { |country| { '@id': collection_country_json(country) } }
 }
 
 if @admin_rocrate
   data[:comment] = @data.comments
   data[:usageinfo] = data[:access_narrative]
   data[:private] = @data.private
-  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': person_json(admin) } }
+  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': collection_person_json(admin) } }
 end
 
-data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
-data[:operator] = { '@id': person_json(@data.operator) } if @data.operator
-data[:sourceOrganization] = organisation_json(@data.university) if @data.university
+data[:license] = { '@id': collection_access_condition_json(@data.access_condition) } if @data.access_condition
+data[:operator] = { '@id': collection_person_json(@data.operator) } if @data.operator
+data[:sourceOrganization] = collection_organisation_json(@data.university) if @data.university
 
 data[:material] = @data.media
 data[:orthographic_notes] = @data.orthographic_notes
 data['paradisec:metadataSource'] = @data.metadata_source
 data[:itemLocation] = @data.tape_location
-data[:about] = field_of_research_json(@data.field_of_research) if @data.field_of_research
+data[:about] = collection_field_of_research_json(@data.field_of_research) if @data.field_of_research
 
-data[:funder] = @data.grants.map { |grant| { '@id': funder_json(grant) } } if @data.grants.any?
+data[:funder] = @data.grants.map { |grant| { '@id': collection_funder_json(grant) } } if @data.grants.any?
 
 data.compact!
 
@@ -233,7 +233,7 @@ data.compact!
 graph = []
 
 graph << data
-graph << rocrate_json
+graph << collection_rocrate_json
 
 # Add all the references
 graph.concat(@property_values.to_a)

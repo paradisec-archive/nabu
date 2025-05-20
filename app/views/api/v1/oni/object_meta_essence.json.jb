@@ -1,14 +1,14 @@
-# frozen_string_literal: truemeta
+# NOTE: The functions in these jb builders need to have uinique names, We should solve this in a better way then relyin
 
-def id
+def essence_id
   repository_essence_url(@data.collection, @data.item, @data.filename)
 end
 
-def parentId
+def essence_parent_id
   repository_item_url(@data.collection, @data.item)
 end
 
-def rocrate_json
+def essence_rocrate_json
   {
     '@id': 'ro-crate-metadata.json',
     '@type': 'CreativeWork',
@@ -16,7 +16,7 @@ def rocrate_json
       '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
     },
     about: {
-      '@id': id
+      '@id': essence_id
     }
   }
 end
@@ -31,7 +31,7 @@ data = {
   name: @data.filename,
   filename: @data.filename,
   doi: @data.doi,
-  parentId:,
+  parentId: essence_paranet_id,
   parentTitle: @data.item.title
 }
 data[:bitrate] = @data.bitrate
@@ -45,7 +45,7 @@ data.compact!
 graph = []
 
 graph << data
-graph << rocrate_json
+graph << essence_rocrate_json
 
 {
   '@context': [

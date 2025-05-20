@@ -1,10 +1,10 @@
-# frozen_string_literal: truemeta
+# NOTE: The functions in these jb builders need to have uinique names, We should solve this in a better way then relyin
 
-def id
+def item_id
   repository_item_url(@data.collection, @data)
 end
 
-def rocrate_json
+def item_rocrate_json
   {
     '@id': 'ro-crate-metadata.json',
     '@type': 'CreativeWork',
@@ -12,13 +12,13 @@ def rocrate_json
       '@id': 'https://w3id.org/ro/crate/1.2-DRAFT'
     },
     about: {
-      '@id': id
+      '@id': item_id
     }
   }
 end
 
 @people = Set.new
-def person_json(user)
+def item_person_json(user)
   id = user.party_identifier || (user.email && "mailto:#{user.email}") || "#person-#{user.id}"
   json = {
     '@id': id,
@@ -35,7 +35,7 @@ def person_json(user)
 end
 
 @essences = Set.new
-def essence_json(essence)
+def item_essence_json(essence)
   id = repository_essence_url(essence.collection, essence.item, essence.filename)
 
   json = {
@@ -62,7 +62,7 @@ def essence_json(essence)
 end
 
 @geos = Set.new
-def geometry_json(shape)
+def item_geometry_json(shape)
   id = "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
   coords = [
     "#{shape.west_limit} #{shape.north_limit}",
@@ -84,13 +84,13 @@ def geometry_json(shape)
 end
 
 @places = Set.new
-def place_json(place, name = nil)
+def item_place_json(place, name = nil)
   id = name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
   json = {
     '@id': id,
     '@type': 'Place',
     geo: {
-      '@id': geometry_json(place)
+      '@id': item_geometry_json(place)
     }
   }
   json[:name] = name if name
@@ -101,7 +101,7 @@ def place_json(place, name = nil)
 end
 
 @countries = Set.new
-def country_json(country)
+def item_country_json(country)
   id = "#country-#{country.name}"
   country = {
     '@id': id,
@@ -115,7 +115,7 @@ def country_json(country)
 end
 
 @property_values = Set.new
-def property_value_json(name, value)
+def item_property_value_json(name, value)
   id = "#identifier_#{name}"
 
   property_value = {
@@ -130,14 +130,14 @@ def property_value_json(name, value)
 end
 
 @languages = Set.new
-def language_json(language)
+def item_language_json(language)
   id = "#language-#{language.code}"
   json = {
     '@id': id,
     '@type': 'Language',
     code: language.code,
     geo: {
-      '@id': geometry_json(language)
+      '@id': item_geometry_json(language)
     },
     name: language.name
   }
@@ -147,7 +147,7 @@ def language_json(language)
 end
 
 @access_conditions = Set.new
-def access_condition_json(access_condition)
+def item_access_condition_json(access_condition)
   id = "#license-#{access_condition.id}"
   json = {
     '@id': id,
@@ -160,7 +160,7 @@ def access_condition_json(access_condition)
 end
 
 @fields_of_research = Set.new
-def field_of_research_json(field_of_research)
+def item_field_of_research_json(field_of_research)
   id = "https://linked.data.gov.au/def/anzsrc-for/2020/#{field_of_research.identifier}"
   json = {
     '@id': id,
@@ -173,7 +173,7 @@ def field_of_research_json(field_of_research)
 end
 
 @organisations = Set.new
-def organisation_json(organisation)
+def item_organisation_json(organisation)
   id = organisation.party_identifier
 
   json = {
@@ -187,7 +187,7 @@ def organisation_json(organisation)
 end
 
 @funders = Set.new
-def funder_json(grant)
+def item_funder_json(grant)
   id = "#grant-#{grant.id}"
 
   json = {
@@ -211,48 +211,48 @@ data = {
   additionalType: 'item',
 
   identifier: [
-    property_value_json('domain', 'paradisec.org.au'),
-    property_value_json('id', @data.full_identifier),
-    property_value_json('itemIdentifier', @data.identifier),
-    property_value_json('doi', @data.doi)
+    item_property_value_json('domain', 'paradisec.org.au'),
+    item_property_value_json('id', @data.full_identifier),
+    item_property_value_json('itemIdentifier', @data.identifier),
+    item_property_value_json('doi', @data.doi)
   ],
 
   name: @data.title,
   description: @data.description,
 
   contentLocation: [{
-    '@id': place_json(@data, @data.region)
+    '@id': item_place_json(@data, @data.region)
   }],
 
   dateCreated: @data.created_at.to_date,
   dateModified: @data.updated_at.to_date,
   datePublished: @data.updated_at.to_date,
 
-  publisher: { '@id': person_json(@data.collector) },
+  publisher: { '@id': item_person_json(@data.collector) },
 
-  inLanguage: @data.content_languages.map { |language| { '@id': language_json(language) } },
-  subjectLanguages: @data.subject_languages.map { |language| { '@id': language_json(language) } },
-  countries: @data.countries.map { |country| { '@id': country_json(country) } }
+  inLanguage: @data.content_languages.map { |language| { '@id': item_language_json(language) } },
+  subjectLanguages: @data.subject_languages.map { |language| { '@id': item_language_json(language) } },
+  countries: @data.countries.map { |country| { '@id': item_country_json(country) } }
 }
 
 if @admin_rocrate
   data[:comment] = @data.admin_comment
   data[:usageinfo] = data[:access_narrative]
   data[:private] = @data.private
-  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': person_json(admin) } }
+  data['paradisec:admins'] = @data.admins.map { |admin| { '@id': item_person_json(admin) } }
 end
 
-data[:license] = { '@id': access_condition_json(@data.access_condition) } if @data.access_condition
-data[:operator] = { '@id': person_json(@data.operator) } if @data.operator
-data[:sourceOrganization] = organisation_json(@data.university) if @data.university
+data[:license] = { '@id': item_access_condition_json(@data.access_condition) } if @data.access_condition
+data[:operator] = { '@id': item_person_json(@data.operator) } if @data.operator
+data[:sourceOrganization] = item_organisation_json(@data.university) if @data.university
 
 data[:memberOf] = { '@id': repository_collection_url(@data.collection), name: @data.collection.title  }
 data[:root] = { '@id': repository_collection_url(@data.collection) }
-data[:identifier] << property_value_json('collectionIdentifier', @data.collection.identifier)
+data[:identifier] << item_property_value_json('collectionIdentifier', @data.collection.identifier)
 data[:languageAsGiven] = @data.language
 data[:originalMedia] = @data.original_media if @data.original_media
 data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
-data[:hasPart] = @data.essences.map { |essence| { '@id': essence_json(essence) } }
+data[:hasPart] = @data.essences.map { |essence| { '@id': item_essence_json(essence) } }
 data[:languageGenre] = @data.discourse_type.name if @data.discourse_type
 if @data.data_categories
   data[:communicationMode] = @data.data_categories.map do |data_category|
@@ -267,7 +267,7 @@ if @data.data_types
 end
 
 @data.item_agents.group_by(&:agent_role).map do |agent_role, item_agents|
-  data[agent_role.name] = item_agents.map { |item_agent| { '@id': person_json(item_agent.user) } }
+  data[agent_role.name] = item_agents.map { |item_agent| { '@id': item_person_json(item_agent.user) } }
 end
 
 if @admin_rocrate
@@ -277,7 +277,7 @@ if @admin_rocrate
   data[:external] = @data.external
   data[:metadataExportable] = @data.metadata_exportable
   data[:tapesReturned] = @data.tapes_returned
-  data['paradisec:users'] = @data.users.map { |user| { '@id': person_json(user) } }
+  data['paradisec:users'] = @data.users.map { |user| { '@id': item_person_json(user) } }
   data['paradisec:dialect'] = @data.dialect
   data['paradisec:ingestNotes'] = @data.ingest_notes
   data['paradisec:originatedOnNarrative'] = @data.originated_on_narrative
@@ -291,7 +291,7 @@ data.compact!
 graph = []
 
 graph << data
-graph << rocrate_json
+graph << item_rocrate_json
 
 # Add all the references
 graph.concat(@property_values.to_a)
