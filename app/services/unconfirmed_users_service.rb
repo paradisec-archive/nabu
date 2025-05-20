@@ -61,7 +61,7 @@ class UnconfirmedUsersService
 
       AdminMailer.with(report_data:).unconfirmed_users_deleted_report.deliver_now
 
-      puts "Deletion confirmation email sent."
+      puts 'Deletion confirmation email sent.'
     end
   end
 
@@ -136,7 +136,7 @@ class UnconfirmedUsersService
     @unconfirmed_users = User
       .where(contact_only: false, confirmed_at: nil)
       .where('created_at < ?', cutoff_date)
-      .map {| user | user_details(user) }
+      .map { | user | user_details(user) }
 
     @logger.info("Found #{@unconfirmed_users.size} unconfirmed users")
   end
@@ -161,7 +161,6 @@ class UnconfirmedUsersService
     referenced_ids.merge(Comment.pluck(:owner_id))
 
     # User-related references
-    referenced_ids.merge(PartyIdentifier.pluck(:user_id))
     referenced_ids.merge(User.where.not(rights_transferred_to_id: nil).pluck(:rights_transferred_to_id))
 
     # Download references
@@ -192,7 +191,6 @@ class UnconfirmedUsersService
     references << 'ItemAgent' if ItemAgent.where(user_id: user_id).exists?
     references << 'ItemUser' if ItemUser.where(user_id: user_id).exists?
     references << 'Comment owner' if Comment.where(owner_id: user_id).exists?
-    references << 'PartyIdentifier' if PartyIdentifier.where(user_id: user_id).exists?
     references << 'Rights transferred to' if User.where(rights_transferred_to_id: user_id).exists?
     references << 'Download' if Download.where(user_id: user_id).exists?
     references
@@ -206,7 +204,7 @@ class UnconfirmedUsersService
       referenced: @referenced_users,
       unreferenced: @unreferenced_users,
       age_days: @age_days,
-      report_date: Time.now,
+      report_date: Time.now
     }
   end
 
@@ -219,7 +217,7 @@ class UnconfirmedUsersService
       name: user.name,
       email: user.email,
       created_at: user.created_at,
-      created_days_ago: created_days_ago,
+      created_days_ago: created_days_ago
     }
   end
 end
