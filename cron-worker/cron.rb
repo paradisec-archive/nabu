@@ -13,7 +13,7 @@ ses = Aws::SES::Client.new(region: 'ap-southeast-2')
 
 scheduler = Rufus::Scheduler.new
 
-scheduler.cron '27 4 * * 2'  do
+scheduler.cron '27 4 * * tue'  do
   name = 'Check DB S3 Sync'
   task = 'catalog:check_db_s3_sync'
 
@@ -26,7 +26,7 @@ scheduler.cron '27 4 * * 2'  do
   end
 end
 
-scheduler.cron '27 5 * * 2'  do
+scheduler.cron '27 5 * * tue'  do
   name = 'Check Replication'
   task = 'catalog:check_replication'
 
@@ -39,7 +39,7 @@ scheduler.cron '27 5 * * 2'  do
   end
 end
 
-scheduler.cron '27 5 * * 3'  do
+scheduler.cron '27 5 * * wed'  do
   name = 'Unconfirmed User Deletion Report'
   task = 'users:list_deletion_candidates'
 
@@ -52,18 +52,18 @@ scheduler.cron '27 5 * * 3'  do
   end
 end
 
-# scheduler.cron '27 5 * * 3'  do
-#   name = 'Delete unconfirmed users'
-#   task = 'users:delete_unconfirmed'
-#
-#   puts "#{Time.current}: Starting task #{name}"
-#
-#   begin
-#     Rake::Task[task].invoke
-#   ensure
-#     Rake::Task[task].reenable
-#   end
-# end
+scheduler.cron '27 5 * * wed'  do
+  name = 'Delete unconfirmed users'
+  task = 'users:delete_unconfirmed'
+
+  puts "#{Time.current}: Starting task #{name}"
+
+  begin
+    Rake::Task[task].invoke
+  ensure
+    Rake::Task[task].reenable
+  end
+end
 
 scheduler.cron '10 1 * * *'  do
   name = 'Mint Dois'
