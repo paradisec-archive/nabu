@@ -115,6 +115,7 @@ gem 'roo-xls' # Add excel support to roo
 gem 'rubyzip' # Zip the large CSV files before emailing
 gem 'rufus-scheduler' # Cron
 gem 'rack-cors' # API
+gem 'amazing_print' # debug printing
 
 group :development, :test do
   gem 'rails-controller-testing'

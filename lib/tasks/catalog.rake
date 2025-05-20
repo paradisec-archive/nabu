@@ -18,4 +18,11 @@ namespace :catalog do
     dry_run = ENV['DRY_RUN'] ? true : false
     BatchDoiMintingService.run(dry_run)
   end
+
+  desc 'Remove old deleted versions'
+  task remove_deleted_versions: :environment do
+    env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')
+    service = S3VersionDeletionService.new(env)
+    service.run
+  end
 end

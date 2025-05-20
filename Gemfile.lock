@@ -83,6 +83,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    amazing_print (1.8.0)
     annotaterb (4.14.0)
     arbre (2.2.0)
       activesupport (>= 7.0)
@@ -679,6 +680,7 @@ PLATFORMS
 
 DEPENDENCIES
   activeadmin (= 4.0.0.beta15)
+  amazing_print
   annotaterb
   aws-actionmailer-ses (~> 1)
   aws-sdk-rails (~> 5)
