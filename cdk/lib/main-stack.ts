@@ -2,6 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -86,6 +88,26 @@ export class MainStack extends cdk.Stack {
         validation: acm.CertificateValidation.fromDns(),
       });
     }
+
+    // ////////////////////////
+    // Service endpoint for Nabu NLB
+    // ////////////////////////
+    const nlb = elbv2.NetworkLoadBalancer.fromLookup(this, 'NLB', {
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(
+        this,
+        '/usyd/resources/network-load-balance/application/arn',
+      ),
+    });
+
+    const endpoint = new ec2.VpcEndpointService(this, 'NlbEndpointService', {
+      vpcEndpointServiceLoadBalancers: [nlb],
+      acceptanceRequired: false,
+    });
+
+    new ssm.StringParameter(this, 'NLBEndpointServiceParameter', {
+      parameterName: '/nabu/resources/nlb-endpoint/service-name',
+      stringValue: endpoint.vpcEndpointServiceName,
+    });
 
     // ////////////////////////
     // Meta Bucket
