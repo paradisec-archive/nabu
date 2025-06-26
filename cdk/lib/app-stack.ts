@@ -1,8 +1,6 @@
 import { execSync } from 'node:child_process';
 
 import * as cdk from 'aws-cdk-lib';
-import type { Construct } from 'constructs';
-
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -18,8 +16,8 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-
 import { NagSuppressions } from 'cdk-nag';
+import type { Construct } from 'constructs';
 
 import type { AppProps } from './types';
 
@@ -51,10 +49,7 @@ export class AppStack extends cdk.Stack {
     });
 
     const dataSubnets = ['a', 'b', 'c'].map((az, index) => {
-      const subnetId = ssm.StringParameter.valueForStringParameter(
-        this,
-        `/usyd/resources/subnets/isolated/apse2${az}-id`,
-      );
+      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/isolated/apse2${az}-id`);
       const availabilityZone = `ap-southeast-2${az}`;
       const subnet = ec2.Subnet.fromSubnetAttributes(this, `DataSubnet${index}`, { subnetId, availabilityZone });
       cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
@@ -63,10 +58,7 @@ export class AppStack extends cdk.Stack {
     });
 
     const appSubnets = ['a', 'b', 'c'].map((az, index) => {
-      const subnetId = ssm.StringParameter.valueForStringParameter(
-        this,
-        `/usyd/resources/subnets/public/apse2${az}-id`,
-      );
+      const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/public/apse2${az}-id`);
       const availabilityZone = `ap-southeast-2${az}`;
       const subnet = ec2.Subnet.fromSubnetAttributes(this, `AppSubnet${index}`, { subnetId, availabilityZone });
       cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
@@ -145,9 +137,18 @@ export class AppStack extends cdk.Stack {
       },
     });
     NagSuppressions.addResourceSuppressions(searchDomain, [
-      { id: 'AwsSolutions-OS3', reason: 'We are indise a VPC, not on the Internet' },
-      { id: 'AwsSolutions-OS4', reason: "We don't want to pay for dedicated data nodes" },
-      { id: 'AwsSolutions-OS5', reason: 'Should not trigger as anonymous disabled' },
+      {
+        id: 'AwsSolutions-OS3',
+        reason: 'We are indise a VPC, not on the Internet',
+      },
+      {
+        id: 'AwsSolutions-OS4',
+        reason: "We don't want to pay for dedicated data nodes",
+      },
+      {
+        id: 'AwsSolutions-OS5',
+        reason: 'Should not trigger as anonymous disabled',
+      },
     ]);
 
     // ////////////////////////
@@ -164,7 +165,10 @@ export class AppStack extends cdk.Stack {
       useForServiceConnect: true,
     });
     NagSuppressions.addResourceSuppressions(cluster, [
-      { id: 'AwsSolutions-ECS4', reason: 'https://github.com/cdklabs/cdk-nag/pull/1927' },
+      {
+        id: 'AwsSolutions-ECS4',
+        reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
+      },
     ]);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'EcsASG', {
@@ -210,10 +214,9 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const viewerTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ViewerTaskDefinition');
-    NagSuppressions.addResourceSuppressions(viewerTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
+    NagSuppressions.addResourceSuppressions(viewerTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
     viewerTaskDefinition.addContainer('ViewerContainer', {
+      containerName: 'viewer',
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', {
         file: 'docker/viewer.Dockerfile',
@@ -234,24 +237,58 @@ export class AppStack extends cdk.Stack {
     });
 
     // ////////////////////////
+    // Sentry Relay
+    // ////////////////////////
+
+    const sentryTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SentryTaskDefinition', {
+      networkMode: ecs.NetworkMode.AWS_VPC,
+    });
+    NagSuppressions.addResourceSuppressions(sentryTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+
+    // Sentry container - not exposed externally
+    sentryTaskDefinition.addContainer('SentryContainer', {
+      containerName: 'sentry',
+      memoryLimitMiB: 128,
+      image: ecs.ContainerImage.fromRegistry('getsentry/relay'),
+      portMappings: [{ name: 'sentry', containerPort: 3000 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SentryService' }),
+      environment: {
+        RELAY_MODE: 'proxy',
+      },
+    });
+
+    // Nginx proxy container - handles path rewriting
+    sentryTaskDefinition.addContainer('NginxContainer', {
+      containerName: 'nginx',
+      memoryLimitMiB: 64,
+      image: ecs.ContainerImage.fromAsset('..', {
+        file: 'docker/sentry-nginx.Dockerfile',
+      }),
+      portMappings: [{ name: 'nginx', containerPort: 80 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SentryNginx' }),
+    });
+
+    const sentryService = new ecs.Ec2Service(this, 'SentryService', {
+      serviceName: 'sentry',
+      cluster,
+      taskDefinition: sentryTaskDefinition,
+      enableExecuteCommand: true,
+    });
+
+    // ////////////////////////
     // Oni
     // ////////////////////////
 
     const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
-    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
+    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
     oniTaskDefinition.addContainer('OniContainer', {
+      containerName: 'oni',
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('..', {
         file: 'docker/oni.Dockerfile',
         buildArgs: {
-          ROCRATE_API_ENDPOINT:
-            env === 'prod' ? 'https://catalog.paradisec.org.au/' : 'https://catalog.nabu-stage.paradisec.org.au',
-          ROCRATE_API_CLIENTID:
-            env === 'prod'
-              ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ'
-              : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
+          ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://catalog.paradisec.org.au/' : 'https://catalog.nabu-stage.paradisec.org.au',
+          ROCRATE_API_CLIENTID: env === 'prod' ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ' : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
         },
       }),
       portMappings: [{ name: 'oni', containerPort: 80 }],
@@ -282,9 +319,7 @@ export class AppStack extends cdk.Stack {
         datacite_pass: cdk.SecretValue.unsafePlainText('secret'),
       },
     });
-    NagSuppressions.addResourceSuppressions(appSecrets, [
-      { id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' },
-    ]);
+    NagSuppressions.addResourceSuppressions(appSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
 
     // ////////////////////////
     // App
@@ -327,10 +362,9 @@ export class AppStack extends cdk.Stack {
     };
 
     const appTaskDefinition = new ecs.Ec2TaskDefinition(this, 'AppTaskDefinition');
-    NagSuppressions.addResourceSuppressions(appTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
+    NagSuppressions.addResourceSuppressions(appTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
     appTaskDefinition.addContainer('AppContainer', {
+      containerName: 'app',
       ...commonAppImageOptions,
       // NOTE: This is huge due to being able to show all 30000 items on the one page
       memoryLimitMiB: 4096,
@@ -357,10 +391,7 @@ export class AppStack extends cdk.Stack {
 
     db.connections.allowDefaultPortFrom(autoScalingGroup, 'Allow from ECS service');
     const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(this, 'AppAlb', {
-      loadBalancerArn: ssm.StringParameter.valueFromLookup(
-        this,
-        '/usyd/resources/application-load-balancer/application/arn',
-      ),
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
     });
     loadBalancer.connections.allowTo(autoScalingGroup, ec2.Port.allTcp(), 'Allow from LB to ECS service');
     searchDomain.grantReadWrite(appTaskDefinition.taskRole);
@@ -372,10 +403,9 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const jobsTaskDefinition = new ecs.Ec2TaskDefinition(this, 'JobsTaskDefinition');
-    NagSuppressions.addResourceSuppressions(jobsTaskDefinition, [
-      { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-    ]);
+    NagSuppressions.addResourceSuppressions(jobsTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
     jobsTaskDefinition.addContainer('JobsContainer', {
+      containerName: 'jobs',
       ...commonAppImageOptions,
       memoryLimitMiB: 1024,
       memoryReservationMiB: 1024,
@@ -401,10 +431,9 @@ export class AppStack extends cdk.Stack {
 
     if (env === 'prod') {
       const cronTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CronTaskDefinition');
-      NagSuppressions.addResourceSuppressions(cronTaskDefinition, [
-        { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' },
-      ]);
+      NagSuppressions.addResourceSuppressions(cronTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
       cronTaskDefinition.addContainer('CronContainer', {
+        containerName: 'cron',
         ...commonAppImageOptions,
         memoryReservationMiB: 128,
         logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'CronService' }),
@@ -436,16 +465,11 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const sslListener = elbv2.ApplicationListener.fromLookup(this, 'AlbSslListener', {
-      loadBalancerArn: ssm.StringParameter.valueFromLookup(
-        this,
-        '/usyd/resources/application-load-balancer/application/arn',
-      ),
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
       listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
     });
     if (env === 'prod') {
-      sslListener.addCertificates('TempCatalogCert', [
-        elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn),
-      ]);
+      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
     }
 
     const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
@@ -483,6 +507,25 @@ export class AppStack extends cdk.Stack {
       ],
     });
 
+    const sentryTargetGroup = new elbv2.ApplicationTargetGroup(this, 'SentryTargetGroup', {
+      targets: [sentryService.loadBalancerTarget({ containerName: 'nginx' })],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      healthCheck: {
+        path: '/sentry-relay/api/relay/healthcheck/live/',
+      },
+    });
+
+    // TODO: Technically anyone could use this route but why would they vs just going direct?
+    sslListener.addTargetGroups('SentryTargetGroups', {
+      targetGroups: [sentryTargetGroup],
+      priority: 7,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/sentry-relay/*']),
+      ],
+    });
+
     const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
       targets: [oniService],
       vpc,
@@ -492,10 +535,7 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
       priority: 6,
-      conditions: [
-        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/oni*']),
-      ],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns(['/oni*'])],
     });
 
     // ////////////////////////
@@ -519,13 +559,7 @@ export class AppStack extends cdk.Stack {
 
     if (env === 'stage') {
       // To
-      const testers = [
-        'johnf@inodes.org',
-        'jodie.kell@sydney.edu.au',
-        'julia.miller@anu.edu.au',
-        'enwardy@hotmail.com',
-        'thien@unimelb.edu.au',
-      ];
+      const testers = ['johnf@inodes.org', 'jodie.kell@sydney.edu.au', 'julia.miller@anu.edu.au', 'enwardy@hotmail.com', 'thien@unimelb.edu.au'];
       testers.forEach((email) => {
         new ses.EmailIdentity(this, `TesterSesIdentity-${email}`, {
           identity: ses.Identity.email(email),
@@ -557,9 +591,7 @@ export class AppStack extends cdk.Stack {
         memoryLimitMiB: 32768,
         ephemeralStorageGiB: 200,
       });
-      NagSuppressions.addResourceSuppressions(searchDomain, [
-        { id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' },
-      ]);
+      NagSuppressions.addResourceSuppressions(searchDomain, [{ id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' }]);
 
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
         secretName: '/nabu/mediaflux',
@@ -568,11 +600,10 @@ export class AppStack extends cdk.Stack {
           password: cdk.SecretValue.unsafePlainText('secret'),
         },
       });
-      NagSuppressions.addResourceSuppressions(mediafluxSecrets, [
-        { id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' },
-      ]);
+      NagSuppressions.addResourceSuppressions(mediafluxSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
 
       taskDefinition.addContainer('MediafluxContainer', {
+        containerName: 'mediaflux',
         image: ecs.ContainerImage.fromDockerImageAsset(image),
         logging: new ecs.AwsLogDriver({ streamPrefix: 'copy-to-mediaflux' }),
         pseudoTerminal: true,
@@ -589,7 +620,10 @@ export class AppStack extends cdk.Stack {
         containerInsightsV2: ecs.ContainerInsights.ENHANCED,
       });
       NagSuppressions.addResourceSuppressions(cluster, [
-        { id: 'AwsSolutions-ECS4', reason: 'https://github.com/cdklabs/cdk-nag/pull/1927' },
+        {
+          id: 'AwsSolutions-ECS4',
+          reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
+        },
       ]);
 
       const mediaFluxTask = new targets.EcsTask({
@@ -603,8 +637,14 @@ export class AppStack extends cdk.Stack {
           {
             containerName: 'MediafluxContainer',
             environment: [
-              { name: 'S3_BUCKET', value: events.EventField.fromPath('$.detail.bucket.name') },
-              { name: 'S3_KEY', value: events.EventField.fromPath('$.detail.object.key') },
+              {
+                name: 'S3_BUCKET',
+                value: events.EventField.fromPath('$.detail.bucket.name'),
+              },
+              {
+                name: 'S3_KEY',
+                value: events.EventField.fromPath('$.detail.object.key'),
+              },
             ],
           },
         ],
