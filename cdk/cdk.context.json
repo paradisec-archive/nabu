@@ -509,5 +509,12 @@
     "securityGroupIds": [
       "sg-01757ad1caf451de3"
     ]
+  },
+  "load-balancer-listener:account=618916419351:listenerProtocol=HTTP:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:618916419351$:loadbalancer/app/Ingress-alb-01/4162825c506c4b6a:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:listener/app/Ingress-alb-01/4162825c506c4b6a/fad0e2a3fcc3317f",
+    "listenerPort": 80,
+    "securityGroupIds": [
+      "sg-02a8995547a7489b6"
+    ]
   }
 }
