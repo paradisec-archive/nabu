@@ -9,15 +9,12 @@ module Nabu
       book&.sheet(0)
 
       if book.nil?
-        NullNabuSpreadsheet.new(nil)
-      # Currently parsed as a Float of value 2.0
-      elsif book.row(1)[2].to_i == 2
-        Version2NabuSpreadsheet.new(book)
-      elsif book.row(1)[2].to_i == 3
-        Version3NabuSpreadsheet.new(book)
-      else
-        Version1NabuSpreadsheet.new(book)
+        NullNabuSpreadsheet.new
+
+        return
       end
+
+      Version3NabuSpreadsheet.new(book)
     end
 
     # In theory, the program could determine which extension to try first by using Content-Type.
@@ -343,7 +340,7 @@ module Nabu
     end
 
     class NullNabuSpreadsheet < NabuSpreadsheet
-      def initialize(_book = nil)
+      def initialize
         @notices = []
         @errors = ['ERROR File is neither XLS nor XLSX']
         @items = []
@@ -356,68 +353,6 @@ module Nabu
 
       def valid?
         false
-      end
-    end
-
-    class Version1NabuSpreadsheet < NabuSpreadsheet
-      def parse_coll_id
-        @book.row(4)[1].to_s
-      end
-
-      def parse_collection_title
-        @book.row(5)[1]
-      end
-
-      def parse_collection_description
-        @book.row(6)[1]
-      end
-
-      def parse_user_names
-        name = @book.row(7)[1]
-        unless name
-          @errors << 'Got no name for collector'
-          return nil
-        end
-
-        first_name, last_name = name.split(',').map(&:strip)
-
-        last_name = nil if last_name == ''
-        [first_name, last_name]
-      end
-
-      def item_start_row
-        13
-      end
-    end
-
-    class Version2NabuSpreadsheet < NabuSpreadsheet
-      def parse_coll_id
-        @book.row(6)[1].to_s
-      end
-
-      def parse_collection_title
-        @book.row(7)[1]
-      end
-
-      def parse_collection_description
-        @book.row(8)[1]
-      end
-
-      def parse_user_names
-        first_name = @book.row(9)[1]
-        last_name = @book.row(10)[1]
-
-        unless first_name
-          @errors << 'Got no name for collector'
-          return nil
-        end
-
-        last_name = nil if last_name == ''
-        [first_name, last_name]
-      end
-
-      def item_start_row
-        16
       end
     end
 
