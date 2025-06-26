@@ -148,7 +148,7 @@ module Nabu
 
       # add content and subject language
       if row[3].present?
-        content_languages = row[3].split('|')
+        content_languages = row[3].split(/[|,; ]/)
         content_languages.each do |language|
           content_language = Language.find_by(name: language) || Language.find_by(code: language)
           if content_language
@@ -159,7 +159,7 @@ module Nabu
         end
       end
       if row[4].present?
-        subject_languages = row[4].split('|')
+        subject_languages = row[4].split(/[|,; ]/)
         subject_languages.each do |language|
           subject_language = Language.find_by(name: language) || Language.find_by(code: language)
           if subject_language
@@ -172,7 +172,7 @@ module Nabu
 
       # add countries
       if row[5].present?
-        countries = row[5].split('|')
+        countries = row[5].split(/[|,; ]/)
         countries.each do |country|
           code, = country.strip.split(' - ')
           cntry = Country.find_by(code: code.strip)
@@ -209,7 +209,7 @@ module Nabu
 
       # add data categories
       if row[9].present?
-        data_category_names = row[9].split('|')
+        data_category_names = row[9].split(/[|,; ]/)
         data_category_names.each do |data_category_name|
           data_category = DataCategory.find_by(name: data_category_name)
           if data_category
@@ -223,7 +223,7 @@ module Nabu
 
       # add data_types
       if data_types_column && row[data_types_column].present?
-        data_type_names = row[data_types_column].split('|')
+        data_type_names = row[data_types_column].split(/[|,; ]/)
         data_type_names.each do |data_type_name|
           data_type = DataType.find_by(name: data_type_name)
           if data_type
