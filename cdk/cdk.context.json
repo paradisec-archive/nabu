@@ -516,5 +516,14 @@
     "securityGroupIds": [
       "sg-02a8995547a7489b6"
     ]
+  },
+  "ssm:account=618916419351:parameterName=/usyd/resources/network-load-balance/application/arn:region=ap-southeast-2": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/net/Ingress-nlb-01/6e899656576878b0",
+  "load-balancer:account=618916419351:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:618916419351$:loadbalancer/net/Ingress-nlb-01/6e899656576878b0:loadBalancerType=network:region=ap-southeast-2": {
+    "loadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:618916419351:loadbalancer/net/Ingress-nlb-01/6e899656576878b0",
+    "loadBalancerCanonicalHostedZoneId": "ZCT6FZBF4DROD",
+    "loadBalancerDnsName": "Ingress-nlb-01-6e899656576878b0.elb.ap-southeast-2.amazonaws.com",
+    "vpcId": "vpc-0437e3b41f7565c3a",
+    "securityGroupIds": [],
+    "ipAddressType": "ipv4"
   }
 }

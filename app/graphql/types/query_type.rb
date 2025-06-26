@@ -101,7 +101,11 @@ module Types
       warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
         i.set_user(context[:current_user], scope: :user)
       end
-      item_renderer = ItemsController.renderer.new('warden' => warden)
+      item_renderer = ItemsController.renderer.new(
+        warden: warden,
+        http_host: 'catalog.paradisec.org.au',
+        https: true
+      )
 
       txt = item_renderer.render(:item_id3, formats: [:txt], assigns: { item: })
 

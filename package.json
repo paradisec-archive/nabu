@@ -24,7 +24,7 @@
     "build:css_active_admin": "tailwindcss -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify -c tailwind-active_admin.config.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.0.5",
     "@types/select2": "^4.0.63",
     "esbuild": "^0.25.3"
   }
