@@ -516,14 +516,16 @@ export class AppStack extends cdk.Stack {
       },
     });
 
+    const listener = elbv2.ApplicationListener.fromLookup(this, 'AlbListener', {
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
+      listenerProtocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
     // TODO: Technically anyone could use this route but why would they vs just going direct?
-    sslListener.addTargetGroups('SentryTargetGroups', {
+    listener.addTargetGroups('SentryTargetGroups', {
       targetGroups: [sentryTargetGroup],
       priority: 7,
-      conditions: [
-        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/sentry-relay/*']),
-      ],
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/sentry-relay/*'])],
     });
 
     const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {

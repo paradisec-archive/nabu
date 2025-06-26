@@ -502,5 +502,12 @@
     "vpcId": "vpc-09d5391b88ef5d9df",
     "securityGroupIds": [],
     "ipAddressType": "ipv4"
+  },
+  "load-balancer-listener:account=847483222616:listenerProtocol=HTTP:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:847483222616$:loadbalancer/app/Ingress-alb-01/a98404019ba2c855:loadBalancerType=application:region=ap-southeast-2": {
+    "listenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:listener/app/Ingress-alb-01/a98404019ba2c855/94b1e8466c9754a8",
+    "listenerPort": 80,
+    "securityGroupIds": [
+      "sg-01757ad1caf451de3"
+    ]
   }
 }
