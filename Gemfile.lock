@@ -120,10 +120,10 @@ GEM
     aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
     backport (1.2.0)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt (3.1.20)
-    benchmark (0.4.0)
-    bigdecimal (3.1.9)
+    benchmark (0.4.1)
+    bigdecimal (3.2.2)
     bindex (0.8.1)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
@@ -177,7 +177,8 @@ GEM
       doorkeeper (>= 5.5, < 5.9)
       jwt (>= 2.5)
       ostruct (>= 0.5)
-    drb (2.2.1)
+    drb (2.2.3)
+    erb (5.0.1)
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
@@ -306,7 +307,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    loofah (2.24.0)
+    loofah (2.24.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     lumberjack (1.2.10)
@@ -385,7 +386,7 @@ GEM
     pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    psych (5.2.4)
+    psych (5.2.6)
       date
       stringio
     public_suffix (6.0.2)
@@ -393,10 +394,10 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.1.13)
+    rack (3.1.16)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
-    rack-session (2.1.0)
+    rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
     rack-test (2.2.0)
@@ -421,7 +422,7 @@ GEM
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
       activesupport (>= 5.0.1.rc1)
-    rails-dom-testing (2.2.0)
+    rails-dom-testing (2.3.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -440,7 +441,7 @@ GEM
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
-    rake (13.2.1)
+    rake (13.3.0)
     ransack (4.3.0)
       activerecord (>= 6.1.5)
       activesupport (>= 6.1.5)
@@ -454,7 +455,8 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     rbs (3.9.2)
       logger
-    rdoc (6.13.1)
+    rdoc (6.14.1)
+      erb
       psych (>= 4.0.0)
     recaptcha (5.19.0)
     regexp_parser (2.10.0)
@@ -567,10 +569,10 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sentry-rails (5.23.0)
+    sentry-rails (5.26.0)
       railties (>= 5.0)
-      sentry-ruby (~> 5.23.0)
-    sentry-ruby (5.23.0)
+      sentry-ruby (~> 5.26.0)
+    sentry-ruby (5.26.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
     shellany (0.0.1)
@@ -673,7 +675,7 @@ GEM
     yard-sorbet (0.9.0)
       sorbet-runtime
       yard
-    zeitwerk (2.7.2)
+    zeitwerk (2.7.3)
 
 PLATFORMS
   x86_64-linux
