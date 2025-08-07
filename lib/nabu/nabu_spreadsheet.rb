@@ -172,7 +172,7 @@ module Nabu
 
       # add countries
       if row[5].present?
-        countries = row[5].split(/[|,; ]/)
+        countries = row[5].split(/[|,;]/)
         countries.each do |country|
           code, = country.strip.split(' - ')
           cntry = Country.find_by(code: code.strip)
@@ -209,7 +209,7 @@ module Nabu
 
       # add data categories
       if row[9].present?
-        data_category_names = row[9].split(/[|,; ]/)
+        data_category_names = row[9].split(/[|,;]/)
         data_category_names.each do |data_category_name|
           data_category = DataCategory.find_by(name: data_category_name)
           if data_category
