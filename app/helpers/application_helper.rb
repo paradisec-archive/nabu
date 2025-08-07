@@ -101,4 +101,35 @@ module ApplicationHelper
 
     select_tag attribute, params[attribute], data:, class: "#{class_name} select2", multiple: options[:multiple]
   end
+
+  def crawler_user_agent?
+    return false unless request.user_agent.present?
+
+    crawler_patterns = [
+      /bot/i,
+      /crawler/i,
+      /spider/i,
+      /scraper/i,
+      /facebookexternalhit/i,
+      /twitterbot/i,
+      /linkedinbot/i,
+      /whatsapp/i,
+      /telegram/i,
+      /slackbot/i,
+      /googlebot/i,
+      /bingbot/i,
+      /yandexbot/i,
+      /duckduckbot/i,
+      /baiduspider/i,
+      /applebot/i,
+      /semrushbot/i,
+      /ahrefsbot/i,
+      /dotbot/i,
+      /mj12bot/i,
+      /blexbot/i,
+      /petalbot/i
+    ]
+
+    crawler_patterns.any? { |pattern| request.user_agent.match?(pattern) }
+  end
 end

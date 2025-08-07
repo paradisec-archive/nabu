@@ -97,8 +97,11 @@
   %fieldset
     %legend Locations
 
-    .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content,
-    :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
+    - unless crawler_user_agent?
+      .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content,
+      :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
+    - else
+      %p.map-placeholder Map not displayed for automated requests
 
   %fieldset
     %legend My Items (#{@num_items}) - ordered by recent edits

@@ -6,8 +6,10 @@
 
 .twoup-1.column.span-12
   .page-box
-
-    .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content}}
+    - unless crawler_user_agent?
+      .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content}}
+    - else
+      %p.map-placeholder Map not displayed for automated requests
 
   .page-box
 
