@@ -49,7 +49,10 @@
                 %bitrate= number_to_human_rate essence.bitrate
                 %sampleRate= "#{essence.samplerate} Hz" if essence.samplerate
                 %channels= number_to_human_channels essence.channels
-                %frameRate= "#{essence.fps} FPS" if essence.fps
+                - if essence.fps == 0
+                  %frameRate= "VFR"
+                - else
+                  %frameRate= essence.fps "#{essence.fps} FPS" if essence.fps
           %archiveInfo
             %bornDigital= item.born_digital
             %tapesReturned= h(item.tapes_returned)
