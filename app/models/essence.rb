@@ -49,7 +49,7 @@ class Essence < ApplicationRecord
   validates :size, presence: true, numericality: { only_integer: true, greater_than: 0 }, unless: :allowed_zero_file_size?
   validates :duration, numericality: { greater_than: 0, allow_nil: true }
   validates :channels, numericality: { greater_than: 0, allow_nil: true }
-  validates :fps, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
+  validates :fps, numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
 
   # ensure that the item catalog gets updated when essences are added/removed
 
