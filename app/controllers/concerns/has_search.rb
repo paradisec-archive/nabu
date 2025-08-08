@@ -102,7 +102,23 @@ module HasSearch
   end
 
   def body
-    text = model.search_text_fields.map { |name| build_should(name, params[name]) if params[name].present? }.compact
+    text = []
+    model.search_text_fields.each do |name|
+      next unless params[name].present?
+
+      parsed = parse_search_terms(params[name])
+
+      # Add exact phrase queries
+      parsed[:exact_phrases].each do |phrase|
+        text << build_should(name, phrase, exact: true)
+      end
+
+      # Add fuzzy term queries
+      unless parsed[:fuzzy_terms].empty?
+        fuzzy_query = parsed[:fuzzy_terms].join(' ')
+        text << build_should(name, fuzzy_query, exact: false)
+      end
+    end
 
     body = {
       query: {
@@ -126,35 +142,50 @@ module HasSearch
   end
 
   # rubocop:disable Metrics/MethodLength
-  def build_should(name, value)
+  def build_should(name, value, exact: false)
     boost = case name
     when :title then 10
     when :identifier then 20
     else 1
     end
 
-    {
-      dis_max: {
-        queries: [
-          {
-            bool: {
-              must: {
-                bool: {
-                  should: [
-                    { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } }
-                    # { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
-                    #                                    prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
-                  ]
+    if exact
+      {
+        dis_max: {
+          queries: [
+            {
+              match_phrase: { "#{name}.analyzed": { query: value, boost: boost * 10 } }
+            },
+            {
+              match_phrase: { name.to_s => { query: value, boost: boost * 5 } }
+            }
+          ]
+        }
+      }
+    else
+      {
+        dis_max: {
+          queries: [
+            {
+              bool: {
+                must: {
+                  bool: {
+                    should: [
+                      { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } }
+                      # { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
+                      #                                    prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
+                    ]
+                  }
+                },
+                should: {
+                  match: { "#{name}.analyzed": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } }
                 }
-              },
-              should: {
-                match: { "#{name}.analyzed": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } }
               }
             }
-          }
-        ]
+          ]
+        }
       }
-    }
+    end
   end
   # rubocop:enable Metrics/MethodLength
 
@@ -172,6 +203,36 @@ module HasSearch
     end
 
     where
+  end
+
+  def parse_search_terms(value)
+    return { exact_phrases: [], fuzzy_terms: [] } if value.blank?
+
+    exact_phrases = []
+    remaining_text = value.dup
+
+    # Extract quoted phrases
+    remaining_text.scan(/"([^"]*)"/) do |match|
+      exact_phrases << match[0] unless match[0].blank?
+    end
+
+    # Remove quoted phrases from remaining text
+    fuzzy_text = remaining_text.gsub(/"[^"]*"/, ' ').strip
+
+    # Split remaining text into individual terms
+    fuzzy_terms = fuzzy_text.split(/\s+/).reject(&:blank?)
+
+    { exact_phrases:, fuzzy_terms: }
+  end
+
+  def quoted_phrase?(term)
+    term.start_with?('"') && term.end_with?('"') && term.length > 1
+  end
+
+  def extract_phrase(term)
+    return term unless quoted_phrase?(term)
+
+    term[1..-2]
   end
 
   def where_regexp(name, value)
