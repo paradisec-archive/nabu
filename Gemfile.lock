@@ -557,7 +557,7 @@ GEM
       activerecord (>= 7.1)
       chartkick (>= 5)
       groupdate (>= 6)
-    searchkick (5.5.1)
+    searchkick (5.5.2)
       activemodel (>= 7.1)
       hashie
     securerandom (0.4.1)
