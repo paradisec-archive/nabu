@@ -16,6 +16,7 @@
     = sortable :language, 'Language as given'
     = sortable :countries, 'Countries'
     = sortable :essences_count, '# of files'
+    = sortable :created_at, 'Creation Date'
     = sortable :updated_at, 'Modification Date'
     %th Actions
     - if show_exclusions
@@ -31,6 +32,7 @@
           - item.countries.sort_by(&:name).each do |country|
             = country.name
         %td= item.essences_count
+        %td= item.created_at.to_date
         %td= item.updated_at.to_date
         %td
           = link_to 'View', [item.collection, item]

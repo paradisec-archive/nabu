@@ -492,7 +492,8 @@
   },
   "acknowledged-issue-numbers": [
     32775,
-    34739
+    34739,
+    34892
   ],
   "ssm:account=847483222616:parameterName=/usyd/resources/network-load-balance/application/arn:region=ap-southeast-2": "arn:aws:elasticloadbalancing:ap-southeast-2:847483222616:loadbalancer/net/Ingress-nlb-01/9174ddeafc5c5854",
   "load-balancer:account=847483222616:loadBalancerArn=arn$:aws$:elasticloadbalancing$:ap-southeast-2$:847483222616$:loadbalancer/net/Ingress-nlb-01/9174ddeafc5c5854:loadBalancerType=network:region=ap-southeast-2": {

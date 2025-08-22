@@ -9,6 +9,7 @@
     = sortable :countries, 'Countries'
     = sortable :languages, 'Languages'
     = sortable :created_at, 'Creation Date'
+    = sortable :updated_at, 'Modification Date'
     = sortable :university_name, 'Source university'
     %th Actions
 
@@ -24,6 +25,7 @@
           - collection.languages.sort_by(&:name).each do |language|
             = language.name
         %td= collection.created_at.to_date
+        %td= collection.updated_at.to_date
         %td= collection.university_name
 
         %td
