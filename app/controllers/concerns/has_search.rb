@@ -124,14 +124,13 @@ module HasSearch
       query: {
         bool: {
           must: [
-            { bool: { should: text } }
-          ],
-          filter: {
-            bool: { must: filter }
-          }
+            { bool: { must: text } }
+          ]
         }
       }
     }
+
+    body[:query][:bool][:filter] = { bool: { must: filter } } if filter.any?
     body[:query][:must].push({ range: }) if range.any?
 
     body[:query][:bool][:filter][:bool][:must_not] = [{ ids: { values: params[:exclusions].split(',').map(&:to_i) } }] if params[:exclusions].present?
@@ -168,18 +167,9 @@ module HasSearch
           queries: [
             {
               bool: {
-                must: {
-                  bool: {
-                    should: [
-                      { match: { "#{name}.word_start": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } } }
-                      # { match: { "#{name}.word_start": { query: value, boost:, operator: 'and', analyzer: 'searchkick_word_search', fuzziness: 1,
-                      #                                    prefix_length: 0, max_expansions: 3, fuzzy_transpositions: true } } }
-                    ]
-                  }
-                },
-                should: {
-                  match: { "#{name}.analyzed": { query: value, boost: boost * 10, operator: 'and', analyzer: 'searchkick_word_search' } }
-                }
+                should: [
+                  {  match: { "#{name}.analyzed": { query: value, boost: boost * 10  } } }
+                ]
               }
             }
           ]
