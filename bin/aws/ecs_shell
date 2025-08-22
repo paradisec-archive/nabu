@@ -2,7 +2,7 @@
 
 export AWS_OUTPUT="json"
 
-TASK_NAME="${1^}"
+TASK_NAME="${1}"
 shift
 
 echo "Getting cluster..."
@@ -29,5 +29,5 @@ aws ecs execute-command \
   --cluster "$CLUSTER" \
   --task "$TASK" \
   --interactive \
-  --container "${TASK_NAME}Container" \
+  --container "${TASK_NAME}" \
   --command "/bin/sh $*"
