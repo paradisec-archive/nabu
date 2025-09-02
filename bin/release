@@ -20,7 +20,7 @@ git push
 git switch main
 
 cd cdk
-AWS_PROFILE=nabu-${ENV} yarn cdk deploy "nabu-appstack-${ENV}"
+AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
 
 if [ "$ENV" != "prod" ]; then
   exit

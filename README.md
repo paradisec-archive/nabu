@@ -183,7 +183,7 @@ nabu_run bundle outdated
 nabu_run bundle update
 
 # node modules
-nabu_run yarn upgrade-interactive
+nabu_run pnpm up -i
 
 # New rails version
 rails new nabu --database=mysql --javascript=esbuild --css=sass --skip-action-cable --skip-kamal

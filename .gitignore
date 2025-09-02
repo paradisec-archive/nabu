@@ -45,16 +45,6 @@
 /vendor/bundle
 .irb_history
 
-# Yarn v4
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-**/.yarn/install-state.gz
-
 #sorbet
 # They recommend you commit these but I'm not convinced
 sorbet/rbi
