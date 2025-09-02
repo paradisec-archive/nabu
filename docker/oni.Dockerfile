@@ -17,11 +17,11 @@ WORKDIR /tmp/oni-ui
 COPY docker/oni.json src/configuration.json
 
 RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" src/configuration.json && \
-  yarn install && \
+  pnpm install && \
   ls scripts && \
   node -v && \
   node --experimental-strip-types scripts/fetch-vocabs.mts vocab.json && \
-  yarn run build-only --base=/oni
+  pnpm run build-only --base=/oni
 
 ###############################################################################
 #
