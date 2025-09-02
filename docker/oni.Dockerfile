@@ -10,7 +10,6 @@ RUN corepack enable
 
 WORKDIR /tmp
 
-RUN git clone https://github.com/paradisec-archive/oni-ui.git -b paradisec
 RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b new-api
 
 WORKDIR /tmp/oni-ui
