@@ -1,3 +1,5 @@
+packages:
+  - cdk
 onlyBuiltDependencies:
-  - '@parcel/watcher'
+  - "@parcel/watcher"
   - esbuild
