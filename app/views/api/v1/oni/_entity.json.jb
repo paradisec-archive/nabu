@@ -6,7 +6,7 @@ json = {
   name: entity.title,
   description: entity.description.truncate(256),
   conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
-  recordType: ['Data', 'Object', is_item ? 'RepositoryObject' : 'RepositoryCollection'],
+  recordType: is_item ? 'RepositoryObject' : 'RepositoryCollection',
   extra: {
     language: (is_item ? entity.content_languages : entity.languages).map(&:name)
   },
