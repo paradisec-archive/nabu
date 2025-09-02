@@ -4,13 +4,14 @@ FROM node:lts AS builder
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
-ARG BUMP=21
+ARG BUMP=22
 
 RUN corepack enable
 
 WORKDIR /tmp
 
 RUN git clone https://github.com/paradisec-archive/oni-ui.git -b paradisec
+RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b new-api
 
 WORKDIR /tmp/oni-ui
 
@@ -18,9 +19,7 @@ COPY docker/oni.json src/configuration.json
 
 RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" src/configuration.json && \
   pnpm install && \
-  ls scripts && \
-  node -v && \
-  node --experimental-strip-types scripts/fetch-vocabs.mts vocab.json && \
+  pnpm run setup:vocabs vocab.json && \
   pnpm run build-only --base=/oni
 
 ###############################################################################

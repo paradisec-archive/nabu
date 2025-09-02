@@ -1,17 +1,6 @@
 {
-  "api": {
-    "rocrate": {
-      "endpoint": "ROCRATE_API_ENDPOINT",
-      "path": "/api/v1/oni",
-      "callbackPrefix": "/oni",
-      "clientId": "ROCRATE_API_CLIENTID",
-      "usesRedirects": true
-    }
-  },
   "ui": {
-    "siteName": "STAGE - Pacific And Regional Archive for Digital Sources in Endangered Cultures",
-    "siteNameX": "Discovery",
-    "title": "STAGE - PARADISC Catalog",
+    "title": "Pacific And Regional Archive for Digital Sources in Endangered Cultures",
     "shortTitle": "PARADISEC",
     "splash": {
       "text": "Oni acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
@@ -22,47 +11,44 @@
     },
     "showLogo": true,
     "navHeight": "80px",
-    "showNotebooks": false,
     "showEllipsis": true,
     "help": {
-      "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>).",
-      "helpUrl": "https://www.example.com",
-      "citationText": "CITE AS: Oni Platform. A project with co-investment from Australian Research Data Commons, The University of Queensland, The University of Melbourne, The University of Sydney, Monash University, First Languages Australia and AARNet."
+      "citationText": "CITE AS: Oni Platform. A project with co-investment from Australian Research Data Commons, The University of Queensland, The University of Melbourne, The University of Sydney, Monash University, First Languages Australia and AARNet.",
+      "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>)."
     },
     "subHelpLinks": [
       {
-        "name": "Example Link",
-        "href": "https://www.example.com",
+        "name": "Portal Help",
+        "href": "https://www.ldaca.edu.au/resources/user-guides/portal/",
         "target": "_blank"
       }
     ],
     "terms": {
-      "text": "Example terms of service",
+      "text": "<p class='pt-2'><span>Effective date: &nbsp;</span><span>7th of June, 2023</span></p><p class='pt-2'><span></span></p><p class='pt-2'><span>By viewing, browsing, and using this webpage, you agree to the following Terms of        Use.</span></p><p class='pt-2'><span>Terms of Use</span></p><ol class='list-decimal px-4 py-6'>    <li class='py-1'>1.&nbsp;<span>LDaCA is an online resource that enhances the findability,            accessibility and reusability of language data. LDaCA does not own the data made available through the            platform. Copyright for each collection of data is managed by the relevant Data Steward. Licenses cannot            be sublicensed, transferred or assigned to others, unless otherwise permitted by the relevant Data            Steward. </span></li>    <li class='py-1'>2.&nbsp;<span>LDaCA users must adhere to the conditions defined in the data access            licence and must conform to ethical standards with regards to sensitive data and confidentiality. When            collection data is accessed for research purposes, LDaCA users must adhere to ethical research standards            and processes as defined by the Australian Code for the Responsible of Research and/or by their            institution. LDaCA is not responsible for breaches of data license terms. </span></li>    <li class='py-1'>3.&nbsp;<span>Use of the collection data accessed via LDaCA must not cause            disrespect, damage, or harm of any kind. </span></li>    <li class='py-1'>4.&nbsp;<span>Material must be properly attributed using the provided citation.        </span></li>    <li class='py-1'>5.&nbsp;<span>Metadata publicly available in the LDaCA catalogue is licensed under            a </span><span><a class='text-blue-600'                 href='https://creativecommons.org/licenses/by/4.0/'>Creative                Commons Attribution 4.0 International</a></span><span>&nbsp;(CC BY 4.0) license.</span>    </li>    <li class='py-1'>6.&nbsp;<span>LDaCA facilitates access to the collection data &lsquo;as is&rsquo;            and provides no guarantee with regards to the accuracy, completeness, or legality of the material. LDaCA            users access the collection data at their own discretion and risk. </span></li>    <li class='py-1'>7.&nbsp;<span>LDaCA users must not share their account with others. LDaCA may            change the site and collection data without notice. LDaCA may suspend or cancel user access without            notice. &nbsp;</span></li></ol><p class='pt-2'><span></span></p>",
       "href": "/terms",
       "title": "Terms of Service"
     },
-    "email": {
-      "help": "help@example.com"
+    "privacy": {
+      "text": "<p class='pt-2'><span>Effective date: &nbsp;</span><span>7th of June, 2023</span></p><p class='pt-2'><span></span></p><p class='pt-2'><span>By viewing, browsing, and using this webpage, you agree to the following Terms of        Use.</span></p><p class='pt-2'><span>Terms of Use</span></p><ol class='list-decimal px-4 py-6'>    <li class='py-1'>1.&nbsp;<span>LDaCA is an online resource that enhances the findability,            accessibility and reusability of language data. LDaCA does not own the data made available through the            platform. Copyright for each collection of data is managed by the relevant Data Steward. Licenses cannot            be sublicensed, transferred or assigned to others, unless otherwise permitted by the relevant Data            Steward. </span></li>    <li class='py-1'>2.&nbsp;<span>LDaCA users must adhere to the conditions defined in the data access            licence and must conform to ethical standards with regards to sensitive data and confidentiality. When            collection data is accessed for research purposes, LDaCA users must adhere to ethical research standards            and processes as defined by the Australian Code for the Responsible of Research and/or by their            institution. LDaCA is not responsible for breaches of data license terms. </span></li>    <li class='py-1'>3.&nbsp;<span>Use of the collection data accessed via LDaCA must not cause            disrespect, damage, or harm of any kind. </span></li>    <li class='py-1'>4.&nbsp;<span>Material must be properly attributed using the provided citation.        </span></li>    <li class='py-1'>5.&nbsp;<span>Metadata publicly available in the LDaCA catalogue is licensed under            a </span><span><a class='text-blue-600'                 href='https://creativecommons.org/licenses/by/4.0/'>Creative                Commons Attribution 4.0 International</a></span><span>&nbsp;(CC BY 4.0) license.</span>    </li>    <li class='py-1'>6.&nbsp;<span>LDaCA facilitates access to the collection data &lsquo;as is&rsquo;            and provides no guarantee with regards to the accuracy, completeness, or legality of the material. LDaCA            users access the collection data at their own discretion and risk. </span></li>    <li class='py-1'>7.&nbsp;<span>LDaCA users must not share their account with others. LDaCA may            change the site and collection data without notice. LDaCA may suspend or cancel user access without            notice. &nbsp;</span></li></ol><p class='pt-2'><span></span></p>",
+      "href": "/privacy",
+      "title": "Privacy"
     },
     "footer": {
-      "copyright": "Example Group",
+      "copyright": "© 2025 PARADISEC",
       "link": {
-        "href": "https://example.com",
-        "text": "Oni"
+        "href": "https://paradisec.org.au",
+        "text": "PARADISEC"
       }
     },
     "login": {
-      "enabled": true
-    },
-    "authorizationProvider": {
-      "label": "REMS",
-      "url": "https://rems-uat.example.com/applications"
-    },
-    "enrollment": {
-      "enforced": false,
-      "URL": "https://registry-test.ldaca.edu.au/registry/co_petitions/start/coef:9"
+      "enabled": true,
+      "manageTermsAndConditions": false
     },
     "topNavItems": [
+      {
+        "route": "search",
+        "display": "search"
+      },
       {
         "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
         "display": "Collections"
@@ -74,14 +60,6 @@
       {
         "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Object,https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
         "display": "Both"
-      },
-      {
-        "route": "search?f=%257B%2522%2540type%2522%253A%255B%2522RepositoryCollection%2522%255D%252C%2522_isTopLevel.%2540value%2522%253A%255B%2522true%2522%255D%257D",
-        "display": "Top Collections"
-      },
-      {
-        "route": "/search?f=%257B%2522%2540type%2522%253A%255B%2522SoftwareApplication%2522%255D%257D",
-        "display": "Notebooks"
       }
     ],
     "search": {
@@ -95,7 +73,7 @@
           "label": "Id"
         },
         {
-          "value": "title",
+          "value": "name",
           "label": "Title"
         },
         {
@@ -121,10 +99,6 @@
           "label": "Descending"
         }
       ],
-      "defaultOrder": {
-        "value": "desc",
-        "label": "Descending"
-      },
       "searchDetails": [
         {
           "field": "language",
@@ -133,30 +107,8 @@
       ]
     },
     "main": {
-      "fields": [
-        {
-          "display": "Language",
-          "name": "inLanguage"
-        },
-        {
-          "display": "Linguistic Genre",
-          "name": "linguisticGenre"
-        },
-        {
-          "display": "Comminication Mode",
-          "name": "communicationMode"
-        },
-        {
-          "display": "Annotation Type",
-          "name": "annotationType"
-        },
-        {
-          "display": "File Formats",
-          "name": "encodingFormat"
-        }
-      ],
       "byteFields": ["size", "contentSize"],
-      "expand": ["speaker", "author", "citation"]
+      "expand": ["ldac:speaker", "author", "citation"]
     },
     "collection": {
       "name": {
@@ -178,40 +130,8 @@
         }
       ],
       "meta": {
-        "hide": [
-          "name",
-          "description",
-          "datePublished",
-          "license",
-          "@type",
-          "containsTypes",
-          "crateId",
-          "isRoot",
-          "isTopLevel",
-          "root",
-          "hasPart",
-          "hasMember",
-          "memberOf",
-          "isSubLevel",
-          "memberOf",
-          "access",
-          "collectionStack",
-          "metadataIsPublic",
-          "metadataLicense",
-          "identifier",
-          "subCollection",
-          "mainCollection"
-        ],
-        "displayHasMember": false,
-        "displayHasPart": true
-      },
-      "relationships": [
-        {
-          "name": "notebook",
-          "display": "Notebooks",
-          "type": "SoftwareApplication"
-        }
-      ]
+        "hide": []
+      }
     },
     "object": {
       "name": {
@@ -233,184 +153,147 @@
         }
       ],
       "meta": {
-        "hide": [
-          "memberOf",
-          "name",
-          "description",
-          "datePublished",
-          "identifier",
-          "license",
-          "@type",
-          "containsTypes",
-          "crateId",
-          "isRoot",
-          "isTopLevel",
-          "root",
-          "hasPart",
-          "hasMember",
-          "error",
-          "parent",
-          "access",
-          "indexableText",
-          "access",
-          "collectionStack",
-          "metadataIsPublic",
-          "metadataLicense",
-          "mainCollection",
-          "subCollection"
-        ]
+        "hide": []
       }
     },
     "file": {
       "meta": {
-        "hide": [
-          "name",
-          "@type",
-          "access",
-          "crateId",
-          "parent",
-          "memberOf",
-          "root",
-          "text",
-          "collectionStack",
-          "metadataIsPublic",
-          "metadataLicense",
-          "mainCollection",
-          "subCollection"
-        ]
-      }
-    },
-    "notebook": {
-      "name": {
-        "display": "Name",
-        "name": "name"
-      },
-      "top": [
-        {
-          "display": "Name",
-          "name": "name"
-        },
-        {
-          "display": "Description",
-          "name": "description"
-        },
-        {
-          "display": "Date Published",
-          "name": "datePublished"
-        }
-      ],
-      "meta": {
-        "hide": [
-          "name",
-          "description",
-          "@type",
-          "datePublished",
-          "gitName",
-          "gitRepo",
-          "url",
-          "binderLink",
-          "base64",
-          "access",
-          "metadataIsPublic",
-          "metadataLicense",
-          "mainCollection",
-          "subCollection"
-        ],
-        "displayHasMember": false,
-        "displayHasPart": false
+        "hide": []
       }
     },
     "analytics": {
-      "gaMeasurementId": "G-XXX"
+      "gaMeasurementId": "G-G9M2J7CBHC"
     },
     "googleForm": {
       "takedown": "https://docs.google.com/forms/d/e/1FAIpQLSc3wWGYLgkEtba65mL46BUhMAPWiHt5EHrQ2rWiI4nJqPjpDg/viewform?usp=pp_url&entry.812577446="
     },
-    "binderhubRegistry": {
-      "registryJson": "https://api.github.com/repos/Language-Research-Technology/BinderHub-registry/contents/BinderHub-registry.json"
+    "citeData": {
+      "help": {
+        "text": "See this <span style=\"display: inline-flex; align-items: center;\"><a class=\"el-link el-link--primary\" target=\"_blank\" href=\"https://www.ldaca.edu.au/resources/user-guides/portal/cite-data/\">help</a></span> page for more detail."
+      }
+    },
+    "textReplacements": {
+      "^_": "",
+      "^ldac:doi$": "DOI",
+      "^ldac:isDeIdentified$": "Is De-Identified",
+      "^citation$": "Related Works",
+      "^ldac:": "",
+      "^dct:": "",
+      "^local:": "",
+      "^prov:": "",
+      "^pcdm:": "",
+      "^isbn$": "ISBN",
+      "^issn$": "ISSN",
+      "^url$": "URL",
+      "^@id$": "ID",
+      "^@type$": "Type",
+      "^arcp://name,custom/terms#": ""
+    },
+    "head": {
+      "title": "DC.publisher",
+      "meta": [
+        {
+          "name": "DC.title",
+          "content": "name"
+        },
+        {
+          "name": "DC.description",
+          "content": "description"
+        },
+        {
+          "name": "DC.creator",
+          "content": "creator"
+        },
+        {
+          "name": "DC.creator",
+          "content": "author"
+        },
+        {
+          "name": "DC.contributor",
+          "content": "contributor"
+        },
+        {
+          "name": "DC.date",
+          "content": "datePublished"
+        },
+        {
+          "name": "DC.language",
+          "content": "inLanguage"
+        },
+        {
+          "name": "DC.identifier",
+          "content": "@id"
+        },
+        {
+          "name": "DC.type",
+          "content": "@type"
+        },
+        {
+          "name": "DC.type",
+          "content": "materialType"
+        },
+        {
+          "name": "DC.license",
+          "content": "license"
+        },
+        {
+          "name": "DC.date",
+          "content": "dateCreated"
+        }
+      ]
     },
     "aggregations": [
       {
         "display": "Collector",
-        "order": 0,
         "name": "collector_name",
-        "active": true,
-        "hide": false
+        "active": true
       },
       {
         "display": "Collection",
-        "order": 1,
-        "name": "memberOf",
-        "hide": false
+        "name": "memberOf"
       },
       {
         "display": "Main Collections",
-        "order": 0,
         "name": "root",
-        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants.",
-        "hide": false
-      },
-      {
-        "display": "Collection",
-        "order": 1,
-        "name": "mainCollection",
-        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants.",
-        "hide": true
+        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants."
       },
       {
         "display": "Country",
-        "order": 2,
         "name": "countries",
         "help": "The countries associated with the entity."
       },
       {
-        "display": "License",
-        "order": 0,
-        "name": "licenseId",
-        "hide": true,
-        "icons": true
-      },
-      {
         "display": "Access",
-        "order": 2,
         "name": "licenseName",
         "help": "The access conditions associated with a resource."
       },
       {
         "display": "Record Type",
-        "order": 3,
         "name": "type",
         "help": "The type of object a record describes, i.e. a collection, object or file. For individual files, this field also gives information about the nature of the material, i.e. primary material, transcription, annotation etc."
       },
       {
         "display": "Language",
-        "order": 4,
         "name": "languages",
         "help": "The language(s) of the content in this resource."
       },
       {
         "display": "Communication Mode",
-        "order": 5,
         "name": "communicationMode",
-        "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource.",
-        "icons": true
+        "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource."
       },
       {
         "display": "Linguistic Genre",
-        "order": 6,
         "name": "linguisticGenre",
         "help": "The linguistic classification of the genre of this resource."
       },
       {
         "display": "File Format",
-        "order": 7,
         "name": "encodingFormat",
-        "help": "The media type of the resource.",
-        "icons": true
+        "help": "The media type of the resource."
       },
       {
         "display": "Annotation Type",
-        "order": 8,
         "name": "annotationType"
       }
     ],
@@ -432,22 +315,35 @@
         "checked": true
       }
     },
-    "licenses": [
-      {
-        "license": "#restricted",
-        "group": "restricted-users",
-        "access": "loginPlus",
-        "enrollment": {
-          "url": "http://localhost",
-          "label": "",
-          "class": ""
-        }
-      }
-    ],
     "conformsTo": {
       "collection": "https://w3id.org/ldac/profile#Collection",
-      "object": "https://w3id.org/ldac/profile#Object",
-      "notebook": "https://w3id.org/ldac/profile#Notebook"
+      "object": "https://w3id.org/ldac/profile#Object"
+    },
+    "mapConfig": {
+      "boundingBox": {
+        "topRight": {
+          "lat": -11.523088,
+          "lng": 162.649886
+        },
+        "bottomLeft": {
+          "lat": -42.811522,
+          "lng": 108.64901
+        }
+      },
+      "precision": 5,
+      "center": {
+        "lat": -25,
+        "lng": 134
+      },
+      "zoom": 8
+    }
+  },
+  "api": {
+    "rocrate": {
+      "endpoint": "ROCRATE_API_ENDPOINT",
+      "path": "/api/v1/oni",
+      "clientId": "ROCRATE_API_CLIENTID",
+      "usesRedirects": true
     }
   }
 }
