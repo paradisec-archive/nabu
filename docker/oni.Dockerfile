@@ -4,7 +4,7 @@ FROM node:lts AS builder
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
-ARG BUMP=22
+ARG BUMP=23
 
 RUN corepack enable
 
