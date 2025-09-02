@@ -10,7 +10,11 @@ module Api
           return
         end
 
-        sort = query.sort === 'id' ? 'entity_id' : query.sort
+        sort = case query.sort
+        when 'id' then 'entity_id'
+        when 'name' then 'title'
+        else query.sort
+        end
 
         entities = Entity.where(
           entity_type: 'Collection',
@@ -69,26 +73,17 @@ module Api
 
         @admin_rocrate = false
 
-        if check_for_essence
-          # NOTE: Hard code the format as rails pick up the extension in the id
-          render 'object_meta_essence', formats: [:json]
-
-          return
-        end
-
         if check_for_item
-          render 'object_meta_item'
-
-          return
+          puts '🪚 ⛎'
+          @entity = @data
+          puts "🪚 entity: #{@entity.inspect}"
+        elsif check_for_collection
+          puts '🪚 🔵'
+          @entity = @data
+          puts "🪚 entity: #{@entity.inspect}"
+        else
+          raise ActiveRecord::RecordNotFound
         end
-
-        if check_for_collection
-          render 'object_meta_collection'
-
-          return
-        end
-
-        raise ActiveRecord::RecordNotFound
       end
 
       def file
@@ -107,6 +102,24 @@ module Api
         as_attachment = params[:disposition] == 'attachment'
         filename = params[:filename]
 
+        # Special treatment for ro-crate-metadata.json
+        if params[:path] === 'ro-crate-metadata.json'
+          @admin_rocrate = false
+
+          if check_for_item
+            render 'object_meta_item'
+
+            return
+          end
+
+          if check_for_collection
+            render 'object_meta_collection'
+
+            return
+          end
+        end
+
+        ## Only items have files
         raise ActiveRecord::RecordNotFound unless check_for_item
 
         essence = @data.essences.find_by(filename: params[:path])

@@ -3,7 +3,7 @@ module Oni
     include ActiveModel::Validations
 
     # NOTE: We remap name to title below to match the database column
-    SORT_FIELDS = %w[id title created_at updated_at].freeze
+    SORT_FIELDS = %w[id name created_at updated_at].freeze
     ORDER_FIELDS = %w[asc desc].freeze
     CONFORMS_TO_VALUES = %w[https://w3id.org/ldac/profile#Collection https://w3id.org/ldac/profile#Object].freeze
 

@@ -7,6 +7,8 @@ json = {
   description: entity.description.truncate(256),
   conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
   recordType: is_item ? 'RepositoryObject' : 'RepositoryCollection',
+  createst_at: entity.created_at.iso8601,
+  updated_at: entity.updated_at.iso8601,
   extra: {
     language: (is_item ? entity.content_languages : entity.languages).map(&:name)
   },
@@ -36,6 +38,11 @@ end
 # TODO:: add communicationMode
 
 extra[:mediaType] = @mime_types
+extra[:access] = {
+  metadata: true,
+  # FIXME: change to false when we have a way to restrict access to files
+  files: true
+}
 
 searchExtra = json[:searchExtra]
 
