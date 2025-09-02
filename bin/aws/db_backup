@@ -15,7 +15,7 @@ execute_command() {
     --cluster "$CLUSTER" \
     --task "$TASK" \
     --interactive \
-    --container "AppContainer" \
+    --container "app" \
     --command "/bin/bash -c \"$1\""
 }
 
@@ -25,8 +25,8 @@ echo "Getting data..."
 execute_command "mysqldump -u nabu -h \$NABU_DATABASE_HOSTNAME --password=\$NABU_DATABASE_PASSWORD --ignore-table=nabu.versions nabu | bzip2 | base64" >|../data.sql.bz2.b64
 
 echo "Decompressing..."
-tail -n +6 ../schema.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../schema.sql
-tail -n +6 ../data.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc >|../data.sql
+tail -n +6 ../schema.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc | sed 's/DEFINER=`[^`]*`/DEFINER=`root`/' >|../schema.sql
+tail -n +6 ../data.sql.bz2.b64 | head -n -4 | base64 -id | bunzip2 -dc | sed 's/DEFINER=`[^`]*`/DEFINER=`root`/' >|../data.sql
 rm ../*.b64
 
 echo "Now run"
