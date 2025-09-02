@@ -38,7 +38,7 @@ RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-ENV NODE_VERSION=22.11.0
+ENV NODE_VERSION=22.19.0
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 # Setup node

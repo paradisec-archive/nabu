@@ -10,32 +10,32 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-        apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
-        rm -rf /var/lib/apt/lists /var/cache/apt/archives
+  apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
+  rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-        apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config && \
-        rm -rf /var/lib/apt/lists /var/cache/apt/archives
+  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config && \
+  rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-ENV NODE_VERSION=22.11.0
+ENV NODE_VERSION=22.19.0
 ENV NVM_DIR /usr/local/nvm
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT 0
 RUN mkdir -p $NVM_DIR
 # Setup node
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
-        . $NVM_DIR/nvm.sh && \
-        nvm install $NODE_VERSION && \
-        nvm alias default $NODE_VERSION  && \
-        nvm use default && \
-        corepack enable
+  . $NVM_DIR/nvm.sh && \
+  nvm install $NODE_VERSION && \
+  nvm alias default $NODE_VERSION  && \
+  nvm use default && \
+  corepack enable
 
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # Set production environment
 ENV RAILS_ENV="development" \
-        BUNDLE_PATH="/usr/local/bundle"
+  BUNDLE_PATH="/usr/local/bundle"
 
 # So rubocop works
 RUN mkdir -p /home/johnf/work/nabu; ln -s /rails /home/johnf/work/nabu/nabu
