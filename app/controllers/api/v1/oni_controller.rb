@@ -74,67 +74,63 @@ module Api
         @admin_rocrate = false
 
         if check_for_item
-          puts '🪚 ⛎'
           @entity = @data
-          puts "🪚 entity: #{@entity.inspect}"
         elsif check_for_collection
-          puts '🪚 🔵'
           @entity = @data
-          puts "🪚 entity: #{@entity.inspect}"
         else
           raise ActiveRecord::RecordNotFound
         end
       end
 
-      def file
-        unless params[:id]
-          render json: { error: 'id is required' }, status: :bad_request
-
-          return
-        end
-
-        unless params[:path]
-          render json: { error: 'path is required' }, status: :bad_request
-
-          return
-        end
-
-        as_attachment = params[:disposition] == 'attachment'
-        filename = params[:filename]
-
-        # Special treatment for ro-crate-metadata.json
-        if params[:path] === 'ro-crate-metadata.json'
-          @admin_rocrate = false
-
-          if check_for_item
-            render 'object_meta_item'
-
-            return
-          end
-
-          if check_for_collection
-            render 'object_meta_collection'
-
-            return
-          end
-        end
-
-        ## Only items have files
-        raise ActiveRecord::RecordNotFound unless check_for_item
-
-        essence = @data.essences.find_by(filename: params[:path])
-
-        raise ActiveRecord::RecordNotFound unless essence
-
-        location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
-        raise ActionController::RoutingError, 'Essence file not found' unless location
-
-        if params[:noRedirect] === 'true'
-          render json: { location: }
-        else
-          redirect_to location, allow_other_host: true
-        end
-      end
+      # def file
+      #   unless params[:id]
+      #     render json: { error: 'id is required' }, status: :bad_request
+      #
+      #     return
+      #   end
+      #
+      #   unless params[:path]
+      #     render json: { error: 'path is required' }, status: :bad_request
+      #
+      #     return
+      #   end
+      #
+      #   as_attachment = params[:disposition] == 'attachment'
+      #   filename = params[:filename]
+      #
+      #   # Special treatment for ro-crate-metadata.json
+      #   if params[:path] === 'ro-crate-metadata.json'
+      #     @admin_rocrate = false
+      #
+      #     if check_for_item
+      #       render 'object_meta_item'
+      #
+      #       return
+      #     end
+      #
+      #     if check_for_collection
+      #       render 'object_meta_collection'
+      #
+      #       return
+      #     end
+      #   end
+      #
+      #   ## Only items have files
+      #   raise ActiveRecord::RecordNotFound unless check_for_item
+      #
+      #   essence = @data.essences.find_by(filename: params[:path])
+      #
+      #   raise ActiveRecord::RecordNotFound unless essence
+      #
+      #   location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
+      #   raise ActionController::RoutingError, 'Essence file not found' unless location
+      #
+      #   if params[:noRedirect] === 'true'
+      #     render json: { location: }
+      #   else
+      #     redirect_to location, allow_other_host: true
+      #   end
+      # end
 
       def search
         query = Oni::SearchValidator.new(params)
