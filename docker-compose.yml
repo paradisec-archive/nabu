@@ -15,7 +15,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-      NABU_CATALOG_BUCKET: nabu
+      NABU_CATALOG_BUCKET: nabu-catalog-prod
       OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
     volumes:
