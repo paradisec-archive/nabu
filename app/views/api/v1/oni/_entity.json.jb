@@ -40,8 +40,7 @@ end
 extra[:mediaType] = @mime_types
 extra[:access] = {
   metadata: true,
-  # FIXME: change to false when we have a way to restrict access to files
-  files: true
+  files: can?(:read, is_item ? entity.essences.first : entity.items.first.essences.first)
 }
 
 searchExtra = json[:searchExtra]
