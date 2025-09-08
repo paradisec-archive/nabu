@@ -75,6 +75,14 @@ services:
     volumes:
       - s3-data:/s3mockroot
 
+  oni-ui:
+    build:
+      context: .
+      dockerfile: docker/oni.Dockerfile
+      args:
+        ROCRATE_API_ENDPOINT: https://localhost:3443
+        ROCRATE_API_CLIENTID: 8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ
+
 volumes:
   s3-data:
   db-data:
