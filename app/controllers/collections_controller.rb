@@ -1,5 +1,5 @@
 require 'nabu/ex_site9'
-require 'nabu/nabu_spreadsheet'
+require 'nabu/spreadsheet'
 
 # rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 class CollectionsController < ApplicationController
@@ -303,7 +303,7 @@ class CollectionsController < ApplicationController
     # get XSL data
     data = params[:collection][:metadata].read
     # parse XML file as Spreadsheet
-    sheet = Nabu::NabuSpreadsheet.new_of_correct_type(data)
+    sheet = Nabu::Spreadsheet.new_of_correct_type(data)
     sheet.parse
 
     if sheet.valid?

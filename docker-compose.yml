@@ -58,20 +58,20 @@ services:
       - search-data:/usr/share/opensearch/data
     restart: unless-stopped
 
-  search-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
-    ports:
-      - "5601:5601"
-    environment:
-      OPENSEARCH_HOSTS: '["http://search:9200"]'
+  # Onlt turn this on when needed
+  # search-dashboards:
+  #   image: opensearchproject/opensearch-dashboards:latest
+  #   ports:
+  #     - "5601:5601"
+  #   environment:
+  #     OPENSEARCH_HOSTS: '["http://search:9200"]'
 
   s3:
     image: adobe/s3mock
     ports:
       - "9090:9090"
     environment:
-      initialBuckets: nabu
-      retainFilesOnExit: true
+      initialBuckets: nabu-catalog-prod
     volumes:
       - s3-data:/s3mockroot
 

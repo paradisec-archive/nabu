@@ -1,7 +1,6 @@
 # rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 module Nabu
-  # TODO: Create spreadsheet version which handles DataType entries.
-  class NabuSpreadsheet
+  class Spreadsheet
     attr_accessor :notices, :errors, :collection, :items
 
     def self.new_of_correct_type(data)
@@ -9,12 +8,10 @@ module Nabu
       book&.sheet(0)
 
       if book.nil?
-        NullNabuSpreadsheet.new
-
-        return
+        return Null.new
       end
 
-      Version3NabuSpreadsheet.new(book)
+      Version3.new(book)
     end
 
     # In theory, the program could determine which extension to try first by using Content-Type.
@@ -339,7 +336,7 @@ module Nabu
       end
     end
 
-    class NullNabuSpreadsheet < NabuSpreadsheet
+    class Null < Spreadsheet
       def initialize
         @notices = []
         @errors = ['ERROR File is neither XLS nor XLSX']
@@ -356,7 +353,7 @@ module Nabu
       end
     end
 
-    class Version3NabuSpreadsheet < NabuSpreadsheet
+    class Version3 < Spreadsheet
       def parse_coll_id
         @book.row(6)[1].to_s
       end

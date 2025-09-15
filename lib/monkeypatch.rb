@@ -63,7 +63,7 @@ module Monkeypatch
 end
 
 # NOTE: Formtastic 5 doesn't support latest country_select gem
-# https://github.com/formtastic/formtastic/issues/1381
+# https://github.com/formtastic/formtastic/issues/1381 will be fixed in Formtastic 6
 module Formtastic
   module Inputs
     class CountryInput
