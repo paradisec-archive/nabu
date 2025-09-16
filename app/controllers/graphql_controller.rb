@@ -1,11 +1,11 @@
-class GraphqlController < ApplicationController
+class GraphqlController < ApiController
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
   # protect_from_forgery with: :null_session
 
   # avoid getting 401'd for not having a CSRF token
-  skip_before_action :verify_authenticity_token, only: [:execute]
+  # skip_before_action :verify_authenticity_token, only: [:execute]
 
   before_action :check_auth, except: [:schema]
 
@@ -14,9 +14,10 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      current_user:
+      current_user:,
+      current_ability:
     }
-    result = NabuSchema.execute(query, variables: variables, context: context, operation_name: operation_name, max_complexity: 300)
+    result = NabuSchema.execute(query, variables:, context:, operation_name:, max_complexity: 300)
     render json: result
   rescue StandardError => error
     raise error unless Rails.env.development?
@@ -34,7 +35,7 @@ class GraphqlController < ApplicationController
   def check_auth
     return if can? :graphql, Item
 
-    render status: :unauthorized, json: { error: 'Must be logged in to query Nabu' }
+    render json: { errors: [{ message: 'Must be logged in to query Nabu' }] }
   end
 
   # Handle variables in form data, JSON body, or a blank value

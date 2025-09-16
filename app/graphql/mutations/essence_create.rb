@@ -12,13 +12,16 @@ module Mutations
     argument :attributes, Types::EssenceAttributes, required: true
 
     def resolve(item_identifier:, collection_identifier:, filename:, attributes:)
-      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
-
-      collection = Collection.find_by(identifier: collection_identifier)
+      collection = Collection.find_by!(identifier: collection_identifier)
+      authorize! :read, collection
 
       item = collection.items.find_by(identifier: item_identifier)
+      authorize! :read, item
+
+      authorize! :create, Essence
 
       essence = ::Essence.new(filename:, item_id: item.id, **attributes)
+
       raise GraphQL::ExecutionError.new 'Error creating essence', extensions: essence.errors.to_hash unless essence.save
 
       { essence: }

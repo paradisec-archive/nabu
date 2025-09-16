@@ -7,6 +7,7 @@ module Types
     include HasSearch
     self.search_model = Item
 
+
     # So we can use HasSearch
     attr_reader :params, :current_user
 
@@ -17,22 +18,25 @@ module Types
       argument :identifier, ID
     end
 
-    # Then provide an implementation:
     def collection(identifier:)
-      Collection.find_by(identifier:)
+      c = Collection.find_by!(identifier:)
+
+      authorize! :read, c
+
+      c
     end
 
     field :item, ItemType, 'Find an item by full identifier. e.g. NT1-009' do
       argument :full_identifier, ID
     end
 
-    # Then provide an implementation:
     def item(full_identifier:)
       collection_identifier, item_identifier = full_identifier.split('-')
-      collection = Collection.find_by(identifier: collection_identifier)
-      raise GraphQL::ExecutionError, 'Not found' unless collection
 
-      collection.items.find_by(identifier: item_identifier)
+      c = Collection.find_by!(identifier: collection_identifier)
+      authorize! :read, c
+
+      c.items.accessible_by(current_ability).find_by!(identifier: item_identifier)
     end
 
     field :item_bwf_csv, ItemBwfCsvType, 'Get the BWF CSV for an item' do
@@ -40,34 +44,33 @@ module Types
       argument :filename, String
     end
     def item_bwf_csv(full_identifier:, filename:)
-      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
-
       collection_identifier, item_identifier = full_identifier.split('-')
-      collection = Collection.find_by(identifier: collection_identifier)
-      raise GraphQL::ExecutionError, 'Not found'  unless collection
 
-      item = collection.items.find_by(identifier: item_identifier)
-      raise GraphQL::ExecutionError, 'Not found'  unless item
+      c = Collection.find_by!(identifier: collection_identifier)
+      authorize! :read, c
+
+      i = c.items.accessible_by(current_ability).find_by!(identifier: item_identifier)
+      authorize! :metadata, i
 
       desc = [
         '# Notes',
         '',
-        "Reference: https://catalog.paradisec.org.au/repository/#{collection.identifier}/#{item.identifier}"
+        "Reference: https://catalog.paradisec.org.au/repository/#{c.identifier}/#{i.identifier}"
       ]
 
-      desc << "Language: #{item.subject_languages.first.name}\" #{item.subject_languages.first.code}" unless item.subject_languages.empty?
+      desc << "Language: #{i.subject_languages.first.name}\" #{i.subject_languages.first.code}" unless i.subject_languages.empty?
 
-      desc << "Country: #{item.countries.first.code}" unless item.countries.empty?
-      desc << "Description: #{item.description}"
+      desc << "Country: #{i.countries.first.code}" unless i.countries.empty?
+      desc << "Description: #{i.description}"
 
       bwf = {
         'FileName' => filename,
         'Description' => desc.join('\n').truncate(240),
-        'Originator' => item.collector_name,
-        'OriginationDate' => item.originated_on,
+        'Originator' => i.collector_name,
+        'OriginationDate' => i.originated_on,
         'BextVersion' => 1,
         'CodingHistory' => 'A=PCM,F=96000,W=24,M=stereo,T=Paragest Pipeline'
-        # 'TBA' => @item.ingest_notes
+        # 'TBA' => @i.ingest_notes
       }
 
       csv = CSV.generate(headers: true) do |c|
@@ -76,12 +79,12 @@ module Types
       end
 
       {
-        full_identifier: item.full_identifier,
-        collection_identifier: collection.identifier,
-        item_identifier: item.identifier,
+        full_identifier: i.full_identifier,
+        collection_identifier: c.identifier,
+        item_identifier: i.identifier,
         csv:,
-        created_at: item.created_at,
-        updated_at: item.updated_at
+        created_at: i.created_at,
+        updated_at: i.updated_at
       }
     end
 
@@ -89,14 +92,13 @@ module Types
       argument :full_identifier, ID
     end
     def item_id3(full_identifier:)
-      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
-
       collection_identifier, item_identifier = full_identifier.split('-')
-      collection = Collection.find_by(identifier: collection_identifier)
-      raise GraphQL::ExecutionError, 'Not found' unless collection
 
-      item = collection.items.find_by(identifier: item_identifier)
-      raise GraphQL::ExecutionError, 'Not found' unless item
+      c = Collection.find_by!(identifier: collection_identifier)
+      authorize! :read, c
+
+      i = c.items.accessible_by(current_ability).find_by!(identifier: item_identifier)
+      authorize! :metadata, i
 
       warden = Warden::Proxy.new({}, Warden::Manager.new({})).tap do |i|
         i.set_user(context[:current_user], scope: :user)
@@ -175,13 +177,14 @@ module Types
 
     def essence(full_identifier:, filename:)
       collection_identifier, item_identifier = full_identifier.split('-')
-      collection = Collection.find_by(identifier: collection_identifier)
-      raise GraphQL::ExecutionError, 'Not found' unless collection
 
-      item = collection.items.find_by(identifier: item_identifier)
-      raise GraphQL::ExecutionError, 'Collection not found' unless item
+      c = Collection.find_by!(identifier: collection_identifier)
+      authorize! :read, c
 
-      item.essences.find_by(filename:)
+      i = c.items.accessible_by(current_ability).find_by!(identifier: item_identifier)
+      authorize! :metadata, i
+
+      i.essences.accessible_by(current_ability).find_by!(filename:)
     end
 
     field :user_by_unikey, EmailUserType, 'Find a user by their unikey' do
@@ -189,7 +192,10 @@ module Types
     end
 
     def user_by_unikey(unikey:)
-      User.find_by(unikey:)
+      u = User.find_by!(unikey:)
+      authorize! :read, u
+
+      { id: u.id, unikey: u.unikey, firstName: u.firstName, lastName: u.lastName, email: u.email }
     end
   end
 end
