@@ -10,7 +10,7 @@ module Mutations
     argument :id, ID, required: true
 
     def resolve(id:, attributes:)
-      essence = ::Essence.find!(id)
+      essence = ::Essence.find(id)
       authorize! :update, essence
 
       raise GraphQL::ExecutionError.new 'Error updating essence', extensions: essence.errors.to_hash unless essence.update(**attributes)
