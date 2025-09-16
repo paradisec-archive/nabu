@@ -6,13 +6,13 @@ module Mutations
 
     field :essence, Types::EssenceType, null: false
 
-    argument :id, ID, required: true
     argument :attributes, Types::EssenceAttributes, required: true
+    argument :id, ID, required: true
 
     def resolve(id:, attributes:)
-      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
+      essence = ::Essence.find!(id)
+      authorize! :update, essence
 
-      essence = ::Essence.find(id)
       raise GraphQL::ExecutionError.new 'Error updating essence', extensions: essence.errors.to_hash unless essence.update(**attributes)
 
       { essence: }

@@ -7,9 +7,9 @@ module Mutations
     argument :identifier, String, required: true
 
     def resolve(identifier:)
-      raise(GraphQL::ExecutionError, 'Not authorised') unless context[:admin_authenticated]
+      collection = Collection.find_by!(identifier: collection_identifier)
+      authorize! :update, collection
 
-      collection = ::Collection.find_by(identifier:)
       collection.has_deposit_form = true
 
       raise GraphQL::ExecutionError.new 'Error updating collection', extensions: collection.errors.to_hash unless collection.save
