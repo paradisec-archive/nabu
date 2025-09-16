@@ -157,15 +157,15 @@ module Types
         https: true
       )
 
-      txt = item_renderer.render(:item_id3, formats: [:txt], assigns: { item: })
+      txt = item_renderer.render(:item_id3, formats: [:txt], assigns: { item: i })
 
       {
-        full_identifier: item.full_identifier,
-        collection_identifier: collection.identifier,
-        item_identifier: item.identifier,
+        full_identifier: i.full_identifier,
+        collection_identifier: c.identifier,
+        item_identifier: i.identifier,
         txt:,
-        created_at: item.created_at,
-        updated_at: item.updated_at
+        created_at: i.created_at,
+        updated_at: i.updated_at
       }
     end
 

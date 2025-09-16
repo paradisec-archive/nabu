@@ -28,6 +28,21 @@ describe 'GraphQL OAuth Authorization', type: :request do
     GRAPHQL
   end
 
+  let(:item_id3_query) do
+    <<-GRAPHQL
+      query GetItemId3($fullIdentifier: ID!) {
+        itemId3(fullIdentifier: $fullIdentifier) {
+          fullIdentifier
+          collectionIdentifier
+          itemIdentifier
+          txt
+          createdAt
+          updatedAt
+        }
+      }
+    GRAPHQL
+  end
+
   let(:essence_create_mutation) do
     <<-GRAPHQL
       mutation CreateEssence($collectionIdentifier: String!, $itemIdentifier: String!, $filename: String!, $attributes: EssenceAttributes!) {
@@ -74,6 +89,16 @@ describe 'GraphQL OAuth Authorization', type: :request do
       expect(result['errors']).to be_present
       expect(result['errors'][0]['message']).to eq('Must be logged in to query Nabu')
     end
+
+    it 'cannot access item ID3 data' do
+      post '/graphql', params: { query: item_id3_query, variables: { fullIdentifier: item.full_identifier } }
+
+      result = JSON.parse(response.body)
+
+      expect(response.status).to eq(200)
+      expect(result['errors']).to be_present
+      expect(result['errors'][0]['message']).to eq('Must be logged in to query Nabu')
+    end
   end
 
   describe 'Machine-to-Machine Authentication' do
@@ -105,6 +130,22 @@ describe 'GraphQL OAuth Authorization', type: :request do
         result = execute_graphql_with_token(item_query, token, variables: { fullIdentifier: private_item.full_identifier })
 
         expect(result['data']['item']).to be_nil
+      end
+
+      it 'can access public item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: item.full_identifier })
+
+        expect(result['errors']).to be_present
+        expect(result['errors'].first['message']).to eq('ItemId3 not found')
+        expect(result['data']['itemId3']).to be_nil
+      end
+
+      it 'cannot access private item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: private_item.full_identifier })
+
+        expect(result['errors']).to be_present
+        expect(result['errors'].first['message']).to eq('ItemId3 not found')
+        expect(result['data']['itemId3']).to be_nil
       end
 
       it 'cannot perform mutations' do
@@ -153,6 +194,26 @@ describe 'GraphQL OAuth Authorization', type: :request do
 
         expect(result['data']['item']).to be_present
         expect(result['data']['item']['identifier']).to eq(private_item.identifier)
+      end
+
+      it 'can access public item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: item.full_identifier })
+
+        expect(result['data']['itemId3']).to be_present
+        expect(result['data']['itemId3']['fullIdentifier']).to eq(item.full_identifier)
+        expect(result['data']['itemId3']['collectionIdentifier']).to eq(collection.identifier)
+        expect(result['data']['itemId3']['itemIdentifier']).to eq(item.identifier)
+        expect(result['data']['itemId3']['txt']).to be_present
+      end
+
+      it 'can access private item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: private_item.full_identifier })
+
+        expect(result['data']['itemId3']).to be_present
+        expect(result['data']['itemId3']['fullIdentifier']).to eq(private_item.full_identifier)
+        expect(result['data']['itemId3']['collectionIdentifier']).to eq(private_collection.identifier)
+        expect(result['data']['itemId3']['itemIdentifier']).to eq(private_item.identifier)
+        expect(result['data']['itemId3']['txt']).to be_present
       end
 
       it 'can perform mutations' do
@@ -205,6 +266,22 @@ describe 'GraphQL OAuth Authorization', type: :request do
         result = execute_graphql_with_token(item_query, token, variables: { fullIdentifier: private_item.full_identifier })
 
         expect(result['data']['item']).to be_nil
+      end
+
+      it 'cannot access public item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: item.full_identifier })
+
+        expect(result['errors']).to be_present
+        expect(result['errors'].first['message']).to eq('ItemId3 not found')
+        expect(result['data']['itemId3']).to be_nil
+      end
+
+      it 'cannot access private item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: private_item.full_identifier })
+
+        expect(result['errors']).to be_present
+        expect(result['errors'].first['message']).to eq('ItemId3 not found')
+        expect(result['data']['itemId3']).to be_nil
       end
 
       it 'cannot perform mutations' do
@@ -296,6 +373,16 @@ describe 'GraphQL OAuth Authorization', type: :request do
         expect(result['data']['item']['identifier']).to eq(private_item.identifier)
       end
 
+      it 'can access all item ID3 data' do
+        result = execute_graphql_with_token(item_id3_query, token, variables: { fullIdentifier: private_item.full_identifier })
+
+        expect(result['data']['itemId3']).to be_present
+        expect(result['data']['itemId3']['fullIdentifier']).to eq(private_item.full_identifier)
+        expect(result['data']['itemId3']['collectionIdentifier']).to eq(private_collection.identifier)
+        expect(result['data']['itemId3']['itemIdentifier']).to eq(private_item.identifier)
+        expect(result['data']['itemId3']['txt']).to be_present
+      end
+
       it 'can perform all mutations' do
         result = execute_graphql_with_token(
           essence_create_mutation,
@@ -320,6 +407,19 @@ describe 'GraphQL OAuth Authorization', type: :request do
     it 'behaves like no authentication' do
       post '/graphql',
            params: { query: collection_query, variables: { identifier: collection.identifier } },
+           headers: { 'Authorization' => 'Bearer invalid_token' }
+
+      expect(response.status).to eq(200)
+
+      result = JSON.parse(response.body)
+
+      expect(result['errors']).to be_present
+      expect(result['errors'][0]['message']).to eq('Must be logged in to query Nabu')
+    end
+
+    it 'cannot access item ID3 data with invalid token' do
+      post '/graphql',
+           params: { query: item_id3_query, variables: { fullIdentifier: item.full_identifier } },
            headers: { 'Authorization' => 'Bearer invalid_token' }
 
       expect(response.status).to eq(200)

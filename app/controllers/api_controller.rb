@@ -23,6 +23,14 @@ class ApplicationUser
     "application_#{application.id}"
   end
 
+  def to_key
+    key = respond_to?(:id) && id
+    key ? Array(key) : nil
+  end
+
+  def authenticatable_salt
+  end
+
   # Mimic user interface if needed
   # def persisted?
   #   true
