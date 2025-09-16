@@ -75,7 +75,8 @@ module HasSearch
 
     model.search_user_fields.each do |field|
       params.delete(field)
-      user_filter.push(where_exact(field, current_user.id))
+      # FIXME this is a dirty hack for M2M oauth apps with public only
+      user_filter.push(where_exact(field, current_user.id)) if current_user.id.is_a?(Numeric)
     end
 
     user_filter
