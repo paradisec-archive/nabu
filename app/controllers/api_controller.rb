@@ -41,6 +41,7 @@ class ApiController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   prepend_before_action :doorkeeper_authorize_optional
+  prepend_before_action :set_current_user
 
   private
 
@@ -52,20 +53,16 @@ class ApiController < ApplicationController
   end
 
   def set_current_user
-    if !doorkeeper_token
-      return nil
+    return if current_user
+
+    # They have  browser session
+    @current_user ||= if !doorkeeper_token
+      nil
+    elsif doorkeeper_token.resource_owner_id
+      # Regular user authentication
+      User.find_by(id: doorkeeper_token[:resource_owner_id])
+    else
+      ApplicationUser.new(doorkeeper_token.application, doorkeeper_token.scopes.to_a)
     end
-
-    # Regular user authentication
-    if doorkeeper_token.resource_owner_id
-      return User.find_by(id: doorkeeper_token[:resource_owner_id])
-    end
-
-    ApplicationUser.new(doorkeeper_token.application, doorkeeper_token.scopes.to_a)
-  end
-
-
-  def current_user
-    @current_user ||= set_current_user
   end
 end
