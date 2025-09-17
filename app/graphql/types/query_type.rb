@@ -201,7 +201,7 @@ module Types
       u = User.find_by!(unikey:)
       authorize! :read, u
 
-      { id: u.id, unikey: u.unikey, firstName: u.first_name, lastName: u.last_name, email: u.email }
+      u
     end
   end
 end
