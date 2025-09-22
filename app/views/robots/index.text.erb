@@ -1,0 +1,20 @@
+<% if Rails.env.production? %>
+# Good search engine bots
+User-agent: *
+Crawl-delay: 1
+Allow: /
+Disallow: /admin
+Disallow: /oauth
+Disallow: /graphql
+Disallow: /api
+Disallow: /jobs
+Disallow: /searchjoy
+Disallow: /_dashboards
+Disallow: /up
+Disallow: /paradisec.graphql
+Disallow: /oai
+<% else %>
+# Staging environment - block all crawlers
+User-agent: *
+Disallow: /
+<% end %>
