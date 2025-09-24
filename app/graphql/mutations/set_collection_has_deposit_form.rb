@@ -7,7 +7,7 @@ module Mutations
     argument :identifier, String, required: true
 
     def resolve(identifier:)
-      collection = Collection.find_by!(identifier: collection_identifier)
+      collection = Collection.find_by!(identifier: identifier)
       authorize! :update, collection
 
       collection.has_deposit_form = true
