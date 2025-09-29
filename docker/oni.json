@@ -9,7 +9,7 @@
       "enabled": true,
       "launcher": "Acknowledgement of Country"
     },
-    "showLogo": true,
+    "logoFilename": "logo.jog",
     "navHeight": "80px",
     "showEllipsis": true,
     "help": {
