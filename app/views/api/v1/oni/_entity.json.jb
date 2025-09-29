@@ -5,47 +5,45 @@ json = {
   id: is_item ? repository_item_url(entity.collection, entity) : repository_collection_url(entity),
   name: entity.title,
   description: entity.description.truncate(256),
-  conformsTo: "https://w3id.org/ldac/profile##{is_item ? 'Object' : 'Collection'}",
-  recordType: is_item ? 'RepositoryObject' : 'RepositoryCollection',
+  entityType: is_item ? 'http://pcdm.org/models#Object' : 'http://pcdm.org/models#Collection',
   createst_at: entity.created_at.iso8601,
   updated_at: entity.updated_at.iso8601,
-  extra: {
-    language: (is_item ? entity.content_languages : entity.languages).map(&:name)
-  },
-  searchExtra: {}
+  language: (is_item ? entity.content_languages : entity.languages).map(&:name),
+  counts: {
+    objects: entity.has_attribute?(:items_count) ? entity.items_count : 0,
+    files: entity.has_attribute?(:essences_count) ? entity.essences_count : 0
+  }
 }
 
 if is_item
   json[:memberOf] = repository_collection_url(entity.collection)
-  json[:root] = repository_collection_url(entity.collection)
+  json[:rootCollection] = repository_collection_url(entity.collection)
 end
 
-extra = json[:extra]
-
-extra[:objectCount] = entity.items_count if entity.has_attribute?(:items_count)
-extra[:fileCount] = entity.essences_count if entity.has_attribute?(:essences_count)
-
 if entity.private?
-  extra[:accessControl] = 'AccessControlList'
+  json[:accessControl] = 'AccessControlList'
 elsif entity.access_condition.nil?
-  extra[:accessControl] = 'AuthorizationByInvitation'
+  json[:accessControl] = 'AuthorizationByInvitation'
 elsif entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
-  extra[:accessControl] = 'AgreeToTerms'
+  json[:accessControl] = 'AgreeToTerms'
 else
-  extra[:accessControl] = 'Public'
+  json[:accessControl] = 'Public'
 end
 
 # TODO:: add communicationMode
 
-extra[:mediaType] = @mime_types
-extra[:access] = {
+json[:mediaType] = @mime_types
+json[:access] = {
   metadata: true,
-  files: can?(:read, is_item ? entity.essences.first : entity.items.first.essences.first)
+  content: can?(:read, is_item ? entity.essences.first : entity.items.first.essences.first)
 }
 
-searchExtra = json[:searchExtra]
+if  defined? score || defined? highlights
+  json[:searchExtra] ||= {}
+  searchExtra = json[:searchExtra]
 
-searchExtra[:score] = score if defined? score
-searchExtra[:highlight] = highlights if defined? highlights
+  searchExtra[:score] = score if defined? score
+  searchExtra[:highlight] = highlights if defined? highlights
+end
 
 json
