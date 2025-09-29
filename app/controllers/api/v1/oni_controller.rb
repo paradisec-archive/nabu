@@ -1,6 +1,6 @@
 module Api
   module V1
-    class OniController < ApplicationController
+    class OniController < ApiController
       def entities
         query = Oni::ObjectsValidator.new(params)
 
