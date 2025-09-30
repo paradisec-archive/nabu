@@ -65,7 +65,7 @@ end
 ###################
 
 # Views
-gem 'haml-rails', '~> 2.0' # We use HAML for templates instead of erb
+gem 'haml-rails' # We use HAML for templates instead of erb
 gem 'jb' # for json templates, simpler and faster than jbuilder
 gem 'kaminari' # Pagination
 gem 'oai' # OAI-PMH
@@ -94,7 +94,7 @@ gem 'aws-actionmailer-ses', '~> 1'  # Send emails via SES
 gem 'aws-sdk-s3' # Talk to the catalog
 
 # Admin Dashboard
-gem 'activeadmin', '4.0.0.beta15'
+gem 'activeadmin', '4.0.0.beta16'
 gem 'mission_control-jobs' # Jobs dashboard
 gem 'country_select'
 
