@@ -47,7 +47,7 @@
     "topNavItems": [
       {
         "route": "search",
-        "display": "search"
+        "display": "Search"
       },
       {
         "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
@@ -85,20 +85,10 @@
           "label": "Updated"
         }
       ],
-      "searchSorting": {
-        "value": "relevance",
-        "label": "Relevance"
+      "default": {
+        "sorting": "relevance",
+        "ordering": "desc"
       },
-      "ordering": [
-        {
-          "value": "asc",
-          "label": "Ascending"
-        },
-        {
-          "value": "desc",
-          "label": "Descending"
-        }
-      ],
       "searchDetails": [
         {
           "field": "language",
@@ -108,52 +98,53 @@
     },
     "main": {
       "byteFields": ["size", "contentSize"],
-      "expand": ["ldac:speaker", "author", "citation"]
+      "expand": ["ldac:speaker", "speaker", "singer", "author", "citation"]
     },
     "collection": {
-      "name": {
-        "display": "Name",
-        "name": "name"
-      },
-      "top": [
-        {
-          "display": "Name",
-          "name": "name"
-        },
-        {
-          "display": "Description",
-          "name": "description"
-        },
-        {
-          "display": "Date Published",
-          "name": "datePublished"
-        }
-      ],
       "meta": {
-        "hide": []
+        "mode": "explicit",
+        "show": [
+          "description",
+          "@id",
+          "dateCreated",
+          "contentLocation",
+          "publisher",
+          "inLanguage",
+          "subjectLanguages",
+          "countries",
+          "license",
+          "sourceOrganization",
+          "about",
+          "datePublished",
+          "dateModified"
+        ]
       }
     },
     "object": {
-      "name": {
-        "display": "Name",
-        "name": "name"
-      },
-      "top": [
-        {
-          "display": "Name",
-          "name": "name"
-        },
-        {
-          "display": "Description",
-          "name": "description"
-        },
-        {
-          "display": "Date Published",
-          "name": "datePublished"
-        }
-      ],
       "meta": {
-        "hide": []
+        "mode": "explicit",
+        "show": [
+          "description",
+          "memberOf",
+          "originatedOn",
+          "datePublished",
+          "@id",
+          "contentLocation",
+          "dateCreated",
+          "dateModified",
+          "speaker",
+          "singer",
+          "publisher",
+          "inLanguage",
+          "subjectLanguages",
+          "languageAsGiven",
+          "languageGenre",
+          "countries",
+          "license",
+          "sourceOrganization",
+          "originalMedia",
+          "about"
+        ]
       }
     },
     "file": {
