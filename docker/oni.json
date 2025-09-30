@@ -9,7 +9,7 @@
       "enabled": true,
       "launcher": "Acknowledgement of Country"
     },
-    "logoFilename": "logo.jpg",
+    "logoFilename": "oni/logo.jpg",
     "navHeight": "80px",
     "showEllipsis": true,
     "help": {
