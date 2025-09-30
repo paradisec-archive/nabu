@@ -214,15 +214,17 @@ if @admin_rocrate
   data['paradisec:admins'] = @data.admins.map { |admin| { '@id': collection_person_json(admin) } }
 end
 
+data[:doi] = @data.doi if @data.doi
+
 data[:license] = { '@id': collection_access_condition_json(@data.access_condition) } if @data.access_condition
 data[:operator] = { '@id': collection_person_json(@data.operator) } if @data.operator
-data[:sourceOrganization] = collection_organisation_json(@data.university) if @data.university
+data[:sourceOrganization] = { '@id': collection_organisation_json(@data.university) } if @data.university
 
 data[:material] = @data.media
 data[:orthographic_notes] = @data.orthographic_notes
 data['paradisec:metadataSource'] = @data.metadata_source
 data[:itemLocation] = @data.tape_location
-data[:about] = collection_field_of_research_json(@data.field_of_research) if @data.field_of_research
+data[:about] = { '@id': collection_field_of_research_json(@data.field_of_research) } if @data.field_of_research
 
 data[:funder] = @data.grants.map { |grant| { '@id': collection_funder_json(grant) } } if @data.grants.any?
 
