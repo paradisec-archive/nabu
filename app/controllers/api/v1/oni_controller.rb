@@ -167,7 +167,7 @@ module Api
         @search = Searchkick.search(
           query.query,
           models: [Collection, Item],
-          model_includes: { Collection => [:languages, :access_condition], Item => [:content_languages, :access_condition, :collection] },
+          model_includes: { Collection => [:languages, :access_condition, items: :essences], Item => [:content_languages, :access_condition, :collection] },
           limit: query.limit,
           offset: query.offset,
           order:, where:,
