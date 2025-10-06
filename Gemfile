@@ -141,7 +141,6 @@ group :development do
 
   gem 'solargraph', require: false
   gem 'sorbet', require: false
-  gem 'tapioca', require: false
 end
 
 group :test do
