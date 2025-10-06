@@ -4,20 +4,21 @@ FROM node:lts AS builder
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
+ARG SENTRY_ENV
 ARG BUMP=28
 
 RUN corepack enable
 
 WORKDIR /tmp
 
-RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b new-api
+RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b sentry-support
 
 WORKDIR /tmp/oni-ui
 
 COPY docker/oni.json src/configuration.json
 COPY app/assets/images/paradisec.jpg public/logo.jpg
 
-RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#" src/configuration.json && \
+RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#;s#SENTRY_ENV#$SENTRY_ENV#" src/configuration.json && \
   pnpm install && \
   pnpm run setup:vocabs vocab.json && \
   pnpm run build-only --base=/oni

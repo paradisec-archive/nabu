@@ -289,6 +289,7 @@ export class AppStack extends cdk.Stack {
         buildArgs: {
           ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://catalog.paradisec.org.au/' : 'https://catalog.nabu-stage.paradisec.org.au',
           ROCRATE_API_CLIENTID: env === 'prod' ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ' : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
+          SENTRY_ENV: env,
         },
       }),
       portMappings: [{ name: 'oni', containerPort: 80 }],

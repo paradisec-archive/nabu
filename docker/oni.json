@@ -158,6 +158,13 @@
     "googleForm": {
       "takedown": "https://docs.google.com/forms/d/e/1FAIpQLSc3wWGYLgkEtba65mL46BUhMAPWiHt5EHrQ2rWiI4nJqPjpDg/viewform?usp=pp_url&entry.812577446="
     },
+    "sentry": {
+      "dsn": "https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608",
+      "environment": "SENTRY_ENV",
+      "tracesSampleRate": 0.1,
+      "replaysSessionSampleRate": 0.1,
+      "replaysOnErrorSampleRate": 1.0
+    },
     "citeData": {
       "help": {
         "text": "See this <span style=\"display: inline-flex; align-items: center;\"><a class=\"el-link el-link--primary\" target=\"_blank\" href=\"https://www.ldaca.edu.au/resources/user-guides/portal/cite-data/\">help</a></span> page for more detail."
