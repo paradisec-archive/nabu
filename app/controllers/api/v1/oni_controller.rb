@@ -155,7 +155,7 @@ module Api
           }
         end
 
-        aggs = %i[memberOf root languages countries collector_name]
+        aggs = %i[collection_title access_condition_name languages countries collector_name]
 
         body_options = { track_total_hits: true }
         if query.geohash_precision

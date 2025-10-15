@@ -309,7 +309,6 @@ class Item < ApplicationRecord
 
   scope :search_import,
         lambda {
-          # includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, items: %i[admins users])
           includes(:users, :content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
                    :essences, :collection, :collector, :operator,
                    :item_admins, :item_agents, :item_users)
@@ -376,6 +375,10 @@ class Item < ApplicationRecord
       digitised_on: digitised_on&.to_date,
       metadata_imported_on: metadata_imported_on&.to_date,
       metadata_exported_on: metadata_exported_on&.to_date,
+
+      # Oni
+      collection_title: collection.title,
+      access_condition_name: access_condition&.name,
 
       created_at: created_at.to_date,
       updated_at: updated_at.to_date

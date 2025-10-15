@@ -262,6 +262,10 @@ class Collection < ApplicationRecord
       funding_body_id: grants.map(&:funding_body_id),
       deposit_form_received:,
 
+      # Oni
+      collection_title: title,
+      access_condition_name: access_condition&.name,
+
       created_at: created_at.to_date,
       updated_at: updated_at.to_date
     }
