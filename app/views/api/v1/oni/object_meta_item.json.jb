@@ -232,7 +232,7 @@ data = {
   publisher: { '@id': item_person_json(@data.collector) },
 
   inLanguage: @data.content_languages.map { |language| { '@id': item_language_json(language) } },
-  subjectLanguages: @data.subject_languages.map { |language| { '@id': item_language_json(language) } },
+  'ldac:subjectLanguage': @data.subject_languages.map { |language| { '@id': item_language_json(language) } },
   countries: @data.countries.map { |country| { '@id': item_country_json(country) } }
 }
 
