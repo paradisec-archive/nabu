@@ -5,13 +5,13 @@ FROM node:lts AS builder
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
 ARG SENTRY_ENV
-ARG BUMP=28
+ARG BUMP=29
 
 RUN corepack enable
 
 WORKDIR /tmp
 
-RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b sentry-support
+RUN git clone https://github.com/paradisec-archive/oni-ui.git -b paradisec
 
 WORKDIR /tmp/oni-ui
 
