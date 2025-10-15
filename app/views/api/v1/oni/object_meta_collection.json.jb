@@ -192,6 +192,8 @@ data = {
   name: @data.title,
   description: @data.description,
 
+  creditText: @data.citation,
+
   contentLocation: [{
     '@id': collection_place_json(@data, @data.region)
   }],

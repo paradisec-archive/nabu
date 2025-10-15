@@ -219,6 +219,8 @@ data = {
   name: @data.title,
   description: @data.description,
 
+  creditText: @data.citation,
+
   contentLocation: [{
     '@id': item_place_json(@data, @data.region)
   }],
