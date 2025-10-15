@@ -248,7 +248,7 @@ data[:license] = { '@id': item_access_condition_json(@data.access_condition) } i
 data[:operator] = { '@id': item_person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = { '@id': item_organisation_json(@data.university) } if @data.university
 
-data[:memberOf] = { '@id': repository_collection_url(@data.collection), name: @data.collection.title  }
+data['pcdm:memberOf'] = { '@id': repository_collection_url(@data.collection), name: @data.collection.title  }
 data[:root] = { '@id': repository_collection_url(@data.collection) }
 data[:identifier] << item_property_value_json('collectionIdentifier', @data.collection.identifier)
 data[:languageAsGiven] = @data.language

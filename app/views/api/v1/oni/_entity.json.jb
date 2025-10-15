@@ -15,7 +15,7 @@ json = {
 }
 
 if is_item
-  json['pcdm:memberOf'] = repository_collection_url(entity.entity.collection)
+  json[:memberOf] = repository_collection_url(entity.entity.collection)
   json[:rootCollection] = repository_collection_url(entity.entity.collection)
 end
 
