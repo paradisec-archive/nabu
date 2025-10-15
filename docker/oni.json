@@ -245,12 +245,7 @@
       },
       {
         "display": "Collection",
-        "name": "memberOf"
-      },
-      {
-        "display": "Main Collections",
-        "name": "root",
-        "help": "A group of related objects such as a corpus, a sub-corpus, or items collected in a session with consultants."
+        "name": "collection_title"
       },
       {
         "display": "Country",
@@ -259,7 +254,7 @@
       },
       {
         "display": "Access",
-        "name": "licenseName",
+        "name": "access_condition_name",
         "help": "The access conditions associated with a resource."
       },
       {
