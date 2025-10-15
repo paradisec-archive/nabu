@@ -95,7 +95,8 @@
     "main": {
       "byteFields": ["size", "contentSize"],
       "durationFields": ["duration"],
-      "expand": ["ldac:speaker", "speaker", "singer", "author", "citation"]
+      "expand": ["ldac:speaker", "speaker", "singer", "author", "citation"],
+      "paginatedMeta": ["inLanguage", "ldac:subkectLanguage"]
     },
     "collection": {
       "meta": {
@@ -107,7 +108,7 @@
           "contentLocation",
           "publisher",
           "inLanguage",
-          "subjectLanguages",
+          "ldac:subjectLanguage",
           "countries",
           "license",
           "sourceOrganization",
