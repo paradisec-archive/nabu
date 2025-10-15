@@ -69,10 +69,6 @@
           "label": "Relevance"
         },
         {
-          "value": "id",
-          "label": "Id"
-        },
-        {
           "value": "name",
           "label": "Title"
         },
@@ -98,6 +94,7 @@
     },
     "main": {
       "byteFields": ["size", "contentSize"],
+      "durationFields": ["duration"],
       "expand": ["ldac:speaker", "speaker", "singer", "author", "citation"]
     },
     "collection": {
@@ -149,7 +146,7 @@
     },
     "file": {
       "meta": {
-        "hide": []
+        "hide": ["@type", "dateCreated", "dateModified", "name", "filename"]
       }
     },
     "analytics": {
