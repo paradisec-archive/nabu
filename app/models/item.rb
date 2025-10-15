@@ -83,6 +83,8 @@ class Item < ApplicationRecord
   belongs_to :access_condition, optional: true
   belongs_to :discourse_type, optional: true
 
+  has_one :entity, as: :entity
+
   has_many :item_countries, dependent: :destroy
   has_many :countries, through: :item_countries, validate: true
 

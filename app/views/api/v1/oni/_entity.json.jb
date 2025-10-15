@@ -1,14 +1,13 @@
-class_name = entity.class.name
-is_item = class_name == 'Item'
+is_item = entity.entity_type == 'Item'
 
 json = {
-  id: is_item ? repository_item_url(entity.collection, entity) : repository_collection_url(entity),
-  name: entity.title,
-  description: entity.description.truncate(256),
+  id: is_item ? repository_item_url(entity.entity.collection, entity.entity) : repository_collection_url(entity.entity),
+  name: entity.entity.title,
+  description: entity.entity.description.truncate(256),
   entityType: is_item ? 'http://pcdm.org/models#Object' : 'http://pcdm.org/models#Collection',
-  createst_at: entity.created_at.iso8601,
-  updated_at: entity.updated_at.iso8601,
-  language: (is_item ? entity.content_languages : entity.languages).map(&:name),
+  createst_at: entity.entity.created_at.iso8601,
+  updated_at: entity.entity.updated_at.iso8601,
+  language: (is_item ? entity.entity.content_languages : entity.entity.languages).map(&:name),
   counts: {
     objects: entity.has_attribute?(:items_count) ? entity.items_count : 0,
     files: entity.has_attribute?(:essences_count) ? entity.essences_count : 0
@@ -16,15 +15,15 @@ json = {
 }
 
 if is_item
-  json['pcdm:memberOf'] = repository_collection_url(entity.collection)
-  json[:rootCollection] = repository_collection_url(entity.collection)
+  json['pcdm:memberOf'] = repository_collection_url(entity.entity.collection)
+  json[:rootCollection] = repository_collection_url(entity.entity.collection)
 end
 
 if entity.private?
   json[:accessControl] = 'AccessControlList'
-elsif entity.access_condition.nil?
+elsif entity.entity.access_condition.nil?
   json[:accessControl] = 'AuthorizationByInvitation'
-elsif entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
+elsif entity.entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
   json[:accessControl] = 'AgreeToTerms'
 else
   json[:accessControl] = 'Public'
@@ -32,10 +31,10 @@ end
 
 # TODO:: add communicationMode
 
-json[:mediaType] = @mime_types
+json[:mediaType] = entity.media_types.split(',') if entity.media_types
 json[:access] = {
   metadata: true,
-  content: can?(:read, is_item ? entity.essences.first : entity.items.first&.essences&.first)
+  content: can?(:read, is_item ? entity.entity.essences.first : entity.entity.items.first&.essences&.first)
 }
 
 if  defined? score || defined? highlights

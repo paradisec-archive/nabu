@@ -66,6 +66,8 @@ class Collection < ApplicationRecord
   belongs_to :field_of_research, optional: true
   belongs_to :access_condition, optional: true
 
+  has_one :entity, as: :entity
+
   has_many :grants
   accepts_nested_attributes_for :grants, allow_destroy: true
 

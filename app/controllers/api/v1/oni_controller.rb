@@ -52,16 +52,7 @@ module Api
 
         @total = entities.count
 
-        entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages]).load
-
-        collection_ids = entities.select { |id| id.entity_type == 'Collection' }.map(&:entity_id)
-        item_ids = entities.select { |id| id.entity_type == 'Item' }.map(&:entity_id)
-
-        collection_mimetypes = Essence.joins(item: :collection).where(item: { collection_id: collection_ids }).distinct.pluck(:mimetype)
-        item_mimetypes = Essence.joins(:item).where(item_id: item_ids).distinct.pluck(:mimetype)
-        @mime_types = collection_mimetypes.concat(item_mimetypes).uniq
-
-        @entities = entities.map(&:entity)
+        @entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages]).load
       end
 
       def entity
@@ -71,12 +62,10 @@ module Api
           return
         end
 
-        @admin_rocrate = false
-
         if check_for_item
-          @entity = @data
+          @entity = @data.entity
         elsif check_for_collection
-          @entity = @data
+          @entity = @data.entity
         else
           raise ActiveRecord::RecordNotFound
         end
@@ -167,7 +156,7 @@ module Api
         @search = Searchkick.search(
           query.query,
           models: [Collection, Item],
-          model_includes: { Collection => [:languages, :access_condition, items: :essences], Item => [:content_languages, :access_condition, :collection] },
+          model_includes: { Collection => [:languages, :access_condition, :entity, items: :essences], Item => [:content_languages, :access_condition, :collection, :entity] },
           limit: query.limit,
           offset: query.offset,
           order:, where:,
@@ -175,6 +164,12 @@ module Api
           body_options:,
           highlight: { tag: '<mark class="font-bold">' }
         )
+
+
+        # puts "🪚 search.hits.map: #{@search.hits[0]}"
+        # entity_collection_ids = @search.hits.select { |h| h._index =~ /^collections_/}.map(&['_id'])
+        # entity_item_ids = @search.hits.select { |h| h._index =~ /^collections_/}.map(&['_id'])
+        # @entities = Entity.find(entity_ids)
       end
 
       private

@@ -10,6 +10,7 @@
 # **`essences_count`**  | `bigint`           | `default(0), not null`
 # **`identifier`**      | `string(255)`      |
 # **`items_count`**     | `bigint`           | `default(0), not null`
+# **`media_types`**     | `text(65535)`      |
 # **`private`**         | `integer`          |
 # **`title`**           | `string(255)`      |
 # **`entity_id`**       | `integer`          | `default(0), not null`

@@ -5,7 +5,7 @@ result = {
   searchTime: @search.took,
   entities: @search.with_highlights.map.with_index do |value, index|
     entity, highlights = value
-    render(partial: 'entity', locals: { entity:, highlights:, score: @search.hits[index].dig('_score') })
+    render(partial: 'entity', locals: { entity: entity.entity, highlights:, score: @search.hits[index].dig('_score') })
   end,
   facets: aggs.transform_values do |agg|
     agg['buckets'].map { |bucket| ({ name: bucket['key'], count: bucket['doc_count'] }) }
