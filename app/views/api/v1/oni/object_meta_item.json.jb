@@ -243,7 +243,7 @@ if @admin_rocrate
   data['paradisec:admins'] = @data.admins.map { |admin| { '@id': item_person_json(admin) } }
 end
 
-data[:doi] = @data.doi if @data.doi
+data['ldac:doi'] = @data.doi if @data.doi
 data[:license] = { '@id': item_access_condition_json(@data.access_condition) } if @data.access_condition
 data[:operator] = { '@id': item_person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = { '@id': item_organisation_json(@data.university) } if @data.university

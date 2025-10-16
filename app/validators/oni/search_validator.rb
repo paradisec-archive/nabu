@@ -17,6 +17,7 @@ module Oni
     validates :sort, inclusion: { in: SORT_FIELDS, message: '%{value} is not a valid sort field' }, allow_nil: true
     validates :limit, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 1000 }, allow_nil: true
     validates :offset, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+    validates :search_type, inclusion: { in: %w[basic advanced], message: '%{value} is not a valid searchType' }, allow_nil: true
 
     def initialize(params)
       permitted = ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }

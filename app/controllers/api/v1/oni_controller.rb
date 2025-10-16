@@ -153,23 +153,25 @@ module Api
           }
         end
 
-        @search = Searchkick.search(
-          query.query,
+        params = {
           models: [Collection, Item],
           model_includes: { Collection => [:languages, :access_condition, :entity, items: :essences], Item => [:content_languages, :access_condition, :collection, :entity] },
           limit: query.limit,
           offset: query.offset,
-          order:, where:,
+          order:,
+          where:,
           aggs:,
           body_options:,
           highlight: { tag: '<mark class="font-bold">' }
-        )
+        }
 
-
-        # puts "🪚 search.hits.map: #{@search.hits[0]}"
-        # entity_collection_ids = @search.hits.select { |h| h._index =~ /^collections_/}.map(&['_id'])
-        # entity_item_ids = @search.hits.select { |h| h._index =~ /^collections_/}.map(&['_id'])
-        # @entities = Entity.find(entity_ids)
+        if query.search_type == 'advanced'
+          @search = Searchkick.search('*', **params) do |payload|
+            payload[:query] =  { query_string: { query: query.query.gsub(/ *:/, '.analyzed:').gsub('name.analyzed:', 'title.analyzed:')  } }
+          end
+        else
+          @search = Searchkick.search(query.query, **params)
+        end
       end
 
       private
