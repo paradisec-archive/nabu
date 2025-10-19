@@ -20,6 +20,8 @@
 #     * **`user_id`**
 #
 ActiveAdmin.register Download do
+  includes :user, essence: [item: :collection]
+
   sidebar :paginate, only: :index  do
     h3 'Pagination', class: 'filters-form-title'
     div class: 'flex flex-col gap-4 items-start' do
@@ -33,19 +35,16 @@ ActiveAdmin.register Download do
 
   permit_params :user, :essence
 
-  # change pagination
   before_action only: :index do
     @per_page = params[:per_page] || 30
   end
 
-  # index page search sidebar
   filter :user_first_name, as: :string
   filter :user_last_name, as: :string
   filter :essence_item_identifier, as: :string, label: 'Item Identifier'
   filter :essence_item_collection_identifier, as: :string, label: 'Collection Identifier'
   filter :created_at
 
-  # index page
   index do
     id_column
     column :user
@@ -70,7 +69,6 @@ ActiveAdmin.register Download do
     actions
   end
 
-  # show page
   show do |download|
     attributes_table_for(resource) do
       row :id
@@ -91,5 +89,14 @@ Rails.application.routes.url_helpers.collection_item_essence_path(download.colle
       end
       row :created_at
     end
+  end
+
+  csv do
+    column :id
+    column('User First Name') { |download| download.user&.first_name }
+    column('User Last Name') { |download| download.user&.last_name }
+    column('User Email') { |download| download.user&.email }
+    column('Essence Identifier') { |download| download.essence&.full_identifier || "Essence #{download.essence_id}, now removed" }
+    column :created_at
   end
 end
