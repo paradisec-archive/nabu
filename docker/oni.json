@@ -289,22 +289,11 @@
       }
     ],
     "searchFields": {
-      "name": {
-        "label": "Name",
-        "checked": true
-      },
-      "description": {
-        "label": "Description",
-        "checked": true
-      },
-      "inLanguage": {
-        "label": "Language",
-        "checked": true
-      },
-      "text": {
-        "label": "Text",
-        "checked": true
-      }
+      "name": "Name",
+      "description": "Description",
+      "inLanguage": "Language",
+      "countries": "Country",
+      "text": "Text"
     },
     "conformsTo": {
       "collection": "https://w3id.org/ldac/profile#Collection",
