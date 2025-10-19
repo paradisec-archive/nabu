@@ -241,8 +241,7 @@
     "aggregations": [
       {
         "display": "Collector",
-        "name": "collector_name",
-        "active": true
+        "name": "collector_name"
       },
       {
         "display": "Collection",
