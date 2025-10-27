@@ -36,15 +36,15 @@ module Api
           entities = entities.where(identifier: md[1])
         end
 
-        case query.conforms_to
-        when ['https://w3id.org/ldac/profile#Collection']
+        case query.entity_type
+        when 'http://pcdm.org/models#Collection'
           if query.member_of
             # NOTE: We don't have collections of collections so we craft a query that will return nothing
             entities = Entity.none
           else
             entities = entities.where(entity_type: 'Collection')
           end
-        when ['https://w3id.org/ldac/profile#Object']
+        when 'http://pcdm.org/models#Object'
           entities = entities.where(entity_type: 'Item')
         else
           # Do nothing
@@ -52,7 +52,7 @@ module Api
 
         @total = entities.count
 
-        @entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages]).load
+        @entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages, :collection, :essences]).load
       end
 
       def entity
