@@ -11,6 +11,7 @@
 # **`items_count`**     | `bigint`           | `default(0), not null`
 # **`media_types`**     | `text(65535)`      |
 # **`member_of`**       | `string(255)`      |
+# **`originated_on`**   | `date`             |
 # **`private`**         | `integer`          |
 # **`title`**           | `string(255)`      |
 # **`entity_id`**       | `integer`          | `default(0), not null`

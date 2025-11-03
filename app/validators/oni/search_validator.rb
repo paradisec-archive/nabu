@@ -3,7 +3,7 @@ module Oni
     include ActiveModel::Validations
 
     # NOTE: We remap name to title below to match the database column
-    SORT_FIELDS = %w[id name title created_at updated_at relevance].freeze
+    SORT_FIELDS = %w[id name title relevance originated_on].freeze
     ORDER_FIELDS = %w[asc desc].freeze
 
     ATTRIBUTES = %i[search_type query filters bounding_box geohash_precision limit offset order sort].freeze

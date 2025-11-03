@@ -268,6 +268,8 @@ class Collection < ApplicationRecord
       field_of_research_id:,
       funding_body_id: grants.map(&:funding_body_id),
       deposit_form_received:,
+      # We don't have this for items so let's use collection created_at
+      originated_on: created_at.to_date,
 
       # Oni
       collection_title: title,

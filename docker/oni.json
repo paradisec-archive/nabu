@@ -63,12 +63,8 @@
           "label": "Title"
         },
         {
-          "value": "createdAt",
-          "label": "Created"
-        },
-        {
-          "value": "updatedAt",
-          "label": "Updated"
+          "value": "originatedOn",
+          "label": "Date"
         }
       ],
       "default": {
