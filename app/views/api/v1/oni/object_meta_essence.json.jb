@@ -31,7 +31,7 @@ data = {
   name: @data.filename,
   filename: @data.filename,
   doi: @data.doi,
-  parentId: essence_paranet_id,
+  parentId: essence_parent_id,
   parentTitle: @data.item.title
 }
 data[:bitrate] = @data.bitrate

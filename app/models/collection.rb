@@ -79,6 +79,7 @@ class Collection < ApplicationRecord
 
   has_many :subject_languages, -> { distinct }, through: :items
   has_many :content_languages, -> { distinct }, through: :items
+  has_many :essences, through: :items
 
   has_many :collection_countries, dependent: :destroy
   has_many :countries, through: :collection_countries, validate: true
@@ -199,7 +200,7 @@ class Collection < ApplicationRecord
   end
 
   def self.search_agg_fields
-    %i[languages countries collector_name]
+    %i[languages countries collector_name encodingFormat rootCollection]
   end
 
   def self.search_text_fields
@@ -234,6 +235,10 @@ class Collection < ApplicationRecord
       languages: languages.map(&:name),
       countries: countries.map(&:name),
       language_codes: languages.map(&:code),
+
+      # Oni
+      encodingFormat: essences.map(&:mimetype),
+      rootCollection: title,
 
       # Full text plus advanced search
       identifier:,

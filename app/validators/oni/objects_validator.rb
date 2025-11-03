@@ -3,15 +3,15 @@ module Oni
     include ActiveModel::Validations
 
     # NOTE: We remap name to title below to match the database column
-    SORT_FIELDS = %w[id name created_at updated_at].freeze
+    SORT_FIELDS = %w[id name title created_at updated_at].freeze
     ORDER_FIELDS = %w[asc desc].freeze
-    CONFORMS_TO_VALUES = %w[https://w3id.org/ldac/profile#Collection https://w3id.org/ldac/profile#Object].freeze
+    ENTITY_TYPES = %w[http://pcdm.org/models#Collection http://pcdm.org/models#Object].freeze
 
-    ATTRIBUTES = %i[member_of conforms_to limit offset order sort].freeze
+    ATTRIBUTES = %i[member_of entity_type limit offset order sort].freeze
     attr_accessor(*ATTRIBUTES)
 
     validates :member_of, format: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_nil: true
-    validates :conforms_to, inclusion: { in: CONFORMS_TO_VALUES, message: '%{value} is not a valid conformsTo' }, allow_nil: true
+    validates :entity_type, inclusion: { in: ENTITY_TYPES, message: '%{value} is not a valid conformsTo' }, allow_nil: true
     validates :order, inclusion: { in: ORDER_FIELDS, message: '%{value} is not a valid order' }, allow_nil: true
     validates :sort, inclusion: { in: SORT_FIELDS, message: '%{value} is not a valid sort field' }, allow_nil: true
     validates :limit, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 1000 }, allow_nil: true

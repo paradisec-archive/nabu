@@ -10,11 +10,11 @@
       "launcher": "Acknowledgement of Country"
     },
     "logoFilename": "oni/logo.jpg",
-    "navHeight": "80px",
-    "showEllipsis": true,
+    "navHeight": "90px",
+    "showEllipsis": false,
     "help": {
-      "citationText": "CITE AS: Oni Platform. A project with co-investment from Australian Research Data Commons, The University of Queensland, The University of Melbourne, The University of Sydney, Monash University, First Languages Australia and AARNet.",
-      "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>)."
+      "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>).",
+      "citationText": "CITE AS: Oni Platform. A project with co-investment from Australian Research Data Commons, The University of Queensland, The University of Melbourne, The University of Sydney, Monash University, First Languages Australia and AARNet."
     },
     "subHelpLinks": [
       {
@@ -23,16 +23,6 @@
         "target": "_blank"
       }
     ],
-    "terms": {
-      "text": "<p class='pt-2'><span>Effective date: &nbsp;</span><span>7th of June, 2023</span></p><p class='pt-2'><span></span></p><p class='pt-2'><span>By viewing, browsing, and using this webpage, you agree to the following Terms of        Use.</span></p><p class='pt-2'><span>Terms of Use</span></p><ol class='list-decimal px-4 py-6'>    <li class='py-1'>1.&nbsp;<span>LDaCA is an online resource that enhances the findability,            accessibility and reusability of language data. LDaCA does not own the data made available through the            platform. Copyright for each collection of data is managed by the relevant Data Steward. Licenses cannot            be sublicensed, transferred or assigned to others, unless otherwise permitted by the relevant Data            Steward. </span></li>    <li class='py-1'>2.&nbsp;<span>LDaCA users must adhere to the conditions defined in the data access            licence and must conform to ethical standards with regards to sensitive data and confidentiality. When            collection data is accessed for research purposes, LDaCA users must adhere to ethical research standards            and processes as defined by the Australian Code for the Responsible of Research and/or by their            institution. LDaCA is not responsible for breaches of data license terms. </span></li>    <li class='py-1'>3.&nbsp;<span>Use of the collection data accessed via LDaCA must not cause            disrespect, damage, or harm of any kind. </span></li>    <li class='py-1'>4.&nbsp;<span>Material must be properly attributed using the provided citation.        </span></li>    <li class='py-1'>5.&nbsp;<span>Metadata publicly available in the LDaCA catalogue is licensed under            a </span><span><a class='text-blue-600'                 href='https://creativecommons.org/licenses/by/4.0/'>Creative                Commons Attribution 4.0 International</a></span><span>&nbsp;(CC BY 4.0) license.</span>    </li>    <li class='py-1'>6.&nbsp;<span>LDaCA facilitates access to the collection data &lsquo;as is&rsquo;            and provides no guarantee with regards to the accuracy, completeness, or legality of the material. LDaCA            users access the collection data at their own discretion and risk. </span></li>    <li class='py-1'>7.&nbsp;<span>LDaCA users must not share their account with others. LDaCA may            change the site and collection data without notice. LDaCA may suspend or cancel user access without            notice. &nbsp;</span></li></ol><p class='pt-2'><span></span></p>",
-      "href": "/terms",
-      "title": "Terms of Service"
-    },
-    "privacy": {
-      "text": "<p class='pt-2'><span>Effective date: &nbsp;</span><span>7th of June, 2023</span></p><p class='pt-2'><span></span></p><p class='pt-2'><span>By viewing, browsing, and using this webpage, you agree to the following Terms of        Use.</span></p><p class='pt-2'><span>Terms of Use</span></p><ol class='list-decimal px-4 py-6'>    <li class='py-1'>1.&nbsp;<span>LDaCA is an online resource that enhances the findability,            accessibility and reusability of language data. LDaCA does not own the data made available through the            platform. Copyright for each collection of data is managed by the relevant Data Steward. Licenses cannot            be sublicensed, transferred or assigned to others, unless otherwise permitted by the relevant Data            Steward. </span></li>    <li class='py-1'>2.&nbsp;<span>LDaCA users must adhere to the conditions defined in the data access            licence and must conform to ethical standards with regards to sensitive data and confidentiality. When            collection data is accessed for research purposes, LDaCA users must adhere to ethical research standards            and processes as defined by the Australian Code for the Responsible of Research and/or by their            institution. LDaCA is not responsible for breaches of data license terms. </span></li>    <li class='py-1'>3.&nbsp;<span>Use of the collection data accessed via LDaCA must not cause            disrespect, damage, or harm of any kind. </span></li>    <li class='py-1'>4.&nbsp;<span>Material must be properly attributed using the provided citation.        </span></li>    <li class='py-1'>5.&nbsp;<span>Metadata publicly available in the LDaCA catalogue is licensed under            a </span><span><a class='text-blue-600'                 href='https://creativecommons.org/licenses/by/4.0/'>Creative                Commons Attribution 4.0 International</a></span><span>&nbsp;(CC BY 4.0) license.</span>    </li>    <li class='py-1'>6.&nbsp;<span>LDaCA facilitates access to the collection data &lsquo;as is&rsquo;            and provides no guarantee with regards to the accuracy, completeness, or legality of the material. LDaCA            users access the collection data at their own discretion and risk. </span></li>    <li class='py-1'>7.&nbsp;<span>LDaCA users must not share their account with others. LDaCA may            change the site and collection data without notice. LDaCA may suspend or cancel user access without            notice. &nbsp;</span></li></ol><p class='pt-2'><span></span></p>",
-      "href": "/privacy",
-      "title": "Privacy"
-    },
     "footer": {
       "copyright": "© 2025 PARADISEC",
       "link": {
@@ -114,7 +104,8 @@
           "sourceOrganization",
           "about",
           "datePublished",
-          "dateModified"
+          "dateModified",
+          "ldac:doi"
         ]
       }
     },
@@ -141,7 +132,8 @@
           "license",
           "sourceOrganization",
           "originalMedia",
-          "about"
+          "about",
+          "ldac:doi"
         ]
       }
     },
@@ -245,7 +237,7 @@
       },
       {
         "display": "Collection",
-        "name": "collection_title"
+        "name": "rootCollection"
       },
       {
         "display": "Country",
@@ -273,18 +265,9 @@
         "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource."
       },
       {
-        "display": "Linguistic Genre",
-        "name": "linguisticGenre",
-        "help": "The linguistic classification of the genre of this resource."
-      },
-      {
         "display": "File Format",
         "name": "encodingFormat",
         "help": "The media type of the resource."
-      },
-      {
-        "display": "Annotation Type",
-        "name": "annotationType"
       }
     ],
     "searchFields": {
@@ -293,10 +276,6 @@
       "inLanguage": "Language",
       "countries": "Country",
       "text": "Text"
-    },
-    "conformsTo": {
-      "collection": "https://w3id.org/ldac/profile#Collection",
-      "object": "https://w3id.org/ldac/profile#Object"
     },
     "mapConfig": {
       "boundingBox": {
@@ -315,6 +294,10 @@
         "lng": 134
       },
       "zoom": 8
+    },
+    "i18n": {
+      "availableLocales": ["en", "de", "fr", "es"],
+      "defaultLocale": "en"
     }
   },
   "api": {

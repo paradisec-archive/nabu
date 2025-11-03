@@ -24,16 +24,28 @@ module Api
             entity_type: 'Item',
             entity_id: Item.accessible_by(current_ability)
           )
+        ).or(
+          Entity.where(
+            entity_type: 'Essence',
+            entity_id: Essence.accessible_by(current_ability)
+          )
         )
 
         if query.member_of
           md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
+          entity_type = 'Item' if md
+
+          unless entity_type
+            md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
+            entity_type = 'Essence' if md
+          end
+
           unless md
             render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
             return
           end
 
-          entities = entities.where(identifier: md[1])
+          entities = entities.where(member_of: md[1], entity_type:)
         end
 
         case query.entity_type
@@ -46,6 +58,8 @@ module Api
           end
         when 'http://pcdm.org/models#Object'
           entities = entities.where(entity_type: 'Item')
+        when 'http://schema.org/MediaObject'
+          entities = entities.where(entity_type: 'File')
         else
           # Do nothing
         end
@@ -62,13 +76,46 @@ module Api
           return
         end
 
-        if check_for_item
+        if check_for_essence
+          @entity = @data.entity
+        elsif check_for_item
           @entity = @data.entity
         elsif check_for_collection
           @entity = @data.entity
         else
           raise ActiveRecord::RecordNotFound
         end
+      end
+
+      def rocrate
+        unless params[:id]
+          render json: { error: 'id is required' }, status: :bad_request
+
+          return
+        end
+
+        @admin_rocrate = false
+
+        if check_for_essence
+          render 'object_meta_essence'
+
+          return
+        end
+
+        if check_for_item
+          render 'object_meta_item'
+
+          return
+        end
+
+        if check_for_collection
+          render 'object_meta_collection'
+
+          return
+        end
+
+
+        raise ActiveRecord::RecordNotFound
       end
 
       def file
@@ -78,39 +125,13 @@ module Api
           return
         end
 
-        unless params[:path]
-          render json: { error: 'path is required' }, status: :bad_request
-
-          return
-        end
-
         as_attachment = params[:disposition] == 'attachment'
         filename = params[:filename]
 
-        # Special treatment for ro-crate-metadata.json
-        if params[:path] === 'ro-crate-metadata.json'
-          @admin_rocrate = false
-
-          if check_for_item
-            render 'object_meta_item'
-
-            return
-          end
-
-          if check_for_collection
-            render 'object_meta_collection'
-
-            return
-          end
-        end
-
         ## Only items have files
-        raise ActiveRecord::RecordNotFound unless check_for_item
+        raise ActiveRecord::RecordNotFound unless check_for_essence
 
-        essence = @data.essences.accessible_by(current_ability).find_by(filename: params[:path])
-        raise ActiveRecord::RecordNotFound unless essence
-
-        location = Nabu::Catalog.instance.essence_url(essence, as_attachment:, filename:)
+        location = Nabu::Catalog.instance.essence_url(@data, as_attachment:, filename:)
         raise ActionController::RoutingError, 'Essence file not found' unless location
 
         if params[:noRedirect] === 'true'
@@ -144,7 +165,7 @@ module Api
           }
         end
 
-        aggs = %i[collection_title access_condition_name languages countries collector_name]
+        aggs = %i[collection_title access_condition_name languages countries collector_name encodingFormat rootCollection]
 
         body_options = { track_total_hits: true }
         if query.geohash_precision

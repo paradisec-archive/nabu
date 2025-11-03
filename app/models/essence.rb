@@ -38,6 +38,7 @@ class Essence < ApplicationRecord
   belongs_to :item, counter_cache: true
   delegate :collection, to: :item
   delegate :collector_name, to: :item
+  has_one :entity, as: :entity
 
   validates :item, associated: true
   validates :filename,

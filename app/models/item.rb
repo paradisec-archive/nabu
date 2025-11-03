@@ -278,7 +278,7 @@ class Item < ApplicationRecord
   end
 
   def self.search_agg_fields
-    %i[content_languages countries collector_name]
+    %i[content_languages countries collector_name encodingFormat rootCollection]
   end
 
   def self.search_text_fields
@@ -349,6 +349,10 @@ class Item < ApplicationRecord
       data_types: data_types.map(&:name),
       filename: essences.map(&:filename),
       mimetype: essences.map(&:mimetype),
+
+      # Oni
+      encodingFormat: essences.map(&:mimetype),
+      rootCollection: collection.title,
 
       external:,
       private: !public?,

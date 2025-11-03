@@ -202,7 +202,8 @@ data = {
   dateModified: @data.updated_at.to_date,
   datePublished: @data.updated_at.to_date,
 
-  publisher: { '@id': collection_person_json(@data.collector) },
+  publisher: { '@id': collection_organisation_json(OpenStruct.new(name: 'PARADISEC', party_identifier: 'http://nla.gov.au/nla.party-1810306')) },
+  collector: { '@id': collection_person_json(@data.collector) },
 
   inLanguage: @data.languages.map { |language| { '@id': collection_language_json(language) } },
   'ldac:subjectLanguage': @data.subject_languages.map { |language| { '@id': collection_language_json(language) } },

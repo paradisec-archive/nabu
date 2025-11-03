@@ -96,9 +96,9 @@ class Ability
     # Essence
     #############
 
-    can %i[read download show_terms agree_to_terms display],  Essence,
+    can %i[read download show_terms agree_to_terms display entities],  Essence,
         item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
-    can %i[read download show_terms agree_to_terms display],  Essence,
+    can %i[read download show_terms agree_to_terms display entities],  Essence,
         item: { access_condition: { name: 'Open (subject to the access condition details)' } }
     can %i[read download display], Essence, item: { collection: { collection_admins: { user_id: user.id } } }
     can %i[read download display], Essence, item: { collection: { collector_id: user.id } }

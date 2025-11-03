@@ -8,9 +8,9 @@
 # --------------------- | ------------------ | ---------------------------
 # **`entity_type`**     | `string(10)`       | `default(""), not null`
 # **`essences_count`**  | `bigint`           | `default(0), not null`
-# **`identifier`**      | `string(255)`      |
 # **`items_count`**     | `bigint`           | `default(0), not null`
 # **`media_types`**     | `text(65535)`      |
+# **`member_of`**       | `string(255)`      |
 # **`private`**         | `integer`          |
 # **`title`**           | `string(255)`      |
 # **`entity_id`**       | `integer`          | `default(0), not null`

@@ -1,41 +1,77 @@
+is_collection = entity.entity_type == 'Collection'
 is_item = entity.entity_type == 'Item'
+is_essence = entity.entity_type == 'Essence'
 
 json = {
-  id: is_item ? repository_item_url(entity.entity.collection, entity.entity) : repository_collection_url(entity.entity),
   name: entity.entity.title,
-  description: entity.entity.description.truncate(256),
-  entityType: is_item ? 'http://pcdm.org/models#Object' : 'http://pcdm.org/models#Collection',
   createst_at: entity.entity.created_at.iso8601,
   updated_at: entity.entity.updated_at.iso8601,
-  language: (is_item ? entity.entity.content_languages : entity.entity.languages).map(&:name),
   counts: {
     objects: entity.has_attribute?(:items_count) ? entity.items_count : 0,
     files: entity.has_attribute?(:essences_count) ? entity.essences_count : 0
+  },
+  access: {
+    metadata: true
   }
 }
 
-if is_item
-  json[:memberOf] = repository_collection_url(entity.entity.collection)
-  json[:rootCollection] = repository_collection_url(entity.entity.collection)
+if is_collection
+  json[:id] = repository_collection_url(entity.entity)
+  json[:entityType] = 'http://pcdm.org/models#Collection'
+  json[:access][:content] = can?(:read, entity.entity.items.first&.essences&.first)
+  json[:rootCollection] = {
+    id: repository_collection_url(entity.entity),
+    name: entity.entity.title
+  }
 end
 
-if entity.private?
-  json[:accessControl] = 'AccessControlList'
-elsif entity.entity.access_condition.nil?
-  json[:accessControl] = 'AuthorizationByInvitation'
-elsif entity.entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
-  json[:accessControl] = 'AgreeToTerms'
-else
-  json[:accessControl] = 'Public'
+if is_item
+  json[:id]= repository_item_url(entity.entity.collection, entity.entity)
+  json[:entityType] = 'http://pcdm.org/models#Object'
+  json[:memberOf] = {
+    id: repository_collection_url(entity.entity.collection),
+    name: entity.entity.collection.title
+  }
+  json[:rootCollection] = {
+    id: repository_collection_url(entity.entity.collection),
+    name:  entity.entity.collection.title
+  }
+  json[:access][:content] = can?(:read, entity.entity.essences.first)
+end
+
+if is_essence
+  json[:id]= repository_essence_url(entity.entity.collection, entity.entity.item, entity.entity.filename)
+  json[:entityType] = 'http://schema.org/MediaObject'
+  json[:memberOf] = {
+    id: repository_item_url(entity.entity.collection, entity.entity.item),
+    name: entity.entity.item.title
+  }
+  json[:rootCollection] = {
+    id: repository_collection_url(entity.entity.collection),
+    name: entity.entity.collection.title
+  }
+  json[:fileId] = repository_essence_url(entity.entity.item.collection, entity.entity.item, entity.entity.filename)
+  json[:access][:content] = can?(:read, entity.entity)
+end
+
+if is_item || is_collection
+  json[:description] = entity.entity.description.truncate(256)
+  json[:language] = (is_item ? entity.entity.content_languages : entity.entity.languages).map(&:name)
+
+  if entity.private?
+    json[:accessControl] = 'AccessControlList'
+  elsif entity.entity.access_condition.nil?
+    json[:accessControl] = 'AuthorizationByInvitation'
+  elsif entity.entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
+    json[:accessControl] = 'AgreeToTerms'
+  else
+    json[:accessControl] = 'Public'
+  end
 end
 
 # TODO:: add communicationMode
 
 json[:mediaType] = entity.media_types.split(',') if entity.media_types
-json[:access] = {
-  metadata: true,
-  content: can?(:read, is_item ? entity.entity.essences.first : entity.entity.items.first&.essences&.first)
-}
 
 if  defined? score || defined? highlights
   json[:searchExtra] ||= {}
