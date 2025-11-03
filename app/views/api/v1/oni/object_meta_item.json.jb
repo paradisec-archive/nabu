@@ -219,7 +219,7 @@ data = {
   name: @data.title,
   description: @data.description,
 
-  creditText: @data.citation,
+  creditText: @data.citation.gsub('<i>', '').gsub('</i>', ''),
 
   contentLocation: [{
     '@id': item_place_json(@data, @data.region)
