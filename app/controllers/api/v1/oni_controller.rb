@@ -188,7 +188,8 @@ module Api
 
         if query.search_type == 'advanced'
           @search = Searchkick.search('*', **params) do |payload|
-            payload[:query] =  { query_string: { query: query.query.gsub(/ *:/, '.analyzed:').gsub('name.analyzed:', 'title.analyzed:')  } }
+            processed_query = query.query.gsub(/ *:/, '.analyzed:').gsub('name.analyzed:', 'title.analyzed:')
+            payload[:query][:bool][:must] =  { query_string: { query: processed_query  } }
           end
         else
           @search = Searchkick.search(query.query, **params)
