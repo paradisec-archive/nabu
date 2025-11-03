@@ -7,6 +7,8 @@ ARG ROCRATE_API_CLIENTID
 ARG SENTRY_ENV
 ARG BUMP=34
 
+ENV ONI_CONFIG_PATH=/oni/configuration.json
+
 RUN corepack enable
 
 WORKDIR /tmp
