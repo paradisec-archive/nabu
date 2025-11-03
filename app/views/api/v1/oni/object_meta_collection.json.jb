@@ -184,8 +184,8 @@ data = {
 
   identifier: [
     collection_property_value_json('domain', 'paradisec.org.au'),
-    collection_property_value_json('id', @data.full_identifier),
-    collection_property_value_json('itemIdentifier', @data.identifier),
+    collection_property_value_json('identifier', @data.full_identifier),
+    collection_property_value_json('collectionIdentifier', @data.identifier),
     collection_property_value_json('doi', @data.doi)
   ],
 
