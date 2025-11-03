@@ -1,0 +1,18 @@
+{
+  "search": {
+    "indexEntriesDescription": "Index entries (Collections, Objects and Files)"
+  },
+  "collection": {
+    "objectsInCollection": "Objects in Collection"
+  },
+  "object": {
+    "title": "Item",
+    "objects": "Items",
+    "viewObject": "View Item",
+    "accessTooltip": "Licence and access conditions for the current item.",
+    "otherObjectsInCollection": "Other Items in this Collection"
+  },
+  "entity": {
+    "objects": "Items:"
+  }
+}

@@ -5,7 +5,7 @@ FROM node:lts AS builder
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
 ARG SENTRY_ENV
-ARG BUMP=32
+ARG BUMP=33
 
 RUN corepack enable
 
@@ -16,6 +16,7 @@ RUN git clone https://github.com/Language-Research-Technology/oni-ui.git -b new-
 WORKDIR /tmp/oni-ui
 
 COPY docker/oni.json src/configuration.json
+COPY docker/i18n public/i18n
 COPY app/assets/images/paradisec.jpg public/logo.jpg
 
 RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID#$ROCRATE_API_CLIENTID#;s#SENTRY_ENV#$SENTRY_ENV#" src/configuration.json && \
