@@ -137,9 +137,7 @@
     "analytics": {
       "gaMeasurementId": "G-G9M2J7CBHC"
     },
-    "googleForm": {
-      "takedown": "https://docs.google.com/forms/d/e/1FAIpQLSc3wWGYLgkEtba65mL46BUhMAPWiHt5EHrQ2rWiI4nJqPjpDg/viewform?usp=pp_url&entry.812577446="
-    },
+    "takedown": "mailto:admin@paradisec.org.au?subject=Content%20Removal%20Request&body=Hi%20Admins%2C%0A%0AURL%3A%20{url}%0A%0AReason%3A%20%3CWhy%20do%20you%20think%20this%20should%20be%20removed%3F%3E%0A%0A",
     "sentry": {
       "dsn": "https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608",
       "environment": "SENTRY_ENV",
