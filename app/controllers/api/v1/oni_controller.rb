@@ -156,7 +156,8 @@ module Api
         where = {
           private: false
         }
-        where.merge!(query.filters)
+        f = transform_filters(query.filters)
+        where.merge!(f)
 
         if query.bounding_box
           where[:location] = {
@@ -165,7 +166,16 @@ module Api
           }
         end
 
-        aggs = %i[collection_title access_condition_name languages countries collector_name encodingFormat rootCollection]
+        aggs = {
+          collection_title: {},
+          access_condition_name: {},
+          languages: {},
+          countries: {},
+          collector_name: {},
+          encodingFormat: {},
+          rootCollection: {},
+          originatedOn: { date_histogram: { field: 'originated_on', calendar_interval: 'year', format: 'yyyy', min_doc_count: 1 } }
+        }
 
         body_options = { track_total_hits: true }
         if query.geohash_precision
@@ -174,6 +184,7 @@ module Api
           }
         end
 
+        #  TODO use new search DSL
         params = {
           models: [Collection, Item],
           model_includes: { Collection => [:languages, :access_condition, :entity, items: :essences], Item => [:content_languages, :access_condition, :collection, :entity] },
@@ -197,6 +208,32 @@ module Api
       end
 
       private
+      def transform_filters(filters)
+        f = filters.to_h.to_h
+
+        return f unless f['originatedOn']
+
+        ranges = parse_originated_on_ranges(f['originatedOn'])
+        f.delete('originatedOn')
+        f[:_or] = ranges.map { |range| { originated_on: range } }
+
+        f
+      end
+
+      def parse_originated_on_ranges(originated_on_array)
+        originated_on_array.map do |range_string|
+          unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+            errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
+          end
+
+          # Parse format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
+          parts = range_string.split(' TO ')
+          next nil if parts.length != 2
+
+          { gte: parts[0].strip, lte: parts[1].strip }
+        end.compact
+      end
+
       def check_for_essence
         puts repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)')
 

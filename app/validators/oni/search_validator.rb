@@ -11,6 +11,7 @@ module Oni
 
     validate :validate_filters
     validate :validate_bounding_box
+    validate :validate_originated_on
     validates :geohash_precision, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }, allow_nil: true
 
     validates :order, inclusion: { in: ORDER_FIELDS, message: '%{value} is not a valid order' }, allow_nil: true
@@ -21,7 +22,7 @@ module Oni
 
     def initialize(params)
       permitted = ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }
-      filters = { languages: [], countries: [], collector_name: [], collection_title: [], access_condition_name: [], encodingFormat: [], rootCollection: [] }
+      filters = { languages: [], countries: [], collector_name: [], collection_title: [], access_condition_name: [], encodingFormat: [], rootCollection: [], originatedOn: [] }
       bounding_box = { topRight: {}, bottomLeft: {} }
       object_params = params.permit(permitted, filters:, boundingBox: bounding_box)
 
@@ -53,6 +54,24 @@ module Oni
 
 
     private
+
+    def transform_originated_on_filter
+      originated_on = @filters['originatedOn']
+      return unless originated_on.is_a?(Array)
+
+      ranges = parse_originated_on_ranges(originated_on)
+      @filters['originatedOn'] = { 'ranges' => ranges }
+    end
+
+    def parse_originated_on_ranges(originated_on_array)
+      originated_on_array.map do |range_string|
+        # Parse format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
+        parts = range_string.split(' TO ')
+        next nil if parts.length != 2
+
+        { 'from' => parts[0].strip, 'to' => parts[1].strip }
+      end.compact
+    end
 
     def validate_filters
       return if filters.nil?
@@ -97,6 +116,30 @@ module Oni
         end
         unless lng.is_a?(Numeric) && lng.between?(-180, 180)
           errors.add(:boundingBox, "#{corner}.lng must be a number between -180 and 180")
+        end
+      end
+    end
+
+    def validate_originated_on
+      return if filters.nil? || !filters.key?('originatedOn')
+
+      originated_on = filters['originatedOn']
+
+      unless originated_on.is_a?(Array)
+        errors.add(:filters, 'originatedOn must be an array')
+        return
+      end
+
+      # Validate each range string format
+      originated_on.each do |range_string|
+        unless range_string.is_a?(String)
+          errors.add(:filters, 'all originatedOn values must be strings')
+          next
+        end
+
+        # Validate format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
+        unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+          errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
         end
       end
     end
