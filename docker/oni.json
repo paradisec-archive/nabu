@@ -78,7 +78,7 @@
       "byteFields": ["size", "contentSize"],
       "durationFields": ["duration"],
       "expand": ["ldac:speaker", "speaker", "singer", "author", "citation"],
-      "paginatedMeta": ["inLanguage", "ldac:subkectLanguage"]
+      "paginatedMeta": ["inLanguage", "ldac:subjectLanguage"]
     },
     "collection": {
       "meta": {
@@ -86,18 +86,19 @@
         "show": [
           "description",
           "@id",
+          "identifier.identifier",
           "dateCreated",
           "contentLocation",
-          "publisher",
+          "collector",
           "inLanguage",
           "ldac:subjectLanguage",
           "countries",
           "license",
           "sourceOrganization",
           "about",
+          "ldac:doi",
           "datePublished",
-          "dateModified",
-          "ldac:doi"
+          "dateModified"
         ]
       }
     },
@@ -110,12 +111,11 @@
           "originatedOn",
           "datePublished",
           "@id",
+          "identifier.identifier",
           "contentLocation",
-          "dateCreated",
-          "dateModified",
+          "collector",
           "speaker",
           "singer",
-          "publisher",
           "inLanguage",
           "subjectLanguages",
           "languageAsGiven",
@@ -125,7 +125,9 @@
           "sourceOrganization",
           "originalMedia",
           "about",
-          "ldac:doi"
+          "ldac:doi",
+          "dateCreated",
+          "dateModified"
         ]
       }
     },
@@ -233,6 +235,12 @@
         "display": "Country",
         "name": "countries",
         "help": "The countries associated with the entity."
+      },
+      {
+        "display": "Date",
+        "name": "originatedOn",
+        "type": "date_histogram",
+        "help": "Filter by the year the content originated."
       },
       {
         "display": "Access",
