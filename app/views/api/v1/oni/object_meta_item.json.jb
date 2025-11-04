@@ -174,7 +174,7 @@ end
 
 @organisations = Set.new
 def item_organisation_json(organisation)
-  id = organisation.party_identifier
+  id = organisation.party_identifier || "#organisation-#{organisation.id}"
 
   json = {
     '@id': id,
