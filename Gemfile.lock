@@ -44,7 +44,7 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
-    activeadmin (4.0.0.beta16)
+    activeadmin (4.0.0.beta18)
       arbre (~> 2.0)
       csv
       formtastic (>= 5.0)
@@ -637,7 +637,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.1.0)
+    uri (1.1.1)
     useragent (0.16.11)
     warden (1.2.9)
       rack (>= 2.0.9)
@@ -664,7 +664,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  activeadmin (= 4.0.0.beta16)
+  activeadmin (= 4.0.0.beta18)
   amazing_print
   annotaterb
   aws-actionmailer-ses (~> 1)
