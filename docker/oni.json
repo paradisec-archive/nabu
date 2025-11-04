@@ -59,10 +59,6 @@
           "label": "Relevance"
         },
         {
-          "value": "name",
-          "label": "Title"
-        },
-        {
           "value": "originatedOn",
           "label": "Date"
         }
