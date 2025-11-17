@@ -1,6 +1,23 @@
 # rubocop:disable Metrics/BlockLength
 ActiveAdmin.register_page 'Catalog Report' do
   content do
+    style do
+      text_node <<~CSS
+        .scrollable-panel {
+          max-height: 400px;
+          overflow-y: auto;
+        }
+
+        @media print {
+          .scrollable-panel {
+            max-height: none;
+            overflow-y: visible;
+          }
+        }
+      CSS
+    end
+
+    scroll_style = 'max-height: 400px; overflow-y: auto;'
     year = params.dig(:date, :year) || Time.zone.today.year
     month = params.dig(:date, :month) || Time.zone.today.month
     month = month.to_i
@@ -45,12 +62,14 @@ ActiveAdmin.register_page 'Catalog Report' do
       %w[new updated].each do |which|
         div do
           panel "#{which.capitalize} Collections" do
-            table_for data[:"#{which}_collections"] do
-              column :identifier do |collection|
-                # Have to call the full path here as activeadmin has a collection_path
-                link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection)
+            div class: 'scrollable-panel' do
+              table_for data[:"#{which}_collections"] do
+                column :identifier do |collection|
+                  # Have to call the full path here as activeadmin has a collection_path
+                  link_to collection.identifier, Rails.application.routes.url_helpers.collection_path(collection)
+                end
+                column :title
               end
-              column :title
             end
           end
         end
@@ -61,11 +80,13 @@ ActiveAdmin.register_page 'Catalog Report' do
       %w[new updated].each do |which|
         div do
           panel "#{which.capitalize} Items" do
-            table_for data[:"#{which}_items"] do
-              column :full_identifier do |item|
-                link_to item.full_identifier, [item.collection, item]
+            div class: 'scrollable-panel' do
+              table_for data[:"#{which}_items"] do
+                column :full_identifier do |item|
+                  link_to item.full_identifier, [item.collection, item]
+                end
+                column :title
               end
-              column :title
             end
           end
         end
@@ -76,9 +97,11 @@ ActiveAdmin.register_page 'Catalog Report' do
       %w[new updated].each do |which|
         div do
           panel "#{which.capitalize} Files" do
-            insert_tag ActiveAdmin::Views::IndexAsTable::IndexTableFor, data[:"#{which}_essences"] do
-              column :full_identifier do |essence|
-                link_to essence.full_identifier, [essence.item.collection, essence.item, essence]
+            div class: 'scrollable-panel' do
+              table_for data[:"#{which}_essences"] do
+                column :full_identifier do |essence|
+                  link_to essence.full_identifier, [essence.item.collection, essence.item, essence]
+                end
               end
             end
           end
