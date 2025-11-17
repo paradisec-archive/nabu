@@ -119,7 +119,7 @@ ActiveAdmin.register_page 'Catalog Report' do
                  .order('files desc')
 
           table_for data do
-            column :type
+            column :mimetype
             column :files
             column(:bytes) { |row| number_to_human_size row.bytes }
             column(:duration) { |row| number_to_human_duration row.duration }
