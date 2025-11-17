@@ -8,13 +8,13 @@ ActiveAdmin.register_page 'Catalog Report' do
     date = Date.parse("#{year}-#{month}-01")
 
     data = {
-      new_collections: Collection.where('created_at >= ? AND created_at <= ?', date.beginning_of_month, date.end_of_month),
-      new_items: Item.where('created_at >= ? AND created_at <= ?', date.beginning_of_month, date.end_of_month),
-      new_essences: Essence.where('created_at >= ? AND created_at <= ?', date.beginning_of_month, date.end_of_month),
+      new_collections: Collection.where(created_at: date.beginning_of_month..date.end_of_month),
+      new_items: Item.where(created_at: date.beginning_of_month..date.end_of_month).includes(:collection),
+      new_essences: Essence.where(created_at: date.beginning_of_month..date.end_of_month).includes(item: :collection),
 
-      updated_collections: Collection.where('updated_at >= ? AND updated_at <= ?', date.beginning_of_month, date.end_of_month),
-      updated_items: Item.where('updated_at >= ? AND updated_at <= ?', date.beginning_of_month, date.end_of_month),
-      updated_essences: Essence.where('updated_at >= ? AND updated_at <= ?', date.beginning_of_month, date.end_of_month)
+      updated_collections: Collection.where(updated_at: date.beginning_of_month..date.end_of_month),
+      updated_items: Item.where(updated_at: date.beginning_of_month..date.end_of_month).includes(:collection),
+      updated_essences: Essence.where(updated_at: date.beginning_of_month..date.end_of_month).includes(item: :collection)
     }
 
     div class: 'grid auto-cols-fr grid-flow-col gap-4 mb-4' do
