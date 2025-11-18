@@ -40,16 +40,12 @@
         "display": "Search"
       },
       {
-        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
+        "route": "list?entityType=http%3A%2F%2Fpcdm.org%2Fmodels%23Collection",
         "display": "Collections"
       },
       {
-        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Object",
+        "route": "list?entityType=http%3A%2F%2Fpcdm.org%2Fmodels%23Object",
         "display": "Items"
-      },
-      {
-        "route": "list?conformsTo=https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Object,https%3A%2F%2Fw3id.org%2Fldac%2Fprofile%23Collection",
-        "display": "Both"
       }
     ],
     "search": {
