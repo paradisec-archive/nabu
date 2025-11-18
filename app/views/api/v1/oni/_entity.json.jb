@@ -64,6 +64,12 @@ if is_item || is_collection
     json[:accessControl] = 'AuthorizationByInvitation'
   elsif entity.entity.access_condition.name == 'Open (subject to agreeing to PDSC access conditions)'
     json[:accessControl] = 'AgreeToTerms'
+  elsif entity.entity.access_condition.name == 'Closed (subject to the access condition details)'
+    json[:accessControl] = 'AccessControlList'
+  elsif entity.entity.access_condition.name == 'Mixed (check individual items)'
+    json[:accessControl] = 'AccessControlList'
+  elsif entity.entity.access_condition.name == '-'
+    json[:accessControl] = 'AccessControlList'
   else
     json[:accessControl] = 'Public'
   end
