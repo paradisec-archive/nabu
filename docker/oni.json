@@ -35,6 +35,9 @@
       "enabled": true,
       "manageTermsAndConditions": false
     },
+    "management": {
+      "editUrl": "{url}?edit=1"
+    },
     "topNavItems": [
       {
         "route": "search",

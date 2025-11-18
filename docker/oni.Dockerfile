@@ -11,7 +11,7 @@ ENV VITE_ONI_CONFIG_PATH=/oni/configuration.json
 
 RUN corepack enable
 
-RUN touch bump-2
+RUN touch bump-3
 
 WORKDIR /tmp
 
