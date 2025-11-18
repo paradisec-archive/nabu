@@ -36,7 +36,7 @@
       "manageTermsAndConditions": false
     },
     "management": {
-      "editUrl": "{url}?edit=1"
+      "editUrl": "{id}?edit=1"
     },
     "topNavItems": [
       {
