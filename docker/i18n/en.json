@@ -1,9 +1,9 @@
 {
   "search": {
-    "indexEntriesDescription": "Index entries (Collections, Objects and Files)"
+    "indexEntriesDescription": "Index entries (Collections, Items and Files)"
   },
   "collection": {
-    "objectsInCollection": "Objects in Collection"
+    "objectsInCollection": "Items in Collection"
   },
   "object": {
     "title": "Item",
