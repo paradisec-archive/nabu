@@ -232,12 +232,12 @@ class Collection < ApplicationRecord
       collector_sortname:,
       operator_name:,
       field_of_research: field_of_research_name,
-      languages: languages.map(&:name),
-      countries: countries.map(&:name),
-      language_codes: languages.map(&:code),
+      languages: languages.map(&:name).uniq,
+      countries: countries.map(&:name).uniq,
+      language_codes: languages.map(&:code).uniq,
 
       # Oni
-      encodingFormat: essences.map(&:mimetype),
+      encodingFormat: essences.map(&:mimetype).uniq,
       rootCollection: title,
 
       # Full text plus advanced search
@@ -259,14 +259,14 @@ class Collection < ApplicationRecord
       collector_id:,
       operator_id:,
       university_id:,
-      country_ids: countries.map(&:id),
-      language_ids: languages.map(&:id),
-      admin_ids: admins.map(&:id),
+      country_ids: countries.map(&:id).uniq,
+      language_ids: languages.map(&:id).uniq,
+      admin_ids: admins.map(&:id).uniq,
       item_admin_ids: items.flat_map(&:admin_ids).uniq,
       item_user_ids: items.flat_map(&:user_ids).uniq,
       access_condition_id:,
       field_of_research_id:,
-      funding_body_id: grants.map(&:funding_body_id),
+      funding_body_id: grants.map(&:funding_body_id).uniq,
       deposit_form_received:,
       # We don't have this for items so let's use collection created_at
       originated_on: created_at.to_date,
