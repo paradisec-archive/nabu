@@ -227,6 +227,7 @@ class Collection < ApplicationRecord
   def search_data
     data = {
       # Extra things for basic full text search
+      record_type: 'Collection',
       university_name:,
       collector_name:,
       collector_sortname:,
