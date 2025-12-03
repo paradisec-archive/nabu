@@ -319,7 +319,7 @@ class Item < ApplicationRecord
   def search_data
     data = {
       # Full text plus advanced search
-      record_type: 'Item',
+      entity_type: 'Item',
       id:,
       identifier:,
       collection_identifier: collection.identifier,
