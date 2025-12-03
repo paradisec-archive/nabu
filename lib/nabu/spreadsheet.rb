@@ -47,7 +47,7 @@ module Nabu
                     .find_by(identifier: coll_id)
       collector = parse_user
       unless collector
-        @errors << 'ERROR collector does not exist'
+        @errors << 'ERROR collector does not exist or there are multiple'
         return
       end
 
@@ -78,7 +78,14 @@ module Nabu
 
     def parse_user
       first_name, last_name = parse_user_names
-      user = User.where(first_name:, last_name:).first
+      users = User.where(first_name:, last_name:)
+
+      if users.count > 1
+        @errors << "Multiple users found for collector #{[first_name, last_name].join(' ')} - you will need to fix this manually<br/>"
+        return nil
+      end
+
+      user = users.first
 
       unless user
         @errors << "Please create user #{[first_name, last_name].join(' ')} first<br/>"
