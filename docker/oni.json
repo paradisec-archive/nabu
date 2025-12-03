@@ -4,7 +4,7 @@
     "title": "Pacific And Regional Archive for Digital Sources in Endangered Cultures",
     "shortTitle": "PARADISEC",
     "splash": {
-      "text": "Oni acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
+      "text": "PARADISEC acknowledges all Aboriginal and Torres Strait Islander Traditional Custodians of Country and recognises their continuing connection to land, sea, culture and community. We pay our respects to Elders past and present.",
       "textClass": "text-5xl text-[#F4EDE4] pb-10",
       "image": "splash-background-1.png",
       "enabled": true,
@@ -14,8 +14,8 @@
     "navHeight": "90px",
     "showEllipsis": false,
     "help": {
-      "aboutText": "This is an Oni Data Portal publication. This portal provides access to a repository of language data, it is provided by the Language Data Commons of Australia [LDaCA](<a href='https://ldaca.edu.au'>https://ldaca.edu.au</a>).",
-      "citationText": "CITE AS: Oni Platform. A project with co-investment from Australian Research Data Commons, The University of Queensland, The University of Melbourne, The University of Sydney, Monash University, First Languages Australia and AARNet."
+      "aboutText": "PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.",
+      "citationText": ""
     },
     "subHelpLinks": [
       {
