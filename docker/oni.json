@@ -276,7 +276,7 @@
     "searchFields": {
       "name": "Name",
       "description": "Description",
-      "inLanguage": "Language",
+      "languages": "Language",
       "countries": "Country",
       "text": "Text"
     },
