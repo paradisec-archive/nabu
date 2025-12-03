@@ -278,7 +278,7 @@ class Item < ApplicationRecord
   end
 
   def self.search_agg_fields
-    %i[content_languages countries collector_name encodingFormat rootCollection]
+    %i[content_languages countries collector_name encodingFormat rootCollection entity_type]
   end
 
   def self.search_text_fields

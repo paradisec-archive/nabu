@@ -266,6 +266,11 @@
         "display": "File Format",
         "name": "encodingFormat",
         "help": "The media type of the resource."
+      },
+      {
+        "display": "Entity Type",
+        "name": "entity_type",
+        "help": "The entity type of the resource."
       }
     ],
     "searchFields": {

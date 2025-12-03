@@ -200,7 +200,7 @@ class Collection < ApplicationRecord
   end
 
   def self.search_agg_fields
-    %i[languages countries collector_name encodingFormat rootCollection]
+    %i[languages countries collector_name encodingFormat rootCollection entity_type]
   end
 
   def self.search_text_fields
