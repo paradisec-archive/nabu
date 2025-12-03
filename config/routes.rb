@@ -49,7 +49,6 @@ Rails.application.routes.draw do
       get 'bulk_update' => 'collections#bulk_edit'
       patch 'bulk_update' => 'collections#bulk_update'
       get 'metadata' => 'collections#new_from_metadata'
-      post 'exsite9' => 'collections#create_from_exsite9'
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
     member do

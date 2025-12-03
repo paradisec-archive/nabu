@@ -1,21 +1,4 @@
 
-= form_for @collection, :url => exsite9_collections_path do |f|
-  - if @collection.errors.any?
-    #error_explanation
-      %h2== #{pluralize(@collection.errors.count, 'error')} prohibited this post from being saved:
-      %ul
-        - @collection.errors.full_messages.each do |msg|
-          %li= msg
-
-  .twoup-1.column.span-12
-    %table.form.show
-      %tr
-        %td= f.file_field :metadata
-
-      %tr
-        %td= f.submit 'Add Collection from ExSite9 file'
-
-
 = form_for @collection, :url => spreadsheet_collections_path do |f|
   - if @collection.errors.any?
     #error_explanation

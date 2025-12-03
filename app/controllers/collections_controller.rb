@@ -265,33 +265,6 @@ class CollectionsController < ApplicationController
     @collection = Collection.new
   end
 
-  def create_from_exsite9
-    unless params.key?(:collection)
-      @collection ||= Collection.new
-      flash.now[:error] = 'No ExSite9 file submitted'
-      render 'new_from_metadata'
-      return
-    end
-    # get XML data
-    data = params[:collection][:metadata].read
-    # parse XML file as ExSite9
-    exsite9 = Nabu::ExSite9.new
-    exsite9.parse data, current_user
-
-    if exsite9.valid?
-      @collection = exsite9.collection
-      @collection.save!
-      flash[:notice] ||= 'SUCCESS: Collection created'
-      flash[:notice] += exsite9.notices.join('<br/>') if exsite9.notices.present?
-      redirect_to @collection
-    else
-      @collection ||= Collection.new
-      flash.now[:notice] = exsite9.notices.join('<br/>') if exsite9.notices.present?
-      flash.now[:error] = exsite9.errors.join('<br/>') if exsite9.errors.present?
-      render 'new_from_metadata'
-    end
-  end
-
   def create_from_spreadsheet
     unless params.key?(:collection)
       @collection ||= Collection.new
