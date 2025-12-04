@@ -64,10 +64,12 @@ end
 @geos = Set.new
 def item_geometry_json(shape)
   id = "#geo-#{shape.west_limit},#{shape.south_limit}-#{shape.east_limit},#{shape.north_limit}"
+
+  east_limit = shape.east_limit < shape.west_limit ? shape.east_limit + 360 : shape.east_limit
   coords = [
     "#{shape.west_limit} #{shape.north_limit}",
-    "#{shape.east_limit} #{shape.north_limit}",
-    "#{shape.east_limit} #{shape.south_limit}",
+    "#{east_limit} #{shape.north_limit}",
+    "#{east_limit} #{shape.south_limit}",
     "#{shape.west_limit} #{shape.south_limit}",
     "#{shape.west_limit} #{shape.north_limit}"
   ]
