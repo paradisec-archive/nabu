@@ -104,7 +104,7 @@ end
 
 @languages = Set.new
 def collection_language_json(language)
-  id = "https://www.ethnologue.com/language/#{language.code}/"
+  id = "http://www.language-archives.org/language/#{language.code}"
   json = {
     '@id': id,
     '@type': 'Language',
