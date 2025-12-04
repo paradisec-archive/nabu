@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import 'source-map-support/register';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
-
-import { MainStack } from '../lib/main-stack';
-import { DrStack } from '../lib/dr-stack';
 import { AppStack } from '../lib/app-stack';
+import { DrStack } from '../lib/dr-stack';
+import { MainStack } from '../lib/main-stack';
 import type { AppProps, Environment } from '../lib/types';
 
 const globals = {

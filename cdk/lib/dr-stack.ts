@@ -1,10 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import type { Construct } from 'constructs';
-
 import * as s3 from 'aws-cdk-lib/aws-s3';
-
-import type { Environment } from './types';
 import { NagSuppressions } from 'cdk-nag';
+import type { Construct } from 'constructs';
+import type { Environment } from './types';
 
 export class DrStack extends cdk.Stack {
   public drBucket: s3.IBucket;
@@ -62,15 +60,7 @@ export class DrStack extends cdk.Stack {
           },
           frequency: s3.InventoryFrequency.WEEKLY,
           includeObjectVersions: s3.InventoryObjectVersion.ALL,
-          optionalFields: [
-            'Size',
-            'LastModifiedDate',
-            'StorageClass',
-            'ReplicationStatus',
-            'IntelligentTieringAccessTier',
-            'ChecksumAlgorithm',
-            'ETag',
-          ],
+          optionalFields: ['Size', 'LastModifiedDate', 'StorageClass', 'ReplicationStatus', 'IntelligentTieringAccessTier', 'ChecksumAlgorithm', 'ETag'],
         },
       ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,

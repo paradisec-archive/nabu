@@ -1,6 +1,4 @@
 import * as cdk from 'aws-cdk-lib';
-import type { Construct } from 'constructs';
-
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
@@ -8,8 +6,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-
 import { NagSuppressions } from 'cdk-nag';
+import type { Construct } from 'constructs';
 
 import type { Environment } from './types';
 
@@ -20,23 +18,14 @@ export class MainStack extends cdk.Stack {
 
   public certificate: acm.ICertificate;
 
-  public zone: route53.IHostedZone;
+  public adminCertificate: acm.ICertificate;
 
-  public tempCertificate: acm.ICertificate;
+  public zone: route53.IHostedZone;
 
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const {
-      appName,
-      // account,
-      // region,
-      // railsEnv,
-      drBucket,
-      env,
-      acmeValue,
-      zoneName,
-    } = environment;
+    const { appName, drBucket, env, acmeValue, zoneName } = environment;
 
     // ////////////////////////
     // DNS
@@ -73,30 +62,25 @@ export class MainStack extends cdk.Stack {
       domainName: `catalog.${zoneName}`,
       validation: acm.CertificateValidation.fromDns(this.zone),
     });
-
     new ssm.StringParameter(this, 'CertArnParameter', {
       parameterName: '/nabu/resources/certificates/ingest',
       stringValue: certificate.certificateArn,
     });
 
-    // ////////////////////////
-    // Temp Cert
-    // ////////////////////////
-    if (env === 'prod') {
-      this.tempCertificate = new acm.Certificate(this, 'TempCertificate', {
-        domainName: 'catalog.paradisec.org.au',
-        validation: acm.CertificateValidation.fromDns(),
-      });
-    }
+    const adminCertificate = new acm.Certificate(this, 'AdminCertificate', {
+      domainName: `admin.catalog.${zoneName}`,
+      validation: acm.CertificateValidation.fromDns(this.zone),
+    });
+    new ssm.StringParameter(this, 'AdminCertArnParameter', {
+      parameterName: '/nabu/resources/certificates/admin',
+      stringValue: adminCertificate.certificateArn,
+    });
 
     // ////////////////////////
     // Service endpoint for Nabu NLB
     // ////////////////////////
     const nlb = elbv2.NetworkLoadBalancer.fromLookup(this, 'NLB', {
-      loadBalancerArn: ssm.StringParameter.valueFromLookup(
-        this,
-        '/usyd/resources/network-load-balance/application/arn',
-      ),
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/network-load-balance/application/arn'),
     });
 
     const endpoint = new ec2.VpcEndpointService(this, 'NlbEndpointService', {
@@ -165,9 +149,7 @@ export class MainStack extends cdk.Stack {
       lifecycleRules: [
         { abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) },
         {
-          transitions: [
-            { storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) },
-          ],
+          transitions: [{ storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL, transitionAfter: cdk.Duration.days(90) }],
           tagFilters: { archive: 'true' },
         },
       ],
@@ -181,15 +163,7 @@ export class MainStack extends cdk.Stack {
           },
           frequency: s3.InventoryFrequency.WEEKLY,
           includeObjectVersions: s3.InventoryObjectVersion.ALL,
-          optionalFields: [
-            'Size',
-            'LastModifiedDate',
-            'StorageClass',
-            'ReplicationStatus',
-            'IntelligentTieringAccessTier',
-            'ChecksumAlgorithm',
-            'ETag',
-          ],
+          optionalFields: ['Size', 'LastModifiedDate', 'StorageClass', 'ReplicationStatus', 'IntelligentTieringAccessTier', 'ChecksumAlgorithm', 'ETag'],
         },
       ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
