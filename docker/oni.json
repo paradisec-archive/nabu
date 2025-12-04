@@ -312,7 +312,7 @@
       "zoom": 8
     },
     "i18n": {
-      "availableLocales": ["en", "de", "fr", "es"],
+      "availableLocales": ["en"],
       "defaultLocale": "en"
     }
   },
