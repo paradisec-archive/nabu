@@ -18,8 +18,6 @@ export class MainStack extends cdk.Stack {
 
   public certificate: acm.ICertificate;
 
-  public adminCertificate: acm.ICertificate;
-
   public zone: route53.IHostedZone;
 
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
@@ -67,14 +65,15 @@ export class MainStack extends cdk.Stack {
       stringValue: certificate.certificateArn,
     });
 
-    const adminCertificate = new acm.Certificate(this, 'AdminCertificate', {
-      domainName: `admin.catalog.${zoneName}`,
-      validation: acm.CertificateValidation.fromDns(this.zone),
-    });
-    new ssm.StringParameter(this, 'AdminCertArnParameter', {
-      parameterName: '/nabu/resources/certificates/admin',
-      stringValue: adminCertificate.certificateArn,
-    });
+    // ////////////////////////
+    // Temp Cert
+    // ////////////////////////
+    if (env === 'prod') {
+      new acm.Certificate(this, 'TempCertificate', {
+        domainName: 'catalog.paradisec.org.au',
+        validation: acm.CertificateValidation.fromDns(),
+      });
+    }
 
     // ////////////////////////
     // Service endpoint for Nabu NLB
