@@ -5,13 +5,12 @@ FROM node:lts AS builder
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
 ARG SENTRY_ENV
-ARG BUMP=41
 
 ENV VITE_ONI_CONFIG_PATH=/oni/configuration.json
 
 RUN corepack enable
 
-RUN touch bump-3
+RUN touch bump-4
 
 WORKDIR /tmp
 
