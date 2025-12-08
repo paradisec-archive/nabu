@@ -18,6 +18,8 @@ export class MainStack extends cdk.Stack {
 
   public certificate: acm.ICertificate;
 
+  public tempCertificate: acm.ICertificate;
+
   public zone: route53.IHostedZone;
 
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
@@ -69,7 +71,7 @@ export class MainStack extends cdk.Stack {
     // Temp Cert
     // ////////////////////////
     if (env === 'prod') {
-      new acm.Certificate(this, 'TempCertificate', {
+      this.tempCertificate = new acm.Certificate(this, 'TempCertificate', {
         domainName: 'catalog.paradisec.org.au',
         validation: acm.CertificateValidation.fromDns(),
       });

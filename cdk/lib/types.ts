@@ -1,3 +1,4 @@
+import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import type { IBucket } from 'aws-cdk-lib/aws-s3';
 
@@ -20,4 +21,5 @@ export type AppProps = Environment & {
   readonly drBucket: IBucket;
   readonly metaDrBucket: IBucket;
   readonly zone: IHostedZone;
+  readonly tempCertificate: ICertificate;
 };
