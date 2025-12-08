@@ -90,12 +90,10 @@ def item_place_json(place, name = nil)
   id = name ? "#place-#{name}" : "#place-#{place.west_limit},#{place.south_limit}-#{place.east_limit},#{place.north_limit}"
   json = {
     '@id': id,
-    '@type': 'Place',
-    geo: {
-      '@id': item_geometry_json(place)
-    }
+    '@type': 'Place'
   }
   json[:name] = name if name
+  json[:geo] = { '@id': item_geometry_json(place) } if place.respond_to?(:west_limit) && place.west_limit && place.south_limit && place.east_limit && place.north_limit
 
   @places.add(json)
 
@@ -138,11 +136,10 @@ def item_language_json(language)
     '@id': id,
     '@type': 'Language',
     code: language.code,
-    geo: {
-      '@id': item_geometry_json(language)
-    },
     name: language.name
   }
+  json[:geo] = { '@id': item_geometry_json(language) } if language.respond_to?(:west_limit) && language.west_limit && language.south_limit && language.east_limit && language.north_limit
+
   @languages.add(json)
 
   id
