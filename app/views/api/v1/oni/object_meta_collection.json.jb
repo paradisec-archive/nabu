@@ -104,7 +104,6 @@ end
 
 @languages = Set.new
 def collection_language_json(language)
-  puts '🪚 ⛎'
   id = "http://www.language-archives.org/language/#{language.code}"
   json = {
     '@id': id,
@@ -120,13 +119,16 @@ def collection_language_json(language)
 end
 
 @access_conditions = Set.new
-def collection_access_condition_json(access_condition)
+def collection_access_condition_json(access_condition, access_narrative = nil)
   id = "#license-#{access_condition.id}"
+  id += "-#{Digest::SHA256.hexdigest(access_narrative)[0, 8]}" if access_narrative
   json = {
     '@id': id,
     '@type': 'CreativeWork',
     name: access_condition.name
   }
+  json[:description] = access_narrative if access_narrative
+
   @access_conditions.add(json)
 
   id
@@ -212,14 +214,14 @@ data = {
 
 if @admin_rocrate
   data[:comment] = @data.comments
-  data[:usageinfo] = data[:access_narrative]
+  data[:usageinfo] = @data.access_narrative if @data.access_narrative
   data[:private] = @data.private
   data['paradisec:admins'] = @data.admins.map { |admin| { '@id': collection_person_json(admin) } }
 end
 
 data['ldac:doi'] = @data.doi if @data.doi
 
-data[:license] = { '@id': collection_access_condition_json(@data.access_condition) } if @data.access_condition
+data[:license] = { '@id': collection_access_condition_json(@data.access_condition, @data.access_narative) } if @data.access_condition
 data[:operator] = { '@id': collection_person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = { '@id': collection_organisation_json(@data.university) } if @data.university
 
