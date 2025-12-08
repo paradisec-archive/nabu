@@ -221,7 +221,7 @@ end
 
 data['ldac:doi'] = @data.doi if @data.doi
 
-data[:license] = { '@id': collection_access_condition_json(@data.access_condition, @data.access_narative) } if @data.access_condition
+data[:license] = { '@id': collection_access_condition_json(@data.access_condition, @data.access_narrative) } if @data.access_condition
 data[:operator] = { '@id': collection_person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = { '@id': collection_organisation_json(@data.university) } if @data.university
 
