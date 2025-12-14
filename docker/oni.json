@@ -30,13 +30,6 @@
       "aboutText": "<p class='mb-4'>This is the catalog of collections in PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) which curates digital material about small or endangered languages.</p><p class='mb-4'>For further information see the website <a class='text-blue-600 underline' href=\"https://paradisec.org.au\">https://paradisec.org.au</a>.</p><p class='mb-4'>This catalog viewer was launched at the beginning of 2026 and is using the tooling developed by the <a class='text-blue-600 underline' href=\"https://ldaca.edu.au\">Language Data Commons of Australia</a>, based on <a class='text-blue-600 underline' href=\"https://www.researchobject.org/ro-crate/\">RO-Crate</a>.</p><p>Contact <a class='text-blue-600 underline' href=\"mailto:admin@paradisec.org.au\">admin@paradisec.org.au</a></p>",
       "citationText": ""
     },
-    "subHelpLinks": [
-      {
-        "name": "Portal Help",
-        "href": "https://www.ldaca.edu.au/resources/user-guides/portal/",
-        "target": "_blank"
-      }
-    ],
     "footer": {
       "copyright": "© 2025",
       "link": {
