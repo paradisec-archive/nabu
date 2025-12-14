@@ -10,7 +10,7 @@
       "enabled": true,
       "launcher": "Acknowledgement of Country"
     },
-    "logoFilename": "oni/logo.jpg",
+    "logoFilename": "/oni/logo.jpg",
     "navHeight": "90px",
     "showEllipsis": false,
     "home": {
@@ -27,7 +27,7 @@
       "content": "<div class='text-left text-gray-700'><div><h3 class='text-lg font-semibold mb-2'>Who runs this site?</h3><p>PARADISEC has been developed since 2003 by a consortium of Australian researchers from the University of Sydney, the University of Melbourne and the Australian National University. (<a href=\"https://paradisec.org.au\">https://paradisec.org.au</a>)</p></div><div><h3 class='text-lg font-semibold mt-4 mb-2'>What system runs this site?</h3><p>The site operates on Nabu, a media management system created by PARADISEC in 2012. \"Nabu\" derives from the South Efate language meaning 'road', reflecting its role connecting various research locations. The system was funded through an Australian Research Council LIEF grant and is open source, with code available on GitHub.</p></div><div><h3 class='text-lg font-semibold mt-4 mb-2'>What material does this collection contain?</h3><p>PARADISEC curates digital materials documenting small or endangered languages across the Pacific region. The collection combines depositor-created catalog entries with digitised materials from deceased researchers. The organisation enforces access restrictions on culturally sensitive or legally problematic content and welcomes community contributions to enrich descriptions.</p></div><div><h3 class='text-lg font-semibold mt-4 mb-2'>What can I do on this site?</h3><p>You can search collections or individual items. Those interested in depositing materials must register, then consult the PARADISEC depositor page for submission guidelines.</p></div><div><h3 class='text-lg font-semibold mt-4 mb-2'>Takedown requests</h3><p>If you believe any material infringes your rights—regarding privacy, copyright, defamation, or cultural sensitivity—you may submit a <a href='mailto:admin@paradisec.org.au?subject=Content%20Removal%20Request' class='text-blue-600 underline'>takedown request</a>.</p></div></div>"
     },
     "help": {
-      "aboutText": "PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) curates digital material about small or endangered languages.",
+      "aboutText": "<p class='mb-4'>This is the catalog of collections in PARADISEC (Pacific And Regional Archive for DIgital Sources in Endangered Cultures) which curates digital material about small or endangered languages.</p><p class='mb-4'>For further information see the website <a class='text-blue-600 underline' href=\"https://paradisec.org.au\">https://paradisec.org.au</a>.</p><p class='mb-4'>This catalog viewer was launched at the beginning of 2026 and is using the tooling developed by the <a class='text-blue-600 underline' href=\"https://ldaca.edu.au\">Language Data Commons of Australia</a>, based on <a class='text-blue-600 underline' href=\"https://www.researchobject.org/ro-crate/\">RO-Crate</a>.</p><p>Contact <a class='text-blue-600 underline' href=\"mailto:admin@paradisec.org.au\">admin@paradisec.org.au</a></p>",
       "citationText": ""
     },
     "subHelpLinks": [
