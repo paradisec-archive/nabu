@@ -40,6 +40,8 @@ export class AppStack extends cdk.Stack {
       adminCertificate,
       tempCertificate,
       cloudflare,
+      adminAcmePath,
+      adminAcmeValue,
     } = appProps;
 
     // ////////////////////////
@@ -543,6 +545,16 @@ export class AppStack extends cdk.Stack {
       targetGroups: [oniTargetGroup],
       priority: 6,
       conditions: [elbv2.ListenerCondition.hostHeaders(['admin.catalog.paradisec.org.au', `admin.catalog.${zoneName}`])],
+    });
+
+    //Cloudflare validation
+    listener.addAction('CloudflareDcv', {
+      priority: 10,
+      conditions: [elbv2.ListenerCondition.hostHeaders([`admin.catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns([adminAcmePath])],
+      action: elbv2.ListenerAction.fixedResponse(200, {
+        contentType: 'text/plain',
+        messageBody: adminAcmeValue,
+      }),
     });
 
     // ////////////////////////
