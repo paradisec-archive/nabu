@@ -36,7 +36,7 @@ export class AppStack extends cdk.Stack {
       metaBucket,
       metaDrBucket,
       zone,
-      catalogCertificate,
+      //catalogCertificate,
       adminCertificate,
       tempCertificate,
       cloudflare,
