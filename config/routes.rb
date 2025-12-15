@@ -125,6 +125,7 @@ Rails.application.routes.draw do
         get 'entities' => 'oni#entities'
         get 'entity/:id' => 'oni#entity', constraints: { id: %r{[^/]+} }
         get 'entity/:id/rocrate' => 'oni#rocrate', constraints: { id: %r{[^/]+} }
+        get 'files' => 'oni#files'
         get 'file/:id' => 'oni#file', constraints: { id: %r{[^/]+} }
         post 'search' => 'oni#search'
       end

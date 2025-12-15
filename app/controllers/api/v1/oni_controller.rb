@@ -46,7 +46,7 @@ module Api
         when 'http://pcdm.org/models#Object'
           entities = entities.where(entity_type: 'Item')
         when 'http://schema.org/MediaObject'
-          entities = entities.where(entity_type: 'File')
+          entities = entities.where(entity_type: 'Essence')
         else
           # Do nothing
         end
@@ -103,6 +103,40 @@ module Api
 
 
         raise ActiveRecord::RecordNotFound
+      end
+
+      def files
+        query = Oni::FilesValidator.new(params)
+
+        unless query.valid?
+          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+
+          return
+        end
+
+        sort = case query.sort
+        when 'id' then 'entity_id'
+        when 'name' then 'title'
+        else query.sort
+        end
+
+        files = Entity.accessible_by(current_ability).where(entity_type: 'Essence')
+
+        if query.member_of
+          md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
+          entity_type = 'Item' if md
+
+          unless md
+            render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
+            return
+          end
+
+          files = files.where(member_of: md[1], entity_type:)
+        end
+
+        @total = files.count
+
+        @entities = files.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:collections, :items, :essences]).load
       end
 
       def file
