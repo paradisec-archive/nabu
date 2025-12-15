@@ -16,8 +16,8 @@ export class MainStack extends cdk.Stack {
 
   public metaBucket: s3.IBucket;
 
-  public certificate: acm.ICertificate;
-
+  public catalogCertificate: acm.ICertificate;
+  public adminCertificate: acm.ICertificate;
   public tempCertificate: acm.ICertificate;
 
   public zone: route53.IHostedZone;
@@ -42,7 +42,7 @@ export class MainStack extends cdk.Stack {
       values: [acmeValue],
     });
 
-    new route53.TxtRecord(this, 'CloudFlareAcmeTxtRecord', {
+    new route53.TxtRecord(this, 'CloudFlareAdminAcmeTxtRecord', {
       zone: this.zone,
       recordName: `_acme-challenge.catalog.${zoneName}`,
       values: [adminAcmeValue],
@@ -64,14 +64,17 @@ export class MainStack extends cdk.Stack {
     // ////////////////////////
     // Certificate
     // ////////////////////////
-    const certificate = new acm.Certificate(this, 'Certificate', {
+    const catalogCertificate = new acm.Certificate(this, 'Certificate', {
       domainName: `catalog.${zoneName}`,
       validation: acm.CertificateValidation.fromDns(this.zone),
     });
-    new ssm.StringParameter(this, 'CertArnParameter', {
-      parameterName: '/nabu/resources/certificates/ingest',
-      stringValue: certificate.certificateArn,
+    this.catalogCertificate = catalogCertificate;
+
+    const adminCertificate = new acm.Certificate(this, 'Certificate', {
+      domainName: `admin.catalog.${zoneName}`,
+      validation: acm.CertificateValidation.fromDns(this.zone),
     });
+    this.adminCertificate = adminCertificate;
 
     if (env === 'prod') {
       this.tempCertificate = new acm.Certificate(this, 'TempCertificate', {

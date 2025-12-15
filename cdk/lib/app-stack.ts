@@ -36,6 +36,8 @@ export class AppStack extends cdk.Stack {
       metaBucket,
       metaDrBucket,
       zone,
+      catalogCertificate,
+      adminCertificate,
       tempCertificate,
       cloudflare,
     } = appProps;
@@ -469,6 +471,8 @@ export class AppStack extends cdk.Stack {
       loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
       listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
     });
+    // sslListener.addCertificates('CatalogCert', [elbv2.ListenerCertificate.fromArn(catalogCertificate.certificateArn)]);
+    sslListener.addCertificates('AdminCert', [elbv2.ListenerCertificate.fromArn(adminCertificate.certificateArn)]);
     if (env === 'prod') {
       sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
     }
@@ -538,7 +542,7 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
       priority: 6,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns(['/oni*'])],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['admin.catalog.paradisec.org.au', `admin.catalog.${zoneName}`])],
     });
 
     // ////////////////////////
