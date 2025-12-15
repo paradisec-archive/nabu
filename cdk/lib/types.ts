@@ -11,6 +11,7 @@ export type Environment = {
   readonly account: string;
   readonly zoneName: string;
   readonly acmeValue: string;
+  readonly adminAcmeValue: string;
   readonly cloudflare: string;
   readonly drBucket?: IBucket;
 };

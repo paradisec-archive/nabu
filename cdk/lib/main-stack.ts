@@ -25,7 +25,7 @@ export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const { appName, drBucket, env, acmeValue, zoneName } = environment;
+    const { appName, drBucket, env, acmeValue, adminAcmeValue, zoneName } = environment;
 
     // ////////////////////////
     // DNS
@@ -40,6 +40,12 @@ export class MainStack extends cdk.Stack {
       zone: this.zone,
       recordName: `_acme-challenge.${zoneName}`,
       values: [acmeValue],
+    });
+
+    new route53.TxtRecord(this, 'CloudFlareAcmeTxtRecord', {
+      zone: this.zone,
+      recordName: `_acme-challenge.catalog.${zoneName}`,
+      values: [adminAcmeValue],
     });
 
     new route53.CaaRecord(this, 'CloudflareAndAmazonCaa', {
