@@ -544,13 +544,13 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
       priority: 6,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['admin.catalog.paradisec.org.au', `admin.catalog.${zoneName}`])],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
     //Cloudflare validation
     listener.addAction('CloudflareDcv', {
       priority: 10,
-      conditions: [elbv2.ListenerCondition.hostHeaders([`admin.catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns([adminAcmePath])],
+      conditions: [elbv2.ListenerCondition.hostHeaders([`admin-catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns([adminAcmePath])],
       action: elbv2.ListenerAction.fixedResponse(200, {
         contentType: 'text/plain',
         messageBody: adminAcmeValue,
@@ -568,9 +568,9 @@ export class AppStack extends cdk.Stack {
     });
 
     new route53.CnameRecord(this, 'AdminCatalogRecord', {
-      recordName: 'admin.catalog',
+      recordName: 'admin-catalog',
       zone,
-      domainName: `admin.${cloudflare}`,
+      domainName: `admin-${cloudflare}`,
     });
 
     // ////////////////////////

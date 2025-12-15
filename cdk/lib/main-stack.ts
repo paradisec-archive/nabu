@@ -55,20 +55,6 @@ export class MainStack extends cdk.Stack {
       ],
     });
 
-    new route53.CaaRecord(this, 'CloudflareAndAmazonCaa', {
-      zone: this.zone,
-      recordName: 'catalog',
-      values: [
-        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'amazon.com' },
-        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'pki.goog; cansignhttpexchanges=yes' },
-        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'pki.goog; cansignhttpexchanges=yes' },
-        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'letsencrypt.org' },
-        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'letsencrypt.org' },
-        { flag: 0, tag: route53.CaaTag.ISSUE, value: 'ssl.com' },
-        { flag: 0, tag: route53.CaaTag.ISSUEWILD, value: 'ssl.com' },
-      ],
-    });
-
     // ////////////////////////
     // Certificate
     // ////////////////////////
@@ -79,7 +65,7 @@ export class MainStack extends cdk.Stack {
     this.catalogCertificate = catalogCertificate;
 
     const adminCertificate = new acm.Certificate(this, 'AdminCertificate', {
-      domainName: `admin.catalog.${zoneName}`,
+      domainName: `admin-catalog.${zoneName}`,
       validation: acm.CertificateValidation.fromDns(this.zone),
     });
     this.adminCertificate = adminCertificate;
