@@ -5,7 +5,7 @@ module Oni
     # NOTE: We remap name to title below to match the database column
     SORT_FIELDS = %w[id name title originated_on].freeze
     ORDER_FIELDS = %w[asc desc].freeze
-    ENTITY_TYPES = %w[http://pcdm.org/models#Collection http://pcdm.org/models#Object].freeze
+    ENTITY_TYPES = %w[http://pcdm.org/models#Collection http://pcdm.org/models#Object http://schema.org/MediaObject].freeze
 
     ATTRIBUTES = %i[member_of entity_type limit offset order sort].freeze
     attr_accessor(*ATTRIBUTES)
