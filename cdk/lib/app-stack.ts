@@ -555,6 +555,12 @@ export class AppStack extends cdk.Stack {
       domainName: cloudflare,
     });
 
+    new route53.CnameRecord(this, 'AdminCatalogRecord', {
+      recordName: 'admin.catalog',
+      zone,
+      domainName: `admin.${cloudflare}`,
+    });
+
     // ////////////////////////
     // SES
     // ////////////////////////

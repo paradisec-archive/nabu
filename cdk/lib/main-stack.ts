@@ -70,7 +70,7 @@ export class MainStack extends cdk.Stack {
     });
     this.catalogCertificate = catalogCertificate;
 
-    const adminCertificate = new acm.Certificate(this, 'Certificate', {
+    const adminCertificate = new acm.Certificate(this, 'AdminCertificate', {
       domainName: `admin.catalog.${zoneName}`,
       validation: acm.CertificateValidation.fromDns(this.zone),
     });
