@@ -4,7 +4,7 @@ is_essence = entity.entity_type == 'Essence'
 
 json = {
   name: entity.entity.title,
-  createst_at: entity.entity.created_at.iso8601,
+  created_at: entity.entity.created_at.iso8601,
   updated_at: entity.entity.updated_at.iso8601,
   counts: {
     objects: entity.has_attribute?(:items_count) ? entity.items_count : 0,

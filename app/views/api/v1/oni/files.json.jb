@@ -1,0 +1,27 @@
+{
+  total: @total,
+  files: @entities.map { |entity|
+    essence = entity.entity
+
+    {
+      id: repository_essence_url(essence.collection, essence.item, essence.filename),
+      filename: essence.filename,
+      mediaType: essence.mimetype,
+      size: essence.size,
+      memberOf: {
+        id: repository_item_url(essence.collection, essence.item),
+        name: essence.item.title
+      },
+      rootCollection: {
+        id: repository_collection_url(essence.collection),
+        name: essence.collection.title
+      },
+      access: {
+        metadata: true,
+        content: can?(:read, entity.entity)
+      },
+      created_at: entity.entity.created_at.iso8601,
+      updated_at: entity.entity.updated_at.iso8601
+    }
+  }
+}
