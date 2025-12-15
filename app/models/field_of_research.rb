@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `fields_of_research`
+# Database name: `primary`
 #
 # ### Columns
 #

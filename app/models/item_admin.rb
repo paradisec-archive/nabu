@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_admins`
+# Database name: `primary`
 #
 # ### Columns
 #

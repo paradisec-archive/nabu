@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `items`
+# Database name: `primary`
 #
 # ### Columns
 #
@@ -70,6 +71,7 @@
 class Item < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
+  include Entityable
   include ActionView::Helpers::SanitizeHelper
 
   delegate :url_helpers, to: 'Rails.application.routes'
@@ -82,8 +84,6 @@ class Item < ApplicationRecord
   belongs_to :university, optional: true
   belongs_to :access_condition, optional: true
   belongs_to :discourse_type, optional: true
-
-  has_one :entity, as: :entity
 
   has_many :item_countries, dependent: :destroy
   has_many :countries, through: :item_countries, validate: true
@@ -154,6 +154,9 @@ class Item < ApplicationRecord
   before_save :propagate_collector
   after_save :update_collection_countries_and_languages
   after_save :update_catalog_metadata
+
+  after_commit :sync_collection_entity
+  after_commit :sync_essence_entities_privacy
 
   scope :public_items, -> { joins(:collection).where(private: false, collection: { private: false }) }
 
@@ -716,5 +719,37 @@ class Item < ApplicationRecord
       item_content_languages item_countries item_data_categories item_data_types
       item_subject_languages item_users operator subject_languages university users versions
     ]
+  end
+
+  private
+
+  def sync_collection_entity
+    return unless previously_new_record? || destroyed? || saved_change_to_collection_id?
+
+    collection&.entity&.update!(items_count: collection.items.count)
+  end
+
+  def sync_essence_entities_privacy
+    return unless saved_change_to_private?
+
+    computed_private = private? || collection.private?
+    Entity.where(entity_type: 'Essence', entity_id: essence_ids).update_all(private: computed_private)
+  end
+
+  def entity_sync_attributes
+    %i[title private originated_on collection_id]
+  end
+
+  def entity_attributes
+    {
+      entity: self,
+      member_of: collection&.identifier,
+      title:,
+      originated_on:,
+      media_types: essences.distinct.pluck(:mimetype).compact.sort.join(',').presence,
+      private:,
+      items_count: 0,
+      essences_count: essences.count
+    }
   end
 end

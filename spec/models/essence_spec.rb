@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `essences`
+# Database name: `primary`
 #
 # ### Columns
 #

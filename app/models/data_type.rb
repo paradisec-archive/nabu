@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `data_types`
+# Database name: `primary`
 #
 # ### Columns
 #

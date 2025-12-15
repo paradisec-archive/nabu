@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `collection_countries`
+# Database name: `primary`
 #
 # ### Columns
 #

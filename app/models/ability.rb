@@ -7,9 +7,10 @@ class Ability
     # Guests
     #############
 
-    unless user
+    if user.nil?
       can :read, Collection, private: false
       can %i[read data], Item, { private: false, collection: { private: false } }
+      can :read, Entity, private: false
 
       return
     end
@@ -36,6 +37,7 @@ class Ability
     #############
 
     # Anyone can create a university
+    # FIXME: normal users shouldn't be able to create universities
     can :create, University
 
     # Anyone can read these entities - need them for creation
@@ -50,9 +52,12 @@ class Ability
     # Collections
     #############
 
+    # Anyone can view non-private collections
+    can :read, Collection, private: false
+
     # Only collection_admins can manage a collection
-    can :read,   Collection, items: { item_users: { user_id: user.id } }
-    can :read,   Collection, items: { item_admins: { user_id: user.id } }
+    can :read, Collection, items: { item_users: { user_id: user.id } }
+    can :read, Collection, items: { item_admins: { user_id: user.id } }
     can %i[read update], Collection, collection_admins: { user_id: user.id }
     can %i[read update], Collection, operator_id: user.id
     can %i[read update], Collection, collector_id: user.id
@@ -65,16 +70,16 @@ class Ability
     cannot :bulk_edit, Collection
     cannot :bulk_update, Collection
 
-    # Anyone can view non-private collections
-    can :read, Collection, private: false
 
     #############
     # Items
     #############
 
     can %i[read data], Item, { private: false, collection: { private: false } }
+
     can %i[read data], Item, item_users: { user_id: user.id }
     can %i[read data], Item, item_admins: { user_id: user.id }
+
     can :manage, Item, collector_id: user.id
     can :manage, Item, operator_id: user.id
     can :manage, Item, collection: { collection_admins: { user_id: user.id } }
@@ -106,6 +111,18 @@ class Ability
     can %i[read download display], Essence, item: { item_users: { user_id: user.id } }
 
     can :create, Comment, commentable: { private: false }
+
+    #############
+    # Entities
+    #############
+
+    # Public entities can be read by anyone
+    can :read, Entity, private: false
+
+    # For non-public entities, check if user can read the underlying entity
+    can :read, Entity do |entity|
+      can? :read, entity.entity
+    end
   end
 end
 # rubocop:enable Metrics/AbcSize,Metrics/MethodLength

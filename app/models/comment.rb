@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `comments`
+# Database name: `primary`
 #
 # ### Columns
 #

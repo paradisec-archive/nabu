@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `discourse_types`
+# Database name: `primary`
 #
 # ### Columns
 #

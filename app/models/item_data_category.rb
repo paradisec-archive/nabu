@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_data_categories`
+# Database name: `primary`
 #
 # ### Columns
 #

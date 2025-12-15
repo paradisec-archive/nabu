@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `funding_bodies`
+# Database name: `primary`
 #
 # ### Columns
 #

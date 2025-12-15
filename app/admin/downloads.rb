@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `downloads`
+# Database name: `primary`
 #
 # ### Columns
 #

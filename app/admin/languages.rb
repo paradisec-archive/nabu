@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `languages`
+# Database name: `primary`
 #
 # ### Columns
 #

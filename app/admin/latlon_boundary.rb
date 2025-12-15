@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `latlon_boundaries`
+# Database name: `primary`
 #
 # ### Columns
 #

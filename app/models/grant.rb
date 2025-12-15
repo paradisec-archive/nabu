@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `grants`
+# Database name: `primary`
 #
 # ### Columns
 #

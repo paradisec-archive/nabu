@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `collection_admins`
+# Database name: `primary`
 #
 # ### Columns
 #

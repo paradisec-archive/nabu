@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_214511) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
@@ -158,6 +158,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_214511) do
     t.string "itemid", null: false
     t.text "subject_languages", size: :long
     t.text "content_languages", size: :long
+  end
+
+  create_table "entities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "entity_type", null: false
+    t.integer "entity_id", null: false
+    t.string "member_of"
+    t.string "title"
+    t.date "originated_on"
+    t.string "media_types", limit: 1000
+    t.boolean "private", default: false, null: false
+    t.integer "items_count", default: 0, null: false
+    t.integer "essences_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entity_type", "entity_id"], name: "index_entities_on_entity_type_and_entity_id", unique: true
+    t.index ["entity_type", "member_of"], name: "index_entities_on_entity_type_and_member_of"
+    t.index ["member_of"], name: "index_entities_on_member_of"
   end
 
   create_table "essences", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -458,8 +475,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_214511) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
-
-  create_view "entities", sql_definition: <<-SQL
-      select `collections`.`id` AS `entity_id`,'Collection' AS `entity_type`,NULL AS `member_of`,`collections`.`title` AS `title`,count(distinct `collection_items`.`id`) AS `items_count`,count(distinct `collection_essences`.`id`) AS `essences_count`,`collections`.`private` AS `private`,group_concat(distinct `collection_essences`.`mimetype` order by `collection_essences`.`mimetype` ASC separator ',') AS `media_types`,cast(`collections`.`created_at` as date) AS `originated_on` from ((`collections` left join `items` `collection_items` on((`collections`.`id` = `collection_items`.`collection_id`))) left join `essences` `collection_essences` on((`collection_items`.`id` = `collection_essences`.`item_id`))) group by `collections`.`id` union select `items`.`id` AS `entity_id`,'Item' AS `entity_type`,`item_collections`.`identifier` AS `member_of`,`items`.`title` AS `title`,0 AS `items_count`,count(distinct `item_essences`.`id`) AS `essences_count`,`items`.`private` AS `private`,group_concat(distinct `item_essences`.`mimetype` order by `item_essences`.`mimetype` ASC separator ',') AS `media_types`,`items`.`originated_on` AS `originated_on` from ((`items` left join `collections` `item_collections` on((`items`.`collection_id` = `item_collections`.`id`))) left join `essences` `item_essences` on((`items`.`id` = `item_essences`.`item_id`))) group by `items`.`id` union select `essences`.`id` AS `entity_id`,'Essence' AS `entity_type`,`essence_items`.`identifier` AS `member_of`,`essences`.`filename` AS `filename`,0 AS `items_count`,0 AS `essences_count`,`essence_items`.`private` AS `private`,`essences`.`mimetype` AS `media_types`,`essence_items`.`originated_on` AS `originated_on` from (`essences` left join `items` `essence_items` on((`essences`.`item_id` = `essence_items`.`id`))) group by `essences`.`id`
-  SQL
 end

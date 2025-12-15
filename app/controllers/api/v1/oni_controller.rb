@@ -16,20 +16,7 @@ module Api
         else query.sort
         end
 
-        entities = Entity.where(
-          entity_type: 'Collection',
-          entity_id: Collection.accessible_by(current_ability)
-        ).or(
-          Entity.where(
-            entity_type: 'Item',
-            entity_id: Item.accessible_by(current_ability)
-          )
-        ).or(
-          Entity.where(
-            entity_type: 'Essence',
-            entity_id: Essence.accessible_by(current_ability)
-          )
-        )
+        entities = Entity.accessible_by(current_ability)
 
         if query.member_of
           md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))

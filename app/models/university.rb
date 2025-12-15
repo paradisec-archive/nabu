@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `universities`
+# Database name: `primary`
 #
 # ### Columns
 #

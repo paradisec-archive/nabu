@@ -67,9 +67,6 @@ export class MainStack extends cdk.Stack {
       stringValue: certificate.certificateArn,
     });
 
-    // ////////////////////////
-    // Temp Cert
-    // ////////////////////////
     if (env === 'prod') {
       this.tempCertificate = new acm.Certificate(this, 'TempCertificate', {
         domainName: 'catalog.paradisec.org.au',

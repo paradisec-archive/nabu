@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `agent_roles`
+# Database name: `primary`
 #
 # ### Columns
 #

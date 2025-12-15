@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_subject_languages`
+# Database name: `primary`
 #
 # ### Columns
 #

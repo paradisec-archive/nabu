@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_users`
+# Database name: `primary`
 #
 # ### Columns
 #

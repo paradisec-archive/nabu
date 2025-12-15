@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `access_conditions`
+# Database name: `primary`
 #
 # ### Columns
 #

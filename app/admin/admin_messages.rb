@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `admin_messages`
+# Database name: `primary`
 #
 # ### Columns
 #

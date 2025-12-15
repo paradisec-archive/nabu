@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `essences`
+# Database name: `primary`
 #
 # ### Columns
 #
@@ -32,13 +33,13 @@
 
 class Essence < ApplicationRecord
   include IdentifiableByDoi
+  include Entityable
 
   has_paper_trail
 
   belongs_to :item, counter_cache: true
   delegate :collection, to: :item
   delegate :collector_name, to: :item
-  has_one :entity, as: :entity
 
   validates :item, associated: true
   validates :filename,
@@ -57,6 +58,8 @@ class Essence < ApplicationRecord
   before_save :round_duration
   after_create :update_catalog_metadata
   before_destroy :update_catalog_metadata
+
+  after_commit :sync_parent_entities
 
   def allowed_zero_file_size?
     filename =~ /\.(annis)$/
@@ -135,5 +138,35 @@ class Essence < ApplicationRecord
 
   def round_duration
     self.duration = duration.round(3) if duration.present?
+  end
+
+  def sync_parent_entities
+    return unless saved_change_to_mimetype? || saved_change_to_item_id? || previously_new_record? || destroyed?
+
+    item&.entity&.update!(
+      media_types: item.essences.distinct.pluck(:mimetype).compact.sort.join(',').presence,
+      essences_count: item.essences.count
+    )
+    item&.collection&.entity&.update!(
+      media_types: item.collection.essences.distinct.pluck(:mimetype).compact.sort.join(',').presence,
+      essences_count: item.collection.essences.count
+    )
+  end
+
+  def entity_sync_attributes
+    %i[filename mimetype item_id]
+  end
+
+  def entity_attributes
+    {
+      entity: self,
+      member_of: item&.full_identifier,
+      title: filename,
+      originated_on: item&.originated_on,
+      media_types: mimetype,
+      private: item&.private? || item&.collection&.private? || false,
+      items_count: 0,
+      essences_count: 0
+    }
   end
 end

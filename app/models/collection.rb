@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `collections`
+# Database name: `primary`
 #
 # ### Columns
 #
@@ -56,6 +57,7 @@
 class Collection < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
+  include Entityable
 
   has_paper_trail
   nilify_blanks
@@ -65,8 +67,6 @@ class Collection < ApplicationRecord
   belongs_to :university, optional: true
   belongs_to :field_of_research, optional: true
   belongs_to :access_condition, optional: true
-
-  has_one :entity, as: :entity
 
   has_many :grants
   accepts_nested_attributes_for :grants, allow_destroy: true
@@ -129,6 +129,7 @@ class Collection < ApplicationRecord
   after_save :update_catalog_metadata
 
   after_commit :reindex_items_if_private_changed, if: :saved_change_to_private?
+  after_commit :sync_essence_entities_privacy, if: :saved_change_to_private?
 
   def default_map_boundaries?
     return false unless north_limit && south_limit && east_limit && west_limit
@@ -616,6 +617,30 @@ class Collection < ApplicationRecord
 
   def reindex_items_if_private_changed
     items.reindex(mode: :async)
+  end
+
+  def sync_essence_entities_privacy
+    items.includes(:essences).find_each do |item|
+      computed_private = item.private? || private?
+      Entity.where(entity_type: 'Essence', entity_id: item.essence_ids).update_all(private: computed_private)
+    end
+  end
+
+  def entity_sync_attributes
+    %i[title private created_at]
+  end
+
+  def entity_attributes
+    {
+      entity: self,
+      member_of: nil,
+      title:,
+      originated_on: created_at&.to_date,
+      media_types: essences.distinct.pluck(:mimetype).compact.sort.join(',').presence,
+      private:,
+      items_count: items.count,
+      essences_count: essences.count
+    }
   end
 end
 # rubocop:enable Metrics/ClassLength

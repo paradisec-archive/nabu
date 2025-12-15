@@ -1,25 +1,39 @@
 # ## Schema Information
 #
-# Table name: `entities(VIEW)`
+# Table name: `entities`
+# Database name: `primary`
 #
 # ### Columns
 #
 # Name                  | Type               | Attributes
 # --------------------- | ------------------ | ---------------------------
-# **`entity_type`**     | `string(10)`       | `default(""), not null`
-# **`essences_count`**  | `bigint`           | `default(0), not null`
-# **`items_count`**     | `bigint`           | `default(0), not null`
-# **`media_types`**     | `text(65535)`      |
+# **`id`**              | `bigint`           | `not null, primary key`
+# **`entity_type`**     | `string(255)`      | `not null`
+# **`essences_count`**  | `integer`          | `default(0), not null`
+# **`items_count`**     | `integer`          | `default(0), not null`
+# **`media_types`**     | `string(1000)`     |
 # **`member_of`**       | `string(255)`      |
 # **`originated_on`**   | `date`             |
-# **`private`**         | `integer`          |
+# **`private`**         | `boolean`          | `default(FALSE), not null`
 # **`title`**           | `string(255)`      |
-# **`entity_id`**       | `integer`          | `default(0), not null`
+# **`created_at`**      | `datetime`         | `not null`
+# **`updated_at`**      | `datetime`         | `not null`
+# **`entity_id`**       | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_entities_on_entity_type_and_entity_id` (_unique_):
+#     * **`entity_type`**
+#     * **`entity_id`**
+# * `index_entities_on_entity_type_and_member_of`:
+#     * **`entity_type`**
+#     * **`member_of`**
+# * `index_entities_on_member_of`:
+#     * **`member_of`**
 #
 class Entity < ApplicationRecord
   belongs_to :entity, polymorphic: true
 
-  def readonly?
-    true
-  end
+  validates :entity_type, presence: true
+  validates :entity_id, presence: true, uniqueness: { scope: :entity_type }
 end

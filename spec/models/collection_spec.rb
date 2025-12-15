@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `collections`
+# Database name: `primary`
 #
 # ### Columns
 #

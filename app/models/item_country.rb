@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_countries`
+# Database name: `primary`
 #
 # ### Columns
 #

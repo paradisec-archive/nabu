@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `countries_languages`
+# Database name: `primary`
 #
 # ### Columns
 #

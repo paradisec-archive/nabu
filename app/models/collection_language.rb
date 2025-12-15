@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `collection_languages`
+# Database name: `primary`
 #
 # ### Columns
 #

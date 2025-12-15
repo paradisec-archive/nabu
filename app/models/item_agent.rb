@@ -1,6 +1,7 @@
 # ## Schema Information
 #
 # Table name: `item_agents`
+# Database name: `primary`
 #
 # ### Columns
 #
