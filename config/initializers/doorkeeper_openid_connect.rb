@@ -2,8 +2,11 @@
 
 Doorkeeper::OpenidConnect.configure do
   issuer do |resource_owner, application|
-    # TODO: Should this be different per environment?
-    'https://catalog.paradisec.org.au'
+    if Rails.env.staging?
+      'https://catalog.nabu-stage.paradisec.org.au'
+    else
+      'https://catalog.paradisec.org.au'
+    end
   end
 
   unless ENV['OPENID_SIGNING_KEY']
