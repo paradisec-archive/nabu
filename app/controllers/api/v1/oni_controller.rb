@@ -32,7 +32,7 @@ module Api
             return
           end
 
-          entities = entities.where(member_of: md[1], entity_type:)
+          entities = entities.where(member_of: md[1].sub('/', '-'), entity_type:)
         end
 
         case query.entity_type
@@ -124,14 +124,13 @@ module Api
 
         if query.member_of
           md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
-          entity_type = 'Item' if md
 
           unless md
             render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
             return
           end
 
-          files = files.where(member_of: md[1], entity_type:)
+          files = files.where(member_of: md[1].sub('/', '-'))
         end
 
         @total = files.count
