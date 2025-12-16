@@ -5,6 +5,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { NagSuppressions } from 'cdk-nag';
 import type { Construct } from 'constructs';
@@ -13,8 +14,9 @@ import type { Environment } from './types';
 
 export class MainStack extends cdk.Stack {
   public catalogBucket: s3.IBucket;
-
   public metaBucket: s3.IBucket;
+  public downloaderBucket: s3.IBucket;
+  public downloaderQueue: sqs.IQueue;
 
   public catalogCertificate: acm.ICertificate;
   public adminCertificate: acm.ICertificate;
@@ -179,6 +181,44 @@ export class MainStack extends cdk.Stack {
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalog-${env}`,
       eventBridgeEnabled: true,
     });
+
+    // ////////////////////////
+    // Downloader Queue
+    // ////////////////////////
+    const downloaderDlq = new sqs.Queue(this, 'DownloaderDLQ', {
+      queueName: `${appName}-downloader-dlq-${env}`,
+      retentionPeriod: cdk.Duration.days(14),
+      enforceSSL: true,
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
+
+    this.downloaderQueue = new sqs.Queue(this, 'DownloaderQueue', {
+      queueName: `rocrate-downloader-${env}`,
+      visibilityTimeout: cdk.Duration.hours(2),
+      retentionPeriod: cdk.Duration.days(4),
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+      enforceSSL: true,
+      deadLetterQueue: {
+        queue: downloaderDlq,
+        maxReceiveCount: 3,
+      },
+    });
+
+    // ////////////////////////
+    // Downloader bucket
+    // ////////////////////////
+    this.downloaderBucket = new s3.Bucket(this, 'DownloaderBucket', {
+      bucketName: `rocrate-downloader-${env}`,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      lifecycleRules: [{ expiration: cdk.Duration.hours(48) }, { abortIncompleteMultipartUploadAfter: cdk.Duration.days(7) }],
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      serverAccessLogsBucket: this.metaBucket,
+      serverAccessLogsPrefix: `s3-access-logs/rocrate-downloader-${env}`,
+      eventBridgeEnabled: true,
+    });
+
     NagSuppressions.addStackSuppressions(this, [
       { id: 'AwsSolutions-IAM4', reason: 'OK with * resources' },
       { id: 'AwsSolutions-IAM5', reason: 'OK with * resources' },
