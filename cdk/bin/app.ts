@@ -21,9 +21,9 @@ const environments: Environment[] = [
     account: '847483222616',
     zoneName: 'nabu-stage.paradisec.org.au',
     acmeValue: 'PM0DillUQGnKlpqsD9dmT-s8U6Jq7WeSPEKOrptZWQI',
-    adminAcmePath: '/.well-known/acme-challenge/HTNpumFLXXqzx3a8uxEwCHT9AIwtiNvx1A1Z9ixnFINmvvnDifE8tYhAsIkn4oM2',
-    adminAcmeValue: 'HTNpumFLXXqzx3a8uxEwCHT9AIwtiNvx1A1Z9ixnFINmvvnDifE8tYhAsIkn4oM2.r54qAqCZSs4xyyeamMffaxyR1FWYVb5OvwUh8EcrhpI',
-    cloudflare: 'catalog.nabu-stage.paradisec.org.au.cdn.cloudflare.net',
+    adminAcmePath: '.well-known/acme-challenge/kC-4NOypAEfhGNjvqrh-hQpMAQHVYKseb8YIPAe-_aPbA9pCVA3KHokJ0Do-6qoa',
+    adminAcmeValue: 'kC-4NOypAEfhGNjvqrh-hQpMAQHVYKseb8YIPAe-_aPbA9pCVA3KHokJ0Do-6qoa.r54qAqCZSs4xyyeamMffaxyR1FWYVb5OvwUh8EcrhpI',
+    cloudflare: 'admin-catalog.nabu-stage.paradisec.org.au.cdn.cloudflare.net',
   },
   {
     ...globals,
@@ -35,7 +35,7 @@ const environments: Environment[] = [
     acmeValue: 'coAr3vAsNUwrReLqZAtAPgfcwvnqPCPovbyYTp791i8',
     adminAcmePath: '/.well-known/acme-challenge/FIXME',
     adminAcmeValue: 'FIXME',
-    cloudflare: 'catalog.nabu-prod.paradisec.org.au.cdn.cloudflare.net',
+    cloudflare: 'admin-catalog.nabu-prod.paradisec.org.au.cdn.cloudflare.net',
   },
 ];
 const prod = environments.find((env) => env.env === 'prod');
