@@ -21,7 +21,7 @@ const environments: Environment[] = [
     account: '847483222616',
     zoneName: 'nabu-stage.paradisec.org.au',
     acmeValue: 'PM0DillUQGnKlpqsD9dmT-s8U6Jq7WeSPEKOrptZWQI',
-    adminAcmePath: '.well-known/acme-challenge/kC-4NOypAEfhGNjvqrh-hQpMAQHVYKseb8YIPAe-_aPbA9pCVA3KHokJ0Do-6qoa',
+    adminAcmePath: '/.well-known/acme-challenge/kC-4NOypAEfhGNjvqrh-hQpMAQHVYKseb8YIPAe-_aPbA9pCVA3KHokJ0Do-6qoa',
     adminAcmeValue: 'kC-4NOypAEfhGNjvqrh-hQpMAQHVYKseb8YIPAe-_aPbA9pCVA3KHokJ0Do-6qoa.r54qAqCZSs4xyyeamMffaxyR1FWYVb5OvwUh8EcrhpI',
     cloudflare: 'catalog.nabu-stage.paradisec.org.au.cdn.cloudflare.net',
   },
