@@ -97,7 +97,7 @@
   %fieldset
     %legend Locations
 
-    - unless crawler_user_agent?
+    - unless crawler_request?
       .collection_map{:data => {:coordinates => @coordinates.to_json, :content => @content,
       :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
     - else

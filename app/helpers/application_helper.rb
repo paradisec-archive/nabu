@@ -102,7 +102,8 @@ module ApplicationHelper
     select_tag attribute, params[attribute], data:, class: "#{class_name} select2", multiple: options[:multiple]
   end
 
-  def crawler_user_agent?
+  def crawler_request?
+    return true if crawler_ip?
     return false unless request.user_agent.present?
 
     crawler_patterns = [
@@ -131,5 +132,14 @@ module ApplicationHelper
     ]
 
     crawler_patterns.any? { |pattern| request.user_agent.match?(pattern) }
+  end
+
+  private
+
+  def crawler_ip?
+    crawler_subnet = IPAddr.new('202.46.62.0/24')
+    crawler_subnet.include?(request.remote_ip)
+  rescue IPAddr::InvalidAddressError
+    false
   end
 end

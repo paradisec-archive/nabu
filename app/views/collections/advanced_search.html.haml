@@ -118,7 +118,7 @@
             = hidden_field_tag :south_limit, params[:south_limit], :class => 'south_limit'
             = hidden_field_tag :east_limit,  params[:east_limit],  :class => 'east_limit'
             = hidden_field_tag :west_limit,  params[:west_limit],  :class => 'west_limit'
-            - unless crawler_user_agent?
+            - unless crawler_request?
               .map{:data => {:editable => 'true'}}
             - else
               %p.map-placeholder Map not displayed for automated requests

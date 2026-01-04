@@ -116,7 +116,7 @@
           = f.hidden_field :south_limit, :class => 'south_limit'
           = f.hidden_field :east_limit, :class => 'east_limit'
           = f.hidden_field :west_limit, :class => 'west_limit'
-          - unless crawler_user_agent?
+          - unless crawler_request?
             .map{:data => {:south_limit => @collection.south_limit, :north_limit => @collection.north_limit, :west_limit => @collection.west_limit, :east_limit => @collection.east_limit, :editable => 'true'}}
           - else
             %p.map-placeholder Map not displayed for automated requests
