@@ -182,7 +182,7 @@ export class AppStack extends cdk.Stack {
       },
 
       instanceType: new ec2.InstanceType('m6a.xlarge'),
-      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2023(),
 
       minCapacity: 1,
       maxCapacity: 1,
