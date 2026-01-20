@@ -11,7 +11,6 @@ module Api
         end
 
         sort = case query.sort
-        when 'id' then 'entity_id'
         when 'name' then 'title'
         else query.sort
         end
@@ -53,7 +52,12 @@ module Api
 
         @total = entities.count
 
-        @entities = entities.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages, :collection, :essences]).load
+        @entities = entities.offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages, :collection, :essences])
+        if sort
+          @entities = @entities.order("#{sort} #{query.order}")
+        end
+
+        @entities = @entities.load
       end
 
       def entity

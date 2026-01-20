@@ -3,7 +3,7 @@ module Oni
     include ActiveModel::Validations
 
     # NOTE: We remap name to title below to match the database column
-    SORT_FIELDS = %w[id name title originated_on].freeze
+    SORT_FIELDS = %w[id name originated_on].freeze
     ORDER_FIELDS = %w[asc desc].freeze
     ENTITY_TYPES = %w[http://pcdm.org/models#Collection http://pcdm.org/models#Object http://schema.org/MediaObject].freeze
 

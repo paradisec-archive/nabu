@@ -81,6 +81,8 @@ services:
   oni-ui:
     ports:
       - "7000:80"
+    # volumes:
+    #   - ./docker/oni.json:/configuration.json
     build:
       context: .
       dockerfile: docker/oni.Dockerfile
