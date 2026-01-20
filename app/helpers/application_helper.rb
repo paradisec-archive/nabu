@@ -142,4 +142,16 @@ module ApplicationHelper
   rescue IPAddr::InvalidAddressError
     false
   end
+
+  def oni_collection_url(collection)
+    "#{Rails.application.config.oni_url}/collection?id=#{URI.encode_www_form_component(repository_collection_url(collection))}"
+  end
+
+  def oni_item_url(item)
+    "#{Rails.application.config.oni_url}/object?id=#{URI.encode_www_form_component(repository_item_url(item.collection, item))}"
+  end
+
+  def oni_essence_url(essence)
+    "#{Rails.application.config.oni_url}/file?id=#{URI.encode_www_form_component(repository_essence_url(essence.collection, essence.item, essence.filename))}"
+  end
 end

@@ -1,6 +1,5 @@
 {
   "ui": {
-    "urlPrefix": "/oni",
     "title": "Pacific And Regional Archive for Digital Sources in Endangered Cultures",
     "shortTitle": "PARADISEC",
     "splash": {
@@ -10,7 +9,7 @@
       "enabled": true,
       "launcher": "Acknowledgement of Country"
     },
-    "logoFilename": "/oni/logo.jpg",
+    "logoFilename": "/logo.jpg",
     "navHeight": "90px",
     "showEllipsis": false,
     "home": {
@@ -31,7 +30,7 @@
       "citationText": ""
     },
     "footer": {
-      "copyright": "© 2025",
+      "copyright": "© 2026",
       "link": {
         "href": "https://paradisec.org.au",
         "text": "PARADISEC"
@@ -271,12 +270,12 @@
       {
         "display": "File Format",
         "name": "encodingFormat",
-        "help": "The media type of the resource."
+        "help": "The media type."
       },
       {
         "display": "Entity Type",
         "name": "entity_type",
-        "help": "The entity type of the resource."
+        "help": "The entity type."
       }
     ],
     "searchFields": {

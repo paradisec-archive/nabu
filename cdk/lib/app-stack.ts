@@ -36,7 +36,7 @@ export class AppStack extends cdk.Stack {
       metaBucket,
       metaDrBucket,
       zone,
-      //catalogCertificate,
+      catalogCertificate,
       adminCertificate,
       tempCertificate,
       cloudflare,
@@ -291,7 +291,7 @@ export class AppStack extends cdk.Stack {
       image: ecs.ContainerImage.fromAsset('..', {
         file: 'docker/oni.Dockerfile',
         buildArgs: {
-          ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://catalog.paradisec.org.au/' : 'https://catalog.nabu-stage.paradisec.org.au',
+          ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au/' : 'https://admin-catalog.nabu-stage.paradisec.org.au',
           ROCRATE_API_CLIENTID: env === 'prod' ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ' : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
           SENTRY_ENV: env,
         },
@@ -473,11 +473,23 @@ export class AppStack extends cdk.Stack {
       loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
       listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
     });
-    // sslListener.addCertificates('CatalogCert', [elbv2.ListenerCertificate.fromArn(catalogCertificate.certificateArn)]);
+    sslListener.addCertificates('CatalogCert', [elbv2.ListenerCertificate.fromArn(catalogCertificate.certificateArn)]);
     sslListener.addCertificates('AdminCert', [elbv2.ListenerCertificate.fromArn(adminCertificate.certificateArn)]);
     if (env === 'prod') {
       sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
     }
+
+    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
+      targets: [oniService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('OniTargetGroups', {
+      targetGroups: [oniTargetGroup],
+      priority: 6,
+      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
+    });
 
     const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
       targets: [appService],
@@ -496,7 +508,7 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('AlbTargetGroups', {
       targetGroups: [appTargetGroup],
       priority: 10,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
     const viewerTargetGroup = new elbv2.ApplicationTargetGroup(this, 'ViewerTargetGroup', {
@@ -533,18 +545,6 @@ export class AppStack extends cdk.Stack {
       targetGroups: [sentryTargetGroup],
       priority: 7,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/sentry-relay/*'])],
-    });
-
-    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
-      targets: [oniService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-    });
-
-    sslListener.addTargetGroups('OniTargetGroups', {
-      targetGroups: [oniTargetGroup],
-      priority: 6,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
     //Cloudflare validation

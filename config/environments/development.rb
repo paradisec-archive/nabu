@@ -76,4 +76,6 @@ Rails.application.configure do
   # Show emails in the browser
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
+
+  config.oni_url = 'http://localhost:7000'
 end

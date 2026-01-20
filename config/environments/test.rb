@@ -58,4 +58,6 @@ Rails.application.configure do
   config.active_job.queue_adapter = :inline
 
   config.hosts << 'www.example.com'
+
+  config.oni_url = 'http://localhost:7000'
 end

@@ -2,6 +2,7 @@
   %link{:rel => 'canonical', :href => collection_item_essence_url(@collection, @item, @essence)}
 
 .right
+  = link_to 'View (Oni)', oni_essence_url(@essence), :class => 'button'
   = link_to 'Previous file', [@collection, @item, @essence.prev_essence], :class => 'button' if @essence.prev_essence
   - if @essence.next_essence
     = link_to 'Next file', [@collection, @item, @essence.next_essence], :class => 'button'

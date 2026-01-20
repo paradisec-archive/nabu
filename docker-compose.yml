@@ -79,6 +79,8 @@ services:
       - s3-data:/s3mockroot
 
   oni-ui:
+    ports:
+      - "7000:80"
     build:
       context: .
       dockerfile: docker/oni.Dockerfile
