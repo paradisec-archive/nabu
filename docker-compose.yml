@@ -81,14 +81,13 @@ services:
   oni-ui:
     ports:
       - "7000:80"
-    # volumes:
-    #   - ./docker/oni.json:/configuration.json
     build:
       context: .
       dockerfile: docker/oni.Dockerfile
       args:
         ROCRATE_API_ENDPOINT: https://localhost:3443
         ROCRATE_API_CLIENTID: 8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ
+        SENTRY_ENV: dev
 
 volumes:
   s3-data:
