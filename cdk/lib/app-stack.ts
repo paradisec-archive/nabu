@@ -292,7 +292,7 @@ export class AppStack extends cdk.Stack {
         file: 'docker/oni.Dockerfile',
         buildArgs: {
           ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au/' : 'https://admin-catalog.nabu-stage.paradisec.org.au',
-          ROCRATE_API_CLIENTID: env === 'prod' ? '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ' : '4MphZMvjuOYYN90U17lwAtDczQKScp52BLUPD63aQBk',
+          ROCRATE_API_CLIENTID: '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
           SENTRY_ENV: env,
         },
       }),
