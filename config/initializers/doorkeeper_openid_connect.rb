@@ -3,9 +3,9 @@
 Doorkeeper::OpenidConnect.configure do
   issuer do |resource_owner, application|
     if Rails.env.staging?
-      'https://catalog.nabu-stage.paradisec.org.au'
+      'https://admin-catalog.nabu-stage.paradisec.org.au'
     else
-      'https://catalog.paradisec.org.au'
+      'https://admin-catalog.paradisec.org.au'
     end
   end
 
