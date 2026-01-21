@@ -97,6 +97,9 @@ class Ability
     cannot :bulk_edit, Item
     cannot :bulk_update, Item
 
+    cannot :essences_csv, Collection
+    cannot :essences_csv, Item
+
     #############
     # Essence
     #############

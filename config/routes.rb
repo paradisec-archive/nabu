@@ -55,6 +55,7 @@ Rails.application.routes.draw do
       get :private_rocrate
       get :public_rocrate
       get :deposit_form
+      get :essences_csv
     end
     resources :items, except: %i[index] do
       member do
@@ -62,6 +63,7 @@ Rails.application.routes.draw do
         get :public_rocrate
         get :data
         patch :inherit_details
+        get :essences_csv
       end
       resources :essences, only: %i[show destroy] do
         member do

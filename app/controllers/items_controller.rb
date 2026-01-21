@@ -186,6 +186,19 @@ class ItemsController < ApplicationController
     send_data json_data, filename: "#{@item.full_identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
+  def essences_csv
+    authorize! :essences_csv, @item
+
+    @essences = @item.essences.order(:filename)
+
+    respond_to do |format|
+      format.csv do
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = "attachment; filename=#{@item.full_identifier}-essences.csv"
+      end
+    end
+  end
+
   def new_report
     @page_title = 'Nabu - Depositor Item Report Request'
   end

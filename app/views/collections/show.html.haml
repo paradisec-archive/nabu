@@ -201,6 +201,10 @@
         %tr
           %th #Essence objects in items of collection
           %td= number_to_human @num_essences
+        - if admin_user_signed_in?
+          %tr
+            %th
+            %td= link_to 'Download Essences CSV', essences_csv_collection_path(@collection, format: :csv)
 
     %fieldset
       %legend Metadata

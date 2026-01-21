@@ -260,6 +260,19 @@ class CollectionsController < ApplicationController
     send_data json_data, filename: "#{@collection.identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
+  def essences_csv
+    authorize! :essences_csv, @collection
+
+    @essences = @collection.essences.includes(:item).order('items.identifier, essences.filename')
+
+    respond_to do |format|
+      format.csv do
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = "attachment; filename=#{@collection.identifier}-essences.csv"
+      end
+    end
+  end
+
   def new_from_metadata
     @collection = Collection.new
   end

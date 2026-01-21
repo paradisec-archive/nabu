@@ -1,0 +1,33 @@
+<%-
+  headers = [
+    'Filename',
+    'Full Identifier',
+    'Mimetype',
+    'Size',
+    'Duration',
+    'Bitrate',
+    'Samplerate',
+    'Channels',
+    'FPS',
+    'DOI',
+    'Derived Files Generated',
+    'Created At'
+  ]
+-%>
+<%= CSV.generate_line(headers) -%>
+<%- @essences.each do |essence| -%>
+<%= CSV.generate_line([
+  essence.filename,
+  essence.full_identifier,
+  essence.mimetype,
+  essence.size,
+  essence.duration,
+  essence.bitrate,
+  essence.samplerate,
+  essence.channels,
+  essence.fps,
+  essence.doi,
+  essence.derived_files_generated,
+  essence.created_at
+]) -%>
+<%- end -%>
