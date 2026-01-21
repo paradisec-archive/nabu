@@ -126,7 +126,7 @@
           "speaker",
           "singer",
           "inLanguage",
-          "subjectLanguages",
+          "ldac:subjectLanguage",
           "languageAsGiven",
           "languageGenre",
           "countries",
