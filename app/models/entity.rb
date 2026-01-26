@@ -36,4 +36,9 @@ class Entity < ApplicationRecord
 
   validates :entity_type, presence: true
   validates :entity_id, presence: true, uniqueness: { scope: :entity_type }
+
+  # NOTE: Only exist for abilities
+  has_one :collection, foreign_key: :id, primary_key: :entity_id
+  has_one :item, foreign_key: :id, primary_key: :entity_id
+  has_one :essence, foreign_key: :id, primary_key: :entity_id
 end

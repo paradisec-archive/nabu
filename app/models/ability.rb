@@ -48,19 +48,33 @@ class Ability
     can :read, DataType
     can :read, DiscourseType
 
+
+    #############
+    # Entities
+    #############
+
+    # Public entities can be read by anyone
+    can :read, Entity, private: false
+
     #############
     # Collections
     #############
 
     # Anyone can view non-private collections
     can :read, Collection, private: false
+    can :read, Entity, entity_type: 'Collection', collection: { private: false }
 
     # Only collection_admins can manage a collection
     can :read, Collection, items: { item_users: { user_id: user.id } }
+    can :read, Entity, entity_type: 'Collection', collection: { items: { item_users: { user_id: user.id } } }
     can :read, Collection, items: { item_admins: { user_id: user.id } }
+    can :read, Entity, entity_type: 'Collection', collection: { items: { item_admins: { user_id: user.id } } }
     can %i[read update], Collection, collection_admins: { user_id: user.id }
+    can :read, Entity, entity_type: 'Collection', collection: { collection_admins: { user_id: user.id } }
     can %i[read update], Collection, operator_id: user.id
+    can :read, Entity, entity_type: 'Collection', collection: { operator_id: user.id }
     can %i[read update], Collection, collector_id: user.id
+    can :read, Entity, entity_type: 'Collection', collection: { collector_id: user.id }
 
     # Only admins can create a collection
     cannot :create, Collection
@@ -76,16 +90,25 @@ class Ability
     #############
 
     can %i[read data], Item, { private: false, collection: { private: false } }
+    can :read, Entity, entity_type: 'Item', item: { private: false, collection: { private: false } }
 
     can %i[read data], Item, item_users: { user_id: user.id }
+    can :read, Entity, entity_type: 'Item', item: { item_users: { user_id: user.id } }
     can %i[read data], Item, item_admins: { user_id: user.id }
+    can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
 
     can :manage, Item, collector_id: user.id
+    can :read, Entity, entity_type: 'Item', item: { collector_id: user.id }
     can :manage, Item, operator_id: user.id
+    can :read, Entity, entity_type: 'Item', item: { operator_id: user.id }
     can :manage, Item, collection: { collection_admins: { user_id: user.id } }
+    can :read, Entity, entity_type: 'Item', item: { collection: { collection_admins: { user_id: user.id } } }
     can :manage, Item, collection: { collector_id: user.id }
+    can :read, Entity, entity_type: 'Item', item: { collection: { collector_id: user.id } }
     can :manage, Item, collection: { operator_id: user.id }
+    can :read, Entity, entity_type: 'Item', item: { collection: { operator_id: user.id } }
     can :manage, Item, item_admins: { user_id: user.id }
+    can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
 
     can :advanced_search, Item
     can :new_report, Item
@@ -105,27 +128,21 @@ class Ability
     #############
 
     can %i[read download show_terms agree_to_terms display entities],  Essence,
-        item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
+      item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } } }
     can %i[read download show_terms agree_to_terms display entities],  Essence,
-        item: { access_condition: { name: 'Open (subject to the access condition details)' } }
+      item: { access_condition: { name: 'Open (subject to the access condition details)' } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { access_condition: { name: 'Open (subject to the access condition details)' } } }
     can %i[read download display], Essence, item: { collection: { collection_admins: { user_id: user.id } } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
     can %i[read download display], Essence, item: { collection: { collector_id: user.id } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collector_id: user.id } } }
     can %i[read download display], Essence, item: { item_admins: { user_id: user.id } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_admins: { user_id: user.id } } }
     can %i[read download display], Essence, item: { item_users: { user_id: user.id } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_users: { user_id: user.id } } }
 
     can :create, Comment, commentable: { private: false }
-
-    #############
-    # Entities
-    #############
-
-    # Public entities can be read by anyone
-    can :read, Entity, private: false
-
-    # For non-public entities, check if user can read the underlying entity
-    can :read, Entity do |entity|
-      can? :read, entity.entity
-    end
   end
 end
 # rubocop:enable Metrics/AbcSize,Metrics/MethodLength
