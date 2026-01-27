@@ -3,17 +3,17 @@
   "private": true,
   "dependencies": {
     "@activeadmin/activeadmin": "4.0.0-beta16",
-    "@googlemaps/js-api-loader": "^2.0.0",
+    "@googlemaps/js-api-loader": "^2.0.2",
     "@googlemaps/markerclusterer": "^2.6.2",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.18",
-    "@sentry/browser": "^10.16.0",
+    "@hotwired/turbo-rails": "^8.0.21",
+    "@sentry/browser": "^10.36.0",
     "jquery": "^3.7.1",
     "jquery-query-object": "^2.2.3",
     "jquery-ui": "^1.14.1",
-    "sass": "^1.93.2",
+    "sass": "^1.97.3",
     "select2": "^4.0.13",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^3.4.19",
     "uuid": "^13.0.0"
   },
   "scripts": {
@@ -23,9 +23,9 @@
     "build:css_active_admin": "tailwindcss -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify -c tailwind-active_admin.config.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
+    "@biomejs/biome": "2.3.13",
     "@types/select2": "^4.0.63",
-    "esbuild": "^0.25.10"
+    "esbuild": "^0.27.2"
   },
   "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a"
 }
