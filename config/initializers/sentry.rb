@@ -8,4 +8,8 @@ Sentry.init do |config|
   config.traces_sample_rate = 1.0
 
   config.enabled_environments = %w[production staging]
+
+  # NOTE: We do this because otherwise when we enable debug logging in staging it impacts sentry too
+  config.sdk_logger = Rails::Logger.new(STDOUT)
+  config.sdk_logger.level = ::Logger::INFO
 end

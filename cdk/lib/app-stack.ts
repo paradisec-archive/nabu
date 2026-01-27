@@ -35,6 +35,7 @@ export class AppStack extends cdk.Stack {
       catalogBucket,
       metaBucket,
       metaDrBucket,
+      downloaderBucket,
       zone,
       catalogCertificate,
       adminCertificate,
@@ -214,6 +215,20 @@ export class AppStack extends cdk.Stack {
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // ////////////////////////
+    // Application Load Balancer
+    // ////////////////////////
+
+    const sslListener = elbv2.ApplicationListener.fromLookup(this, 'AlbSslListener', {
+      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
+      listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
+    });
+    sslListener.addCertificates('CatalogCert', [elbv2.ListenerCertificate.fromArn(catalogCertificate.certificateArn)]);
+    sslListener.addCertificates('AdminCert', [elbv2.ListenerCertificate.fromArn(adminCertificate.certificateArn)]);
+    if (env === 'prod') {
+      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
+    }
+
+    // ////////////////////////
     // Viewer
     // ////////////////////////
 
@@ -238,6 +253,81 @@ export class AppStack extends cdk.Stack {
       cluster,
       taskDefinition: viewerTaskDefinition,
       enableExecuteCommand: true,
+    });
+
+    const viewerTargetGroup = new elbv2.ApplicationTargetGroup(this, 'ViewerTargetGroup', {
+      targets: [viewerService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('ViewerTargetGroups', {
+      targetGroups: [viewerTargetGroup],
+      priority: 5,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
+      ],
+    });
+
+    // ////////////////////////
+    // Downloader
+    // ////////////////////////
+
+    const downloaderSecrets = new secretsmanager.Secret(this, 'AppSecrets', {
+      secretObjectValue: {
+        OIDC_CLIENT_ID: cdk.SecretValue.unsafePlainText('secret'),
+        OIDC_CLIENT_SECRET: cdk.SecretValue.unsafePlainText('secret'),
+        OIDC_REDIRECT_URI: cdk.SecretValue.unsafePlainText('secret'),
+        OIDC_ISSUER: cdk.SecretValue.unsafePlainText('secret'),
+        SESSION_SECRET: cdk.SecretValue.unsafePlainText('secret'),
+      },
+    });
+    NagSuppressions.addResourceSuppressions(downloaderSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
+
+    const downloaderTaskDefinition = new ecs.Ec2TaskDefinition(this, 'DownloaderTaskDefinition');
+    NagSuppressions.addResourceSuppressions(downloaderTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    downloaderTaskDefinition.addContainer('DownloaderContainer', {
+      containerName: 'downloader',
+      memoryLimitMiB: 128,
+      image: ecs.ContainerImage.fromRegistry('ghcr.io/paradisec/nabu-downloader:latest'),
+      portMappings: [{ name: 'downloader', containerPort: 3000 }],
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'DownloaderService' }),
+      environment: {
+        AWS_REGION: region,
+        S3_BUCKET: downloaderBucket.bucketName,
+        ROCRATE_API_BASE_URL: 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
+        EMAIL_FROM: 'admin@paradisec.org.au',
+      },
+      secrets: {
+        SESSION_SECRET: ecs.Secret.fromSecretsManager(downloaderSecrets, 'SESSION_SECRET'),
+        OIDC_CLIENT_ID: ecs.Secret.fromSecretsManager(downloaderSecrets, 'OIDC_CLIENT_ID'),
+        OIDC_CLIENT_SECRET: ecs.Secret.fromSecretsManager(downloaderSecrets, 'OIDC_CLIENT_SECRET'),
+        OIDC_REDIRECT_URI: ecs.Secret.fromSecretsManager(downloaderSecrets, 'OIDC_REDIRECT_URI'),
+        OIDC_ISSUER: ecs.Secret.fromSecretsManager(downloaderSecrets, 'OIDC_ISSUER'),
+      },
+    });
+
+    const downloaderService = new ecs.Ec2Service(this, 'DownloaderService', {
+      serviceName: 'downloader',
+      cluster,
+      taskDefinition: downloaderTaskDefinition,
+      enableExecuteCommand: true,
+    });
+
+    const downloaderTargetGroup = new elbv2.ApplicationTargetGroup(this, 'DownloaderTargetGroup', {
+      targets: [downloaderService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('DownloaderTargetGroups', {
+      targetGroups: [downloaderTargetGroup],
+      priority: 5,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/downloader/*']),
+      ],
     });
 
     // ////////////////////////
@@ -279,6 +369,15 @@ export class AppStack extends cdk.Stack {
       enableExecuteCommand: true,
     });
 
+    const sentryTargetGroup = new elbv2.ApplicationTargetGroup(this, 'SentryTargetGroup', {
+      targets: [sentryService.loadBalancerTarget({ containerName: 'nginx' })],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      healthCheck: {
+        path: '/sentry-relay/api/relay/healthcheck/live/',
+      },
+    });
+
     // ////////////////////////
     // Oni
     // ////////////////////////
@@ -309,6 +408,18 @@ export class AppStack extends cdk.Stack {
       cluster,
       taskDefinition: oniTaskDefinition,
       enableExecuteCommand: true,
+    });
+
+    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
+      targets: [oniService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    sslListener.addTargetGroups('OniTargetGroups', {
+      targetGroups: [oniTargetGroup],
+      priority: 6,
+      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
     });
 
     // //////////////////////
@@ -403,6 +514,26 @@ export class AppStack extends cdk.Stack {
     catalogBucket.grantReadWrite(appTaskDefinition.taskRole);
     searchDomain.connections.allowDefaultPortFrom(autoScalingGroup, 'Allow from ECS service');
 
+    const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
+      targets: [appService],
+      vpc,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      deregistrationDelay: cdk.Duration.seconds(5),
+      healthCheck: {
+        path: '/up',
+        interval: cdk.Duration.seconds(10),
+        healthyThresholdCount: 2,
+        unhealthyThresholdCount: 3,
+        timeout: cdk.Duration.seconds(5),
+      },
+    });
+
+    sslListener.addTargetGroups('AlbTargetGroups', {
+      targetGroups: [appTargetGroup],
+      priority: 10,
+      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
+    });
+
     // ////////////////////////
     // Jobs
     // ////////////////////////
@@ -464,76 +595,6 @@ export class AppStack extends cdk.Stack {
       });
       cronService.enableServiceConnect();
     }
-
-    // ////////////////////////
-    // Application Load Balancer
-    // ////////////////////////
-
-    const sslListener = elbv2.ApplicationListener.fromLookup(this, 'AlbSslListener', {
-      loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
-      listenerProtocol: elbv2.ApplicationProtocol.HTTPS,
-    });
-    sslListener.addCertificates('CatalogCert', [elbv2.ListenerCertificate.fromArn(catalogCertificate.certificateArn)]);
-    sslListener.addCertificates('AdminCert', [elbv2.ListenerCertificate.fromArn(adminCertificate.certificateArn)]);
-    if (env === 'prod') {
-      sslListener.addCertificates('TempCatalogCert', [elbv2.ListenerCertificate.fromArn(tempCertificate.certificateArn)]);
-    }
-
-    const oniTargetGroup = new elbv2.ApplicationTargetGroup(this, 'OniTargetGroup', {
-      targets: [oniService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-    });
-
-    sslListener.addTargetGroups('OniTargetGroups', {
-      targetGroups: [oniTargetGroup],
-      priority: 6,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
-    });
-
-    const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {
-      targets: [appService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-      deregistrationDelay: cdk.Duration.seconds(5),
-      healthCheck: {
-        path: '/up',
-        interval: cdk.Duration.seconds(10),
-        healthyThresholdCount: 2,
-        unhealthyThresholdCount: 3,
-        timeout: cdk.Duration.seconds(5),
-      },
-    });
-
-    sslListener.addTargetGroups('AlbTargetGroups', {
-      targetGroups: [appTargetGroup],
-      priority: 10,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
-    });
-
-    const viewerTargetGroup = new elbv2.ApplicationTargetGroup(this, 'ViewerTargetGroup', {
-      targets: [viewerService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-    });
-
-    sslListener.addTargetGroups('ViewerTargetGroups', {
-      targetGroups: [viewerTargetGroup],
-      priority: 5,
-      conditions: [
-        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
-      ],
-    });
-
-    const sentryTargetGroup = new elbv2.ApplicationTargetGroup(this, 'SentryTargetGroup', {
-      targets: [sentryService.loadBalancerTarget({ containerName: 'nginx' })],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-      healthCheck: {
-        path: '/sentry-relay/api/relay/healthcheck/live/',
-      },
-    });
 
     const listener = elbv2.ApplicationListener.fromLookup(this, 'AlbListener', {
       loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),

@@ -22,6 +22,7 @@ export type AppProps = Environment & {
   readonly metaBucket: IBucket;
   readonly drBucket: IBucket;
   readonly metaDrBucket: IBucket;
+  readonly downloaderBucket: IBucket;
   readonly zone: IHostedZone;
   readonly catalogCertificate: ICertificate;
   readonly adminCertificate: ICertificate;

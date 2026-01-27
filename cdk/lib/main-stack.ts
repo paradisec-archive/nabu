@@ -183,29 +183,7 @@ export class MainStack extends cdk.Stack {
     });
 
     // ////////////////////////
-    // Downloader Queue
-    // ////////////////////////
-    const downloaderDlq = new sqs.Queue(this, 'DownloaderDLQ', {
-      queueName: `${appName}-downloader-dlq-${env}`,
-      retentionPeriod: cdk.Duration.days(14),
-      enforceSSL: true,
-      encryption: sqs.QueueEncryption.SQS_MANAGED,
-    });
-
-    this.downloaderQueue = new sqs.Queue(this, 'DownloaderQueue', {
-      queueName: `rocrate-downloader-${env}`,
-      visibilityTimeout: cdk.Duration.hours(2),
-      retentionPeriod: cdk.Duration.days(4),
-      encryption: sqs.QueueEncryption.SQS_MANAGED,
-      enforceSSL: true,
-      deadLetterQueue: {
-        queue: downloaderDlq,
-        maxReceiveCount: 3,
-      },
-    });
-
-    // ////////////////////////
-    // Downloader bucket
+    // Arocapi Downloader
     // ////////////////////////
     this.downloaderBucket = new s3.Bucket(this, 'DownloaderBucket', {
       bucketName: `rocrate-downloader-${env}`,
