@@ -274,7 +274,7 @@ export class AppStack extends cdk.Stack {
     // Downloader
     // ////////////////////////
 
-    const downloaderSecrets = new secretsmanager.Secret(this, 'AppSecrets', {
+    const downloaderSecrets = new secretsmanager.Secret(this, 'DownloaderSecrets', {
       secretObjectValue: {
         OIDC_CLIENT_ID: cdk.SecretValue.unsafePlainText('secret'),
         OIDC_CLIENT_SECRET: cdk.SecretValue.unsafePlainText('secret'),
