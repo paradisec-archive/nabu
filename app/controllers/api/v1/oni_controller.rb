@@ -183,6 +183,20 @@ module Api
         f = transform_filters(query.filters)
         where.merge!(f)
 
+        where = {}
+        unless current_user&.admin?
+          where[:_or] = [{ private: false }]
+          if current_user
+            Collection.search_user_fields.each do |field|
+              where[:_or].push({ field => current_user.id })
+            end
+
+            Item.search_user_fields.each do |field|
+              where[:_or].push({ field => current_user.id })
+            end
+          end
+        end
+
         if query.bounding_box
           where[:location] = {
             top_right: { lat: query.bounding_box[:topRight][:lat], lon: query.bounding_box[:topRight][:lng] },
