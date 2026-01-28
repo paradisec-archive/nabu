@@ -21,9 +21,6 @@ RUN pnpm install --frozen-lockfile
 # Stage 2: Build the application
 FROM node:lts-alpine AS builder
 
-# Build argument for base path
-ARG BASE_PATH=""
-
 RUN corepack enable
 
 WORKDIR /app
@@ -38,11 +35,8 @@ COPY --from=code /code/vite.config.ts ./
 COPY --from=code /code/src ./src
 COPY --from=code /code/public ./public
 
-# Set base URL for Nitro build
-ENV NITRO_APP_BASE_URL=/downloader
-
 # Build the application
-RUN pnpm build
+RUN NITRO_APP_BASE_URL=/downloader pnpm build
 
 # Stage 3: Production image
 FROM node:lts-alpine AS production
