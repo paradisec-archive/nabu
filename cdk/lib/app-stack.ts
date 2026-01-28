@@ -290,7 +290,9 @@ export class AppStack extends cdk.Stack {
     downloaderTaskDefinition.addContainer('DownloaderContainer', {
       containerName: 'downloader',
       memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromRegistry('ghcr.io/paradisec-archive/arocapi-downloader:latest'),
+      image: ecs.ContainerImage.fromAsset('../docker', {
+        file: 'downloader.Dockerfile',
+      }),
       portMappings: [{ name: 'downloader', containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'DownloaderService' }),
       environment: {
