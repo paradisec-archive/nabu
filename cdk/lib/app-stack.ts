@@ -309,6 +309,13 @@ export class AppStack extends cdk.Stack {
         OIDC_ISSUER: ecs.Secret.fromSecretsManager(downloaderSecrets, 'OIDC_ISSUER'),
       },
     });
+    downloaderBucket.grantReadWrite(downloaderTaskDefinition.taskRole);
+    downloaderTaskDefinition.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['ses:SendRawEmail', 'ses:SendEmail'],
+        resources: ['*'],
+      }),
+    );
 
     const downloaderService = new ecs.Ec2Service(this, 'DownloaderService', {
       serviceName: 'downloader',
