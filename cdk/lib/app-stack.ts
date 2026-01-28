@@ -263,7 +263,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('ViewerTargetGroups', {
       targetGroups: [viewerTargetGroup],
-      priority: 50,
+      priority: 5,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
         elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
@@ -323,7 +323,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('DownloaderTargetGroups', {
       targetGroups: [downloaderTargetGroup],
-      priority: 20,
+      priority: 7,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`]),
         elbv2.ListenerCondition.pathPatterns(['/downloader/*']),
@@ -418,7 +418,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
-      priority: 10,
+      priority: 6,
       conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
     });
 
@@ -530,7 +530,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('AlbTargetGroups', {
       targetGroups: [appTargetGroup],
-      priority: 5,
+      priority: 10,
       conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
@@ -604,13 +604,13 @@ export class AppStack extends cdk.Stack {
     // TODO: Technically anyone could use this route but why would they vs just going direct?
     listener.addTargetGroups('SentryTargetGroups', {
       targetGroups: [sentryTargetGroup],
-      priority: 10,
+      priority: 7,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/sentry-relay/*'])],
     });
 
     //Cloudflare validation
     listener.addAction('CloudflareDcv', {
-      priority: 20,
+      priority: 10,
       conditions: [elbv2.ListenerCondition.hostHeaders([`admin-catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns([adminAcmePath])],
       action: elbv2.ListenerAction.fixedResponse(200, {
         contentType: 'text/plain',
