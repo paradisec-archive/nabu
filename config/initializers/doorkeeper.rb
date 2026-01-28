@@ -469,6 +469,13 @@ Doorkeeper.configure do
   #   Rails.logger.info(context.issued_token)
   # end
 
+  # Reject admin scope for non-admin users
+  before_successful_authorization do |controller, context|
+    if context.pre_auth.scopes.include?('admin') && !controller.current_user.admin?
+      raise Doorkeeper::Errors::DoorkeeperError, 'Admin scope requires admin privileges'
+    end
+  end
+
   # Under some circumstances you might want to have applications auto-approved,
   # so that the user skips the authorization step.
   # For example if dealing with a trusted application.
