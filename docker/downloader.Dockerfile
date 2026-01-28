@@ -1,7 +1,6 @@
 # TODO: We build this ourselves instead of using upstream image because we can't work out how to subpath at runtime yet
 FROM alpine/git AS code
 
-RUN ls /code
 RUN git clone https://github.com/paradisec-archive/arocapi-downloader.git /code
 
 # Stage 2: Install the deps
