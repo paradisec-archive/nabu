@@ -36,7 +36,7 @@ COPY --from=code /code/src ./src
 COPY --from=code /code/public ./public
 
 # Build the application
-RUN NITRO_APP_BASE_URL=/downloader pnpm build
+RUN NITRO_APP_BASE_URL=/downloader/ pnpm build
 
 # Stage 3: Production image
 FROM node:lts-alpine AS production
