@@ -540,10 +540,8 @@ class Item < ApplicationRecord
       end
 
       essences.each do |essence|
-        unless /PDSC_ADMIN/.match(essence.filename)
-          xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}/#{essence.filename}",
-                   'xsi:type' => 'dcterms:URI'
-        end
+        xml.tag! 'dcterms:tableOfContents', "http://catalog.paradisec.org.au/repository/#{collection.identifier}/#{identifier}/#{essence.filename}",
+                 'xsi:type' => 'dcterms:URI'
       end
 
       xml.tag! 'dc:contributor', collector_name, 'xsi:type' => 'olac:role', 'olac:code' => 'compiler' if collector
