@@ -242,7 +242,7 @@ module Api
             payload[:query][:bool][:must] =  { query_string: { query: processed_query  } }
           end
         else
-          @search = Searchkick.search(query.query, **params)
+          @search = Searchkick.search(query.query, **params).indices_boost(Collection => 10, Item => 1)
         end
       end
 
