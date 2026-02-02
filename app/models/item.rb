@@ -523,6 +523,7 @@ class Item < ApplicationRecord
   def to_olac
     xml = ::Builder::XmlMarkup.new
     xml.tag! 'olac:olac', OAI::Provider::Metadata::Olac.instance.header_specification do
+      xml.tag! 'dc:publisher', 'Pacific and Regional Archive for Digital Sources in Endangered Cultures (PARADISEC)'
       xml.tag! 'dc:title', title
 
       xml.tag! 'dc:identifier', full_identifier
