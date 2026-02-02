@@ -428,7 +428,10 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
       priority: 6,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
+      conditions:
+        env === 'stage'
+          ? [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])]
+          : [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
     // //////////////////////
@@ -540,7 +543,11 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('AlbTargetGroups', {
       targetGroups: [appTargetGroup],
       priority: 10,
-      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
+      // conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
+      conditions:
+        env === 'stage'
+          ? [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])]
+          : [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
     });
 
     // ////////////////////////
