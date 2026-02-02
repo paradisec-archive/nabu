@@ -63,18 +63,3 @@
 # Tests
 /Guardfile
 /spec
-
-# # Convoluted because cdk has a bug https://github.com/aws/aws-cdk/issues/20712
-!/solr
-/solr/*
-!/solr/solr.xml
-!/solr/configsets
-!/solr/zoo.cfg
-
-!/solr/production
-/solr/production/*
-!/solr/production/core.properties
-
-!/solr/staging
-/solr/staging/*
-!/solr/staging/core.properties

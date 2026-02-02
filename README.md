@@ -24,7 +24,7 @@ docker compose up
 This brings up the following containers
 
 * app - the rails app
-* search - Solr instance for search (dev + test)
+* search - elasticsearch instance for search (dev + test)
 * db - mysql data base (dev + test)
 * s3 - s3 mock
 
