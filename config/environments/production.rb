@@ -59,7 +59,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: 'admin-catalog.paradisec.org.au' }
+  config.action_mailer.default_url_options = { host: 'catalog.paradisec.org.au' }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -95,5 +95,5 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :ses_v2
 
-  config.oni_url = 'https://catalog.paradisec.org.au'
+  config.oni_url = 'https://admin-catalog.paradisec.org.au'
 end
