@@ -16,6 +16,7 @@
     %title= @page_title || 'Nabu'
     %meta{ :name => 'viewport', :content => 'width=device-width,initial-scale=1' }
     %meta{ :name => 'apple-mobile-web-app-capable', :content => 'yes' }
+    %meta{ :name => 'application-name', :content => 'Nabu' }
     %meta{ :name => 'mobile-web-app-capable', :content => 'yes' }
     = csrf_meta_tags
     = csp_meta_tag
@@ -29,8 +30,9 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    = javascript_include_tag "application", "data-turbo-track": "reload", type: "module", defer: true
+    -# Includes all stylesheet files in app/assets/stylesheets
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = javascript_include_tag "application", "data-turbo-track": "reload", type: "module", defer: true
 
     = yield :page_scripts
 

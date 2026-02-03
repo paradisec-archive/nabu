@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7-labs
+# syntax=docker/dockerfile:1-labs
 ## NOTE: Above so we can use exclude
 # check=error=true
 
@@ -21,28 +21,32 @@ WORKDIR /rails
 # Install base packages
 RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
+  ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
+# Set production environment variables and enable jemalloc for reduced memory usage and latency.
 ENV RAILS_ENV="production" \
   BUNDLE_DEPLOYMENT="1" \
   BUNDLE_PATH="/usr/local/bundle" \
-  BUNDLE_WITHOUT="development:test"
 # Unlike dhh we don;t think this image wil be used for CI
+  BUNDLE_WITHOUT="development:test" \
+  LD_PRELOAD="/usr/local/lib/libjemalloc.so"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Install packages needed to build gems  and node modules
 RUN apt-get update -qq && \
-  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config && \
+  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libyaml-dev node-gyp pkg-config python-is-python3 && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Install JavaScript dependencies
 ENV NODE_VERSION=22.19.0
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 # Setup node
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
+# NOTE: We use nvm rather than build from scratch
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash && \
   . $NVM_DIR/nvm.sh && \
   nvm install $NODE_VERSION && \
   nvm alias default $NODE_VERSION  && \
@@ -74,26 +78,25 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN ASSET_PRECOMPILE=1 SECRET_KEY_BASE_DUMMY=1 OPENID_SIGNING_KEY=1 ./bin/rails assets:precompile
 
-RUN rm -rf node_modules
 
+RUN rm -rf node_modules
 
 
 # Final stage for app image
 FROM base
 
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build --exclude=tmp/cache/* --exclude=vendor/bundle /rails /rails
-
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
-  useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-  chown -R rails:rails db log storage tmp
+  useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
 USER 1000:1000
+
+# Copy built artifacts: gems, application
+COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --chown=rails:rails --from=build --exclude=tmp/cache/* --exclude=vendor/bundle /rails /rails
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server", "--log-to-stdout", "-b", "0.0.0.0"]
+CMD ["./bin/thrust", "./bin/rails", "server", "--log-to-stdout", "-b", "0.0.0.0"]

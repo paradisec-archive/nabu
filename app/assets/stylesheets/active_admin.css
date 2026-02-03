@@ -1,3 +1,3 @@
 @import "tailwindcss";
 
-@config "../../../tailwind-active_admin.config.js";
+@config "../../../tailwind-active_admin.config.mjs";
