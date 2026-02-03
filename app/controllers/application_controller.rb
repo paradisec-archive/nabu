@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :set_access_headers
   before_action :set_sentry_user
   before_action :validate_per_page_param
+  before_action :set_paper_trail_whodunnit
 
   private
 
