@@ -191,7 +191,6 @@ module Api
         f = transform_filters(query.filters)
         where.merge!(f)
 
-        where = {}
         unless current_user&.admin?
           where[:_or] = [{ private: false }]
           if current_user
