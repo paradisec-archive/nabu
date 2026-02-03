@@ -15,3 +15,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Follow REST conventions for controllers
 - GraphQL mutations should inherit from BaseMutation
 
+## Running Commands
+
+This is a dockerized Rails application. Use `nabu_run` to execute Rails commands:
+
+```bash
+nabu_run bin/rails server
+nabu_run bin/rails runner "puts User.count"
+nabu_run bundle exec rubocop
+```
+
