@@ -185,24 +185,28 @@ module Api
         order = {}
         order[query.sort === 'relevance' ? '_score' : query.sort] = query.order
 
-        where = {
-          private: false
-        }
-        f = transform_filters(query.filters)
-        where.merge!(f)
+        filters = transform_filters(query.filters)
 
+        perms = []
         unless current_user&.admin?
-          where[:_or] = [{ private: false }]
+          perms << { private: false }
           if current_user
             Collection.search_user_fields.each do |field|
-              where[:_or].push({ field => current_user.id })
+              perms << { field => current_user.id }
             end
 
             Item.search_user_fields.each do |field|
-              where[:_or].push({ field => current_user.id })
+              perms << { field => current_user.id }
             end
           end
         end
+
+        where = {
+          _and: [
+            filters,
+            perms.empty? ? {} : { _or: perms }
+          ]
+        }
 
         if query.bounding_box
           where[:location] = {
@@ -256,7 +260,6 @@ module Api
       private
       def transform_filters(filters)
         f = filters.to_h.to_h
-
         return f unless f['originatedOn']
 
         ranges = parse_originated_on_ranges(f['originatedOn'])
@@ -281,8 +284,6 @@ module Api
       end
 
       def check_for_essence
-        puts repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)')
-
         md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
         return false unless md
 
