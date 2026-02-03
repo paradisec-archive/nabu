@@ -155,8 +155,16 @@ module Api
         ## Only items have files
         raise ActiveRecord::RecordNotFound unless check_for_essence
 
+        if !current_user&.admin? && @data.is_archived?
+          render json: { error: 'This file is archived and can only be accessed by admins' }, status: :forbidden
+
+          return
+        end
+
         location = Nabu::Catalog.instance.essence_url(@data, as_attachment:, filename:)
         raise ActionController::RoutingError, 'Essence file not found' unless location
+
+        Download.create!(user: current_user, essence: @data) if as_attachment
 
         if params[:noRedirect] === 'true'
           render json: { location: }
