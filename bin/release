@@ -27,8 +27,8 @@ docker pull ghcr.io/language-research-technology/oni-ui:new-api
 cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
 
-# CLeanup cdk
-rm cdk.out/assets.*
+# Cleanup cdk
+rm -rf cdk.out/assets.*
 
 if [ "$ENV" != "prod" ]; then
   exit
