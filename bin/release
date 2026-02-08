@@ -19,8 +19,16 @@ git merge --ff-only main
 git push
 git switch main
 
+# Pull docker images for the new release
+docker pull node:lts-alpine
+docker pull ubuntu:24.04
+docker pull ghcr.io/language-research-technology/oni-ui:new-api
+
 cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
+
+# CLeanup cdk
+rm cdk.out/assets.*
 
 if [ "$ENV" != "prod" ]; then
   exit
