@@ -427,7 +427,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
-      priority: 6,
+      priority: 15,
       conditions:
         env === 'stage'
           ? [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])]
@@ -542,7 +542,7 @@ export class AppStack extends cdk.Stack {
 
     sslListener.addTargetGroups('AlbTargetGroups', {
       targetGroups: [appTargetGroup],
-      priority: 10,
+      priority: 20,
       // conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
       conditions:
         env === 'stage'
