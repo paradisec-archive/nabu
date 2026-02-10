@@ -263,7 +263,7 @@
       },
       {
         "display": "Language",
-        "name": "languages",
+        "name": "languages_with_code",
         "help": "The language(s) of the content in this resource."
       },
       {

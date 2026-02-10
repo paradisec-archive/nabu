@@ -218,7 +218,7 @@ module Api
         aggs = {
           collection_title: {},
           access_condition_name: {},
-          languages: { limit: 2000 },
+          languages_with_code: { limit: 2000 },
           countries: {},
           collector_name: {},
           encodingFormat: {},

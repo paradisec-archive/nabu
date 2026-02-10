@@ -235,6 +235,7 @@ class Collection < ApplicationRecord
       operator_name:,
       field_of_research: field_of_research_name,
       languages: languages.map(&:name).uniq,
+      languages_with_code: content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
       countries: countries.map(&:name).uniq,
       language_codes: languages.map(&:code).uniq,
 

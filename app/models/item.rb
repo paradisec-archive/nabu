@@ -344,6 +344,7 @@ class Item < ApplicationRecord
       university_name:,
       operator_name:,
       languages: content_languages.map(&:name).uniq,
+      languages_with_code: content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
       content_languages: content_languages.map(&:name).uniq,
       content_languages_code: content_languages.map(&:code).uniq,
       subject_languages: subject_languages.map(&:name).uniq,
