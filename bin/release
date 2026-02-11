@@ -28,7 +28,8 @@ cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
 
 # Cleanup cdk
-rm -rf cdk.out/assets.*
+# Echo cleaning up!!
+pnpm exec cdk-agc
 
 if [ "$ENV" != "prod" ]; then
   exit

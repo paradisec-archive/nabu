@@ -82,6 +82,9 @@ importers:
       aws-cdk:
         specifier: 2.1003.0
         version: 2.1003.0
+      cdk-agc:
+        specifier: ^1.2.0
+        version: 1.2.0
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.13.10)(ts-node@10.9.2(@types/node@22.13.10)(typescript@5.8.3))
@@ -941,6 +944,11 @@ packages:
   caniuse-lite@1.0.30001739:
     resolution: {integrity: sha512-y+j60d6ulelrNSwpPyrHdl+9mJnQzHBr08xm48Qno0nSk4h3Qojh+ziv2qE6rXf4k3tadF4o1J/1tAbVm1NtnA==}
 
+  cdk-agc@1.2.0:
+    resolution: {integrity: sha512-0/JP5ZMm0gzP0CV0uB8ZnHo+Sjw5fHfC6waPrETiv0T5M4ipqR9DpcwAJGqeBI0KrLs/d0UAGzIq/7psLo+J2Q==}
+    engines: {node: '>=20.0.0'}
+    hasBin: true
+
   cdk-nag@2.37.14:
     resolution: {integrity: sha512-9VIpmWV86pRaA0pY+P49SRe3F6Z4dhio56sHxgxjc6VbAPzJimcg81B8AWc0xJnHY71Bhq/LVl+hAzrgJh8gSA==}
     peerDependencies:
@@ -983,6 +991,10 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  commander@12.1.0:
+    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
+    engines: {node: '>=18'}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -2708,6 +2720,10 @@ snapshots:
 
   caniuse-lite@1.0.30001739: {}
 
+  cdk-agc@1.2.0:
+    dependencies:
+      commander: 12.1.0
+
   cdk-nag@2.37.14(aws-cdk-lib@2.182.0(constructs@10.4.2))(constructs@10.4.2):
     dependencies:
       aws-cdk-lib: 2.182.0(constructs@10.4.2)
@@ -2743,6 +2759,8 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  commander@12.1.0: {}
 
   concat-map@0.0.1: {}
 
