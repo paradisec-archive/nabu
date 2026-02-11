@@ -544,7 +544,7 @@ export class AppStack extends cdk.Stack {
       conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
-    sslListener.addTargetGroups('AlbTargetGroups', {
+    sslListener.addTargetGroups('AlbTargetGroupsAPIs', {
       targetGroups: [appTargetGroup],
       priority: 8,
       conditions: [
