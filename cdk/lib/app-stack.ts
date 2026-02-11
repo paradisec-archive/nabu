@@ -544,6 +544,15 @@ export class AppStack extends cdk.Stack {
       conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
+    sslListener.addTargetGroups('AlbTargetGroups', {
+      targetGroups: [appTargetGroup],
+      priority: 8,
+      conditions: [
+        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.pathPatterns(['/oai', '/oai/*']),
+      ],
+    });
+
     // ////////////////////////
     // Jobs
     // ////////////////////////
