@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   before_action :set_sentry_user
   before_action :validate_per_page_param
   before_action :set_paper_trail_whodunnit
+  before_action :enforce_terms_acceptance
 
   private
 
@@ -67,7 +68,7 @@ class ApplicationController < ActionController::Base
   #    infinite redirect loop.
   # - The request is an Ajax request as this can lead to very unexpected behaviour.
   def storable_location?
-    request.get? && is_navigational_format? && !devise_controller? && !request.xhr?
+    request.get? && is_navigational_format? && !devise_controller? && !request.xhr? && !controller_name.in?(%w[terms])
   end
 
   def store_user_location!
@@ -87,6 +88,20 @@ class ApplicationController < ActionController::Base
 
   def set_sentry_user
     Sentry.set_user(id: current_user.id, email: current_user.email) if current_user
+  end
+
+  def enforce_terms_acceptance
+    return unless current_user
+    return if current_user.admin? || current_user.terms_accepted?
+    return if devise_controller? || controller_name == 'terms'
+
+    respond_to do |format|
+      format.json { render json: { error: 'You must accept the terms and conditions' }, status: :forbidden }
+      format.html do
+        store_location_for(:user, request.fullpath) if storable_location?
+        redirect_to terms_path
+      end
+    end
   end
 
   def validate_per_page_param

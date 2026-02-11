@@ -26,6 +26,9 @@ Rails.application.routes.draw do
 
   root to: 'page#dashboard'
 
+  get '/terms' => 'terms#show', as: 'terms'
+  post '/terms/accept' => 'terms#accept', as: 'accept_terms'
+
   get '/contact' => 'page#contact'
   get '/dashboard' => redirect('/')
   get '/glossary' => 'page#glossary'
@@ -69,8 +72,6 @@ Rails.application.routes.draw do
         member do
           get :download
           get :display
-          get :show_terms
-          get :agree_to_terms
         end
       end
     end

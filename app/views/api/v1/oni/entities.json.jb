@@ -1,4 +1,4 @@
 {
   total: @total,
-  entities: @entities.map { |entity| render(partial: 'entity', locals: { entity: }) }
+  entities: @entities.map { |entity| render(partial: 'entity', locals: { entity:, essence_terms_required: @essence_terms_required }) }
 }

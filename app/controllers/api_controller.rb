@@ -28,6 +28,14 @@ class ApplicationUser
     key ? Array(key) : nil
   end
 
+  def terms_accepted?
+    true
+  end
+
+  def contact_only?
+    false
+  end
+
   def authenticatable_salt
   end
 
@@ -51,6 +59,13 @@ class ApiController < ApplicationController
     if doorkeeper_token
       doorkeeper_authorize!
     end
+  end
+
+  def enforce_terms_acceptance
+    return unless current_user
+    return if current_user.admin? || current_user.contact_only? || current_user.terms_accepted?
+
+    render json: { error: 'You must accept the terms and conditions' }, status: :forbidden
   end
 
   def set_current_user

@@ -1,7 +1,9 @@
 module Api
   module V1
     class OniController < ApiController
-      def entities
+      skip_before_action :enforce_terms_acceptance, only: %i[entities entity rocrate search]
+
+      def entities # rubocop:disable Metrics/MethodLength
         query = Oni::ObjectsValidator.new(params)
 
         unless query.valid?
@@ -50,6 +52,10 @@ module Api
           # Do nothing
         end
 
+        entities = entities.where.not(entity_type: 'Essence') if essence_terms_required?
+
+        @essence_terms_required = essence_terms_required?
+
         @total = entities.count
 
         @entities = entities.offset(query.offset).limit(query.limit).includes(entity: [:access_condition, :languages, :content_languages, :collection, :essences])
@@ -87,7 +93,10 @@ module Api
           return
         end
 
+        @essence_terms_required = essence_terms_required?
+
         if check_for_essence
+          raise ActiveRecord::RecordNotFound if essence_terms_required?
           @entity = @data.entity
         elsif check_for_item
           @entity = @data.entity
@@ -107,7 +116,10 @@ module Api
 
         @admin_rocrate = false
 
+        @essence_terms_required = essence_terms_required?
+
         if check_for_essence
+          raise ActiveRecord::RecordNotFound if essence_terms_required?
           render 'object_meta_essence'
 
           return
@@ -291,6 +303,14 @@ module Api
       end
 
       private
+
+      def essence_terms_required?
+        return false unless current_user
+        return false if current_user.admin? || current_user.terms_accepted?
+
+        true
+      end
+
       def transform_filters(filters)
         f = filters.to_h.to_h
         return f unless f['originatedOn']

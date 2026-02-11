@@ -380,6 +380,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_000001) do
 
   create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "admin_only", default: false, null: false
+    t.string "name", null: false
+    t.string "uid", null: false
+    t.string "secret", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
     t.string "name", null: false

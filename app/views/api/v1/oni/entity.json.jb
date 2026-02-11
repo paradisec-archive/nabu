@@ -1,1 +1,1 @@
-render(partial: 'entity', locals: { entity: @entity })
+render(partial: 'entity', locals: { entity: @entity, essence_terms_required: @essence_terms_required })

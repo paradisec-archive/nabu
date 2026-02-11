@@ -42,7 +42,12 @@ if is_item
     id: repository_collection_url(entity.entity.collection),
     name:  entity.entity.collection.title
   }
-  json[:access][:content] = can?(:read, entity.entity.essences.first)
+  json[:access][:content] = can?(:read, entity.entity.essences.first) && !essence_terms_required
+
+  if @essence_terms_required
+    json[:access][:contentAuthorizationUrl] = terms_url
+    json[:access][:metadataAuthorizationUrl] = terms_url
+  end
 
   json[:identifiers] = {
     domain: 'paradisec.org.au',
@@ -65,7 +70,15 @@ if is_essence
     name: entity.entity.collection.title
   }
   json[:fileId] = repository_essence_url(entity.entity.item.collection, entity.entity.item, entity.entity.filename)
-  json[:access][:content] = can?(:read, entity.entity)
+<<<<<<< HEAD
+  if essence_terms_required
+    json[:access][:metadata] = false
+    json[:access][:content] = false
+    json[:access][:contentAuthorizationUrl] = terms_url
+    json[:access][:metadataAuthorizationUrl] = terms_url
+  else
+    json[:access][:content] = can?(:read, entity.entity)
+  end
 
   json[:identifiers] = {
     domain: 'paradisec.org.au',

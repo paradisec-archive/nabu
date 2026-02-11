@@ -6,6 +6,7 @@ FactoryBot.define do
     password { 'password' }
     password_confirmation { password }
     confirmed_at { Time.now }
+    terms_accepted_at { Time.current }
 
     factory :admin_user do
       admin { true }

@@ -1,8 +1,8 @@
 class EssencesController < ApplicationController
   before_action :find_essence, only: %i[show]
-  load_and_authorize_resource :collection, find_by: :identifier, except: [:list_mimetypes]
-  load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: [:list_mimetypes]
-  load_and_authorize_resource :essence, through: :item, except: [:list_mimetypes]
+  load_and_authorize_resource :collection, find_by: :identifier, except: %i[list_mimetypes]
+  load_and_authorize_resource :item, find_by: :identifier, through: :collection, except: %i[list_mimetypes]
+  load_and_authorize_resource :essence, through: :item, except: %i[list_mimetypes]
 
   rescue_from CanCan::AccessDenied do
     flash[:notice] = 'Please Sign Up and Log In to access this file.'
@@ -17,8 +17,6 @@ class EssencesController < ApplicationController
     if @essence.item.access_condition.nil?
       flash[:error] = 'Item does not have data access conditions set'
       redirect_to [@collection, @item]
-    elsif ['Open (subject to agreeing to PDSC access conditions)'].include? @essence.item.access_condition.name
-      redirect_to show_terms_collection_item_essence_path unless session["terms_#{@collection.id}"] == true
     end
   end
 
@@ -50,20 +48,6 @@ class EssencesController < ApplicationController
     raise ActionController::RoutingError, 'Essence file not found' unless location
 
     redirect_to location, allow_other_host: true
-  end
-
-  def show_terms
-    @page_title = 'Nabu - Terms and Conditions'
-  end
-
-  def agree_to_terms
-    if params[:agree] == '1'
-      session["terms_#{@collection.id}"] = true
-      redirect_to [@collection, @item, @essence]
-    else
-      flash[:error] = 'You must agree to the PDSC access form before you can view files'
-      redirect_to [@collection, @item]
-    end
   end
 
   def destroy

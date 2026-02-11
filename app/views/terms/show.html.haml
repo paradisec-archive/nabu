@@ -1,0 +1,12 @@
+%h1 Conditions of Access
+
+.page-box.terms-and-conditions
+  = render 'terms/conditions_of_access'
+
+= form_tag accept_terms_path, method: :post, class: 'no-empty-submit' do
+  .page-box
+    %p
+      = check_box_tag :agree
+      By clicking here I agree that I will not contravene this licence.
+
+  = submit_tag 'Submit'

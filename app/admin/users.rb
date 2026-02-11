@@ -84,7 +84,8 @@ ActiveAdmin.register User do
 
   permit_params :email, :first_name, :last_name,
                 :address, :address2, :country, :phone, :password, :password_confirmation, :remember_me, :unconfirmed_email,
-                :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector, :unikey
+                :rights_transferred_to_id, :rights_transfer_reason, :admin, :contact_only, :party_identifier, :collector, :unikey,
+                :terms_accepted_at
 
   before_destroy :check_dependent
 
@@ -112,6 +113,7 @@ ActiveAdmin.register User do
   filter :collector
   filter :admin
   filter :unikey
+  filter :terms_accepted_at
 
   action_item :merge do
     if %w[show edit].include?(params[:action]) && (User.duplicates_of(resource.first_name, resource.last_name).count > 1)
@@ -217,6 +219,7 @@ ActiveAdmin.register User do
       row :failed_attempts
       row :locked_at
       row :reset_password_sent_at
+      row :terms_accepted_at
     end
   end
 

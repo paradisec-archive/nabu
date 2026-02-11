@@ -59,6 +59,7 @@
 #
 
 class User < ApplicationRecord
+  TERMS_EXPIRY_PERIOD = 3.months
   # Users may not want paper_trail storing a history of their account information, so don't have has_paper_trail
 
   # TODO: Maybe move to normalises
@@ -157,6 +158,14 @@ class User < ApplicationRecord
     "#{id} - #{first_name} #{last_name} - #{email || '<no email>'}"
   end
 
+  def terms_accepted?
+    terms_accepted_at.present? && terms_accepted_at > TERMS_EXPIRY_PERIOD.ago
+  end
+
+  def accept_terms!
+    update!(terms_accepted_at: Time.current)
+  end
+
   def admin?
     admin
   end
@@ -199,7 +208,7 @@ class User < ApplicationRecord
       contact_only country created_at current_sign_in_at current_sign_in_ip email encrypted_password
       failed_attempts first_name id last_name last_sign_in_at last_sign_in_ip locked_at party_identifier
       phone remember_created_at reset_password_sent_at reset_password_token rights_transfer_reason
-      rights_transferred_to_id sign_in_count unconfirmed_email unlock_token updated_at unikey
+      rights_transferred_to_id sign_in_count terms_accepted_at unconfirmed_email unlock_token updated_at unikey
     ]
   end
 
