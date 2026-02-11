@@ -241,7 +241,7 @@ class Collection < ApplicationRecord
 
       # Oni
       encodingFormat: essences.map(&:mimetype).uniq,
-      rootCollection: title,
+      rootCollection: "#{identifier} - #{title}",
 
       # Full text plus advanced search
       identifier:,

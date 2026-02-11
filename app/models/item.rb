@@ -359,7 +359,7 @@ class Item < ApplicationRecord
 
       # Oni
       encodingFormat: essences.map(&:mimetype).uniq,
-      rootCollection: collection.title,
+      rootCollection: "#{collection.identifier} - #{collection.title}",
 
       external:,
       private: !public?,
