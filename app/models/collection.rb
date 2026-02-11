@@ -222,7 +222,7 @@ class Collection < ApplicationRecord
     %i[title description]
   end
   scope :search_import, lambda {
-                          includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, items: %i[admins users])
+                          includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, :access_condition, :content_languages, :essences, items: %i[admins users])
                         }
 
   def search_data

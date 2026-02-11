@@ -316,7 +316,9 @@ class Item < ApplicationRecord
         lambda {
           includes(:users, :content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
                    :essences, :collection, :collector, :operator,
-                   :item_admins, :item_agents, :item_users)
+                   :item_admins, :item_agents, :item_users,
+                   :access_condition
+                  )
         }
 
   def search_data
