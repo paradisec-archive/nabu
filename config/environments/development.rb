@@ -84,4 +84,6 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
 
   config.oni_url = 'http://localhost:7000'
+
+  config.web_console.permissions = '172.16.0.0/12'
 end
