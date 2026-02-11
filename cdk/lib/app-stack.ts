@@ -298,7 +298,8 @@ export class AppStack extends cdk.Stack {
       environment: {
         AWS_REGION: region,
         S3_BUCKET: downloaderBucket.bucketName,
-        ROCRATE_API_BASE_URL: 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
+        ROCRATE_API_BASE_URL:
+          env === 'prod' ? 'https://admin-catalog.paradisec.org.au/api/v1/oni' : 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
         EMAIL_FROM: 'admin@paradisec.org.au',
       },
       secrets: {
@@ -428,10 +429,7 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('OniTargetGroups', {
       targetGroups: [oniTargetGroup],
       priority: 15,
-      conditions:
-        env === 'stage'
-          ? [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])]
-          : [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
     });
 
     // //////////////////////
@@ -543,11 +541,7 @@ export class AppStack extends cdk.Stack {
     sslListener.addTargetGroups('AlbTargetGroups', {
       targetGroups: [appTargetGroup],
       priority: 20,
-      // conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
-      conditions:
-        env === 'stage'
-          ? [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])]
-          : [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`])],
+      conditions: [elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`])],
     });
 
     // ////////////////////////
