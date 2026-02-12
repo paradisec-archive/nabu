@@ -1,26 +1,25 @@
-<%-
-  headers = [
-    :identifier,
-    :title,
-    :description,
-    :collector_name,
-    :operator_name,
-    :university_name,
-    :csv_languages,
-    :csv_countries,
-    :region,
-    :north_limit,
-    :south_limit,
-    :west_limit,
-    :east_limit,
-    :field_of_research_name,
-    :csv_full_grant_identifiers,
-    :funding_body_names,
-    :access_condition_name,
-    :access_narrative
-  ]
--%>
+<%- headers = %i[
+  identifier
+  title
+  description
+  collector_name
+  operator_name
+  university_name
+  csv_languages
+  csv_countries
+  region
+  north_limit
+  south_limit
+  west_limit
+  east_limit
+  field_of_research_name
+  csv_full_grant_identifiers
+  funding_body_names
+  access_condition_name
+  access_narrative
+  doi
+] -%>
 <%= CSV.generate_line headers.map(&:to_s).map(&:humanize) -%>
 <%- @search.each do |line| -%>
-<%= CSV.generate_line(headers.map {|header| line.send(header) }).html_safe -%>
+  <%= CSV.generate_line(headers.map { |header| line.send(header) }).html_safe -%>
 <%- end -%>
