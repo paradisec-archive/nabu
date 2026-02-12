@@ -85,6 +85,17 @@ class EssencesController < ApplicationController
 
 
   def find_essence
-    @essence = Essence.includes(item: { item_agents: %i[agent_role user] }).find(params[:id])
+    @essence = Essence.includes([
+      {
+        item: [
+          :admins,
+          :users,
+          item_agents: %i[agent_role user],
+          collection: [:admins, items: [:admins, :users]]
+        ]
+      }
+    ]).find(params[:id])
+    @item = @essence.item
+    @collection = @item.collection
   end
 end
