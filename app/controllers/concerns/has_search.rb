@@ -266,11 +266,9 @@ module HasSearch
   end
 
   def order
-    return if params[:sort].blank?
+    return [{ 'full_identifier' => params[:direction] == 'desc' ? 'desc' : 'asc' }] if params[:search].blank? && params[:sort].blank?
 
-    # TODO: Put this back if they want default search
-    # use_default = params[:sort].nil? || model.search_model.sortable_columns.exclude?(params[:sort])
-    # return model.search_model.sortable_columns[0, 2].map { |col| { col => 'asc' } } if use_default
+    return if params[:sort].blank?
 
     [{ params[:sort] => params[:direction] == 'desc' ? 'desc' : 'asc' }]
   end

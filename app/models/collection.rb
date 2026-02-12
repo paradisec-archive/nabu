@@ -245,6 +245,7 @@ class Collection < ApplicationRecord
 
       # Full text plus advanced search
       identifier:,
+      full_identifier:,
       title:,
       description:,
       access_narrative:,
