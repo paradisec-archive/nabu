@@ -136,8 +136,8 @@
           "originalMedia",
           "about",
           "ldac:doi",
-          "dateCreated",
-          "dateModified"
+          "dateModified",
+          "dateCreated"
         ]
       },
       "memberSort": "id"
