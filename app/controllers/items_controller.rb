@@ -345,6 +345,7 @@ class ItemsController < ApplicationController
     @item = @collection.items
                        .includes([
                                    { item_agents: %i[agent_role user] },
+                                   { collection: [:admins, items: [:admins, :users]] },
                                    :data_types,
                                    :data_categories,
                                    :admins,
