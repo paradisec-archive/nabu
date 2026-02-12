@@ -18,6 +18,8 @@ services:
       NABU_CATALOG_BUCKET: nabu-catalog-prod
       OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
+      RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
     volumes:
       - .:/rails
       - ./vendor/bundle:/usr/local/bundle

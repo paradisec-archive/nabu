@@ -1,18 +1,16 @@
-<p>Welcome!</p>
-
-<p>You have just signed up for an account with the PARADISEC catalog.</p>
-<br/>
+<p>Welcome <%= @email %>!</p>
 
 <p>You can confirm your account email through the link below:</p>
 
-<p><%= link_to "Confirm my account",
-  confirmation_url(@resource, confirmation_token: @token) %></p>
+<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
 
-<br/>
 <p>The Conditions of Access are attached below for your reference. Please take
   the time to familiarise yourself with them.</p>
-<br/>
+
 <hr/>
+
 <h3>Conditions of Access</h3>
+
 <%= render "terms/conditions_of_access" %>
+
 <hr/>
