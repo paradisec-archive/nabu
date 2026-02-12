@@ -25,9 +25,9 @@ if is_collection
   }
   json[:identifiers] = {
     domain: 'paradisec.org.au',
-    shortIdentifier: @data.identifier,
-    collectionIdentifier: @data.identifier,
-    doi: @data.doi
+    shortIdentifier: entity.entity.identifier,
+    collectionIdentifier: entity.entity.identifier,
+    doi: entity.entity.doi
   }
 end
 
