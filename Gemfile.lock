@@ -582,9 +582,10 @@ GEM
     sentry-rails (6.3.0)
       railties (>= 5.2.0)
       sentry-ruby (~> 6.3.0)
-    sentry-ruby (6.3.0)
+    sentry-ruby (6.3.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
+      logger
     shellany (0.0.1)
     simpleidn (0.2.3)
     solargraph (0.58.2)
