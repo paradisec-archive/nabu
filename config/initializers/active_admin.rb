@@ -211,6 +211,7 @@ ActiveAdmin.setup do |config|
       menu.add label: 'Jobs', url: '/jobs'
       menu.add label: 'Search', url: '/searchjoy'
       menu.add label: 'OAUTH Tokens', url: '/oauth/applications'
+      menu.add label: 'Downloader', url: '/downloader'
     end
   end
 
