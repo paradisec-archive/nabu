@@ -55,7 +55,7 @@
 
       %tr
         %th Archive link
-        %td= @item.external ? 'Item not owned by Paradisec' : link_to(repository_item_url(@collection, @item))
+        %td= @item.external ? 'Item not owned by Paradisec' : link_to(repository_item_url(@collection, @item), repository_item_url(@collection, @item))
 
       %tr
         %th URL
