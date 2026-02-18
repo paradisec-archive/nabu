@@ -54,7 +54,7 @@ class DoiUrlAuditService
   end
 
   def run_paged
-    totals = { correct: 0, needs_update: 0, orphaned: 0, fetched: 0 }
+    totals = { correct: 0, needs_update: 0, unexpected_url: 0, orphaned: 0, fetched: 0 }
     next_url = "#{@base_url}/dois?prefix=#{@prefix}&page[size]=#{page_size}&page[cursor]=1"
     pages_fetched = 0
 
@@ -81,6 +81,7 @@ class DoiUrlAuditService
 
       totals[:correct] += results[:correct].size
       totals[:needs_update] += results[:needs_update].size
+      totals[:unexpected_url] += results[:unexpected_url].size
       totals[:orphaned] += results[:orphaned].size
 
       next_url = response.dig('links', 'next')
@@ -100,6 +101,7 @@ class DoiUrlAuditService
     puts "  DOIs fetched: #{totals[:fetched]}"
     puts "  Correct: #{totals[:correct]}"
     puts "  Needs update: #{totals[:needs_update]}"
+    puts "  Unexpected URL (skipped): #{totals[:unexpected_url]}"
     puts "  Orphaned: #{totals[:orphaned]}"
     puts '=' * 60
   end
@@ -199,6 +201,7 @@ class DoiUrlAuditService
     results = {
       correct: [],
       needs_update: [],
+      unexpected_url: [],
       orphaned: []
     }
 
@@ -213,12 +216,23 @@ class DoiUrlAuditService
 
       if dc_doi[:url] == db_entry[:expected_url]
         results[:correct] << { datacite: dc_doi, db: db_entry }
-      else
+      elsif catalog_url?(dc_doi[:url])
         results[:needs_update] << { datacite: dc_doi, db: db_entry }
+      else
+        results[:unexpected_url] << { datacite: dc_doi, db: db_entry }
       end
     end
 
     results
+  end
+
+  def catalog_url?(url)
+    return false if url.nil?
+
+    uri = URI.parse(url)
+    uri.host == 'catalog.paradisec.org.au'
+  rescue URI::InvalidURIError
+    false
   end
 
   def print_report(results, dois_count)
@@ -232,6 +246,7 @@ class DoiUrlAuditService
     puts "\nAudit Results:"
     puts "  Correct (URL matches): #{results[:correct].size}"
     puts "  Needs update (URL mismatch): #{results[:needs_update].size}"
+    puts "  Unexpected URL (not catalog.paradisec.org.au, skipped): #{results[:unexpected_url].size}"
     puts "  Orphaned (in DataCite but not in DB): #{results[:orphaned].size}"
 
     if results[:needs_update].any?
@@ -248,6 +263,16 @@ class DoiUrlAuditService
       puts '  By type:'
       %w[Collection Item Essence].each do |type|
         puts "    #{type}s: #{update_type_counts[type] || 0}"
+      end
+    end
+
+    if results[:unexpected_url].any?
+      puts "\nUnexpected URLs (not catalog.paradisec.org.au, first 10):"
+      results[:unexpected_url].first(10).each do |entry|
+        puts "  DOI: #{entry[:datacite][:doi]}"
+        puts "    Current:  #{entry[:datacite][:url]}"
+        puts "    Expected: #{entry[:db][:expected_url]}"
+        puts
       end
     end
 
