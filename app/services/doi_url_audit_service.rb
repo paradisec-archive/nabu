@@ -66,7 +66,10 @@ class DoiUrlAuditService
     end
 
     current_url = response.dig('data', 'attributes', 'url')
+    current_state = response.dig('data', 'attributes', 'state')
+    expected_state = record_public?(record) ? 'findable' : 'registered'
     puts "  Current URL:  #{current_url}"
+    puts "  State:        #{current_state} (expected: #{expected_state})"
 
     if current_url == expected_url
       puts 'URLs already match, nothing to do.'
@@ -119,7 +122,7 @@ class DoiUrlAuditService
   end
 
   def run_paged
-    totals = { correct: 0, needs_update: 0, unexpected_url: 0, orphaned: 0, fetched: 0 }
+    totals = { correct: 0, needs_update: 0, unexpected_url: 0, state_mismatch: 0, orphaned: 0, fetched: 0 }
     next_url = "#{@base_url}/dois?prefix=#{@prefix}&page[size]=#{page_size}&page[cursor]=1"
     pages_fetched = 0
 
@@ -147,6 +150,7 @@ class DoiUrlAuditService
       totals[:correct] += results[:correct].size
       totals[:needs_update] += results[:needs_update].size
       totals[:unexpected_url] += results[:unexpected_url].size
+      totals[:state_mismatch] += results[:state_mismatch].size
       totals[:orphaned] += results[:orphaned].size
 
       next_url = response.dig('links', 'next')
@@ -167,6 +171,7 @@ class DoiUrlAuditService
     puts "  Correct: #{totals[:correct]}"
     puts "  Needs update: #{totals[:needs_update]}"
     puts "  Unexpected URL (skipped): #{totals[:unexpected_url]}"
+    puts "  State mismatch: #{totals[:state_mismatch]}"
     puts "  Orphaned: #{totals[:orphaned]}"
     puts '=' * 60
   end
@@ -180,7 +185,8 @@ class DoiUrlAuditService
         index[collection.doi.downcase] = {
           type: 'Collection',
           record: collection,
-          expected_url: collection.full_path
+          expected_url: collection.full_path,
+          expected_state: collection.private? ? 'registered' : 'findable'
         }
         count += 1
         print_progress(count)
@@ -194,7 +200,8 @@ class DoiUrlAuditService
         index[item.doi.downcase] = {
           type: 'Item',
           record: item,
-          expected_url: item.full_path
+          expected_url: item.full_path,
+          expected_state: item.public? ? 'findable' : 'registered'
         }
         count += 1
         print_progress(count)
@@ -208,7 +215,8 @@ class DoiUrlAuditService
         index[essence.doi.downcase] = {
           type: 'Essence',
           record: essence,
-          expected_url: essence.full_path
+          expected_url: essence.full_path,
+          expected_state: essence.item.public? ? 'findable' : 'registered'
         }
         count += 1
         print_progress(count)
@@ -257,6 +265,7 @@ class DoiUrlAuditService
       {
         doi: doi_record['id'],
         url: doi_record.dig('attributes', 'url'),
+        state: doi_record.dig('attributes', 'state'),
         identifiers: doi_record.dig('attributes', 'identifiers') || []
       }
     end
@@ -267,6 +276,7 @@ class DoiUrlAuditService
       correct: [],
       needs_update: [],
       unexpected_url: [],
+      state_mismatch: [],
       orphaned: []
     }
 
@@ -279,16 +289,31 @@ class DoiUrlAuditService
         next
       end
 
+      entry = { datacite: dc_doi, db: db_entry }
+
+      if dc_doi[:state] != db_entry[:expected_state]
+        results[:state_mismatch] << entry
+      end
+
       if dc_doi[:url] == db_entry[:expected_url]
-        results[:correct] << { datacite: dc_doi, db: db_entry }
+        results[:correct] << entry
       elsif catalog_url?(dc_doi[:url])
-        results[:needs_update] << { datacite: dc_doi, db: db_entry }
+        results[:needs_update] << entry
       else
-        results[:unexpected_url] << { datacite: dc_doi, db: db_entry }
+        results[:unexpected_url] << entry
       end
     end
 
     results
+  end
+
+  def record_public?(record)
+    case record
+    when Collection then !record.private?
+    when Item then record.public?
+    when Essence then record.item.public?
+    else false
+    end
   end
 
   def catalog_url?(url)
@@ -312,6 +337,7 @@ class DoiUrlAuditService
     puts "  Correct (URL matches): #{results[:correct].size}"
     puts "  Needs update (URL mismatch): #{results[:needs_update].size}"
     puts "  Unexpected URL (not catalog.paradisec.org.au, skipped): #{results[:unexpected_url].size}"
+    puts "  State mismatch: #{results[:state_mismatch].size}"
     puts "  Orphaned (in DataCite but not in DB): #{results[:orphaned].size}"
 
     if results[:needs_update].any?
@@ -328,6 +354,25 @@ class DoiUrlAuditService
       puts '  By type:'
       %w[Collection Item Essence].each do |type|
         puts "    #{type}s: #{update_type_counts[type] || 0}"
+      end
+    end
+
+    if results[:state_mismatch].any?
+      puts "\nState mismatches (first 10):"
+      results[:state_mismatch].first(10).each do |entry|
+        puts "  DOI: #{entry[:datacite][:doi]}"
+        puts "    Type: #{entry[:db][:type]}"
+        puts "    DataCite state: #{entry[:datacite][:state]}"
+        puts "    Expected state: #{entry[:db][:expected_state]}"
+        puts
+      end
+
+      state_counts = results[:state_mismatch]
+        .group_by { |e| "#{e[:datacite][:state]} -> #{e[:db][:expected_state]}" }
+        .transform_values(&:count)
+      puts '  By transition:'
+      state_counts.each do |transition, count|
+        puts "    #{transition}: #{count}"
       end
     end
 
