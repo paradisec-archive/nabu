@@ -4,6 +4,8 @@ ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
 ARG SENTRY_ENV
 
+ENV BUMP=1
+
 WORKDIR /
 
 COPY docker/oni.json /configuration.json

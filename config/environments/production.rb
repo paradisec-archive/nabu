@@ -95,4 +95,6 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :ses_v2
 
   config.oni_url = 'https://catalog.paradisec.org.au'
+
+  config.action_mailer.default_url_options = { host: 'admin-catalog.paradisec.org.au' }
 end

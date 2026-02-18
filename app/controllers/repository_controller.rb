@@ -9,7 +9,7 @@ class RepositoryController < ApplicationController
     if params[:edit].present?
       redirect_to edit_collection_path(collection), status: :moved_permanently
     else
-      redirect_to collection, status: :moved_permanently
+      redirect_to helpers.oni_collection_url(collection), status: :moved_permanently, allow_other_host: true
     end
   end
 
@@ -25,7 +25,7 @@ class RepositoryController < ApplicationController
     if params[:edit].present?
       redirect_to edit_collection_item_path(collection, item), status: :moved_permanently
     else
-      redirect_to [collection, item], status: :moved_permanently
+      redirect_to helpers.oni_item_url(item), status: :moved_permanently, allow_other_host: true
     end
   end
 

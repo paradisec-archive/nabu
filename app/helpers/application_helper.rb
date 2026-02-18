@@ -134,15 +134,6 @@ module ApplicationHelper
     crawler_patterns.any? { |pattern| request.user_agent.match?(pattern) }
   end
 
-  private
-
-  def crawler_ip?
-    crawler_subnet = IPAddr.new('202.46.62.0/24')
-    crawler_subnet.include?(request.remote_ip)
-  rescue IPAddr::InvalidAddressError
-    false
-  end
-
   def oni_collection_url(collection)
     "#{Rails.application.config.oni_url}/collection?id=#{URI.encode_www_form_component(repository_collection_url(collection))}"
   end
@@ -153,5 +144,14 @@ module ApplicationHelper
 
   def oni_essence_url(essence)
     "#{Rails.application.config.oni_url}/file?id=#{URI.encode_www_form_component(repository_essence_url(essence.collection, essence.item, essence.filename))}"
+  end
+
+  private
+
+  def crawler_ip?
+    crawler_subnet = IPAddr.new('202.46.62.0/24')
+    crawler_subnet.include?(request.remote_ip)
+  rescue IPAddr::InvalidAddressError
+    false
   end
 end
