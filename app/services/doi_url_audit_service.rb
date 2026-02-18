@@ -67,9 +67,11 @@ class DoiUrlAuditService
 
     current_url = response.dig('data', 'attributes', 'url')
     current_state = response.dig('data', 'attributes', 'state')
+    current_schema = response.dig('data', 'attributes', 'schemaVersion')
     expected_state = record_public?(record) ? 'findable' : 'registered'
     puts "  Current URL:  #{current_url}"
     puts "  State:        #{current_state} (expected: #{expected_state})"
+    puts "  Schema:       #{current_schema || 'unknown'}"
 
     if current_url == expected_url
       puts 'URLs already match, nothing to do.'
@@ -88,18 +90,10 @@ class DoiUrlAuditService
 
     return unless answer == 'y'
 
-    body = {
-      data: {
-        type: 'dois',
-        attributes: {
-          url: expected_url,
-          identifiers: [{ identifier: expected_url, identifierType: 'URL' }]
-        }
-      }
-    }.to_json
+    body = build_update_body(record)
 
     if datacite_put("/dois/#{doi}", body)
-      puts "Updated DOI #{doi} URL to #{expected_url}"
+      puts "Updated DOI #{doi} to #{expected_url}"
     else
       puts "Failed to update DOI #{doi}"
     end
@@ -266,6 +260,7 @@ class DoiUrlAuditService
         doi: doi_record['id'],
         url: doi_record.dig('attributes', 'url'),
         state: doi_record.dig('attributes', 'state'),
+        schema_version: doi_record.dig('attributes', 'schemaVersion'),
         identifiers: doi_record.dig('attributes', 'identifiers') || []
       }
     end
@@ -323,6 +318,33 @@ class DoiUrlAuditService
     uri.host == 'catalog.paradisec.org.au'
   rescue URI::InvalidURIError
     false
+  end
+
+  def build_update_body(record)
+    new_url = record.full_path
+
+    {
+      data: {
+        type: 'dois',
+        attributes: {
+          url: new_url,
+          identifiers: [{ identifier: new_url, identifierType: 'URL' }],
+          types: {
+            resourceType: "PARADISEC #{record.class}",
+            resourceTypeGeneral: resource_type_general(record)
+          },
+          schemaVersion: 'http://datacite.org/schema/kernel-4'
+        }
+      }
+    }.to_json
+  end
+
+  def resource_type_general(record)
+    case record
+    when Item then 'Collection'
+    when Essence then record.send(:essence_resource_type)
+    else 'Collection'
+    end
   end
 
   def print_report(results, dois_count)
@@ -393,6 +415,17 @@ class DoiUrlAuditService
       end
     end
 
+    all_entries = results[:correct] + results[:needs_update] + results[:unexpected_url]
+    schema_counts = all_entries
+      .group_by { |e| e[:datacite][:schema_version] || 'unknown' }
+      .transform_values(&:count)
+    if schema_counts.any?
+      puts "\nSchema versions:"
+      schema_counts.sort_by { |k, _| k }.each do |version, count|
+        puts "  #{version}: #{count}"
+      end
+    end
+
     puts "\n#{'=' * 60}\n"
   end
 
@@ -406,22 +439,13 @@ class DoiUrlAuditService
 
     needs_update.each do |entry|
       doi = entry[:datacite][:doi]
-      new_url = entry[:db][:expected_url]
-
-      body = {
-        data: {
-          type: 'dois',
-          attributes: {
-            url: new_url,
-            identifiers: [{ identifier: new_url, identifierType: 'URL' }]
-          }
-        }
-      }.to_json
+      record = entry[:db][:record]
+      body = build_update_body(record)
 
       response = datacite_put("/dois/#{doi}", body)
       if response
         updated += 1
-        Rails.logger.info "Updated DOI #{doi} URL to #{new_url}"
+        Rails.logger.info "Updated DOI #{doi} to #{record.full_path}"
       else
         failed += 1
         Rails.logger.error "Failed to update DOI #{doi}"
