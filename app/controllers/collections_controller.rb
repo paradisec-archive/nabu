@@ -60,7 +60,6 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.xml
       format.geo_json do
         json = {
           type: 'FeatureCollection',
