@@ -549,7 +549,7 @@ export class AppStack extends cdk.Stack {
       priority: 8,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/oai', '/oai/*']),
+        elbv2.ListenerCondition.pathPatterns(['/oai', '/oai/*', '/repository/*']),
       ],
     });
 
