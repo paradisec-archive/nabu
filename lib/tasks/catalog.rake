@@ -26,6 +26,12 @@ namespace :catalog do
     DoiUrlAuditService.run(update:, paged:)
   end
 
+  desc 'Fix a single DOI URL in DataCite'
+  task fix_doi: :environment do
+    doi = ENV.fetch('DOI') { abort 'Usage: DOI=10.26278/XXXX bin/rails catalog:fix_doi' }
+    DoiUrlAuditService.fix_one(doi)
+  end
+
   desc 'Remove old deleted versions'
   task remove_deleted_versions: :environment do
     env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')

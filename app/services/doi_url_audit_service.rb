@@ -9,9 +9,14 @@ require 'net/http'
 #   DoiUrlAuditService.run(update: true)           # report and update
 #   DoiUrlAuditService.run(paged: true)            # report page-by-page with prompts
 #   DoiUrlAuditService.run(update: true, paged: true) # update page-by-page with prompts
+#   DoiUrlAuditService.fix_one('10.26278/XXXX')       # fix a single DOI
 class DoiUrlAuditService
   def self.run(update: false, paged: false)
     new(update:, paged:).run
+  end
+
+  def self.fix_one(doi)
+    new.fix_one(doi)
   end
 
   def initialize(update: false, paged: false)
@@ -41,7 +46,67 @@ class DoiUrlAuditService
     puts "DOI URL Audit finished at #{Time.current} (total: #{elapsed}s)"
   end
 
+  def fix_one(doi)
+    record = find_record_by_doi(doi)
+    unless record
+      puts "DOI #{doi} not found in database"
+
+      return
+    end
+
+    expected_url = record.full_path
+    puts "Found: #{record.class} (#{record.full_identifier})"
+    puts "  Expected URL: #{expected_url}"
+
+    response = datacite_get_url("#{@base_url}/dois/#{doi}")
+    unless response
+      puts "DOI #{doi} not found in DataCite"
+
+      return
+    end
+
+    current_url = response.dig('data', 'attributes', 'url')
+    puts "  Current URL:  #{current_url}"
+
+    if current_url == expected_url
+      puts 'URLs already match, nothing to do.'
+
+      return
+    end
+
+    unless catalog_url?(current_url)
+      puts "Current URL is not on catalog.paradisec.org.au, skipping."
+
+      return
+    end
+
+    print 'Update this DOI? [y/N] '
+    answer = $stdin.gets&.strip&.downcase
+
+    return unless answer == 'y'
+
+    body = {
+      data: {
+        type: 'dois',
+        attributes: {
+          url: expected_url,
+          identifiers: [{ identifier: expected_url, identifierType: 'URL' }]
+        }
+      }
+    }.to_json
+
+    if datacite_put("/dois/#{doi}", body)
+      puts "Updated DOI #{doi} URL to #{expected_url}"
+    else
+      puts "Failed to update DOI #{doi}"
+    end
+  end
+
   private
+
+  def find_record_by_doi(doi)
+    Collection.find_by(doi:) || Item.find_by(doi:) || Essence.find_by(doi:)
+  end
 
   def run_batch
     datacite_dois = timed('Fetching all DataCite DOIs') { fetch_all_datacite_dois }
