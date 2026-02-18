@@ -19,6 +19,13 @@ namespace :catalog do
     BatchDoiMintingService.run(dry_run)
   end
 
+  desc 'Audit DOI URLs against DataCite and optionally update them'
+  task audit_dois: :environment do
+    update = ENV['UPDATE'] ? true : false
+    paged = ENV['PAGED'] ? true : false
+    DoiUrlAuditService.run(update:, paged:)
+  end
+
   desc 'Remove old deleted versions'
   task remove_deleted_versions: :environment do
     env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')

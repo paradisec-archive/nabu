@@ -74,7 +74,6 @@ class Item < ApplicationRecord
   include Entityable
   include ActionView::Helpers::SanitizeHelper
 
-  delegate :url_helpers, to: 'Rails.application.routes'
   has_paper_trail
   nilify_blanks
 
@@ -188,11 +187,6 @@ class Item < ApplicationRecord
 
   def full_identifier
     "#{collection.identifier}-#{identifier}"
-  end
-
-  def full_path
-    # FIX ME
-    "http://catalog.paradisec.org.au/collections/#{collection.identifier}/items/#{identifier}"
   end
 
   def xml_key

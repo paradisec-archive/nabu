@@ -2,6 +2,25 @@ module IdentifiableByDoi
   extend ActiveSupport::Concern
 
   included do
+    def full_path
+      helpers = Rails.application.routes.url_helpers
+      opts = repository_url_options
+
+      case self
+      when Collection
+        helpers.repository_collection_url(collection_identifier: identifier, **opts)
+      when Item
+        helpers.repository_item_url(collection_identifier: collection.identifier, item_identifier: identifier, **opts)
+      when Essence
+        helpers.repository_essence_url(
+          collection_identifier: item.collection.identifier,
+          item_identifier: item.identifier,
+          essence_filename: filename,
+          **opts
+        )
+      end
+    end
+
     def to_doi_json(prefix)
       # NOTE: Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
       publication_date =
@@ -70,6 +89,13 @@ module IdentifiableByDoi
   end
 
   private
+
+  def repository_url_options
+    uri = URI.parse(Rails.application.config.oni_url)
+    opts = { host: uri.host, protocol: uri.scheme }
+    opts[:port] = uri.port unless uri.port == uri.default_port
+    opts
+  end
 
   def essence_resource_type
     case mimetype.split('/')[0]

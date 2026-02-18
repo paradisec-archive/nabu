@@ -323,11 +323,6 @@ class Collection < ApplicationRecord
     identifier
   end
 
-  def full_path
-    # FIX ME
-    "http://catalog.paradisec.org.au/collections/#{identifier}"
-  end
-
   def xml_key
     "paradisec.org.au/collection/#{identifier}"
   end
