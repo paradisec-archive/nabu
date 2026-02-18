@@ -477,6 +477,10 @@ class DoiUrlAuditService
     result
   end
 
+  def user_agent
+    'Nabu/1.0 (https://catalog.paradisec.org.au; mailto:admin@paradisec.org.au)'
+  end
+
   def datacite_get_url(full_url)
     uri = URI.parse(full_url)
     connection = Net::HTTP.new(uri.host, uri.port)
@@ -484,6 +488,7 @@ class DoiUrlAuditService
 
     request = Net::HTTP::Get.new(uri.request_uri)
     request['Accept'] = 'application/vnd.api+json'
+    request['User-Agent'] = user_agent
     request.basic_auth(@user, @pass)
 
     response = connection.request(request)
@@ -504,6 +509,7 @@ class DoiUrlAuditService
 
     request = Net::HTTP::Put.new(uri.request_uri)
     request['Content-Type'] = 'application/vnd.api+json'
+    request['User-Agent'] = user_agent
     request.basic_auth(@user, @pass)
     request.body = body
 
