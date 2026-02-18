@@ -68,6 +68,7 @@ class DoiUrlAuditService
     current_url = response.dig('data', 'attributes', 'url')
     current_state = response.dig('data', 'attributes', 'state')
     current_schema = response.dig('data', 'attributes', 'schemaVersion')
+    current_contributors = response.dig('data', 'attributes', 'contributors') || []
     expected_state = record_public?(record) ? 'findable' : 'registered'
     puts "  Current URL:  #{current_url}"
     puts "  State:        #{current_state} (expected: #{expected_state})"
@@ -90,7 +91,7 @@ class DoiUrlAuditService
 
     return unless answer == 'y'
 
-    body = build_update_body(record)
+    body = build_update_body(record, current_contributors:)
 
     if datacite_put("/dois/#{doi}", body)
       puts "Updated DOI #{doi} to #{expected_url}"
@@ -261,7 +262,8 @@ class DoiUrlAuditService
         url: doi_record.dig('attributes', 'url'),
         state: doi_record.dig('attributes', 'state'),
         schema_version: doi_record.dig('attributes', 'schemaVersion'),
-        identifiers: doi_record.dig('attributes', 'identifiers') || []
+        identifiers: doi_record.dig('attributes', 'identifiers') || [],
+        contributors: doi_record.dig('attributes', 'contributors') || []
       }
     end
   end
@@ -320,23 +322,28 @@ class DoiUrlAuditService
     false
   end
 
-  def build_update_body(record)
+  def build_update_body(record, current_contributors: [])
     new_url = record.full_path
 
-    {
-      data: {
-        type: 'dois',
-        attributes: {
-          url: new_url,
-          identifiers: [{ identifier: new_url, identifierType: 'URL' }],
-          types: {
-            resourceType: "PARADISEC #{record.class}",
-            resourceTypeGeneral: resource_type_general(record)
-          },
-          schemaVersion: 'http://datacite.org/schema/kernel-4'
-        }
-      }
-    }.to_json
+    attributes = {
+      url: new_url,
+      identifiers: [{ identifier: new_url, identifierType: 'URL' }],
+      types: {
+        resourceType: "PARADISEC #{record.class}",
+        resourceTypeGeneral: resource_type_general(record)
+      },
+      schemaVersion: 'http://datacite.org/schema/kernel-4'
+    }
+
+    if current_contributors.any? { |c| c['contributorType'].blank? }
+      contributors = [{ name: record.collector_name, contributorType: 'DataCollector' }]
+      if record.respond_to?(:university_name) && record.university_name.present?
+        contributors.push({ name: record.university_name, contributorType: 'DataCollector' })
+      end
+      attributes[:contributors] = contributors
+    end
+
+    { data: { type: 'dois', attributes: } }.to_json
   end
 
   def resource_type_general(record)
@@ -440,7 +447,7 @@ class DoiUrlAuditService
     needs_update.each do |entry|
       doi = entry[:datacite][:doi]
       record = entry[:db][:record]
-      body = build_update_body(record)
+      body = build_update_body(record, current_contributors: entry[:datacite][:contributors])
 
       response = datacite_put("/dois/#{doi}", body)
       if response
