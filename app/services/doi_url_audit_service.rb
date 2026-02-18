@@ -1,5 +1,6 @@
 require 'uri'
 require 'net/http'
+require 'concurrent'
 
 # Audits DOI URLs registered with DataCite against expected repository URLs.
 # Optionally updates mismatched DOIs when run with update: true.
@@ -44,6 +45,9 @@ class DoiUrlAuditService
 
     elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - @run_start).round(1)
     puts "DOI URL Audit finished at #{Time.current} (total: #{elapsed}s)"
+  rescue => e
+    AdminMailer.with(error: e, failed_dois: []).doi_audit_error.deliver_now
+    raise
   end
 
   def fix_one(doi)
@@ -440,31 +444,49 @@ class DoiUrlAuditService
     return if needs_update.empty?
 
     puts "Updating #{needs_update.size} DOIs..."
-    updated = 0
-    failed = 0
-    count = 0
+    updated = Concurrent::AtomicFixnum.new(0)
+    failed_dois = Concurrent::Array.new
+    count = Concurrent::AtomicFixnum.new(0)
+    pool = Concurrent::FixedThreadPool.new(10)
 
-    needs_update.each do |entry|
-      doi = entry[:datacite][:doi]
-      record = entry[:db][:record]
-      body = build_update_body(record, current_contributors: entry[:datacite][:contributors])
+    needs_update.each_slice(10) do |slice|
+      slice_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-      response = datacite_put("/dois/#{doi}", body)
-      if response
-        updated += 1
-        Rails.logger.info "Updated DOI #{doi} to #{record.full_path}"
-      else
-        failed += 1
-        Rails.logger.error "Failed to update DOI #{doi}"
+      futures = slice.map do |entry|
+        Concurrent::Promises.future_on(pool) do
+          doi = entry[:datacite][:doi]
+          record = entry[:db][:record]
+          body = build_update_body(record, current_contributors: entry[:datacite][:contributors])
+
+          response = datacite_put("/dois/#{doi}", body)
+          if response
+            updated.increment
+            Rails.logger.info "Updated DOI #{doi} to #{record.full_path}"
+          else
+            failed_dois << doi
+            Rails.logger.error "Failed to update DOI #{doi}"
+          end
+
+          current = count.increment
+          print_progress(current)
+        end
       end
 
-      count += 1
-      print_progress(count)
-      sleep(0.25)
+      futures.each(&:value!)
+
+      elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - slice_start
+      sleep(6.0 - elapsed) if elapsed < 6.0
     end
 
-    print_progress_done(count)
-    puts "Update complete: #{updated} updated, #{failed} failed"
+    pool.shutdown
+    pool.wait_for_termination
+
+    print_progress_done(count.value)
+    puts "Update complete: #{updated.value} updated, #{failed_dois.size} failed"
+
+    return if failed_dois.empty?
+
+    AdminMailer.with(error: nil, failed_dois:).doi_audit_error.deliver_now
   end
 
   def print_progress(count)

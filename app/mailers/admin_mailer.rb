@@ -32,4 +32,11 @@ class AdminMailer < ApplicationMailer
 
     mail(subject:)
   end
+
+  def doi_audit_error
+    @error = params[:error]
+    @failed_dois = params[:failed_dois]
+
+    mail(subject: "[NABU Admin] DOI Audit Error: #{Date.today.strftime('%F')}")
+  end
 end

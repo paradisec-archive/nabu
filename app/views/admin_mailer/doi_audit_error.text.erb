@@ -1,0 +1,21 @@
+DOI Audit encountered an error at <%= Time.current %>.
+
+<% if @error -%>
+## Error
+
+<%= @error.class %>: <%= @error.message %>
+
+### Backtrace
+
+<% @error.backtrace&.first(20)&.each do |line| -%>
+  <%= line %>
+<% end -%>
+<% end -%>
+
+<% if @failed_dois.any? -%>
+## Failed DOI Updates (<%= @failed_dois.size %>)
+
+<% @failed_dois.each do |doi| -%>
+  - <%= doi %>
+<% end -%>
+<% end -%>
