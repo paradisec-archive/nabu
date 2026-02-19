@@ -296,7 +296,7 @@ class DoiUrlAuditService
         results[:state_mismatch] << entry
       end
 
-      if dc_doi[:url] == db_entry[:expected_url]
+      if dc_doi[:url] == db_entry[:expected_url] || doi_fail_url?(dc_doi[:url])
         results[:correct] << entry
       elsif catalog_url?(dc_doi[:url])
         results[:needs_update] << entry
@@ -315,6 +315,12 @@ class DoiUrlAuditService
     when Essence then record.item.public?
     else false
     end
+  end
+
+  DOI_FAIL_URL = 'https://www.paradisec.org.au/PDSCDOIFail.html'
+
+  def doi_fail_url?(url)
+    url == DOI_FAIL_URL
   end
 
   def catalog_url?(url)
