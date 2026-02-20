@@ -2,40 +2,33 @@
 
 export AWS_OUTPUT="json"
 
-TASK_NAME=$1
+TASK_NAME="${1}"
+shift
+
+echo "Getting cluster..."
+CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]' | grep 'nabu$')
 
 if [ -z "$TASK_NAME" ]; then
-  TASKS=$(aws ecs list-task-definitions \
-    | jq -r '.taskDefinitionArns | .[]' \
-    | sed 's/.*task-definition\/StageCdkStack//;s/Definition.*//')
+  TASKS=$(aws ecs list-services --cluster "$CLUSTER")
 
   echo "Please specify a task to run"
-  echo Select from $TASKS
+  echo Select from "$TASKS" | tr '' '\n'
   exit 1
 fi
 
-echo "Getting task..."
-TASK=$(aws ecs list-task-definitions | jq  -r '.taskDefinitionArns | .[]' | grep -i $TASK_NAME | tail -1)
+echo "Getting task def..."
+TASK_DEF=$(aws ecs list-task-definitions | jq -r '.taskDefinitionArns | .[]' | grep -i "${TASK_NAME}Task" | tail -1)
 
-echo "Getting cluster..."
-CLUSTER=$(aws ecs list-clusters | jq -r '.clusterArns | .[]')
+# Build JSON array from arguments
+CMD_JSON=$(printf '%s\n' "$@" | jq -R . | jq -s .)
 
-echo "Getting security group..."
-APP_SG=$(aws ec2 describe-security-groups \
-  | jq -r '.SecurityGroups | .[] | select(.GroupName | test("StageCdkStack-AppServiceSecurityGroup")) | .GroupId')
-
-echo "Finding VPC..."
-VPC_ID=$(aws ec2 describe-vpcs \
-  --query 'Vpcs[?Tags[?Value == `StageCdkStack`]]' \
-  | jq -r '.[0].VpcId')
-
-echo "Finding Subnet..."
-SUBNET_ID=$(aws ec2 describe-instances \
-  | jq -r '.Reservations | .[] | .Instances | .[] | select(.Tags != null) | select(.Tags | .[] | .Value | test("tageCdkStack-ClusterEcsAsgA")) | .SubnetId' \
-  | tail -1)
-
-echo "Running task..."
 aws ecs run-task \
-  --cluster $CLUSTER \
-  --task-definition $TASK \
-  --network-configuration '{ "awsvpcConfiguration": { "subnets": ["'$SUBNET_ID'"], "securityGroups": ["'$APP_SG'"] } }'
+  --cluster "$CLUSTER" \
+  --task-definition "$TASK_DEF" \
+  --launch-type EC2 \
+  --overrides "{
+    \"containerOverrides\": [{
+      \"name\": \"$TASK_NAME\",
+      \"command\": $CMD_JSON
+    }]
+  }"
