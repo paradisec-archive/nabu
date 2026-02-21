@@ -571,7 +571,7 @@ GEM
       activerecord (>= 7.1)
       chartkick (>= 5)
       groupdate (>= 6)
-    searchkick (6.0.3)
+    searchkick (6.1.0)
       activemodel (>= 7.2)
     securerandom (0.4.1)
     selenium-webdriver (4.40.0)
