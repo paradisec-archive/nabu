@@ -22,7 +22,7 @@ module Oni
 
     def initialize(params)
       permitted = ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }
-      filters = { languages_with_code: [], countries: [], collector_name: [], collection_title: [], access_condition_name: [], encodingFormat: [], rootCollection: [], originatedOn: [], entity_type: [] }
+      filters = { languages_with_code: [], countries: [], collector_name: [], collection_title: [], access_condition_name: [], encodingFormat: [], rootCollection: [], originatedOn: [], entity_type: [], full_identifier: [] }
       bounding_box = { topRight: {}, bottomLeft: {} }
       object_params = params.permit(permitted, filters:, boundingBox: bounding_box)
 

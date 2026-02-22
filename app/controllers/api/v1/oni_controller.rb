@@ -224,7 +224,8 @@ module Api
           encodingFormat: {},
           rootCollection: {},
           originatedOn: { date_histogram: { field: 'originated_on', calendar_interval: 'year', format: 'yyyy', min_doc_count: 1 } },
-          entity_type: {}
+          entity_type: {},
+          full_identifier: {}
         }
 
         body_options = { track_total_hits: true }
