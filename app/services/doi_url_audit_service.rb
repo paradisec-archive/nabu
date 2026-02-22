@@ -27,6 +27,9 @@ class DoiUrlAuditService
     @prefix = ENV.fetch('DOI_PREFIX')
     @update = update
     @paged = paged
+    # Flush the output
+    $stdout.sync = true
+    $stderr.sync = true
   end
 
   def run
@@ -85,7 +88,7 @@ class DoiUrlAuditService
     end
 
     unless catalog_url?(current_url)
-      puts "Current URL is not on catalog.paradisec.org.au, skipping."
+      puts 'Current URL is not on catalog.paradisec.org.au, skipping.'
 
       return
     end
