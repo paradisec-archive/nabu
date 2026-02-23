@@ -7,7 +7,7 @@ class RepositoryController < ApplicationController
     raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
 
     if params[:edit].present?
-      redirect_to edit_collection_path(collection), status: :moved_permanently
+      redirect_to edit_collection_url(collection), status: :moved_permanently
     else
       redirect_to helpers.oni_collection_url(collection), status: :moved_permanently, allow_other_host: true
     end
@@ -23,7 +23,7 @@ class RepositoryController < ApplicationController
     raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:collection_identifier]}" if item.nil?
 
     if params[:edit].present?
-      redirect_to edit_collection_item_path(collection, item), status: :moved_permanently
+      redirect_to edit_collection_item_url(collection, item), status: :moved_permanently
     else
       redirect_to helpers.oni_item_url(item), status: :moved_permanently, allow_other_host: true
     end
