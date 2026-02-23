@@ -82,7 +82,7 @@ services:
 
   oni-ui:
     ports:
-      - "80:80"
+      - "7000:80"
     build:
       context: .
       dockerfile: docker/oni.Dockerfile

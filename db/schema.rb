@@ -10,32 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_23_013835) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", precision: nil, null: false
+    t.string "name"
     t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "active_admin_comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "resource_id", null: false
-    t.string "resource_type", null: false
     t.integer "author_id"
     t.string "author_type"
     t.text "body", size: :medium
     t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.string "namespace"
+    t.integer "resource_id", null: false
+    t.string "resource_type", null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
     t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
     t.index ["resource_type", "resource_id"], name: "index_admin_notes_on_resource_type_and_resource_id"
   end
 
   create_table "admin_messages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "finish_at", precision: nil, null: false
     t.text "message", size: :medium, null: false
     t.datetime "start_at", precision: nil, null: false
-    t.datetime "finish_at", precision: nil, null: false
-    t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
@@ -64,32 +64,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "identifier", null: false, collation: "utf8mb4_bin"
-    t.string "title", null: false
-    t.text "description", size: :medium, null: false
-    t.integer "collector_id", null: false
-    t.integer "operator_id"
-    t.integer "university_id"
-    t.integer "field_of_research_id"
-    t.string "region"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.integer "access_condition_id"
     t.text "access_narrative", size: :medium
-    t.string "metadata_source"
-    t.string "orthographic_notes"
-    t.string "media"
+    t.integer "collector_id", null: false
     t.text "comments", size: :medium
     t.boolean "complete"
-    t.boolean "private"
-    t.string "tape_location"
+    t.datetime "created_at", precision: nil, null: false
     t.boolean "deposit_form_received"
-    t.float "north_limit"
-    t.float "south_limit"
-    t.float "west_limit"
-    t.float "east_limit"
+    t.text "description", size: :medium, null: false
     t.string "doi"
+    t.float "east_limit"
+    t.integer "field_of_research_id"
     t.boolean "has_deposit_form"
+    t.string "identifier", null: false, collation: "utf8mb4_bin"
+    t.string "media"
+    t.string "metadata_source"
+    t.float "north_limit"
+    t.integer "operator_id"
+    t.string "orthographic_notes"
+    t.boolean "private"
+    t.string "region"
+    t.float "south_limit"
+    t.string "tape_location"
+    t.string "title", null: false
+    t.integer "university_id"
+    t.datetime "updated_at", precision: nil, null: false
+    t.float "west_limit"
     t.index ["access_condition_id"], name: "index_collections_on_access_condition_id"
     t.index ["collector_id"], name: "index_collections_on_collector_id"
     t.index ["field_of_research_id"], name: "index_collections_on_field_of_research_id"
@@ -106,13 +106,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "comments", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "owner_id", null: false
+    t.text "body", size: :medium, null: false
     t.integer "commentable_id", null: false
     t.string "commentable_type", null: false
-    t.text "body", size: :medium, null: false
     t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
+    t.integer "owner_id", null: false
     t.string "status"
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["commentable_id", "commentable_type"], name: "index_comments_on_commentable_id_and_commentable_type"
     t.index ["owner_id"], name: "index_comments_on_owner_id"
   end
@@ -145,32 +145,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "downloads", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "essence_id"
     t.datetime "created_at", precision: nil, null: false
+    t.integer "essence_id"
     t.datetime "updated_at", precision: nil, null: false
+    t.integer "user_id"
     t.index ["essence_id"], name: "index_downloads_on_essence_id"
     t.index ["user_id"], name: "index_downloads_on_user_id"
   end
 
   create_table "dump_for_nick", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "collid", null: false
+    t.text "content_languages", size: :long
     t.string "itemid", null: false
     t.text "subject_languages", size: :long
-    t.text "content_languages", size: :long
   end
 
   create_table "entities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "entity_type", null: false
-    t.integer "entity_id", null: false
-    t.string "member_of"
-    t.string "title"
-    t.date "originated_on"
-    t.string "media_types", limit: 1000
-    t.boolean "private", default: false, null: false
-    t.integer "items_count", default: 0, null: false
-    t.integer "essences_count", default: 0, null: false
     t.datetime "created_at", null: false
+    t.integer "entity_id", null: false
+    t.string "entity_type", null: false
+    t.integer "essences_count", default: 0, null: false
+    t.integer "items_count", default: 0, null: false
+    t.string "media_types", limit: 1000
+    t.string "member_of"
+    t.date "originated_on"
+    t.boolean "private", default: false, null: false
+    t.string "title"
     t.datetime "updated_at", null: false
     t.index ["entity_type", "entity_id"], name: "index_entities_on_entity_type_and_entity_id", unique: true
     t.index ["entity_type", "member_of"], name: "index_entities_on_entity_type_and_member_of"
@@ -178,19 +178,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "essences", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "item_id"
-    t.string "filename"
-    t.string "mimetype"
     t.bigint "bitrate"
+    t.integer "channels"
+    t.datetime "created_at", precision: nil
+    t.boolean "derived_files_generated", default: false
+    t.string "doi"
+    t.float "duration"
+    t.string "filename"
+    t.integer "fps"
+    t.integer "item_id"
+    t.string "mimetype"
     t.integer "samplerate"
     t.bigint "size"
-    t.float "duration"
-    t.integer "channels"
-    t.integer "fps"
-    t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.string "doi"
-    t.boolean "derived_files_generated", default: false
     t.index ["item_id", "filename"], name: "index_essences_on_item_id_and_filename", unique: true
     t.index ["item_id"], name: "index_essences_on_item_id"
   end
@@ -202,17 +202,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
     t.index ["name"], name: "index_fields_of_research_on_name", unique: true
   end
 
+  create_table "fields_of_research_backup", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "id", default: 0, null: false
+    t.string "identifier"
+    t.string "name"
+  end
+
   create_table "funding_bodies", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "key_prefix"
     t.datetime "created_at", precision: nil, null: false
+    t.string "key_prefix"
+    t.string "name", null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "grants", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id"
-    t.string "grant_identifier"
     t.integer "funding_body_id"
+    t.string "grant_identifier"
     t.index ["collection_id", "funding_body_id"], name: "index_grants_on_collection_id_and_funding_body_id"
     t.index ["collection_id"], name: "index_grants_on_collection_id"
     t.index ["funding_body_id"], name: "index_grants_on_funding_body_id"
@@ -225,9 +231,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "item_agents", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "agent_role_id", null: false
     t.integer "item_id", null: false
     t.integer "user_id", null: false
-    t.integer "agent_role_id", null: false
     t.index ["item_id", "user_id", "agent_role_id"], name: "index_item_agents_on_item_id_and_user_id_and_agent_role_id", unique: true
   end
 
@@ -238,20 +244,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "item_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "item_id", null: false
     t.integer "country_id", null: false
+    t.integer "item_id", null: false
     t.index ["item_id", "country_id"], name: "index_item_countries_on_item_id_and_country_id", unique: true
   end
 
   create_table "item_data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "item_id", null: false
     t.integer "data_category_id", null: false
+    t.integer "item_id", null: false
     t.index ["item_id", "data_category_id"], name: "index_item_data_categories_on_item_id_and_data_category_id", unique: true
   end
 
   create_table "item_data_types", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "item_id", null: false
     t.integer "data_type_id", null: false
+    t.integer "item_id", null: false
     t.index ["data_type_id"], name: "index_item_data_types_on_data_type_id"
     t.index ["item_id"], name: "index_item_data_types_on_item_id"
   end
@@ -269,43 +275,43 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "items", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "collection_id", null: false
-    t.string "identifier", null: false, collation: "utf8mb4_bin"
-    t.boolean "private"
-    t.string "title", null: false
-    t.string "url"
-    t.integer "collector_id", null: false
-    t.integer "university_id"
-    t.integer "operator_id"
-    t.text "description", size: :medium, null: false
-    t.date "originated_on"
-    t.string "language"
-    t.string "dialect"
-    t.string "region"
-    t.integer "discourse_type_id"
     t.integer "access_condition_id"
     t.text "access_narrative", size: :medium
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.boolean "metadata_exportable"
-    t.boolean "born_digital"
-    t.boolean "tapes_returned"
-    t.text "original_media", size: :medium
-    t.datetime "received_on", precision: nil
-    t.datetime "digitised_on", precision: nil
-    t.text "ingest_notes", size: :medium
-    t.datetime "metadata_imported_on", precision: nil
-    t.datetime "metadata_exported_on", precision: nil
-    t.text "tracking", size: :medium
     t.text "admin_comment", size: :medium
-    t.boolean "external", default: false
-    t.text "originated_on_narrative", size: :medium
-    t.float "north_limit"
-    t.float "south_limit"
-    t.float "west_limit"
-    t.float "east_limit"
+    t.boolean "born_digital"
+    t.integer "collection_id", null: false
+    t.integer "collector_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.text "description", size: :medium, null: false
+    t.string "dialect"
+    t.datetime "digitised_on", precision: nil
+    t.integer "discourse_type_id"
     t.string "doi"
+    t.float "east_limit"
     t.integer "essences_count"
+    t.boolean "external", default: false
+    t.string "identifier", null: false, collation: "utf8mb4_bin"
+    t.text "ingest_notes", size: :medium
+    t.string "language"
+    t.boolean "metadata_exportable"
+    t.datetime "metadata_exported_on", precision: nil
+    t.datetime "metadata_imported_on", precision: nil
+    t.float "north_limit"
+    t.integer "operator_id"
+    t.text "original_media", size: :medium
+    t.date "originated_on"
+    t.text "originated_on_narrative", size: :medium
+    t.boolean "private"
+    t.datetime "received_on", precision: nil
+    t.string "region"
+    t.float "south_limit"
+    t.boolean "tapes_returned"
+    t.string "title", null: false
+    t.text "tracking", size: :medium
+    t.integer "university_id"
+    t.datetime "updated_at", precision: nil, null: false
+    t.string "url"
+    t.float "west_limit"
     t.index ["access_condition_id"], name: "index_items_on_access_condition_id"
     t.index ["collection_id", "private", "updated_at"], name: "index_items_on_collection_id_and_private_and_updated_at"
     t.index ["collection_id"], name: "index_items_on_collection_id"
@@ -318,51 +324,51 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
 
   create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "code"
+    t.float "east_limit"
     t.string "name"
-    t.boolean "retired"
     t.float "north_limit"
+    t.boolean "retired"
     t.float "south_limit"
     t.float "west_limit"
-    t.float "east_limit"
     t.index ["code"], name: "index_languages_on_code", unique: true
   end
 
   create_table "latlon_boundaries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "country_id", null: false
     t.decimal "east_limit", precision: 6, scale: 3, null: false
-    t.decimal "west_limit", precision: 6, scale: 3, null: false
     t.decimal "north_limit", precision: 6, scale: 3, null: false
     t.decimal "south_limit", precision: 6, scale: 3, null: false
+    t.decimal "west_limit", precision: 6, scale: 3, null: false
     t.boolean "wrapped", default: false
     t.index ["country_id"], name: "index_latlon_boundaries_on_country_id"
   end
 
   create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.integer "expires_in", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
-    t.datetime "created_at", null: false
-    t.datetime "revoked_at"
     t.string "code_challenge"
     t.string "code_challenge_method"
+    t.datetime "created_at", null: false
+    t.integer "expires_in", null: false
+    t.text "redirect_uri", null: false
+    t.bigint "resource_owner_id", null: false
+    t.datetime "revoked_at"
+    t.string "scopes", default: "", null: false
+    t.string "token", null: false
     t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
     t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
   create_table "oauth_access_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "resource_owner_id"
     t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.string "refresh_token"
-    t.integer "expires_in"
-    t.string "scopes"
     t.datetime "created_at", null: false
-    t.datetime "revoked_at"
+    t.integer "expires_in"
     t.string "previous_refresh_token", default: "", null: false
+    t.string "refresh_token"
+    t.bigint "resource_owner_id"
+    t.datetime "revoked_at"
+    t.string "scopes"
+    t.string "token", null: false
     t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
     t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
@@ -370,13 +376,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
+    t.boolean "admin_only", default: false, null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.string "secret", null: false
+    t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
@@ -388,23 +395,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "searchjoy_conversions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "search_id"
-    t.string "convertable_type"
     t.bigint "convertable_id"
+    t.string "convertable_type"
     t.datetime "created_at"
+    t.bigint "search_id"
     t.index ["convertable_type", "convertable_id"], name: "index_searchjoy_conversions_on_convertable"
     t.index ["search_id"], name: "index_searchjoy_conversions_on_search_id"
   end
 
   create_table "searchjoy_searches", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "user_id"
-    t.string "search_type"
-    t.string "query"
-    t.string "normalized_query"
-    t.string "search_family"
-    t.integer "results_count"
-    t.datetime "created_at"
     t.datetime "converted_at"
+    t.datetime "created_at"
+    t.string "normalized_query"
+    t.string "query"
+    t.integer "results_count"
+    t.string "search_family"
+    t.string "search_type"
+    t.bigint "user_id"
     t.index ["created_at"], name: "index_searchjoy_searches_on_created_at"
     t.index ["search_type", "created_at"], name: "index_searchjoy_searches_on_search_type_and_created_at"
     t.index ["search_type", "normalized_query", "created_at"], name: "index_searchjoy_searches_on_search_type_query"
@@ -412,45 +419,46 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "universities", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
+    t.string "name"
     t.string "party_identifier"
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "email"
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at", precision: nil
-    t.datetime "remember_created_at", precision: nil
-    t.integer "sign_in_count", default: 0
-    t.datetime "current_sign_in_at", precision: nil
-    t.datetime "last_sign_in_at", precision: nil
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
-    t.string "confirmation_token"
-    t.datetime "confirmed_at", precision: nil
-    t.datetime "confirmation_sent_at", precision: nil
-    t.string "unconfirmed_email"
-    t.integer "failed_attempts", default: 0
-    t.string "unlock_token"
-    t.datetime "locked_at", precision: nil
-    t.string "first_name", null: false
-    t.string "last_name"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.boolean "admin", default: false, null: false
     t.string "address"
     t.string "address2"
-    t.string "country"
-    t.string "phone"
-    t.boolean "contact_only", default: false
-    t.integer "rights_transferred_to_id"
-    t.string "rights_transfer_reason"
-    t.string "party_identifier"
+    t.boolean "admin", default: false, null: false
     t.boolean "collector", default: false, null: false
+    t.datetime "confirmation_sent_at", precision: nil
+    t.string "confirmation_token"
+    t.datetime "confirmed_at", precision: nil
+    t.boolean "contact_only", default: false
+    t.string "country"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "current_sign_in_at", precision: nil
+    t.string "current_sign_in_ip"
+    t.string "email"
+    t.string "encrypted_password", default: "", null: false
+    t.integer "failed_attempts", default: 0
+    t.string "first_name", null: false
+    t.string "last_name"
+    t.datetime "last_sign_in_at", precision: nil
+    t.string "last_sign_in_ip"
+    t.datetime "locked_at", precision: nil
+    t.string "party_identifier"
+    t.string "phone"
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "reset_password_sent_at", precision: nil
+    t.string "reset_password_token"
+    t.string "rights_transfer_reason"
+    t.integer "rights_transferred_to_id"
+    t.integer "sign_in_count", default: 0
+    t.datetime "terms_accepted_at"
+    t.string "unconfirmed_email"
     t.string "unikey"
+    t.string "unlock_token"
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -460,13 +468,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_100648) do
   end
 
   create_table "versions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "item_type", null: false
-    t.integer "item_id", null: false
-    t.string "event", null: false
-    t.string "whodunnit"
-    t.text "object", size: :long
     t.datetime "created_at", precision: nil
+    t.string "event", null: false
+    t.integer "item_id", null: false
+    t.string "item_type", null: false
+    t.text "object", size: :long
     t.text "object_changes", size: :long
+    t.string "whodunnit"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 

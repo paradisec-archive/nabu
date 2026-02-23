@@ -415,9 +415,9 @@ Doorkeeper.configure do
   #
   # By default all Resource Owners are authorized to any Client (application).
   #
-  # authorize_resource_owner_for_client do |client, resource_owner|
-  #   resource_owner.admin? || client.owners_allowlist.include?(resource_owner)
-  # end
+  authorize_resource_owner_for_client do |client, resource_owner|
+    !client.admin_only? || resource_owner.admin?
+  end
 
   # Allows additional data fields to be sent while granting access to an application,
   # and for this additional data to be included in subsequently generated access tokens.

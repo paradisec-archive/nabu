@@ -1,0 +1,53 @@
+.border-bottom.mb-4
+  %h1= t('.title', name: @application.name)
+
+.row
+  .col-md-8
+    %h4= "#{t('.application_id')}:"
+    %p
+      %code.bg-light#application_id= @application.uid
+
+    %h4= "#{t('.secret')}:"
+    %p
+      %code.bg-light#secret
+        - secret = flash[:application_secret].presence || @application.plaintext_secret
+        - if secret.blank? && Doorkeeper.config.application_secret_hashed?
+          %span.bg-light.font-italic.text-uppercase.text-muted= t('.secret_hashed')
+        - else
+          = secret
+
+    %h4= "#{t('.scopes')}:"
+    %p
+      %code.bg-light#scopes
+        - if @application.scopes.present?
+          = @application.scopes
+        - else
+          %span.bg-light.font-italic.text-uppercase.text-muted= t('.not_defined')
+
+    %h4= "#{t('.confidential')}:"
+    %p
+      %code.bg-light#confidential= @application.confidential?
+
+    %h4 Admin Only:
+    %p
+      %code.bg-light#admin_only= @application.admin_only?
+
+    %h4= "#{t('.callback_urls')}:"
+
+    - if @application.redirect_uri.present?
+      %table
+        - @application.redirect_uri.split.each do |uri|
+          %tr
+            %td
+              %code.bg-light= uri
+            %td
+              = link_to t('doorkeeper.applications.buttons.authorize'), oauth_authorization_path(client_id: @application.uid, redirect_uri: uri, response_type: 'code', scope: @application.scopes), class: 'btn btn-success', target: '_blank'
+    - else
+      %span.bg-light.font-italic.text-uppercase.text-muted= t('.not_defined')
+
+  .col-md-4
+    %h3= t('.actions')
+
+    %p= link_to t('doorkeeper.applications.buttons.edit'), edit_oauth_application_path(@application), class: 'btn btn-primary'
+
+    %p= render 'delete_form', application: @application, submit_btn_css: 'btn btn-danger'

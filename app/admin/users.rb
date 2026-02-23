@@ -34,6 +34,7 @@
 # **`reset_password_token`**      | `string(255)`      |
 # **`rights_transfer_reason`**    | `string(255)`      |
 # **`sign_in_count`**             | `integer`          | `default(0)`
+# **`terms_accepted_at`**         | `datetime`         |
 # **`unconfirmed_email`**         | `string(255)`      |
 # **`unikey`**                    | `string(255)`      |
 # **`unlock_token`**              | `string(255)`      |
