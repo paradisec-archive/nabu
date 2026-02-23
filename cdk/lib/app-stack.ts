@@ -292,6 +292,7 @@ export class AppStack extends cdk.Stack {
       memoryLimitMiB: 128,
       image: ecs.ContainerImage.fromAsset('../docker', {
         file: 'downloader.Dockerfile',
+        extraHash: execSync('git ls-remote --tags https://github.com/paradisec-archive/arocapi-downloader.git | sort -t / -k 3 -V | tail -1').toString().trim(),
       }),
       portMappings: [{ name: 'downloader', containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'DownloaderService' }),
