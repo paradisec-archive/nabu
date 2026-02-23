@@ -30,4 +30,4 @@ aws ecs execute-command \
   --task "$TASK" \
   --interactive \
   --container "${TASK_NAME}" \
-  --command "/bin/bash $*"
+  --command "/bin/sh $*"
