@@ -13,5 +13,5 @@ RUN sed -i "s#ROCRATE_API_ENDPOINT#$ROCRATE_API_ENDPOINT#;s#ROCRATE_API_CLIENTID
 
 WORKDIR /usr/share/nginx/html
 
-COPY docker/i18n .
+COPY docker/i18n i18n
 COPY app/assets/images/paradisec.jpg logo.jpg
