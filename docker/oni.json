@@ -110,7 +110,7 @@
           "dateModified"
         ]
       },
-      "memberSort": "id"
+      "memberSort": "identifier"
     },
     "object": {
       "meta": {
@@ -140,7 +140,7 @@
           "dateCreated"
         ]
       },
-      "memberSort": "id"
+      "memberSort": "identifier"
     },
     "file": {
       "meta": {

@@ -300,16 +300,22 @@ class CollectionsController < ApplicationController
         saved_items += 1
         added_items += "#{item.identifier}, "
       end
-      flash[:notice] = "SUCCESS: #{saved_items} items created/updated for collection #{@collection.identifier}<br/>"
-      flash[:notice] += sheet.notices.join('<br/>').truncate(500) unless sheet.notices.empty?
-      flash[:notice] += "<br/>Added items: #{added_items.chomp(', ')}".truncate(500)
-      flash[:notice] += ' Truncated...'
+      flash[:notice] = "SUCCESS: <b>#{saved_items}</b> items created/updated for collection #{@collection.identifier}<br/>"
+      flash[:notice] += sheet.notices.join('<br/>').truncate(1000) unless sheet.notices.empty?
+      flash[:notice] += '<br />'
+      if added_items.chomp(', ').length > 0
+        flash[:notice] += "<br /><b>Added items:</b> #{added_items.chomp(', ')}".truncate(1000)
+        flash[:notice] += '<br />'
+        if added_items.chomp(', ').length > 1000
+          flash[:notice] += ' Truncated...'
+        end
+      end
 
       redirect_to @collection
     else
       @collection ||= Collection.new
-      flash.now[:notice] = sheet.notices.join('<br/>').truncate(500) unless sheet.notices.empty?
-      flash.now[:error] = sheet.errors.join('<br/>').truncate(500) unless sheet.errors.empty?
+      flash.now[:notice] = sheet.notices.join('<br/>').truncate(1000) unless sheet.notices.empty?
+      flash.now[:error] = sheet.errors.join('<br/>').truncate(1000) unless sheet.errors.empty?
       render 'new_from_metadata'
     end
   end
