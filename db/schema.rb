@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_23_013835) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_09_000002) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -165,6 +165,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_23_013835) do
     t.integer "entity_id", null: false
     t.string "entity_type", null: false
     t.integer "essences_count", default: 0, null: false
+    t.string "identifier", null: false
     t.integer "items_count", default: 0, null: false
     t.string "media_types", limit: 1000
     t.string "member_of"
@@ -174,6 +175,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_23_013835) do
     t.datetime "updated_at", null: false
     t.index ["entity_type", "entity_id"], name: "index_entities_on_entity_type_and_entity_id", unique: true
     t.index ["entity_type", "member_of"], name: "index_entities_on_entity_type_and_member_of"
+    t.index ["identifier"], name: "index_entities_on_identifier"
     t.index ["member_of"], name: "index_entities_on_member_of"
   end
 

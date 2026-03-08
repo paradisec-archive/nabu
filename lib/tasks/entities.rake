@@ -15,6 +15,7 @@ namespace :entities do
         {
           entity_type: 'Collection',
           entity_id: collection.id,
+          identifier: collection.identifier,
           member_of: nil,
           title: collection.title,
           originated_on: collection.created_at&.to_date,
@@ -37,6 +38,7 @@ namespace :entities do
         {
           entity_type: 'Item',
           entity_id: item.id,
+          identifier: item.full_identifier,
           member_of: item.collection&.identifier,
           title: item.title,
           originated_on: item.originated_on,
@@ -59,6 +61,7 @@ namespace :entities do
         {
           entity_type: 'Essence',
           entity_id: essence.id,
+          identifier: essence.full_identifier,
           member_of: essence.item&.full_identifier,
           title: essence.filename,
           originated_on: essence.item&.originated_on,
@@ -76,5 +79,32 @@ namespace :entities do
     puts "\nCreated #{Entity.where(entity_type: 'Essence').count} Essence entities"
 
     puts 'Backfill complete!'
+  end
+
+  desc 'Backfill identifier column on entities from associated records'
+  task backfill_identifiers: :environment do
+    puts 'Backfilling Collection identifiers...'
+    Entity.where(entity_type: 'Collection')
+          .joins('INNER JOIN collections ON collections.id = entities.entity_id')
+          .update_all('entities.identifier = collections.identifier')
+    puts "Done: #{Entity.where(entity_type: 'Collection').where.not(identifier: nil).count} updated"
+
+    puts 'Backfilling Item identifiers...'
+    Entity.where(entity_type: 'Item')
+          .joins('INNER JOIN items ON items.id = entities.entity_id')
+          .joins('INNER JOIN collections ON collections.id = items.collection_id')
+          .update_all("entities.identifier = CONCAT(collections.identifier, '-', items.identifier)")
+    puts "Done: #{Entity.where(entity_type: 'Item').where.not(identifier: nil).count} updated"
+
+    puts 'Backfilling Essence identifiers...'
+    Entity.where(entity_type: 'Essence')
+          .joins('INNER JOIN essences ON essences.id = entities.entity_id')
+          .joins('INNER JOIN items ON items.id = essences.item_id')
+          .joins('INNER JOIN collections ON collections.id = items.collection_id')
+          .update_all("entities.identifier = CONCAT(collections.identifier, '/', items.identifier, '/', essences.filename)")
+    puts "Done: #{Entity.where(entity_type: 'Essence').where.not(identifier: nil).count} updated"
+
+    remaining = Entity.where(identifier: nil).count
+    puts "Backfill complete! Remaining without identifier: #{remaining}"
   end
 end

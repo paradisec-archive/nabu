@@ -624,12 +624,13 @@ class Collection < ApplicationRecord
   end
 
   def entity_sync_attributes
-    %i[title private created_at]
+    %i[title private created_at identifier]
   end
 
   def entity_attributes
     {
       entity: self,
+      identifier:,
       member_of: nil,
       title:,
       originated_on: created_at&.to_date,

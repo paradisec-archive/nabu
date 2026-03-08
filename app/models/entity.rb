@@ -10,6 +10,7 @@
 # **`id`**              | `bigint`           | `not null, primary key`
 # **`entity_type`**     | `string(255)`      | `not null`
 # **`essences_count`**  | `integer`          | `default(0), not null`
+# **`identifier`**      | `string(255)`      | `not null`
 # **`items_count`**     | `integer`          | `default(0), not null`
 # **`media_types`**     | `string(1000)`     |
 # **`member_of`**       | `string(255)`      |
@@ -28,6 +29,8 @@
 # * `index_entities_on_entity_type_and_member_of`:
 #     * **`entity_type`**
 #     * **`member_of`**
+# * `index_entities_on_identifier`:
+#     * **`identifier`**
 # * `index_entities_on_member_of`:
 #     * **`member_of`**
 #
@@ -36,6 +39,7 @@ class Entity < ApplicationRecord
 
   validates :entity_type, presence: true
   validates :entity_id, presence: true, uniqueness: { scope: :entity_type }
+  validates :identifier, presence: true
 
   # NOTE: Only exist for abilities
   has_one :collection, foreign_key: :id, primary_key: :entity_id

@@ -733,12 +733,13 @@ class Item < ApplicationRecord
   end
 
   def entity_sync_attributes
-    %i[title private originated_on collection_id]
+    %i[title private originated_on collection_id identifier]
   end
 
   def entity_attributes
     {
       entity: self,
+      identifier: full_identifier,
       member_of: collection&.identifier,
       title:,
       originated_on:,

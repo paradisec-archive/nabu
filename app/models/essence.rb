@@ -149,12 +149,13 @@ class Essence < ApplicationRecord
   end
 
   def entity_sync_attributes
-    %i[filename mimetype item_id]
+    %i[filename mimetype item_id identifier]
   end
 
   def entity_attributes
     {
       entity: self,
+      identifier: full_identifier,
       member_of: item&.full_identifier,
       title: filename,
       originated_on: item&.originated_on,
