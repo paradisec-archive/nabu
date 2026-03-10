@@ -3,7 +3,7 @@ class PageController < ApplicationController
     @page_title = 'Nabu - Home'
     item_counts = Item.group(:collection_id).count
     @coordinates = Collection.where(private: false).map { |c| c.center_coordinate(item_counts) }.compact
-    @content = render_to_string partial: 'page/infowindow'
+    @content = render_to_string partial: 'page/infowindow', formats: [:html]
   end
 
   def dashboard
@@ -37,7 +37,7 @@ class PageController < ApplicationController
     @south_limit = @coordinates.pluck(:lat).min
     @east_limit  = @coordinates.pluck(:lng).max
     @west_limit  = @coordinates.pluck(:lng).min
-    @content = render_to_string partial: 'page/infowindow'
+    @content = render_to_string partial: 'page/infowindow', formats: [:html]
   end
 
   def glossary
