@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__sentry__search_issues",
+      "mcp__sentry__find_projects",
+      "mcp__sentry__get_issue_details"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "sentry"
+  ]
+}
