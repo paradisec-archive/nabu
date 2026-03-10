@@ -167,6 +167,7 @@ class ItemsController < ApplicationController
                                updates: item_params)
 
     flash[:notice] = "Items will be updated shortly, you'll be notified once it's completed"
+
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
   end
 
