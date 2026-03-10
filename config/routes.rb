@@ -121,7 +121,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      scope '/oni', as: 'oni' do
+      scope '/oni', as: 'oni', defaults: { format: :json } do
         use_doorkeeper do
           skip_controllers :authorized_applications, :applications
         end
