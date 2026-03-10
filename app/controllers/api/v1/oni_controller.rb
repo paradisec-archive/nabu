@@ -58,6 +58,26 @@ module Api
         end
 
         @entities = @entities.load
+
+        # Preload associations needed for CanCan permission checks to avoid N+1 queries
+        # when the view calls can?(:read, essence) for each entity
+        items = @entities.filter_map { |e| e.entity if e.entity_type == 'Item' }
+        if items.any?
+          ActiveRecord::Associations::Preloader.new(
+            records: items,
+            associations: [:item_admins, :item_users, :access_condition, { collection: :collection_admins }]
+          ).call
+        end
+
+        # For Collection entities, the view checks can?(:read, items.first.essences.first)
+        # so we need to preload items and their permission associations
+        collections = @entities.filter_map { |e| e.entity if e.entity_type == 'Collection' }
+        if collections.any?
+          ActiveRecord::Associations::Preloader.new(
+            records: collections,
+            associations: [:collection_admins, { items: [:essences, :item_admins, :item_users, :access_condition] }]
+          ).call
+        end
       end
 
       def entity
