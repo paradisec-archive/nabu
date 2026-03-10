@@ -118,6 +118,13 @@ module Oni
           errors.add(:boundingBox, "#{corner}.lng must be a number between -180 and 180")
         end
       end
+
+      return if errors.any?
+
+      if bounding_box['topRight']['lat'] == bounding_box['bottomLeft']['lat'] ||
+         bounding_box['topRight']['lng'] == bounding_box['bottomLeft']['lng']
+        errors.add(:boundingBox, 'topRight and bottomLeft must not have identical lat or lng values')
+      end
     end
 
     def validate_originated_on
