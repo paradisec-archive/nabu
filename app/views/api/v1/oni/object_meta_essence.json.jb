@@ -39,6 +39,30 @@ data[:duration] = @data.duration
 data[:channels] = @data.channels
 data[:sampleRate] = @data.samplerate
 
+# Add audio/video↔ELAN relationships
+media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
+elan_extension = 'eaf'
+current_ext = File.extname(@data.filename).delete('.').downcase
+current_basename = File.basename(@data.filename, File.extname(@data.filename))
+
+if media_extensions.include?(current_ext)
+  related = @data.item.essences.select do |e|
+    File.extname(e.filename).delete('.').downcase == elan_extension &&
+      File.basename(e.filename, File.extname(e.filename)) == current_basename
+  end
+  if related.any?
+    data[:hasAnnotation] = related.map { |e| { '@id': repository_essence_url(e.collection, e.item, e.filename) } }
+  end
+elsif current_ext == elan_extension
+  related = @data.item.essences.select do |e|
+    media_extensions.include?(File.extname(e.filename).delete('.').downcase) &&
+      File.basename(e.filename, File.extname(e.filename)) == current_basename
+  end
+  if related.any?
+    data[:annotationOf] = related.map { |e| { '@id': repository_essence_url(e.collection, e.item, e.filename) } }
+  end
+end
+
 data.compact!
 
 # starts: here,

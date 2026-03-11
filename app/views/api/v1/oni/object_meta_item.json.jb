@@ -35,7 +35,30 @@ def item_person_json(user)
 end
 
 @essences = Set.new
+@essence_basename_lookup = nil
+
+def build_essence_basename_lookup
+  media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
+  elan_extension = 'eaf'
+  lookup = Hash.new { |h, k| h[k] = { media: [], eaf: [] } }
+
+  @data.essences.each do |essence|
+    ext = File.extname(essence.filename).delete('.').downcase
+    basename = File.basename(essence.filename, File.extname(essence.filename))
+
+    if media_extensions.include?(ext)
+      lookup[basename][:media] << essence
+    elsif ext == elan_extension
+      lookup[basename][:eaf] << essence
+    end
+  end
+
+  lookup
+end
+
 def item_essence_json(essence)
+  @essence_basename_lookup ||= build_essence_basename_lookup
+
   id = repository_essence_url(essence.collection, essence.item, essence.filename)
 
   json = {
@@ -53,6 +76,21 @@ def item_essence_json(essence)
     channels: essence.channels,
     sampleRate: essence.samplerate
   }
+
+  # Add audio/video↔ELAN relationships
+  media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
+  ext = File.extname(essence.filename).delete('.').downcase
+  basename = File.basename(essence.filename, File.extname(essence.filename))
+
+  if media_extensions.include?(ext) && @essence_basename_lookup[basename][:eaf].any?
+    json[:hasAnnotation] = @essence_basename_lookup[basename][:eaf].map do |e|
+      { '@id': repository_essence_url(e.collection, e.item, e.filename) }
+    end
+  elsif ext == 'eaf' && @essence_basename_lookup[basename][:media].any?
+    json[:annotationOf] = @essence_basename_lookup[basename][:media].map do |e|
+      { '@id': repository_essence_url(e.collection, e.item, e.filename) }
+    end
+  end
 
   json.compact!
 
