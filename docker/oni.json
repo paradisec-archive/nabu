@@ -122,6 +122,7 @@
           "datePublished",
           "@id",
           "identifier.identifier",
+          "paradisec:url",
           "contentLocation",
           "collector",
           "speaker",

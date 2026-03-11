@@ -251,6 +251,7 @@ data['ldac:doi'] = @data.doi if @data.doi
 data[:license] = { '@id': item_access_condition_json(@data.access_condition, @data.access_narrative) } if @data.access_condition
 data[:operator] = { '@id': item_person_json(@data.operator) } if @data.operator
 data[:sourceOrganization] = { '@id': item_organisation_json(@data.university) } if @data.university
+data['paradisec:url'] = @data.url if @data.url
 
 data['pcdm:memberOf'] = { '@id': repository_collection_url(@data.collection), name: @data.collection.title  }
 data[:root] = { '@id': repository_collection_url(@data.collection) }
@@ -288,7 +289,6 @@ if @admin_rocrate
   data['paradisec:ingestNotes'] = @data.ingest_notes
   data['paradisec:originatedOnNarrative'] = @data.originated_on_narrative
   data['paradisec:tracking'] = @data.tracking
-  data['paradisec:url'] = @data.url
 end
 
 data.compact!
