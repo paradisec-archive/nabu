@@ -167,6 +167,7 @@
     "textReplacements": {
       "^_": "",
       "^ldac:doi$": "DOI",
+      "^paradisec:url$": "URL",
       "^ldac:isDeIdentified$": "Is De-Identified",
       "^citation$": "Related Works",
       "^ldac:": "",
