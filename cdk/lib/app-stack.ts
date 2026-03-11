@@ -265,7 +265,7 @@ export class AppStack extends cdk.Stack {
       targetGroups: [viewerTargetGroup],
       priority: 5,
       conditions: [
-        elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
+        elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`]),
         elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
       ],
     });
