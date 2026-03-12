@@ -24,10 +24,10 @@ Rails.application.routes.draw do
   # Auth
   devise_for :users, controllers: { registrations: 'registrations' }
 
-  root to: 'page#home'
+  root to: 'page#dashboard'
 
   get '/contact' => 'page#contact'
-  get '/dashboard' => 'page#dashboard'
+  get '/dashboard' => redirect('/')
   get '/glossary' => 'page#glossary'
   get '/apidoc' => 'page#apidoc'
   get '/tlcmap' => 'page#tlcmap'

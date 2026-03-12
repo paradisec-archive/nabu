@@ -18,7 +18,7 @@ describe 'Collections' do
 
     it 'should succeed as user' do
       sign_in admin_user
-      visit dashboard_path
+      visit root_path
       expect(page).to have_content('Add new collection')
       click_on 'Add new collection'
       expect(page).to have_content('Deposit form received')

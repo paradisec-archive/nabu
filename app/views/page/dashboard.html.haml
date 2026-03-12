@@ -1,6 +1,21 @@
 
 %h1 Dashboard for #{@name}
 
+.column.span-24
+  %fieldset
+    %legend Quick Search
+    .twoup-1.column.span-12
+      = form_tag search_collections_path, method: :get do
+        %label{ for: 'collection_search' } Collections
+        = text_field_tag :search, nil, id: 'collection_search', placeholder: 'Search collections...', style: 'margin-bottom: 0.5em;'
+        = submit_tag 'Search', class: 'button'
+    .twoup-2.column.span-12.last
+      = form_tag search_items_path, method: :get do
+        %label{ for: 'item_search' } Items
+        = text_field_tag :search, nil, id: 'item_search', placeholder: 'Search items...', style: 'margin-bottom: 0.5em;'
+        = submit_tag 'Search', class: 'button'
+    .clear
+
 .twoup-1.column.span-12
 
   %fieldset
@@ -47,7 +62,34 @@
       - ['10', '50', "all #{@num_collections}"].each do |n|
         = link_to "Show #{n}", params.permit!.merge(collections_per_page: n.sub('all ', ''), collections_page: n.start_with?('all') ? 1 : params[:collections_page]), class: 'button'
 
+.twoup-2.column.span-12.last
 
+  %fieldset
+    %legend My Items (#{@num_items}) - ordered by recent edits
+
+    .left
+      = paginate @items, :param_name => :items_page
+
+    .clear
+
+    %table.table
+      %thead
+        %tr
+          %th Item
+          %th Title
+          %th Creation Date
+          %th Actions
+      %tbody
+        - @items.each do |item|
+          %tr
+            %td= item.full_identifier
+            %td= item.title
+            %td= item.created_at.to_date
+            %td
+              = link_to 'View', [item.collection, item]
+              = link_to 'Edit', edit_collection_item_path(item.collection, item)
+
+.column.span-24
 
   %fieldset
     %legend My Comments (#{@num_comments})
@@ -91,9 +133,6 @@
               %td= comment.owner_name
               %td= comment.body
 
-
-.twoup-2.column.span-12.last
-
   %fieldset
     %legend Locations
 
@@ -102,29 +141,3 @@
       :north_limit => @north_limit, :east_limit => @east_limit, :south_limit => @south_limit, :west_limit => @west_limit}}
     - else
       %p.map-placeholder Map not displayed for automated requests
-
-  %fieldset
-    %legend My Items (#{@num_items}) - ordered by recent edits
-
-    .left
-      = paginate @items, :param_name => :items_page
-
-    .clear
-
-      %table.table
-        %tr
-          %th Item
-          %th Title
-          %th Creation Date
-          %th Actions
-
-          - @items.each do |item|
-            %tr
-              %td= item.full_identifier
-              %td= item.title
-              %td= item.created_at.to_date
-              %td
-                = link_to 'View', [item.collection, item]
-                = link_to 'Edit', edit_collection_item_path(item.collection, item)
-
-
