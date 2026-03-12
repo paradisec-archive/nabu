@@ -9,6 +9,9 @@
       "enabled": true,
       "launcher": "Acknowledgement of Country"
     },
+    "features": {
+      "errorPageImage": false
+    },
     "logoFilename": "/logo.jpg",
     "navHeight": "90px",
     "showEllipsis": false,
