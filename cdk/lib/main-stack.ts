@@ -173,7 +173,7 @@ export class MainStack extends cdk.Stack {
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET],
-          allowedOrigins: ['https://catalog.paradisec.org.au', `https:catalog.${zoneName}`],
+          allowedOrigins: ['https://catalog.paradisec.org.au', `https:catalog.${zoneName}`, 'http://localhost:5173'],
           allowedHeaders: ['*'],
         },
       ],
