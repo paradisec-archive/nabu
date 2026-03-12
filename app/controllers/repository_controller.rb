@@ -20,7 +20,7 @@ class RepositoryController < ApplicationController
     raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
 
     item = collection.items.find_by(identifier: params[:item_identifier])
-    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:collection_identifier]}" if item.nil?
+    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:item_identifier]}" if item.nil?
 
     if params[:edit].present?
       redirect_to edit_collection_item_url(collection, item, host: 'admin-catalog.paradisec.org.au'), status: :found, allow_other_host: true
@@ -34,16 +34,13 @@ class RepositoryController < ApplicationController
     raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
 
     item = collection.items.find_by(identifier: params[:item_identifier])
-    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:collection_identifier]}" if item.nil?
+    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:item_identifier]}" if item.nil?
 
     essence = item.essences.find_by(filename: params[:essence_filename])
     raise ActionController::RoutingError, "Essence not found: #{params[:essence_filename]}" if essence.nil?
 
     authorize! :read, essence
 
-    location = Nabu::Catalog.instance.essence_url(essence, as_attachment: true)
-    raise ActionController::RoutingError, 'Essence file not found' unless location
-
-    redirect_to location, allow_other_host: true
+    redirect_to helpers.oni_essence_url(essence), status: :found, allow_other_host: true
   end
 end
