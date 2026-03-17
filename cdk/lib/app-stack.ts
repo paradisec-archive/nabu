@@ -722,6 +722,7 @@ export class AppStack extends cdk.Stack {
           MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
         },
       });
+      NagSuppressions.addResourceSuppressions(taskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
       catalogBucket.grantRead(taskDefinition.taskRole);
 
       const cluster = new ecs.Cluster(this, 'NabuCluster', {
