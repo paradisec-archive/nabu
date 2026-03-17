@@ -40,10 +40,13 @@ const main = async () => {
   } catch (error) {
     const err = error as Error & { status?: number; stdout?: string; stderr?: string };
     const message = `Inventory binary failed (exit code ${err.status})`;
+    const tail = (text?: string) => text?.split('\n').slice(-100).join('\n');
+    const stdoutTail = tail(err.stdout);
+    const stderrTail = tail(err.stderr);
     console.error(message);
-    console.error(err.stdout ?? '');
+    console.error(stdoutTail ?? '');
     Sentry.captureException(new Error(message), {
-      extra: { stdout: err.stdout, stderr: err.stderr },
+      extra: { stdout: stdoutTail, stderr: stderrTail },
     });
     await Sentry.flush(5000);
     process.exit(1);
