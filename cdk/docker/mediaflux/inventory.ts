@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { createReadStream, mkdirSync } from 'node:fs';
+import { createReadStream, mkdirSync, openSync, readFileSync } from 'node:fs';
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import * as Sentry from '@sentry/node';
@@ -22,6 +22,10 @@ const main = async () => {
 
   console.log('Running mediaflux inventory check...');
 
+  const stdoutFd = openSync('/tmp/inventory/stdout.log', 'w');
+  const stderrFd = openSync('/tmp/inventory/stderr.log', 'w');
+
+  let exitCode: number | undefined;
   try {
     execFileSync(
       '/app/mf/bin/unix/unimelb-mf-check',
@@ -35,18 +39,24 @@ const main = async () => {
         '/tmp/inventory/empty',
         '/projects/proj-1190_paradisec_backup-1128.4.248/paradisec',
       ],
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'], timeout: 60 * 60 * 1000 },
+      { stdio: ['pipe', stdoutFd, stderrFd], timeout: 60 * 60 * 1000 },
     );
   } catch (error) {
-    const err = error as Error & { status?: number; stdout?: string; stderr?: string };
-    const message = `Inventory binary failed (exit code ${err.status})`;
-    const tail = (text?: string) => text?.split('\n').slice(-100).join('\n');
-    const stdoutTail = tail(err.stdout);
-    const stderrTail = tail(err.stderr);
+    exitCode = (error as Error & { status?: number }).status;
+  }
+
+  // Dump full output to CloudWatch
+  console.log('--- stdout ---');
+  execFileSync('cat', ['/tmp/inventory/stdout.log'], { stdio: ['pipe', 'inherit', 'inherit'] });
+  console.log('--- stderr ---');
+  execFileSync('cat', ['/tmp/inventory/stderr.log'], { stdio: ['pipe', 'inherit', 'inherit'] });
+
+  if (exitCode !== undefined) {
+    const message = `Inventory binary failed (exit code ${exitCode})`;
+    const tail = (path: string) => readFileSync(path, 'utf-8').split('\n').slice(-100).join('\n');
     console.error(message);
-    console.error(stdoutTail ?? '');
     Sentry.captureException(new Error(message), {
-      extra: { stdout: stdoutTail, stderr: stderrTail },
+      extra: { stdout: tail('/tmp/inventory/stdout.log'), stderr: tail('/tmp/inventory/stderr.log') },
     });
     await Sentry.flush(5000);
     process.exit(1);
