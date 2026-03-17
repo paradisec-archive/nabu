@@ -21,6 +21,8 @@ import type { Construct } from 'constructs';
 
 import type { AppProps } from './types';
 
+const SENTRY_DSN = 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608';
+
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -470,7 +472,7 @@ export class AppStack extends cdk.Stack {
         RAILS_ENV: railsEnv,
         OPENSEARCH_URL: `https://${searchDomain.domainEndpoint}`,
         NABU_CATALOG_BUCKET: catalogBucket.bucketName,
-        SENTRY_DSN: 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608',
+        SENTRY_DSN,
         DOI_PREFIX: '10.26278',
         DATACITE_BASE_URL: env === 'prod' ? 'https://api.datacite.org' : 'https://api.test.datacite.org',
         AWS_REGION: region,
@@ -702,7 +704,6 @@ export class AppStack extends cdk.Stack {
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
         secretName: '/nabu/mediaflux',
         secretObjectValue: {
-          username: cdk.SecretValue.unsafePlainText('secret'),
           password: cdk.SecretValue.unsafePlainText('secret'),
         },
       });
@@ -713,8 +714,10 @@ export class AppStack extends cdk.Stack {
         image: ecs.ContainerImage.fromDockerImageAsset(image),
         logging: new ecs.AwsLogDriver({ streamPrefix: 'copy-to-mediaflux' }),
         pseudoTerminal: true,
+        environment: {
+          SENTRY_DSN,
+        },
         secrets: {
-          MFLUX_USER: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'username'),
           // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
           MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
         },

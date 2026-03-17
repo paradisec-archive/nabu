@@ -1,0 +1,9 @@
+{
+  "name": "mediaflux-archive",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1010.0",
+    "@sentry/node": "^9.47.1"
+  }
+}
