@@ -745,7 +745,7 @@ export class AppStack extends cdk.Stack {
         taskDefinition,
         containerOverrides: [
           {
-            containerName: 'MediafluxContainer',
+            containerName: 'mediaflux',
             environment: [
               {
                 name: 'S3_BUCKET',
