@@ -28,7 +28,7 @@ RUN apt-get update -qq && \
 ENV RAILS_ENV="production" \
   BUNDLE_DEPLOYMENT="1" \
   BUNDLE_PATH="/usr/local/bundle" \
-# Unlike dhh we don;t think this image wil be used for CI
+  # Unlike dhh we don;t think this image wil be used for CI
   BUNDLE_WITHOUT="development:test" \
   LD_PRELOAD="/usr/local/lib/libjemalloc.so"
 
@@ -42,7 +42,7 @@ RUN apt-get update -qq && \
 
 # Install JavaScript dependencies
 ENV NODE_VERSION=22.19.0
-ENV NVM_DIR /usr/local/nvm
+ENV NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR
 # Setup node
 # NOTE: We use nvm rather than build from scratch
@@ -53,8 +53,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | b
   nvm use default && \
   corepack enable
 
-ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+ENV NODE_PATH=$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

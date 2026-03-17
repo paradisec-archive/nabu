@@ -19,8 +19,8 @@ RUN apt-get update -qq && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ENV NODE_VERSION=22.19.0
-ENV NVM_DIR /usr/local/nvm
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT 0
+ENV NVM_DIR=/usr/local/nvm
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN mkdir -p $NVM_DIR
 # Setup node
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
@@ -30,8 +30,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | b
   nvm use default && \
   corepack enable
 
-ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+ENV NODE_PATH=$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # Set production environment
 ENV RAILS_ENV="development" \
