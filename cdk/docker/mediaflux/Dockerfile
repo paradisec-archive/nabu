@@ -10,10 +10,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 WORKDIR /app
 
 # Download and set up MediaFlux client
-RUN wget "$MF_CLIENT_URL" \
+RUN wget -q "$MF_CLIENT_URL" \
   && tar -xzf "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
   && rm "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
-  && mv * mf
+  && mv ./* mf
 
 # NOTE: https://gitlab.unimelb.edu.au/resplat-mediaflux/unimelb-mf-clients/-/blob/master/README.md#system-environment-variables
 ENV MFLUX_HOST=mediaflux.researchsoftware.unimelb.edu.au
@@ -26,6 +26,5 @@ COPY package.json /app/package.json
 RUN corepack enable pnpm && pnpm install --prod
 
 COPY archive.ts /app/archive.ts
-COPY entrypoint.sh /app/entrypoint.sh
 
 CMD ["node", "/app/archive.ts"]
