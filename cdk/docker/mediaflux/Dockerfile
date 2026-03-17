@@ -26,5 +26,6 @@ COPY package.json /app/package.json
 RUN corepack enable pnpm && pnpm install --prod
 
 COPY archive.ts /app/archive.ts
+COPY inventory.ts /app/inventory.ts
 
 CMD ["node", "/app/archive.ts"]

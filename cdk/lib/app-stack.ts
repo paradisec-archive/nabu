@@ -776,6 +776,41 @@ export class AppStack extends cdk.Stack {
         },
         targets: [mediaFluxTask],
       });
+
+      const inventoryTaskDefinition = new ecs.FargateTaskDefinition(this, 'MediafluxInventoryTaskDefinition', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+      });
+
+      inventoryTaskDefinition.addContainer('MediafluxInventoryContainer', {
+        containerName: 'mediaflux-inventory',
+        image: ecs.ContainerImage.fromDockerImageAsset(image),
+        command: ['node', '/app/inventory.ts'],
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'mediaflux-inventory' }),
+        pseudoTerminal: true,
+        environment: {
+          SENTRY_DSN,
+          META_BUCKET: metaBucket.bucketName,
+        },
+        secrets: {
+          MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
+        },
+      });
+
+      metaBucket.grantWrite(inventoryTaskDefinition.taskRole, 'mediaflux-inventory/*');
+      NagSuppressions.addResourceSuppressions(inventoryTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }], true);
+
+      const inventoryTask = new targets.EcsTask({
+        cluster,
+        taskDefinition: inventoryTaskDefinition,
+        subnetSelection: { subnets: appSubnets },
+      });
+
+      new events.Rule(this, 'MediafluxInventoryScheduleRule', {
+        description: 'Daily mediaflux inventory check at 18:00 UTC (04:00 AEST)',
+        schedule: events.Schedule.cron({ hour: '18', minute: '0' }),
+        targets: [inventoryTask],
+      });
     }
     cdk.Tags.of(this).add('uni:billing:application', 'para');
   }
