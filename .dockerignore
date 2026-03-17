@@ -50,6 +50,11 @@
 # NABU
 ##################
 
+# Not needed in any Docker build from root context
+/cron-worker
+/sorbet
+/data
+
 # cdk
 /cdk
 

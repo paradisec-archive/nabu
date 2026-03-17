@@ -67,7 +67,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy application code
-COPY . .
+COPY --exclude=docker --exclude=cron-worker --exclude=sorbet --exclude=data . .
 
 # Sentry setup
 RUN echo $GIT_SHA > REVISION

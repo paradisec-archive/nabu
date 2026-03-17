@@ -239,8 +239,8 @@ export class AppStack extends cdk.Stack {
     viewerTaskDefinition.addContainer('ViewerContainer', {
       containerName: 'viewer',
       memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('..', {
-        file: 'docker/viewer.Dockerfile',
+      image: ecs.ContainerImage.fromAsset('../docker', {
+        file: 'viewer.Dockerfile',
       }),
       portMappings: [{ name: 'viewer', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ViewerService' }),
@@ -368,8 +368,8 @@ export class AppStack extends cdk.Stack {
     sentryTaskDefinition.addContainer('NginxContainer', {
       containerName: 'nginx',
       memoryLimitMiB: 64,
-      image: ecs.ContainerImage.fromAsset('..', {
-        file: 'docker/sentry-nginx.Dockerfile',
+      image: ecs.ContainerImage.fromAsset('../docker', {
+        file: 'sentry-nginx.Dockerfile',
       }),
       portMappings: [{ name: 'nginx', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SentryNginx' }),
@@ -400,8 +400,8 @@ export class AppStack extends cdk.Stack {
     oniTaskDefinition.addContainer('OniContainer', {
       containerName: 'oni',
       memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('..', {
-        file: 'docker/oni.Dockerfile',
+      image: ecs.ContainerImage.fromAsset('../docker', {
+        file: 'oni.Dockerfile',
         buildArgs: {
           ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au/' : 'https://admin-catalog.nabu-stage.paradisec.org.au',
           ROCRATE_API_CLIENTID: '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
