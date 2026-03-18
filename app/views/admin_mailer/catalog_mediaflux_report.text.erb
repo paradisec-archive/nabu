@@ -1,7 +1,7 @@
 This report validates that every file in the S3 catalog bucket is backed up in mediaflux.
 
-missing:  @missing.size
-size mismatch: @size_mismatch.size
+missing: <%= @missing.size %>
+size mismatch: <%= @size_mismatch.size %>
 
 ## Files missing from mediaflux (<%= @missing.size %>)
 

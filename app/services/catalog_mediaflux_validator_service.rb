@@ -136,7 +136,7 @@ class CatalogMediafluxValidatorService
 
     most_recent = timestamped_files.max_by { |file| file[:time] }
 
-    raise "S3 inventory is stale (#{most_recent[:time]}), must be within 2 days" if most_recent[:time] < Time.now - 7.days
+    raise "S3 inventory is stale (#{most_recent[:time]}), must be within 7 days" if most_recent[:time] < Time.now - 7.days
 
     most_recent[:key]
   end
