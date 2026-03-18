@@ -58,7 +58,7 @@ export class DrStack extends cdk.Stack {
             bucket: this.metaDrBucket,
             prefix: 'inventories/catalogdr',
           },
-          frequency: s3.InventoryFrequency.WEEKLY,
+          frequency: s3.InventoryFrequency.DAILY,
           includeObjectVersions: s3.InventoryObjectVersion.ALL,
           optionalFields: ['Size', 'LastModifiedDate', 'StorageClass', 'ReplicationStatus', 'IntelligentTieringAccessTier', 'ChecksumAlgorithm', 'ETag'],
         },

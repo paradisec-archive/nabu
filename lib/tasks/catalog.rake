@@ -32,6 +32,12 @@ namespace :catalog do
     DoiUrlAuditService.fix_one(doi)
   end
 
+  desc 'Validate Catalog vs Mediaflux'
+  task check_mediaflux: :environment do
+    validator = CatalogMediafluxValidatorService.new
+    validator.run
+  end
+
   desc 'Remove old deleted versions'
   task remove_deleted_versions: :environment do
     env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')

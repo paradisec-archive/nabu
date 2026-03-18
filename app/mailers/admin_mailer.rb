@@ -15,6 +15,13 @@ class AdminMailer < ApplicationMailer
     mail(subject: "[NABU Admin] Catalog Replication Report: #{Date.today.strftime('%F')}")
   end
 
+  def catalog_mediaflux_report
+    @missing = params[:missing]
+    @size_mismatch = params[:size_mismatch]
+
+    mail(subject: "[NABU Admin] Catalog Mediaflux Report: #{Date.today.strftime('%F')}", to: ['johnf@inodes.org'])
+  end
+
   def unconfirmed_users_deletion_report
     @report_data = params[:report_data]
 

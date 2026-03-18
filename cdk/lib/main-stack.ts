@@ -170,7 +170,7 @@ export class MainStack extends cdk.Stack {
             bucket: this.metaBucket,
             prefix: 'inventories/catalog',
           },
-          frequency: s3.InventoryFrequency.WEEKLY,
+          frequency: s3.InventoryFrequency.DAILY,
           includeObjectVersions: s3.InventoryObjectVersion.ALL,
           optionalFields: ['Size', 'LastModifiedDate', 'StorageClass', 'ReplicationStatus', 'IntelligentTieringAccessTier', 'ChecksumAlgorithm', 'ETag'],
         },

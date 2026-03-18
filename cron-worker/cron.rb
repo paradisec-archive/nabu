@@ -65,6 +65,19 @@ scheduler.cron '27 5 * * wed'  do
   end
 end
 
+scheduler.cron '27 6 * * wed'  do
+  name = 'Check Mediaflux'
+  task = 'catalog:check_mediaflux'
+
+  puts "#{Time.current}: Starting task #{name}"
+
+  begin
+    Rake::Task[task].invoke
+  ensure
+    Rake::Task[task].reenable
+  end
+end
+
 scheduler.cron '10 1 * * *'  do
   name = 'Mint Dois'
   task = 'catalog:mint_dois'
