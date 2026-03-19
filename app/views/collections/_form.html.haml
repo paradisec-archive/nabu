@@ -1,6 +1,3 @@
-:javascript
-  window.$fbRowTemplate = "#{ render(partial: 'collections/grants/funding_body_entry', locals: {fb_label: nil, fb_id: nil, fb_grants: nil }).squish }";
-  window.$giRowTemplate = "#{ render(partial: 'collections/grants/grant_identifier_entry', locals: {grant: nil, fb_id: nil }).squish }";
 
 .clear
 
@@ -63,7 +60,7 @@
       %tr
         %th= f.label :university_id, 'Originating university'
         %td
-          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2 university'
+          = f.university_select :university_id
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
@@ -134,7 +131,7 @@
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose an access condition...'}, :class => 'select2'
+        %td= f.access_condition_select :access_condition_id, placeholder: 'Choose an access condition...'
 
       %tr
         %th= f.label :access_narrative, 'Data access details'
@@ -205,12 +202,12 @@
 
       %tr
         %th= f.label :field_of_research_id, 'Field of research'
-        %td= f.collection_select :field_of_research_id, FieldOfResearch.alpha, :id, :name_with_identifier, {:include_blank => true}, :data => {:placeholder => 'Choose a field of research...'}, :class => 'select2'
+        %td= f.field_of_research_select :field_of_research_id
 
       %tr
         %th Funding Bodies
         %td
-          = select_tag 'funding_body_select', options_for_select(FundingBody.alpha.collect{|f| [f.name, f.id]}), class: 'select2', include_blank: true, :data => {:placeholder => 'Choose a funding body...'}
-          #funding-bodies
+          = f.funding_body_select
+          #funding-bodies{data: { 'fb-row-template': render(partial: 'collections/grants/funding_body_entry', locals: {fb_label: nil, fb_id: nil, fb_grants: nil }).squish, 'gi-row-template': render(partial: 'collections/grants/grant_identifier_entry', locals: {grant: nil, fb_id: nil }).squish }}
             - @collection.grants.group_by(&:funding_body).each do |fb, grants|
               = render partial: 'collections/grants/funding_body_entry', locals: {fb_label: fb.name, fb_id: fb.id, fb_grants: grants}

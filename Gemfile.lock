@@ -750,10 +750,8 @@ DEPENDENCIES
   solid_cache
   solid_queue
   sorbet
-  stimulus-rails
   thruster
   traceroute
-  turbo-rails
   tzinfo-data
   web-console
 

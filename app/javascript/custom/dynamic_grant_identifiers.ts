@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { getChoicesInstance } from './choices_setup';
 
 export const addFundingBody = (event: Event) => {
   const fundingBodySelect = event.target as HTMLSelectElement;
@@ -18,35 +18,40 @@ export const addFundingBody = (event: Event) => {
     return;
   }
 
-  // @ts-expect-error global variable
-  const fundingBodyRow = window.$fbRowTemplate.replace('{{label}}', fundingBodyName).replace(/{{id}}/g, fundingBodyId);
+  const fbRowTemplate = fundingBodies.dataset.fbRowTemplate;
+  if (!fbRowTemplate) {
+    throw new Error('Funding body row template not found');
+  }
+  const fundingBodyRow = fbRowTemplate.replace('{{label}}', fundingBodyName).replace(/{{id}}/g, fundingBodyId);
 
   fundingBodies.insertAdjacentHTML('beforeend', fundingBodyRow);
 
-  fundingBodySelect.value = '';
-  fundingBodySelect.dispatchEvent(new Event('change'));
+  const instance = getChoicesInstance(fundingBodySelect);
+  if (instance) {
+    instance.setChoiceByValue('');
+  }
 };
 
 const deleteFundingBody = (event: Event) => {
+  event.preventDefault();
+
   const target = event.target as HTMLLinkElement;
   const fundingBody = target.parentElement;
   if (!fundingBody) {
     return;
   }
 
-  const grants = fundingBody.querySelectorAll<HTMLSpanElement>(
-    'input[name^="collection[grants_attributes]"][name$="[_destroy]"]',
-  );
+  const grants = fundingBody.querySelectorAll<HTMLInputElement>('input[name^="collection[grants_attributes]"][name$="[_destroy]"]');
   grants.forEach((grant) => {
     grant.checked = true;
   });
 
   fundingBody.classList.add('hidden');
-
-  event.preventDefault();
 };
 
 const addGrant = (event: Event) => {
+  event.preventDefault();
+
   const target = event.target as HTMLLinkElement;
   const fundingBody = target.parentElement;
   if (!fundingBody) {
@@ -55,45 +60,48 @@ const addGrant = (event: Event) => {
 
   const grantIdInput = fundingBody.querySelector<HTMLInputElement>('input[name="add_grant_id"]');
   if (!grantIdInput) {
-    console.error('Grant ID input not found');
-    return;
+    throw new Error('Grant ID input not found');
   }
   const grantId = grantIdInput.value;
 
-  const fundingBodyIdInput = fundingBody.parentElement?.querySelector<HTMLInputElement>(
-    'input[name="funding_body_ids[]"]',
-  );
+  const fundingBodyIdInput = fundingBody.parentElement?.querySelector<HTMLInputElement>('input[name="funding_body_ids[]"]');
   if (!fundingBodyIdInput) {
-    console.error('Funding body input not found');
-    return;
+    throw new Error('Funding body ID input not found');
   }
   const fundingBodyId = fundingBodyIdInput.value;
 
-  const newId = new Date().getTime();
+  const newId = Date.now();
 
   if (!/^[a-zA-Z][a-zA-Z0-9_]+/.test(grantId)) {
     alert('grant id must start with a letter and only contain letters, numbers and underscores');
+
     return;
   }
 
   if (fundingBody.querySelectorAll(`#${grantId}`).length !== 0) {
     alert('grant id already exists');
+
     return;
   }
 
-  // @ts-expect-error global variable
-  const row = window.$giRowTemplate
+  const fundingBodies = document.getElementById('funding-bodies');
+  const giRowTemplate = fundingBodies?.dataset.giRowTemplate;
+  if (!giRowTemplate) {
+    console.error('Grant identifier row template not found');
+    return;
+  }
+  const row = giRowTemplate
     .replace(/{{grant_id}}/gm, grantId)
     .replace(/{{fb_id}}/gm, fundingBodyId)
-    .replace(/{{uuid}}/g, newId);
+    .replace(/{{uuid}}/g, String(newId));
   fundingBody.insertAdjacentHTML('beforeend', row);
 
   grantIdInput.value = '';
-
-  event.preventDefault();
 };
 
 const removeNewGrant = (event: Event) => {
+  event.preventDefault();
+
   const target = event.target as HTMLLinkElement;
   const grant = target.parentElement;
   if (!grant) {
@@ -101,8 +109,6 @@ const removeNewGrant = (event: Event) => {
   }
 
   grant.remove();
-
-  event.preventDefault();
 };
 
 document.body.addEventListener('click', (event: Event) => {

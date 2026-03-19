@@ -131,7 +131,7 @@
 
         %tr
           %th= label_tag :university_id, 'Originating university'
-          %td= select_tag :university_id, options_from_collection_for_select(University.alpha, :id, :name, params[:university_id]), :include_blank => true, :data => {:placeholder => 'Choose a university...'}, :class => 'select2'
+          %td= university_select_tag :university_id
 
 
         %tr
@@ -140,16 +140,15 @@
 
         %tr
           %th= label_tag 'data_category_ids[]', 'Data Categories'
-          -# REVIEW: Why is data_category used as a class?
-          %td= select_tag 'data_category_ids[]', params[:data_category_ids], :data => {:placeholder => 'Choose a category...', 'ajax--url' => data_categories_path, :multiple => true}, :class => 'select2 data_category'
+          %td= data_category_select_tag 'data_category_ids[]'
 
         %tr
           %th= label_tag 'data_type_ids[]', 'Data Types'
-          %td= select_tag 'data_type_ids[]', params[:data_type_ids], :data => {:placeholder => 'Choose a type...', 'ajax--url' => data_types_path, :multiple => true}, :class => 'select2'
+          %td= data_type_select_tag 'data_type_ids[]'
 
         %tr
           %th= label_tag :discourse_type_id
-          %td= select_tag :discourse_type_id, options_from_collection_for_select(DiscourseType.alpha, :id, :name, params[:discourse_type_id]), :include_blank => true, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+          %td= discourse_type_select_tag :discourse_type_id
 
         %tr
           %th= label_tag 'agent_ids[]', 'Agents'
@@ -292,7 +291,7 @@
 
         %tr
           %th= label_tag :access_condition, 'Data access conditions'
-          %td= select_tag :access_condition_id, options_from_collection_for_select(AccessCondition.alpha, :id, :name, params[:access_condition_id]), :include_blank => true, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
+          %td= access_condition_select_tag :access_condition_id
 
         %tr
           %th= label_tag :access_narrative, 'Data access details'

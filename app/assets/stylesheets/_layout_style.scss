@@ -388,7 +388,7 @@ body.bp {
   input[type="email"],
   input[type="password"],
   textarea,
-  td .select2-container,
+  div .choices,
   td select {
     &.short {
       width: 200px;
@@ -430,13 +430,8 @@ body.bp {
     }
   }
 
-  td div.select2-container {
-    border: solid 2px #E5E5E5;
-    width: 100% !important;
-  }
-
   input[type="submit"],
-  button,
+  button:not(.choices__button),
   .button {
     width: auto;
     height: 32px;
@@ -558,17 +553,12 @@ body.bp {
     }
   }
 
-  // select2
-  .select2-container {
-    min-width: 200px;
+  // choices.js
+  .choices {
+   margin-bottom: inherit;
   }
-
-  .select2-container-multi .select2-choices .select2-search-field input {
-    height: 23px;
-  }
-
-  td li.select2-search-choice a {
-    padding-left: 0px;
+  .choices__inner {
+    min-height: inherit;
   }
 
   .invisible {

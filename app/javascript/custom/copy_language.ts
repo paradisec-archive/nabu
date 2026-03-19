@@ -1,3 +1,5 @@
+import { getChoicesInstance } from './choices_setup';
+
 const copyLanguage = (src: string, dst: string) => {
   const button = document.getElementById(`copy-${dst}-language`) as HTMLAnchorElement | null;
   if (!button) {
@@ -17,31 +19,34 @@ const copyLanguage = (src: string, dst: string) => {
       throw new Error(`Select element with id item_${dst}_language_ids not found`);
     }
 
-    for (const option of dstSelect.options) {
-      option.selected = false;
+    const dstInstance = getChoicesInstance(dstSelect);
+
+    // Collect selected options from source
+    const selectedOptions: { value: string; label: string }[] = [];
+    for (const srcOption of srcSelect.selectedOptions) {
+      selectedOptions.push({ value: srcOption.value, label: srcOption.text });
     }
 
-    for (const srcOption of srcSelect.options) {
-      if (!srcOption.selected) {
-        continue;
-      }
-
-      const dstOption = dstSelect.querySelector(`option[value="${srcOption.value}"]`) as HTMLOptionElement | null;
-      if (dstOption) {
-        dstOption.selected = true;
-
-        continue;
-      }
-
-      const option = new Option(srcOption.text, srcOption.value, false, true);
-      dstSelect.appendChild(option);
+    if (!dstInstance) {
+      throw new Error('Choices.js instance not found for destination select');
     }
 
-    dstSelect.dispatchEvent(new Event('change'));
+    dstInstance.removeActiveItems();
+
+    // Add choices that may not exist yet (AJAX-loaded), then select them
+    dstInstance.setChoices(selectedOptions, 'value', 'label', true);
+    for (const opt of selectedOptions) {
+      dstInstance.setChoiceByValue(opt.value);
+    }
   });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    copyLanguage('subject', 'content');
+    copyLanguage('content', 'subject');
+  });
+} else {
   copyLanguage('subject', 'content');
   copyLanguage('content', 'subject');
-});
+}

@@ -50,56 +50,84 @@ module ApplicationHelper
   end
 
   def user_select_tag(attribute, options = {})
-    data = options.merge({
-      'ajax--url': users_path
-    })
+    html_data = {
+      'search-url': users_path,
+      placeholder: options[:placeholder] || 'Choose a user...'
+    }
 
     class_name = options.delete 'class'
     users = User.where(id: params[attribute.to_s.sub('[]', '')])
+    option_tags = options_for_select(users.map { |user| [user.display_label, user.id] })
 
-    data[:data] = users.map { |user| { id: user.id, text: user.display_label, selected: true } }
-
-    select_tag attribute, params[attribute], data:, class: "#{class_name} select2", multiple: options[:multiple]
+    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select", multiple: options[:multiple]
   end
 
   def country_select_tag(attribute, options = {})
-    data = options.merge({
-      'ajax--url': countries_path,
-      placeholder: 'Choose a country...',
-      multiple: true
-    })
+    html_data = {
+      placeholder: 'Choose a country...'
+    }
     class_name = options.delete 'class'
-    countries = Country.where(id: params[attribute.to_s.sub('[]', '')])
-    data[:data] = countries.map { |country| { id: country.id, text: country.name, selected: true } }
+    selected_ids = params[attribute.to_s.sub('[]', '')]
 
-    select_tag attribute, params[attribute], data:, class: "#{class_name} select2 country", multiple: true
+    all_countries = Country.order(:name).map { |c| [c.name, c.id] }
+    option_tags = options_for_select(all_countries, selected_ids)
+
+    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select country", multiple: true
   end
 
   def language_select_tag(attribute, options = {})
-    data = options.merge({
-      'ajax--url': languages_path,
+    html_data = {
+      'search-url': languages_path,
       placeholder: 'Choose a language...',
-      multiple: true,
-      'extra-name': 'country_ids',
-      'extra-selector': '#collection_country_ids'
-    })
+      'extra-name': options[:'extra-name'] || 'country_ids',
+      'extra-selector': options[:'extra-selector'] || '#collection_country_ids'
+    }
     class_name = options.delete 'class'
     languages = Language.where(id: params[attribute.to_s.sub('[]', '')])
-    data[:data] = languages.map { |language| { id: language.id, text: language.name, selected: true } }
+    option_tags = options_for_select(languages.map { |language| [language.name, language.id] })
 
-    select_tag attribute, params[attribute], data:, class: "#{class_name} select2 language", multiple: true
+    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select language", multiple: true
   end
 
   def mimetype_select_tag(attribute, options = {})
-    data = options.merge({
-      'ajax--url': list_mimetypes_path,
+    html_data = {
       placeholder: 'Choose a mimetype...'
-    })
+    }
 
     class_name = options.delete 'class'
-    data[:data] = Essence.where(mimetype: params[attribute]).pluck(:mimetype).map { |m| { id: m, text: m } }
+    all_mimetypes = Essence.distinct.pluck(:mimetype).compact.sort.map { |m| [m, m] }
+    selected = params[attribute]
+    option_tags = options_for_select(all_mimetypes, selected)
 
-    select_tag attribute, params[attribute], data:, class: "#{class_name} select2", multiple: options[:multiple]
+    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select", multiple: options[:multiple]
+  end
+
+  def university_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, University.alpha, :name, 'Choose a university...', options)
+  end
+
+  def access_condition_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, AccessCondition.alpha, :name, 'Choose a data access condition...', options)
+  end
+
+  def discourse_type_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, DiscourseType.alpha, :name, 'Choose a discourse...', options)
+  end
+
+  def field_of_research_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, FieldOfResearch.alpha, :name_with_identifier, 'Choose a field of research...', options)
+  end
+
+  def funding_body_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, FundingBody.alpha, :name, 'Choose a funding body...', options)
+  end
+
+  def data_category_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, DataCategory.order(:name), :name, 'Choose a category...', options, multiple: true)
+  end
+
+  def data_type_select_tag(attribute, options = {})
+    preloaded_select_tag(attribute, DataType.order(:name), :name, 'Choose a type...', options, multiple: true)
   end
 
   def crawler_request?
@@ -147,6 +175,23 @@ module ApplicationHelper
   end
 
   private
+
+  def preloaded_select_tag(attribute, collection, label_method, default_placeholder, options = {}, multiple: false)
+    html_data = {
+      placeholder: options[:placeholder] || default_placeholder
+    }
+
+    all_items = collection.map { |item| [item.send(label_method), item.id] }
+    param_key = multiple ? attribute.to_s.sub('[]', '') : attribute
+    selected = params[param_key]
+    option_tags = options_for_select(all_items, selected)
+
+    tag_options = { data: html_data, class: 'choices-select' }
+    tag_options[:include_blank] = true unless multiple
+    tag_options[:multiple] = true if multiple
+
+    select_tag attribute, option_tags, **tag_options
+  end
 
   def crawler_ip?
     crawler_subnet = IPAddr.new('202.46.62.0/24')

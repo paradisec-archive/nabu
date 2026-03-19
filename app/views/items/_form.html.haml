@@ -168,7 +168,7 @@
       %tr
         %th= f.label :university_id, 'Originating university'
         %td
-          = f.collection_select :university_id, University.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a university...'}, :class => 'select2 university'
+          = f.university_select :university_id
           = link_to 'Add University', '#', :id => 'add-university'
 
       %tr
@@ -193,7 +193,7 @@
 
       %tr
         %th= f.label :discourse_type_id
-        %td= f.collection_select :discourse_type_id, DiscourseType.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a discourse...'}, :class => 'select2'
+        %td= f.discourse_type_select :discourse_type_id
 
       %tr
         %th= f.label :agent_id, 'Roles'
@@ -219,8 +219,8 @@
           - ia = ItemAgent.new
           - id = ia.object_id
           - fields = f.fields_for :item_agents, ia, :child_index => id do |c|
-            = c.select :user_id, [], {}, { :data => {:placeholder => 'Choose a user...', 'ajax--url' => users_path, :tags => true}, :class => 'select2' }
-            = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'select2'
+            = c.select :user_id, [], {}, { :data => {:placeholder => 'Choose a user...', 'search-url' => users_path, :tags => true}, :class => 'choices-select' }
+            = c.collection_select :agent_role_id, AgentRole.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a role...'}, :class => 'choices-select'
 
           = link_to 'Add new role', '#', :class => 'add_fields', :data => {:id => id, :fields => fields.gsub("\n", "")}
 
@@ -314,7 +314,7 @@
 
       %tr
         %th= f.label :access_condition, 'Data access conditions'
-        %td= f.collection_select :access_condition_id, AccessCondition.alpha, :id, :name, {:include_blank => true}, :data => {:placeholder => 'Choose a data access condition...'}, :class => 'select2'
+        %td= f.access_condition_select :access_condition_id
 
       %tr
         %th= f.label :access_narrative, 'Data access details'
@@ -339,29 +339,39 @@
         - if @item.bulk_deleteable[:countries].present?
           %tr
             %th= f.label :bulk_delete_country_ids, 'Countries'
-            %td= f.select :bulk_delete_country_ids, [], { include_blank: true },
-              { name: 'bulk_delete_country_ids[]', data: { placeholder: 'Choose countries to delete', data: @item.bulk_deleteable[:countries].to_json, multiple: true }, class: 'select2' }
+            %td= f.select :bulk_delete_country_ids,
+              @item.bulk_deleteable[:countries]&.map { |c| [c[:text], c[:id]] } || [],
+              { include_blank: true },
+              { name: 'bulk_delete_country_ids[]', data: { placeholder: 'Choose countries to delete' }, multiple: true, class: 'choices-select' }
 
         - if @item.bulk_deleteable[:subject_languages].present?
           %tr
             %th= f.label :bulk_delete_subject_language_ids, 'Subject Languages'
-            %td= f.select :bulk_delete_subject_language_ids, [], { include_blank: true },
-              { name: 'bulk_delete_subject_language_ids[]', data: { placeholder: 'Choose subject languages to delete', data: @item.bulk_deleteable[:subject_languages].to_json, multiple: true }, class: 'select2' }
+            %td= f.select :bulk_delete_subject_language_ids,
+              @item.bulk_deleteable[:subject_languages]&.map { |l| [l[:text], l[:id]] } || [],
+              { include_blank: true },
+              { name: 'bulk_delete_subject_language_ids[]', data: { placeholder: 'Choose subject languages to delete' }, multiple: true, class: 'choices-select' }
 
         - if @item.bulk_deleteable[:content_languages].present?
           %tr
             %th= f.label :bulk_delete_content_language_ids, 'Content Languages'
-            %td= f.select :bulk_delete_content_language_ids, [], { include_blank: true },
-              { name: 'bulk_delete_content_language_ids[]', data: { placeholder: 'Choose content languages to delete', data: @item.bulk_deleteable[:content_languages].to_json, multiple: true }, class: 'select2' }
+            %td= f.select :bulk_delete_content_language_ids,
+              @item.bulk_deleteable[:content_languages]&.map { |l| [l[:text], l[:id]] } || [],
+              { include_blank: true },
+              { name: 'bulk_delete_content_language_ids[]', data: { placeholder: 'Choose content languages to delete' }, multiple: true, class: 'choices-select' }
 
         - if @item.bulk_deleteable[:data_categories].present?
           %tr
             %th= f.label :bulk_delete_data_category_ids, 'Data Categories'
-            %td= f.select :bulk_delete_data_category_ids, [], { include_blank: true },
-              { name: 'bulk_delete_data_category_ids[]', data: { placeholder: 'Choose data categories to delete', data: @item.bulk_deleteable[:data_categories].to_json, multiple: true }, class: 'select2' }
+            %td= f.select :bulk_delete_data_category_ids,
+              @item.bulk_deleteable[:data_categories]&.map { |c| [c[:text], c[:id]] } || [],
+              { include_blank: true },
+              { name: 'bulk_delete_data_category_ids[]', data: { placeholder: 'Choose data categories to delete' }, multiple: true, class: 'choices-select' }
 
         - if @item.bulk_deleteable[:data_types].present?
           %tr
             %th= f.label :bulk_delete_data_type_ids, 'Data Types'
-            %td= f.select :bulk_delete_data_type_ids, [], { include_blank: true },
-              { name: 'bulk_delete_data_type_ids[]', data: { placeholder: 'Choose data types to delete', data: @item.bulk_deleteable[:data_types].to_json, multiple: true }, class: 'select2' }
+            %td= f.select :bulk_delete_data_type_ids,
+              @item.bulk_deleteable[:data_types]&.map { |t| [t[:text], t[:id]] } || [],
+              { include_blank: true },
+              { name: 'bulk_delete_data_type_ids[]', data: { placeholder: 'Choose data types to delete' }, multiple: true, class: 'choices-select' }

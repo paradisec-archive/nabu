@@ -4,8 +4,7 @@
       %label Add specific users:
       %input{type: :hidden, name: 'first_name', value: @primary_user.first_name}
       %input{type: :hidden, name: 'last_name', value: @primary_user.last_name}
-      %select{name: 'specific_user_ids', value: params[:specific_user_ids], type: :hidden,
-        data: { placeholder: 'Choose one or more users...', url: users_path, multiple: 'true'}, class: 'select2'}
+      = user_select_tag 'specific_user_ids', placeholder: 'Choose one or more users...', multiple: true
       %input{type: :submit, id: 'add_user_submit_button', value: 'Add Users To Merge'}
 
   = form_for @primary_user, url: do_merge_admin_user_path do |f|

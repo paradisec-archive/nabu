@@ -1,10 +1,6 @@
 // NOTE: Add sentry as early as possible
 import './custom/sentry'; // Add jQuery to the window
 
-// Entry point for the build script in your package.json
-import '@hotwired/turbo-rails';
-import './controllers';
-
 ///////////////////
 // Our Stuff
 ///////////////////

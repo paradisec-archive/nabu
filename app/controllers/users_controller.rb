@@ -18,12 +18,12 @@ class UsersController < ApplicationController
 
     @users = @users.limit(100)
 
-    render json: { results: @users.map { |u| { id: u.id, text: u.display_label } } }
+    render json: { results: @users.map { |u| { value: u.id, label: u.display_label } } }
   end
 
   def show
     @user = User.find params[:id]
 
-    render json: { id: @user.id, text: @user.display_label }
+    render json: { value: @user.id, label: @user.display_label }
   end
 end

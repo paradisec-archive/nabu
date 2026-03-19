@@ -19,7 +19,7 @@ class LanguagesController < ApplicationController
     @languages << Language.find_by_code('und')
     @languages << Language.find_by_code('zxx')
 
-    render json: { results: @languages.map { |l| { id: l.id, text: l.name } } }
+    render json: { results: @languages.map { |l| { value: l.id, label: l.name } } }
   end
 
   def show
