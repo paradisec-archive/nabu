@@ -231,48 +231,6 @@ export class AppStack extends cdk.Stack {
     }
 
     // ////////////////////////
-    // Viewer
-    // ////////////////////////
-
-    const viewerTaskDefinition = new ecs.Ec2TaskDefinition(this, 'ViewerTaskDefinition');
-    NagSuppressions.addResourceSuppressions(viewerTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
-    viewerTaskDefinition.addContainer('ViewerContainer', {
-      containerName: 'viewer',
-      memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('../docker', {
-        file: 'viewer.Dockerfile',
-      }),
-      portMappings: [{ name: 'viewer', containerPort: 80 }],
-      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ViewerService' }),
-      environment: {
-        AWS_REGION: region,
-        BUCKET_NAME: catalogBucket.bucketName,
-      },
-    });
-
-    const viewerService = new ecs.Ec2Service(this, 'ViewerService', {
-      serviceName: 'viewer',
-      cluster,
-      taskDefinition: viewerTaskDefinition,
-      enableExecuteCommand: true,
-    });
-
-    const viewerTargetGroup = new elbv2.ApplicationTargetGroup(this, 'ViewerTargetGroup', {
-      targets: [viewerService],
-      vpc,
-      protocol: elbv2.ApplicationProtocol.HTTP,
-    });
-
-    sslListener.addTargetGroups('ViewerTargetGroups', {
-      targetGroups: [viewerTargetGroup],
-      priority: 5,
-      conditions: [
-        elbv2.ListenerCondition.hostHeaders(['admin-catalog.paradisec.org.au', `admin-catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/viewer/*']),
-      ],
-    });
-
-    // ////////////////////////
     // Downloader
     // ////////////////////////
 

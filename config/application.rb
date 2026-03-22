@@ -50,8 +50,6 @@ module Nabu
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app/validators')
     ActiveSupport::Dependencies.autoload_paths << Rails.root.join('lib')
 
-    config.viewer_url = '/viewer'
-
     config.catalog_bucket = ENV.fetch('NABU_CATALOG_BUCKET', 'nabu')
   end
 end
