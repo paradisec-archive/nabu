@@ -11,6 +11,24 @@ body.bp {
     color: #06C;
   }
 
+  .button_to {
+    display: inline;
+  }
+
+  .link-button {
+    background: none;
+    border: none;
+    color: #20538D;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+
+    &:hover, &:focus {
+      color: #06C;
+    }
+  }
+
   p {
     margin: 0 0 0.5em;
   }
@@ -183,11 +201,6 @@ body.bp {
 
   #flash {
     padding-top: 10px;
-
-    .undo {
-      color: blue;
-      text-decoration: underline;
-    }
   }
 
   .field_with_errors {
@@ -433,7 +446,7 @@ body.bp {
   }
 
   input[type="submit"],
-  button:not(.choices__button),
+  button:not(.choices__button):not(.link-button),
   .button {
     width: auto;
     height: 32px;

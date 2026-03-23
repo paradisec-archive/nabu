@@ -223,9 +223,9 @@
       - if @collection.items.any?
         %p.delete-warning
           %strong This collection contains items! If you choose to delete it they will be deleted too, as well as any content files they contain. This action can not be undone!
-        = button_to 'Delete collection and contents', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection and all of its items?' }, :class => 'button-red'
+        = button_to 'Delete collection and contents', collection_path(@collection), :method => :delete, :data => { :confirm => 'Do you really want to delete this collection and all of its items?' }, :class => 'button-red'
       - else
-        = button_to 'Delete collection', collection_path(@collection), :method => :delete, :data => { :confirm_delete_message => 'Do you really want to delete this collection?' }, :class => 'button-red'
+        = button_to 'Delete collection', collection_path(@collection), :method => :delete, :data => { :confirm => 'Do you really want to delete this collection?' }, :class => 'button-red'
 
     - if can? :update, Collection
       = link_to 'Edit collection', edit_collection_path(@collection), :class => 'button right'

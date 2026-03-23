@@ -135,7 +135,7 @@ class CollectionsController < ApplicationController
     flash[:error] = response[:messages][:error]
 
     if response[:success] && response[:can_undo]
-      undo_link = view_context.link_to('undo', revert_version_path(@collection.versions.last), method: :post, class: 'undo')
+      undo_link = view_context.button_to('undo', revert_version_path(@collection.versions.last), method: :post, class: 'link-button')
       flash[:notice] = flash[:notice] + " (#{undo_link})"
     end
 

@@ -25,7 +25,7 @@ const noSearchUpdate = () => {
 const currentIdentifier = getCurrentIdentifier();
 
 if (currentIdentifier) {
-  console.log('🪚 resultIds:', JSON.stringify(resultIds, null, 2));
+  const resultIds = JSON.parse(sessionStorage.getItem('item_result_ids'));
   if (!resultIds) {
     const resultsButton = document.getElementById('results_button');
     if (resultsButton) resultsButton.style.display = 'none';

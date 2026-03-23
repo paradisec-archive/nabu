@@ -10,7 +10,7 @@
 
 -------------------------------------------------------------- */
 
-a.button, button {
+a.button, button:not(.link-button) {
   display:block;
   float:left;
   margin: 0.7em 0.5em 0.7em 0;
@@ -29,12 +29,12 @@ a.button, button {
   color:#565656;
   cursor:pointer;
 }
-button {
+button:not(.link-button) {
   width:auto;
   overflow:visible;
   padding:4px 10px 3px 7px;   /* IE6 */
 }
-button[type] {
+button[type]:not(.link-button) {
   padding:4px 10px 4px 7px;   /* Firefox */
   line-height:17px;           /* Safari */
 }
@@ -55,7 +55,7 @@ button img, a.button img{
 -------------------------------------------------------------- */
 
 /* Standard */
-button:hover, a.button:hover{
+button:not(.link-button):hover, a.button:hover{
   background-color:#dff4ff;
   border:1px solid #c2e1ef;
   color:#336699;

@@ -1,5 +1,5 @@
 !!! html5
-%html{ 'data-turbo' => 'false' }
+%html
   %head
     - if Rails.env.production?
       = javascript_include_tag 'https://www.googletagmanager.com/gtag/js?id=G-G9M2J7CBHC', :async => true
@@ -28,8 +28,8 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     -# Includes all stylesheet files in app/assets/stylesheets
-    = stylesheet_link_tag "application", "data-turbo-track": "reload"
-    = javascript_include_tag "application", "data-turbo-track": "reload", type: "module", defer: true
+    = stylesheet_link_tag "application"
+    = javascript_include_tag "application", type: "module", defer: true
 
     = yield :page_scripts
 
@@ -43,7 +43,7 @@
             - if user_signed_in?
               = link_to current_user.name, edit_user_registration_path
               |
-              = link_to 'Sign out', destroy_user_session_path, :data => { :turbo => true, :turbo_method => :delete }
+              = button_to 'Sign out', destroy_user_session_path, method: :delete, class: 'link-button'
             - else
               = link_to 'Sign up', new_user_registration_path
               |
