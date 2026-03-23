@@ -163,6 +163,7 @@ class ItemsController < ApplicationController
                            .where(id: params[:item_ids].split)
                            .pluck(:id)
     BulkUpdateItemsJob.perform_later(item_ids: accessible_items,
+                               current_user_id: current_user&.id,
                                current_user_email: current_user.try(:email),
                                updates: item_params)
 

@@ -1,10 +1,12 @@
 class BulkUpdateItemsJob < ApplicationJob
   queue_as :default
 
-  def perform(item_ids:, updates:, current_user_email:)
+  def perform(item_ids:, updates:, current_user_id: nil, current_user_email:)
     @item_ids = item_ids
     @current_user_email = current_user_email
     @start_time = Time.current
+
+    PaperTrail.request.whodunnit = current_user_id.to_s if current_user_id
 
     process_updates(updates)
     update_items

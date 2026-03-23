@@ -1,6 +1,11 @@
 class VersionsController < ApplicationController
+  before_action :authenticate_user!
+
   def revert
     @version = PaperTrail::Version.find(params[:id])
+
+    raise CanCan::AccessDenied unless @version.whodunnit == current_user.id.to_s
+
     model = @version.reify
     model.save!
     if model.class == Item
