@@ -1,28 +1,29 @@
-$(() => {
-  const existingExclusions = $('#existing_exclusions');
-  const hiddenExclusions = $('.exclusions');
+const existingExclusions = document.getElementById('existing_exclusions');
+const hiddenExclusions = document.querySelectorAll('.exclusions');
 
-  $('[name="exclude[]"]').on('click', () => {
-    let ids = [];
-    $('[name="exclude[]"]:checked').each(function () {
-      ids.push($(this).val());
+document.querySelectorAll('[name="exclude[]"]').forEach((checkbox) => {
+  checkbox.addEventListener('click', () => {
+    const ids = [];
+    document.querySelectorAll('[name="exclude[]"]:checked').forEach((checked) => {
+      ids.push(checked.value);
     });
 
-    // if new ids have been checked, then show button
-    if (ids.length > 0) {
-      $('#update_exclusions').show();
-    } else {
-      $('#update_exclusions').hide();
+    const updateButton = document.getElementById('update_exclusions');
+    if (updateButton) {
+      updateButton.style.display = ids.length > 0 ? '' : 'none';
     }
 
-    ids = ids.concat(existingExclusions.val())
-
-    hiddenExclusions.val(ids)
-  });
-
-  $('#update_exclusions').on('click', () => {
-    $('form').trigger('submit');
-
-    return false;
+    const allIds = existingExclusions ? ids.concat(existingExclusions.value) : ids;
+    hiddenExclusions.forEach((el) => {
+      el.value = allIds;
+    });
   });
 });
+
+const updateButton = document.getElementById('update_exclusions');
+if (updateButton) {
+  updateButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    document.querySelector('form').requestSubmit();
+  });
+}

@@ -1,8 +1,6 @@
 class CommentsController < ApplicationController
   load_and_authorize_resource except: :create
 
-  # respond_to :js
-
   def index
     @comments = @comments.page(params[:page])
   end

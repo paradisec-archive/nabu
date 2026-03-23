@@ -23,15 +23,6 @@ importers:
       choices.js:
         specifier: ^11.0.6
         version: 11.2.1
-      jquery:
-        specifier: ^3.7.1
-        version: 3.7.1
-      jquery-query-object:
-        specifier: ^2.2.3
-        version: 2.2.3
-      jquery-ui:
-        specifier: ^1.14.2
-        version: 1.14.2
       sass:
         specifier: ^1.98.0
         version: 1.98.0
@@ -1545,15 +1536,6 @@ packages:
     peerDependenciesMeta:
       node-notifier:
         optional: true
-
-  jquery-query-object@2.2.3:
-    resolution: {integrity: sha512-BSIoUqeZrYHA9LWCId42TfVbfGfV8Iryl5MdKcg6ZoccUChSGVnLmvG5RGe8y0e8gq9eboesW7zyR6RcP0FOVA==}
-
-  jquery-ui@1.14.2:
-    resolution: {integrity: sha512-1gSl7PUjyipa2adSr780Ujk16faicrV7PjPPzPtvWk7tTqBnsqp67NNV9jZK2+BIxUPXWSnIUU/LBCgwgGZE+Q==}
-
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3645,16 +3627,6 @@ snapshots:
       - esbuild-register
       - supports-color
       - ts-node
-
-  jquery-query-object@2.2.3:
-    dependencies:
-      jquery: 3.7.1
-
-  jquery-ui@1.14.2:
-    dependencies:
-      jquery: 3.7.1
-
-  jquery@3.7.1: {}
 
   js-tokens@4.0.0: {}
 

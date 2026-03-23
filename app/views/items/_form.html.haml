@@ -50,7 +50,7 @@
 
       %tr
         %th= f.label :originated_on, 'Origination date'
-        %td= f.text_field :originated_on, :class => 'dateinput short', :value => params[:originated_on] || @item.originated_on && @item.originated_on.strftime('%d %B %Y')
+        %td= f.date_field :originated_on, :class => 'short', :value => params[:originated_on] || @item.originated_on
 
       %tr
         %th= f.label :originated_on_narrative, 'Origination date free form'
@@ -167,9 +167,7 @@
 
       %tr
         %th= f.label :university_id, 'Originating university'
-        %td
-          = f.university_select :university_id
-          = link_to 'Add University', '#', :id => 'add-university'
+        %td= f.university_select :university_id
 
       %tr
         %th= f.label :operator_id
@@ -263,11 +261,11 @@
 
       %tr
         %th Date received
-        %td= f.text_field :received_on, :class => 'dateinput short', :value => params[:received_on] || @item.received_on && @item.received_on.strftime('%d %B %Y')
+        %td= f.date_field :received_on, :class => 'short', :value => params[:received_on] || @item.received_on
 
       %tr
         %th Date digitised
-        %td= f.text_field :digitised_on, :class => 'dateinput short', :value => params[:digitised_on] || @item.digitised_on && @item.digitised_on.strftime('%d %B %Y')
+        %td= f.date_field :digitised_on, :class => 'short', :value => params[:digitised_on] || @item.digitised_on
 
       %tr
         %th= f.label :ingest_notes
@@ -279,11 +277,11 @@
 
       %tr
         %th= f.label :metadata_imported_on, 'Metadata imported'
-        %td= f.text_field :metadata_imported_on, :class => 'dateinput short', :value => params[:metadata_imported_on] || @item.metadata_imported_on && @item.metadata_imported_on.strftime('%d %B %Y')
+        %td= f.date_field :metadata_imported_on, :class => 'short', :value => params[:metadata_imported_on] || @item.metadata_imported_on
 
       %tr
         %th= f.label :metadata_exported_on, 'Metadata exported'
-        %td= f.text_field :metadata_exported_on, :class => 'dateinput short', :value => params[:metadata_exported_on] || @item.metadata_exported_on && @item.metadata_exported_on.strftime('%d %B %Y')
+        %td= f.date_field :metadata_exported_on, :class => 'short', :value => params[:metadata_exported_on] || @item.metadata_exported_on
 
       %tr
         %th= f.label :tracking

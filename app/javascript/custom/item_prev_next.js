@@ -1,5 +1,5 @@
 const getCurrentIdentifier = () => {
-  const match = window.location.pathname.match(/^\/collections\/([^\/]+)\/items\/(.*)$/);
+  const match = window.location.pathname.match(/^\/collections\/([^/]+)\/items\/(.*)$/);
   if (!match) {
     return null;
   }
@@ -10,57 +10,50 @@ const getCurrentIdentifier = () => {
 };
 
 const noSearchUpdate = () => {
-  $('.next_prev_button').each((_i, button) => {
-    const identifier = $(button).data('identifier');
+  document.querySelectorAll('.next_prev_button').forEach((button) => {
+    const identifier = button.dataset.identifier;
     if (!identifier) {
-      $(button).hide();
-
+      button.style.display = 'none';
       return;
     }
 
     const [collection, item] = identifier.split('-');
-    $(button).attr('href', `/collections/${collection}/items/${item}`);
+    button.href = `/collections/${collection}/items/${item}`;
   });
 };
 
-$(() => {
-  const currentIdentifier = getCurrentIdentifier();
+const currentIdentifier = getCurrentIdentifier();
 
-  if (!currentIdentifier) {
-    return;
-  }
-
-  const resultIds = JSON.parse(sessionStorage.getItem('item_result_ids'));
+if (currentIdentifier) {
+  console.log('🪚 resultIds:', JSON.stringify(resultIds, null, 2));
   if (!resultIds) {
-    $('#results_button').hide();
+    const resultsButton = document.getElementById('results_button');
+    if (resultsButton) resultsButton.style.display = 'none';
     noSearchUpdate();
-
-    return;
-  }
-
-  const currentIndex = resultIds.indexOf(currentIdentifier);
-  if (currentIndex < 0) {
-    sessionStorage.removeItem('item_result_ids');
-    noSearchUpdate();
-
-    return;
-  }
-
-  if (currentIndex > 0) {
-    const identifier = resultIds[currentIndex - 1];
-    const [collection, item] = identifier.split('-');
-    const url = `/collections/${collection}/items/${item}`;
-    $('#prev_button').attr('href', url);
   } else {
-    $('#prev_button').hide();
-  }
+    const currentIndex = resultIds.indexOf(currentIdentifier);
+    if (currentIndex < 0) {
+      sessionStorage.removeItem('item_result_ids');
+      noSearchUpdate();
+    } else {
+      const prevButton = document.getElementById('prev_button');
+      const nextButton = document.getElementById('next_button');
 
-  if (currentIndex < resultIds.length - 1) {
-    const identifier = resultIds[currentIndex + 1];
-    const [collection, item] = identifier.split('-');
-    const url = `/collections/${collection}/items/${item}`;
-    $('#next_button').attr('href', url);
-  } else {
-    $('prev_button').hide();
+      if (currentIndex > 0) {
+        const identifier = resultIds[currentIndex - 1];
+        const [collection, item] = identifier.split('-');
+        if (prevButton) prevButton.href = `/collections/${collection}/items/${item}`;
+      } else {
+        if (prevButton) prevButton.style.display = 'none';
+      }
+
+      if (currentIndex < resultIds.length - 1) {
+        const identifier = resultIds[currentIndex + 1];
+        const [collection, item] = identifier.split('-');
+        if (nextButton) nextButton.href = `/collections/${collection}/items/${item}`;
+      } else {
+        if (nextButton) nextButton.style.display = 'none';
+      }
+    }
   }
-});
+}

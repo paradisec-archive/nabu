@@ -64,7 +64,7 @@
         %tr
           %th= label_tag :originated_on, 'Origination date'
           %td
-            = text_field_tag :originated_on, params[:originated_on], :class => 'dateinput short'
+            = date_field_tag :originated_on, params[:originated_on], :class => 'short'
             %br
             Blank
             = check_box_tag :originated_on_blank, true, params[:originated_on_blank]
@@ -217,7 +217,7 @@
         %tr
           %th Date received:
           %td
-            = text_field_tag :received_on, params[:received_on], :class => 'dateinput short', :value => params[:received_on]
+            = date_field_tag :received_on, params[:received_on], :class => 'short'
             %br
             Blank
             = check_box_tag :received_on_blank, true, params[:received_on_blank]
@@ -225,7 +225,7 @@
         %tr
           %th Date digitised:
           %td
-            = text_field_tag :digitised_on, params[:digitised_on], :class => 'dateinput short', :value => params[:digitised_on]
+            = date_field_tag :digitised_on, params[:digitised_on], :class => 'short'
             %br
             Blank
             = check_box_tag :digitised_on_blank, true, params[:digitised_on_blank]
@@ -241,7 +241,7 @@
         %tr
           %th Metadata imported:
           %td
-            = text_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'dateinput short'
+            = date_field_tag :metadata_imported_on, params[:metadata_imported_on], :class => 'short'
             %br
             Blank
             = check_box_tag :metadata_imported_on_blank, true, params[:metadata_imported_on_blank]
@@ -249,7 +249,7 @@
         %tr
           %th Metadata exported:
           %td
-            = text_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'dateinput short'
+            = date_field_tag :metadata_exported_on, params[:metadata_exported_on], :class => 'short'
             %br
             Blank
             = check_box_tag :metadata_exported_on_blank, true, params[:metadata_exported_on_blank]
@@ -268,7 +268,7 @@
         %tr
           %th Record created
           %td
-            = text_field_tag :created_at, params[:created_at], :class => 'dateinput short'
+            = date_field_tag :created_at, params[:created_at], :class => 'short'
             %br
             Blank
             = check_box_tag :created_at_blank, true, params[:created_at_blank]
@@ -276,7 +276,7 @@
         %tr
           %th Record modified
           %td
-            = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short'
+            = date_field_tag :updated_at, params[:updated_at], :class => 'short'
             %br
             Blank
             = check_box_tag :updated_at_blank, true, params[:updated_at_blank]

@@ -387,6 +387,7 @@ body.bp {
   input[type="text"],
   input[type="email"],
   input[type="password"],
+  input[type="date"],
   textarea,
   div .choices,
   td select {
@@ -419,6 +420,7 @@ body.bp {
   input[type="text"],
   input[type="email"],
   input[type="password"],
+  input[type="date"],
   textarea {
     width: 100%;
     box-sizing: border-box;
@@ -520,17 +522,6 @@ body.bp {
 
   .comment_who {
     font-style: italic;
-  }
-
-  // datepicker
-  .ui-datepicker {
-    table {
-      font-size: 0.8em;
-    }
-
-    .ui-datepicker-calendar {
-      margin-bottom: 5px;
-    }
   }
 
   .no-empty-submit {

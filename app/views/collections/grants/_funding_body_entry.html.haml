@@ -1,5 +1,5 @@
--# this partial is rendered 2 ways, one by straight rails for the show action, and the other by jquery template
--# rails will pass values for the fields, jquery will instead manually replace the mustache placeholders
+-# this partial is rendered 2 ways, one by straight rails for the show action, and the other by JS template
+-# rails will pass values for the fields, JS will instead manually replace the mustache placeholders
 %div
   %span= fb_label || '{{label}}'
   %a.row-action.delete-funding-body.remove= "&times;".html_safe

@@ -1,11 +1,11 @@
-$(() => {
-  $('button[data-confirm-delete-message]').on('click', function(event) {
+document.querySelectorAll('button[data-confirm-delete-message]').forEach((button) => {
+  button.addEventListener('click', (event) => {
     event.preventDefault();
 
-    const confirmMessage = $(this).data('confirm-delete-message');
+    const confirmMessage = button.dataset.confirmDeleteMessage;
     const isConfirmed = window.confirm(confirmMessage);
     if (isConfirmed) {
-      $(this).closest('form')[0].submit();
+      button.closest('form').submit();
     }
   });
 });

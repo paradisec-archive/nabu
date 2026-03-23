@@ -134,7 +134,10 @@ module HasSearch
     body[:query][:bool][:filter] = { bool: { must: filter } } if filter.any?
     body[:query][:must].push({ range: }) if range.any?
 
-    body[:query][:bool][:filter][:bool][:must_not] = [{ ids: { values: params[:exclusions].split(',').map(&:to_i) } }] if params[:exclusions].present?
+    if params[:exclusions].present?
+      body[:query][:bool][:filter] ||= { bool: {} }
+      body[:query][:bool][:filter][:bool][:must_not] = [{ ids: { values: params[:exclusions].split(',').map(&:to_i) } }]
+    end
 
     body[:sort] = order if order
 

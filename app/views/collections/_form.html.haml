@@ -59,9 +59,7 @@
 
       %tr
         %th= f.label :university_id, 'Originating university'
-        %td
-          = f.university_select :university_id
-          = link_to 'Add University', '#', :id => 'add-university'
+        %td= f.university_select :university_id
 
       %tr
         %th

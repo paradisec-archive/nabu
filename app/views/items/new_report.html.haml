@@ -7,9 +7,9 @@
     .left
       = form_tag(send_report_items_path, method: :post) do
         = label_tag :date_from, 'Date From'
-        = text_field_tag :date_from, params[:date_from], :class => 'dateinput short', :value => nil
+        = date_field_tag :date_from, params[:date_from], :class => 'short'
         = label_tag :date_to, 'Date To'
-        = text_field_tag :date_to, params[:date_to], :class => 'dateinput short', :value => nil
+        = date_field_tag :date_to, params[:date_to], :class => 'short'
         = submit_tag 'Send Report'
 
 .twoup-2.column.span-12.last

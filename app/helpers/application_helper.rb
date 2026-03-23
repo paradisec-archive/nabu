@@ -99,7 +99,7 @@ module ApplicationHelper
     selected = params[attribute]
     option_tags = options_for_select(all_mimetypes, selected)
 
-    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select", multiple: options[:multiple]
+    select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select", multiple: options[:multiple], include_blank: true
   end
 
   def university_select_tag(attribute, options = {})

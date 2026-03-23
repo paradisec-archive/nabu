@@ -153,7 +153,7 @@
         %tr
           %th Date created:
           %td
-            = text_field_tag :created_at, params[:created_at], :class => 'dateinput short', :value => params[:created_at]
+            = date_field_tag :created_at, params[:created_at], :class => 'short'
             %br
             Blank
             = check_box_tag :created_at_blank, true, params[:created_at_blank]
@@ -161,7 +161,7 @@
         %tr
           %th Date modified:
           %td
-            = text_field_tag :updated_at, params[:updated_at], :class => 'dateinput short', :value => params[:updated_at]
+            = date_field_tag :updated_at, params[:updated_at], :class => 'short'
             %br
             Blank
             = check_box_tag :updated_at_blank, true, params[:updated_at_blank]

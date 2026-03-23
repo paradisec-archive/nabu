@@ -1,11 +1,9 @@
-$(() => {
-  $('form.no-empty-submit').on('submit', function () {
-    $(this).find('input, select, textarea').each((_, element) => {
+document.querySelectorAll('form.no-empty-submit').forEach((form) => {
+  form.addEventListener('submit', () => {
+    form.querySelectorAll('input, select, textarea').forEach((element) => {
       if (element.value === '') {
-        element.disabled = 'disabled'
+        element.disabled = true;
       }
     });
-
-    return true;
   });
 });
