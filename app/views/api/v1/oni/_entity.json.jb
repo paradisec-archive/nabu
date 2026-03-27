@@ -107,7 +107,7 @@ if  defined? score || defined? highlights
   searchExtra = json[:searchExtra]
 
   searchExtra[:score] = score if defined? score
-  searchExtra[:highlight] = highlights if defined? highlights
+  searchExtra[:highlight] = highlights.transform_values { |v| Array(v) } if defined? highlights
 end
 
 json
