@@ -32,4 +32,12 @@ class CollectionAdmin < ApplicationRecord
   #  validates :collection_id, :presence => true
   validates :user_id, presence: true
   validates :collection_id, uniqueness: { scope: [:collection_id, :user_id] }
+
+  after_commit :reindex_collection_essences
+
+  private
+
+  def reindex_collection_essences
+    collection.essences.reindex(mode: :async)
+  end
 end

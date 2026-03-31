@@ -218,6 +218,10 @@ module Api
             Item.search_user_fields.each do |field|
               perms << { field => current_user.id }
             end
+
+            Essence.search_user_fields.each do |field|
+              perms << { field => current_user.id }
+            end
           end
         end
 
@@ -257,8 +261,12 @@ module Api
 
         #  TODO use new search DSL
         params = {
-          models: [Collection, Item],
-          model_includes: { Collection => [:languages, :access_condition, :entity, items: :essences], Item => [:content_languages, :access_condition, :collection, :entity] },
+          models: [Collection, Item, Essence],
+          model_includes: {
+            Collection => [:languages, :access_condition, :entity, items: :essences],
+            Item => [:content_languages, :access_condition, :collection, :entity],
+            Essence => [{ item: [:collection, :content_languages, :access_condition] }, :entity]
+          },
           limit: query.limit,
           offset: query.offset,
           order:,
@@ -274,7 +282,7 @@ module Api
             payload[:query][:bool][:must] =  { query_string: { query: processed_query  } }
           end
         else
-          @search = Searchkick.search(query.query, **params).indices_boost(Collection => 10, Item => 1)
+          @search = Searchkick.search(query.query, **params).indices_boost(Collection => 10, Item => 5, Essence => 1)
         end
       end
 

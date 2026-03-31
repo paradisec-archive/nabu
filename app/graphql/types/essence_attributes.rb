@@ -10,5 +10,6 @@ module Types
     argument :duration, Float, required: false
     argument :channels, Integer, required: false
     argument :fps, Integer, required: false
+    argument :extracted_text, String, required: false
   end
 end

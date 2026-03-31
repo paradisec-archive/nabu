@@ -156,6 +156,7 @@ class Item < ApplicationRecord
 
   after_commit :sync_collection_entity
   after_commit :sync_essence_entities_privacy
+  after_commit :reindex_essences_if_permissions_changed
 
   scope :public_items, -> { joins(:collection).where(private: false, collection: { private: false }) }
 
@@ -730,6 +731,12 @@ class Item < ApplicationRecord
 
     computed_private = private? || collection.private?
     Entity.where(entity_type: 'Essence', entity_id: essence_ids).update_all(private: computed_private)
+  end
+
+  def reindex_essences_if_permissions_changed
+    return unless saved_change_to_private? || saved_change_to_collector_id? || saved_change_to_operator_id?
+
+    essences.reindex(mode: :async)
   end
 
   def entity_sync_attributes

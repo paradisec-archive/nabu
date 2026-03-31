@@ -13,6 +13,7 @@
 # **`derived_files_generated`**  | `boolean`          | `default(FALSE)`
 # **`doi`**                      | `string(255)`      |
 # **`duration`**                 | `float(24)`        |
+# **`extracted_text`**           | `text(4294967295)`  |
 # **`filename`**                 | `string(255)`      |
 # **`fps`**                      | `integer`          |
 # **`mimetype`**                 | `string(255)`      |
@@ -35,7 +36,18 @@ class Essence < ApplicationRecord
   include IdentifiableByDoi
   include Entityable
 
-  has_paper_trail
+  has_paper_trail ignore: [:extracted_text]
+
+  searchkick deep_paging: true
+
+  scope :search_import, lambda {
+    includes(item: [
+      :collection, :collector, :operator,
+      :content_languages, :countries,
+      :item_admins, :item_users,
+      { collection: :collection_admins }
+    ])
+  }
 
   belongs_to :item, counter_cache: true
   delegate :collection, to: :item
@@ -115,6 +127,66 @@ class Essence < ApplicationRecord
 
   def is_archived?
     filename.ends_with?('.mxf') || filename.ends_with?('.mkv')
+  end
+
+  def search_data
+    {
+      entity_type: 'Essence',
+      id:,
+      filename:,
+      mimetype:,
+      full_identifier:,
+      identifier: full_identifier,
+      collection_identifier: item.collection.identifier,
+      item_identifier: item.identifier,
+
+      extracted_text:,
+
+      languages: item.content_languages.map(&:name).uniq,
+      languages_with_code: item.content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
+      countries: item.countries.map(&:name).uniq,
+      collector_name: item.collector_name,
+
+      encodingFormat: [mimetype],
+      rootCollection: "#{item.collection.identifier} - #{item.collection.title}",
+      collection_title: item.collection.title,
+
+      private: item.private? || item.collection.private?,
+      admin_ids: item.item_admins.map(&:user_id).uniq,
+      user_ids: item.item_users.map(&:user_id).uniq,
+      collector_id: item.collector_id,
+      operator_id: item.operator_id,
+      collection_admin_ids: item.collection.collection_admins.map(&:user_id).uniq,
+
+      originated_on: item.originated_on,
+      created_at: created_at&.to_date,
+      updated_at: updated_at&.to_date
+    }
+  end
+
+  def self.search_user_fields
+    %i[admin_ids user_ids collection_admin_ids]
+  end
+
+  def self.search_agg_fields
+    %i[languages_with_code countries collector_name encodingFormat rootCollection entity_type]
+  end
+
+  def self.search_text_fields
+    %i[full_identifier filename extracted_text]
+  end
+
+  def self.search_filter_fields
+    %i[private collector_id operator_id admin_ids user_ids collection_admin_ids mimetype]
+  end
+
+  def self.search_highlight_fields
+    %i[extracted_text filename]
+  end
+
+  def self.search_includes
+    [{ item: [:collection, :collector, :content_languages, :countries, :item_admins, :item_users,
+              { collection: :collection_admins }] }, :entity]
   end
 
   def self.ransackable_attributes(_ = nil)

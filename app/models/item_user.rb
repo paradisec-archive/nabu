@@ -27,4 +27,12 @@ class ItemUser < ApplicationRecord
   validates :user_id, presence: true
   # RAILS bug - can't save item_user without item having been saved
   #  validates :item_id, :presence => true
+
+  after_commit :reindex_item_essences
+
+  private
+
+  def reindex_item_essences
+    item.essences.reindex(mode: :async)
+  end
 end

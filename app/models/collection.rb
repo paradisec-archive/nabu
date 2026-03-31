@@ -129,6 +129,7 @@ class Collection < ApplicationRecord
   after_save :update_catalog_metadata
 
   after_commit :reindex_items_if_private_changed, if: :saved_change_to_private?
+  after_commit :reindex_essences_if_private_changed, if: :saved_change_to_private?
   after_commit :sync_essence_entities_privacy, if: :saved_change_to_private?
 
   def default_map_boundaries?
@@ -614,6 +615,10 @@ class Collection < ApplicationRecord
 
   def reindex_items_if_private_changed
     items.reindex(mode: :async)
+  end
+
+  def reindex_essences_if_private_changed
+    essences.reindex(mode: :async)
   end
 
   def sync_essence_entities_privacy

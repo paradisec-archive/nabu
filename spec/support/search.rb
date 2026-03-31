@@ -2,6 +2,7 @@ RSpec.configure do |config|
    config.before(:suite) do
     Collection.reindex
     Item.reindex
+    Essence.reindex
 
     Searchkick.disable_callbacks
   end
@@ -10,6 +11,7 @@ RSpec.configure do |config|
     # Docs don't have the next two but without the old db entries remain in the index
     Collection.reindex
     Item.reindex
+    Essence.reindex
     Searchkick.callbacks(nil) do
       example.run
     end
