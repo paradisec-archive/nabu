@@ -20,40 +20,53 @@ namespace :catalog do
     total = essences.count
     puts "Found #{total} essences to backfill (extensions: #{extensions.join(', ')})"
 
-    succeeded = 0
-    failed = 0
+    succeeded = Concurrent::AtomicFixnum.new(0)
+    failed = Concurrent::AtomicFixnum.new(0)
+    processed = Concurrent::AtomicFixnum.new(0)
+    pool = Concurrent::FixedThreadPool.new(5)
 
-    essences.find_each.with_index do |essence, index|
-      s3_key = essence.full_identifier
-      extension = File.extname(essence.filename).delete_prefix('.')
+    essences.find_each.each_slice(5) do |slice|
+      futures = slice.map do |essence|
+        Concurrent::Promises.future_on(pool) do
+          s3_key = essence.full_identifier
+          extension = File.extname(essence.filename).delete_prefix('.')
 
-      payload = {
-        essenceId: essence.id.to_s,
-        s3Key: s3_key,
-        extension: extension,
-        mimetype: essence.mimetype,
-        size: essence.size
-      }
+          payload = {
+            essenceId: essence.id.to_s,
+            s3Key: s3_key,
+            extension: extension,
+            mimetype: essence.mimetype,
+            size: essence.size
+          }
 
-      response = lambda_client.invoke(
-        function_name: function_name,
-        invocation_type: 'RequestResponse',
-        payload: JSON.dump(payload)
-      )
+          response = lambda_client.invoke(
+            function_name: function_name,
+            invocation_type: 'RequestResponse',
+            payload: JSON.dump(payload)
+          )
 
-      result = JSON.parse(response.payload.read)
-      if response.function_error.nil?
-        succeeded += 1
-        puts "[#{index + 1}/#{total}] #{s3_key}: #{result['characters']} chars"
-      else
-        failed += 1
-        puts "[#{index + 1}/#{total}] #{s3_key}: FAILED - #{result['errorMessage']}"
+          result = JSON.parse(response.payload.read)
+          index = processed.increment
+          if response.function_error.nil?
+            succeeded.increment
+            puts "[#{index}/#{total}] #{s3_key}: #{result['characters']} chars"
+          else
+            failed.increment
+            puts "[#{index}/#{total}] #{s3_key}: FAILED - #{result['errorMessage']}"
+          end
+        rescue StandardError => e
+          index = processed.increment
+          failed.increment
+          puts "[#{index}/#{total}] #{essence.full_identifier}: ERROR - #{e.message}"
+        end
       end
-    rescue StandardError => e
-      failed += 1
-      puts "[#{index + 1}/#{total}] #{essence.full_identifier}: ERROR - #{e.message}"
+
+      futures.each(&:value!)
     end
 
-    puts "\nDone. #{succeeded} succeeded, #{failed} failed out of #{total}"
+    pool.shutdown
+    pool.wait_for_termination
+
+    puts "\nDone. #{succeeded.value} succeeded, #{failed.value} failed out of #{total}"
   end
 end
