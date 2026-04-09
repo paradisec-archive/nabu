@@ -523,7 +523,7 @@ export class AppStack extends cdk.Stack {
     jobsTaskDefinition.addContainer('JobsContainer', {
       containerName: 'jobs',
       ...commonAppImageOptions,
-      memoryLimitMiB: 1024,
+      memoryLimitMiB: 8912,
       memoryReservationMiB: 1024,
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'JobsService' }),
       command: ['bin/jobs'],
