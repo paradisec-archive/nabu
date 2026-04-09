@@ -38,7 +38,22 @@ class Essence < ApplicationRecord
 
   has_paper_trail ignore: [:extracted_text]
 
-  searchkick deep_paging: true
+  searchkick deep_paging: true,
+             merge_mappings: true,
+             mappings: {
+               properties: {
+                 extracted_text: {
+                   type: 'text',
+                   analyzer: 'searchkick_index',
+                   fields: {
+                     analyzed: {
+                       type: 'text',
+                       analyzer: 'searchkick_index'
+                     }
+                   }
+                 }
+               }
+             }
 
   scope :search_import, lambda {
     includes(item: [
