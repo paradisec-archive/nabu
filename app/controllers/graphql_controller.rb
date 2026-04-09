@@ -20,9 +20,16 @@ class GraphqlController < ApiController
     result = NabuSchema.execute(query, variables:, context:, operation_name:, max_complexity: 300)
     render json: result
   rescue StandardError => error
-    raise error unless Rails.env.development?
+    unless Rails.env.development?
+      logger.error error.message
+      logger.error error.backtrace.join("\n")
+    end
 
-    handle_error_in_development(error)
+    Sentry.capture_exception(error) if defined?(Sentry)
+
+    graphql_error = GraphQL::ExecutionError.new(error.message, extensions: { code: 'INTERNAL_SERVER_ERROR' })
+
+    render json: { errors: [graphql_error.to_h], data: {} }, status: :internal_server_error
   end
 
   def schema
@@ -56,12 +63,5 @@ class GraphqlController < ApiController
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
-  end
-
-  def handle_error_in_development(error)
-    logger.error error.message
-    logger.error error.backtrace.join("\n")
-
-    render json: { errors: [{ message: error.message, backtrace: error.backtrace }], data: {} }, status: :internal_server_error
   end
 end
