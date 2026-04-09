@@ -12,7 +12,7 @@ RSpec.configure do |config|
     Collection.reindex
     Item.reindex
     Essence.reindex
-    Searchkick.callbacks(nil) do
+    Searchkick.callbacks(:inline) do
       example.run
     end
   end

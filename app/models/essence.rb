@@ -48,7 +48,7 @@ class Essence < ApplicationRecord
                    fields: {
                      analyzed: {
                        type: 'text',
-                       analyzer: 'searchkick_index'
+                       analyzer: 'searchkick_search2'
                      }
                    }
                  }

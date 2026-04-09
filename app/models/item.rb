@@ -263,7 +263,7 @@ class Item < ApplicationRecord
 
   def self.search_includes
     includes = %i[
-      collection collector countries collector operator essences university content_languages
+      collection collector countries operator essences university content_languages
       data_categories data_types discourse_type access_condition subject_languages item_admins
     ]
     includes << { item_agents: %i[user agent_role] }
@@ -290,7 +290,7 @@ class Item < ApplicationRecord
 
   def self.search_filter_fields
     %i[
-      private external no_files
+      private external
       title_blank description_blank
       originated_on_blank originated_on_narrative_blank url_blank language_blank dialect_blank region_blank original_media_blank admin_comment_blank
       received_on_blank digitised_on_blank metadata_imported_on_blank metadata_exported_on_blank ingest_notes_blank tracking_blank access_narrative_blank
@@ -358,6 +358,7 @@ class Item < ApplicationRecord
 
       external:,
       private: !public?,
+      essences_count:,
 
       # Link models for dropdowns and aggs
       content_language_ids: content_languages.map(&:id).uniq,

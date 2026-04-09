@@ -187,7 +187,7 @@ class Collection < ApplicationRecord
     CatalogMetadataJob.perform_later(self, false)
   end
 
-  searchkick geo_shape: [:bounds], locations: [:location], word_start: [:identifier]
+  searchkick geo_shape: [:bounds], locations: [:location], word_start: [:identifier], deep_paging: true
 
   def self.sortable_columns
     %w[identifier title collector_sortname university_name created_at languages countries]

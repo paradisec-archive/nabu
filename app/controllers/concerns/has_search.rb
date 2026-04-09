@@ -97,7 +97,7 @@ module HasSearch
     range_names = %i[created_at updated_at]
     range_names.each { |name| range[name] = build_range_date(params[name]) if params[name].present? }
 
-    range[:essences_count] = { gt: value } if params[:no_files]
+    range[:essences_count] = { lte: 0 } if params[:no_files]
 
     range
   end
@@ -132,7 +132,7 @@ module HasSearch
     }
 
     body[:query][:bool][:filter] = { bool: { must: filter } } if filter.any?
-    body[:query][:must].push({ range: }) if range.any?
+    body[:query][:bool][:must].push({ range: }) if range.any?
 
     if params[:exclusions].present?
       body[:query][:bool][:filter] ||= { bool: {} }
@@ -217,27 +217,6 @@ module HasSearch
     fuzzy_terms = fuzzy_text.split(/\s+/).reject(&:blank?)
 
     { exact_phrases:, fuzzy_terms: }
-  end
-
-  def quoted_phrase?(term)
-    term.start_with?('"') && term.end_with?('"') && term.length > 1
-  end
-
-  def extract_phrase(term)
-    return term unless quoted_phrase?(term)
-
-    term[1..-2]
-  end
-
-  def where_regexp(name, value)
-    {
-      regexp: {
-        name => {
-          value: ".*#{value}.*",
-          flags: 'NONE'
-        }
-      }
-    }
   end
 
   def where_exact(name, value)
