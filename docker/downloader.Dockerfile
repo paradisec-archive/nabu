@@ -12,7 +12,7 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy package files
-COPY --from=code /code/package.json /code/pnpm-lock.yaml ./
+COPY --from=code /code/package.json /code/pnpm-lock.yaml /code/pnpm-workspace.yaml ./
 
 # Install all dependencies (including dev for build)
 RUN pnpm install --frozen-lockfile
@@ -49,7 +49,7 @@ RUN addgroup --system --gid 1001 nodejs && \
   adduser --system --uid 1001 appuser
 
 # Copy package files for production install
-COPY --from=code /code/package.json /code/pnpm-lock.yaml ./
+COPY --from=code /code/package.json /code/pnpm-lock.yaml /code/pnpm-workspace.yaml ./
 
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
