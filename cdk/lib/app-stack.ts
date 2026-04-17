@@ -249,7 +249,7 @@ export class AppStack extends cdk.Stack {
     NagSuppressions.addResourceSuppressions(downloaderTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
     downloaderTaskDefinition.addContainer('DownloaderContainer', {
       containerName: 'downloader',
-      memoryLimitMiB: 128,
+      memoryLimitMiB: 2048,
       image: ecs.ContainerImage.fromAsset('../docker', {
         file: 'downloader.Dockerfile',
         extraHash: execSync('git ls-remote --tags https://github.com/paradisec-archive/arocapi-downloader.git | sort -t / -k 3 -V | tail -1').toString().trim(),
