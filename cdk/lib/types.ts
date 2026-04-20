@@ -1,3 +1,4 @@
+import type { IBackupVault } from 'aws-cdk-lib/aws-backup';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { IHostedZone } from 'aws-cdk-lib/aws-route53';
 import type { IBucket } from 'aws-cdk-lib/aws-s3';
@@ -22,6 +23,7 @@ export type AppProps = Environment & {
   readonly metaBucket: IBucket;
   readonly drBucket: IBucket;
   readonly metaDrBucket: IBucket;
+  readonly drBackupVault: IBackupVault;
   readonly downloaderBucket: IBucket;
   readonly zone: IHostedZone;
   readonly catalogCertificate: ICertificate;

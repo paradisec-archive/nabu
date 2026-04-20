@@ -56,6 +56,7 @@ const drStack = new DrStack(
   { ...prodEnvironment, region: 'ap-southeast-4' },
   {
     env: { account: prodEnvironment.account, region: 'ap-southeast-4' },
+    crossRegionReferences: true,
   },
 );
 
@@ -75,6 +76,7 @@ environments.forEach((environment) => {
     metaBucket: mainStack.metaBucket,
     drBucket: drStack.drBucket,
     metaDrBucket: drStack.metaDrBucket,
+    drBackupVault: drStack.backupVault,
     downloaderBucket: mainStack.downloaderBucket,
     zone: mainStack.zone,
     adminCertificate: mainStack.adminCertificate,
@@ -84,6 +86,7 @@ environments.forEach((environment) => {
 
   const stack = new AppStack(app, `${environment.appName}-appstack-${environment.env}`, props, {
     env: { account: environment.account, region: environment.region },
+    crossRegionReferences: true,
   });
   NagSuppressions.addStackSuppressions(stack, [
     { id: 'AwsSolutions-IAM4', reason: 'Managed Policies are fine for us, we can live with the resource wildcard' },

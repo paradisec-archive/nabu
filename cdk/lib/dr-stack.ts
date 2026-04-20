@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import * as backup from 'aws-cdk-lib/aws-backup';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { NagSuppressions } from 'cdk-nag';
 import type { Construct } from 'constructs';
@@ -8,6 +9,8 @@ export class DrStack extends cdk.Stack {
   public drBucket: s3.IBucket;
 
   public metaDrBucket: s3.IBucket;
+
+  public backupVault: backup.IBackupVault;
 
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -66,6 +69,15 @@ export class DrStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       serverAccessLogsBucket: this.metaDrBucket,
       serverAccessLogsPrefix: `s3-access-logs/${appName}-catalogdr-${env}`,
+    });
+
+    // ////////////////////////
+    // Backup vault for cross-region RDS snapshot copies
+    // ////////////////////////
+
+    this.backupVault = new backup.BackupVault(this, 'BackupVault', {
+      backupVaultName: `${appName}-backup-vault-${env}`,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     cdk.Tags.of(this).add('uni:billing:application', 'para');

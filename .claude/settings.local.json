@@ -5,10 +5,11 @@
       "mcp__sentry__find_projects",
       "mcp__sentry__get_issue_details",
       "mcp__sentry__find_organizations",
-      "mcp__sentry__search_issue_events"
+      "mcp__sentry__search_issue_events",
+      "Bash(git log *)",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(pnpm cdk synth:*)"
     ]
   },
-  "enabledMcpjsonServers": [
-    "sentry"
-  ]
+  "enabledMcpjsonServers": ["sentry"]
 }

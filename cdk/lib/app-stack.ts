@@ -37,6 +37,7 @@ export class AppStack extends cdk.Stack {
       catalogBucket,
       metaBucket,
       metaDrBucket,
+      drBackupVault,
       downloaderBucket,
       zone,
       catalogCertificate,
@@ -634,14 +635,42 @@ export class AppStack extends cdk.Stack {
     }
 
     // ////////////////////////
-    // Backups
+    // Backups (prod only)
     // ////////////////////////
 
-    const plan = backup.BackupPlan.dailyMonthly1YearRetention(this, 'BackupPlan');
+    if (env === 'prod') {
+      const plan = new backup.BackupPlan(this, 'BackupPlan');
 
-    plan.addSelection('BackupSelection', {
-      resources: [backup.BackupResource.fromRdsDatabaseInstance(db)],
-    });
+      plan.addRule(
+        new backup.BackupPlanRule({
+          ruleName: 'Daily',
+          scheduleExpression: events.Schedule.cron({ hour: '5', minute: '0' }),
+          deleteAfter: cdk.Duration.days(35),
+        }),
+      );
+
+      // Monthly snapshot is the offsite copy — weeks-to-months RTO makes
+      // daily cross-region copies wasteful given the user's stated RPO.
+      plan.addRule(
+        new backup.BackupPlanRule({
+          ruleName: 'Monthly1Year',
+          scheduleExpression: events.Schedule.cron({ day: '1', hour: '5', minute: '0' }),
+          moveToColdStorageAfter: cdk.Duration.days(30),
+          deleteAfter: cdk.Duration.days(365),
+          copyActions: [
+            {
+              destinationBackupVault: drBackupVault,
+              moveToColdStorageAfter: cdk.Duration.days(30),
+              deleteAfter: cdk.Duration.days(365),
+            },
+          ],
+        }),
+      );
+
+      plan.addSelection('BackupSelection', {
+        resources: [backup.BackupResource.fromRdsDatabaseInstance(db)],
+      });
+    }
 
     // ////////////////////////
     // S3 Event Handling
