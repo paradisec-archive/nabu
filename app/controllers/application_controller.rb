@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
         else
           store_location_for(:user, request.fullpath) if storable_location?
           host = Rails.env.staging? ? 'admin-catalog.nabu-stage.paradisec.org.au' : 'admin-catalog.paradisec.org.au'
-          redirect_to new_user_session_url, alert: exception.message, host:, allow_other_host: true
+          redirect_to new_user_session_url(host:), allow_other_host: true, alert: exception.message
         end
       end
     end
