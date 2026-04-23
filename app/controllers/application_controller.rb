@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
           head :unauthorized
         end
       end
-      format.html do
+      format.any do
         if current_user
           redirect_to root_url, alert: exception.message
         else
