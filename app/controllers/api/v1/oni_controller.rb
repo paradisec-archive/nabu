@@ -316,19 +316,18 @@ module Api
         md = params[:id].match(repository_essence_url(collection_identifier: '(.*)', item_identifier: '(.*)', essence_filename: '(.*)'))
         return false unless md
 
-        @collection = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        @collection = Collection.find_by(identifier: md[1])
         return false unless @collection
 
         @item = @collection.items
-          .accessible_by(current_ability)
           .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
         return false unless @item
 
-        @data = @item.essences
-          .accessible_by(current_ability)
-          .find_by(filename: md[3])
+        @data = @item.essences.find_by(filename: md[3])
 
         return false unless @data
+
+        authorize! :read, @data
 
         true
       end
@@ -337,13 +336,14 @@ module Api
         md = params[:id].match(repository_item_url(collection_identifier: '(.*)', item_identifier: '(.*)'))
         return false unless md
 
-        @collection = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        @collection = Collection.find_by(identifier: md[1])
         return false unless @collection
 
         @data = @collection.items
-          .accessible_by(current_ability)
           .includes(:content_languages, :subject_languages, item_agents: %i[agent_role user]).find_by(identifier: md[2])
         return false unless @data
+
+        authorize! :read, @data
 
         true
       end
@@ -352,8 +352,10 @@ module Api
         md = params[:id].match(repository_collection_url(collection_identifier: '(.*)'))
         return false unless md
 
-        @data = Collection.accessible_by(current_ability).find_by(identifier: md[1])
+        @data = Collection.find_by(identifier: md[1])
         return false unless @data
+
+        authorize! :read, @data
 
         @is_item = false
 

@@ -11,5 +11,7 @@
       "Bash(pnpm cdk synth:*)"
     ]
   },
-  "enabledMcpjsonServers": ["sentry"]
+  "enabledMcpjsonServers": [
+    "sentry"
+  ]
 }
