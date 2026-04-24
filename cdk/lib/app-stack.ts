@@ -511,8 +511,28 @@ export class AppStack extends cdk.Stack {
       priority: 8,
       conditions: [
         elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au', `catalog.${zoneName}`]),
-        elbv2.ListenerCondition.pathPatterns(['/oai', '/oai/*', '/repository/*']),
+        elbv2.ListenerCondition.pathPatterns(['/oai', '/oai/*']),
       ],
+    });
+
+    sslListener.addAction('RepositoryRedirectProd', {
+      priority: 9,
+      conditions: [elbv2.ListenerCondition.hostHeaders(['catalog.paradisec.org.au']), elbv2.ListenerCondition.pathPatterns(['/repository/*'])],
+      action: elbv2.ListenerAction.redirect({
+        protocol: 'HTTPS',
+        host: 'admin-catalog.paradisec.org.au',
+        permanent: true,
+      }),
+    });
+
+    sslListener.addAction('RepositoryRedirectZone', {
+      priority: 10,
+      conditions: [elbv2.ListenerCondition.hostHeaders([`catalog.${zoneName}`]), elbv2.ListenerCondition.pathPatterns(['/repository/*'])],
+      action: elbv2.ListenerAction.redirect({
+        protocol: 'HTTPS',
+        host: `admin-catalog.${zoneName}`,
+        permanent: true,
+      }),
     });
 
     // ////////////////////////
