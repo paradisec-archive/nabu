@@ -521,7 +521,7 @@ export class AppStack extends cdk.Stack {
       action: elbv2.ListenerAction.redirect({
         protocol: 'HTTPS',
         host: 'admin-catalog.paradisec.org.au',
-        permanent: true,
+        permanent: false,
       }),
     });
 
@@ -531,7 +531,7 @@ export class AppStack extends cdk.Stack {
       action: elbv2.ListenerAction.redirect({
         protocol: 'HTTPS',
         host: `admin-catalog.${zoneName}`,
-        permanent: true,
+        permanent: false,
       }),
     });
 
