@@ -88,11 +88,14 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
-  get '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
-  get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence',
-      :as => 'repository_essence',
-      :constraints => { essence_filename: /.*/ }
+  # NOTE: This is needed to make sure we generate the URLs with the right host
+  scope host: 'catalog.paradisec.org.au' do
+    get '/repository/:collection_identifier' => 'repository#collection', :as => 'repository_collection'
+    get '/repository/:collection_identifier/:item_identifier' => 'repository#item', :as => 'repository_item'
+    get '/repository/:collection_identifier/:item_identifier/:essence_filename' => 'repository#essence',
+        :as => 'repository_essence',
+        :constraints => { essence_filename: /.*/ }
+  end
 
   get '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
 
