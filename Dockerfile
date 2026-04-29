@@ -63,7 +63,7 @@ RUN bundle install && \
   bundle exec bootsnap precompile --gemfile
 
 # Install node modules
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy application code
