@@ -41,7 +41,7 @@ RUN apt-get update -qq && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install JavaScript dependencies
-ENV NODE_VERSION=22.19.0
+ENV NODE_VERSION=24.15.0
 ENV NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR
 # Setup node
@@ -78,9 +78,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN ASSET_PRECOMPILE=1 SECRET_KEY_BASE_DUMMY=1 OPENID_SIGNING_KEY=1 ./bin/rails assets:precompile
 
-
 RUN rm -rf node_modules
-
 
 # Final stage for app image
 FROM base
