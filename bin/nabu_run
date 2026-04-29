@@ -7,6 +7,7 @@ docker compose run \
   -v "$PWD":/rails \
   -v "$PWD"/vendor/bundle:/bundler \
   -v "$HOME"/.aws:/home/rails/.aws \
+  -v "$HOME"/.pnpm-store:/home/rails/.pnpm-store \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -e OPENID_SIGNING_KEY="$OPENID_SIGNING_KEY" \

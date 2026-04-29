@@ -140,9 +140,6 @@ group :development do
   gem 'rubocop-rspec_rails', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
-
-  gem 'solargraph', require: false
-  gem 'sorbet', require: false
 end
 
 group :test do

@@ -2,7 +2,7 @@
 # check=error=true
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.2.2
+ARG RUBY_VERSION=3.4.9
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -15,7 +15,7 @@ RUN apt-get update -qq && \
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config && \
+  apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev libyaml-dev git pkg-config && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ENV NODE_VERSION=22.19.0
