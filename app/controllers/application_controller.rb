@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
   # NOTE: nabu needs to support old browsers due to regional context
 
+  before_action :authenticate_user!, unless: :devise_controller?
   before_action :store_user_location!, if: :storable_location?
   before_action :set_timezone
   before_action :set_access_headers

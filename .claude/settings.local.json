@@ -8,7 +8,8 @@
       "mcp__sentry__search_issue_events",
       "Bash(git log *)",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(pnpm cdk synth:*)"
+      "Bash(pnpm cdk synth:*)",
+      "Bash(nabu_run bin/rails routes)"
     ]
   },
   "enabledMcpjsonServers": [

@@ -1,7 +1,7 @@
 class PageController < ApplicationController
-  def dashboard
-    authenticate_user!
+  skip_before_action :authenticate_user!, only: %i[contact glossary apidoc]
 
+  def dashboard
     @page_title = 'Nabu - Dashboard'
     @name = current_user.name
 

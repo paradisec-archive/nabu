@@ -1,6 +1,4 @@
 class VersionsController < ApplicationController
-  before_action :authenticate_user!
-
   def revert
     @version = PaperTrail::Version.find(params[:id])
 

@@ -1,6 +1,8 @@
 require 'ostruct'
 
 class RepositoryController < ApplicationController
+  skip_before_action :authenticate_user!
+
   def collection
     collection = Collection.find_by(identifier: params[:collection_identifier])
 
