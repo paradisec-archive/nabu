@@ -1,48 +1,25 @@
-require 'ostruct'
-
 class RepositoryController < ApplicationController
   skip_before_action :authenticate_user!
 
   def collection
-    collection = Collection.find_by(identifier: params[:collection_identifier])
-
-    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
-
     if params[:edit].present?
-      redirect_to edit_collection_url(collection, host: 'admin-catalog.paradisec.org.au'), status: :found, allow_other_host: true
+      redirect_to edit_collection_url(params[:collection_identifier], host: 'admin-catalog.paradisec.org.au'), status: :found, allow_other_host: true
     else
-      redirect_to helpers.oni_collection_url(collection), status: :found, allow_other_host: true
+      redirect_to helpers.oni_collection_url(params[:collection_identifier]), status: :found, allow_other_host: true
     end
   end
 
   def item
-    params[:collection_identifier], params[:item_identifier] = params[:full_identifier].split('-') if params[:full_identifier]
-
-    collection = Collection.find_by(identifier: params[:collection_identifier])
-    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
-
-    item = collection.items.find_by(identifier: params[:item_identifier])
-    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:item_identifier]}" if item.nil?
-
     if params[:edit].present?
-      redirect_to edit_collection_item_url(collection, item, host: 'admin-catalog.paradisec.org.au'), status: :found, allow_other_host: true
+      redirect_to edit_collection_item_url(params[:collection_identifier], params[:item_identifier], host: 'admin-catalog.paradisec.org.au'),
+                  status: :found, allow_other_host: true
     else
-      redirect_to helpers.oni_item_url(item), status: :found, allow_other_host: true
+      redirect_to helpers.oni_item_url(params[:collection_identifier], params[:item_identifier]), status: :found, allow_other_host: true
     end
   end
 
   def essence
-    collection = Collection.find_by(identifier: params[:collection_identifier])
-    raise ActionController::RoutingError, "Collection not found: #{params[:collection_identifier]}" if collection.nil?
-
-    item = collection.items.find_by(identifier: params[:item_identifier])
-    raise ActionController::RoutingError, "Item not found: #{params[:collection_identifier]}-#{params[:item_identifier]}" if item.nil?
-
-    essence = item.essences.find_by(filename: params[:essence_filename])
-    raise ActionController::RoutingError, "Essence not found: #{params[:essence_filename]}" if essence.nil?
-
-    authorize! :read, essence
-
-    redirect_to helpers.oni_essence_url(essence), status: :found, allow_other_host: true
+    redirect_to helpers.oni_essence_url(params[:collection_identifier], params[:item_identifier], params[:essence_filename]),
+                status: :found, allow_other_host: true
   end
 end

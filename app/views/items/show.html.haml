@@ -8,7 +8,7 @@
 .right
   = link_to 'Previous item', '#', :class => 'button next_prev_button', :id => 'prev_button', :data => { 'identifier' => @item.prev_item&.full_identifier }
 
-  = link_to 'View (Oni)', oni_item_url(@item), :class => 'button'
+  = link_to 'View (Oni)', oni_item_url(@item.collection.identifier, @item.identifier), :class => 'button'
 
   - if can? :update, @item
     = link_to 'Edit item', edit_collection_item_path(@collection, @item), :class => 'button'

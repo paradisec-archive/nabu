@@ -97,8 +97,6 @@ Rails.application.routes.draw do
         :constraints => { essence_filename: /.*/ }
   end
 
-  get '/items/*full_identifier' => 'repository#item', :as => 'repository_collection_item'
-
   get '/essences/mimetypes' => 'essences#list_mimetypes', as: 'list_mimetypes'
 
   resources :comments, shallow: true do
