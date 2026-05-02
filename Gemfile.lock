@@ -554,7 +554,7 @@ GEM
       rubocop-rspec (~> 3.5)
     ruby-ole (1.2.13.1)
     ruby-progressbar (1.13.0)
-    rubyzip (3.2.2)
+    rubyzip (3.3.0)
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
     searchjoy (1.5.0)
