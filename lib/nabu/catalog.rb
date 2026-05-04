@@ -112,6 +112,7 @@ module Nabu
 
       @presigner.presigned_url(
         :get_object,
+        expires_in: 3600 * 24 * 7,
         bucket: bucket_name,
         key:,
         response_content_disposition: disposition
