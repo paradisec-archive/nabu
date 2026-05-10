@@ -189,8 +189,12 @@ export class AppStack extends cdk.Stack {
       machineImage: ecs.EcsOptimizedImage.amazonLinux2023(),
 
       minCapacity: 1,
-      maxCapacity: 1,
+      maxCapacity: 2, // So we can update EC2 without downtime
       requireImdsv2: true,
+
+      updatePolicy: autoscaling.UpdatePolicy.rollingUpdate({
+        minInstancesInService: 1,
+      }),
 
       // keyName: 'nabu',
     });
