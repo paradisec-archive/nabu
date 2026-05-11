@@ -45,8 +45,7 @@ module ApplicationHelper
   end
 
   def admin_messages
-    now = DateTime.now
-    AdminMessage.where('start_at <= ?', now).where('finish_at >= ?', now)
+    AdminMessage.active
   end
 
   def user_select_tag(attribute, options = {})

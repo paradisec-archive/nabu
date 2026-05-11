@@ -22,6 +22,8 @@ class AdminMessage < ApplicationRecord
   validates :start_at, presence: true
   validates :finish_at, presence: true
 
+  scope :active, -> { where('start_at <= :now AND finish_at >= :now', now: Time.current) }
+
   def self.ransackable_attributes(_ = nil)
     %w[created_at finish_at id message start_at updated_at]
   end

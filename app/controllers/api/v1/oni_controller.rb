@@ -194,11 +194,7 @@ module Api
       end
 
       def announcements
-        now = Time.current
-        @announcements = AdminMessage
-          .where('start_at <= ?', now)
-          .where('finish_at >= ?', now)
-          .order(start_at: :desc)
+        @announcements = AdminMessage.active.order(start_at: :desc)
       end
 
       def search
