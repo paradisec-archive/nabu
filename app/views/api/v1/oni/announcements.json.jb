@@ -1,0 +1,3 @@
+{
+  announcements: @announcements.map { |announcement| { id: announcement.id, message: announcement.message } }
+}

@@ -193,6 +193,14 @@ module Api
         end
       end
 
+      def announcements
+        now = Time.current
+        @announcements = AdminMessage
+          .where('start_at <= ?', now)
+          .where('finish_at >= ?', now)
+          .order(start_at: :desc)
+      end
+
       def search
         query = Oni::SearchValidator.new(params)
 
