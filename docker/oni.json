@@ -10,7 +10,8 @@
       "launcher": "Acknowledgement of Country"
     },
     "features": {
-      "errorPageImage": false
+      "errorPageImage": false,
+      "hasAnnouncements": true
     },
     "logoFilename": "/logo.jpg",
     "navHeight": "90px",
