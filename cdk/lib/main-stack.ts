@@ -178,7 +178,7 @@ export class MainStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       cors: [
         {
-          allowedMethods: [s3.HttpMethods.GET],
+          allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
           allowedOrigins: ['https://catalog.paradisec.org.au', `https:catalog.${zoneName}`, 'http://localhost:5173'],
           allowedHeaders: ['*'],
         },
