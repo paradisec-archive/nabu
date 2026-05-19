@@ -181,6 +181,7 @@ export class MainStack extends cdk.Stack {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
           allowedOrigins: ['https://catalog.paradisec.org.au', `https:catalog.${zoneName}`, 'http://localhost:5173'],
           allowedHeaders: ['*'],
+          exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges', 'ETag'],
         },
       ],
       serverAccessLogsBucket: this.metaBucket,
