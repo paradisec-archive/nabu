@@ -70,7 +70,6 @@ if is_essence
     name: entity.entity.collection.title
   }
   json[:fileId] = repository_essence_url(entity.entity.item.collection, entity.entity.item, entity.entity.filename)
-<<<<<<< HEAD
   if essence_terms_required
     json[:access][:metadata] = false
     json[:access][:content] = false
