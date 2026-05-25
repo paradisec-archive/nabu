@@ -382,11 +382,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
     t.boolean "admin_only", default: false, null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
-    t.string "secret", null: false
-    t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
