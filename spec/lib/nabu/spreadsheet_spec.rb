@@ -51,7 +51,7 @@ describe Nabu::Spreadsheet do
       end
     end
 
-    context 'xlsx file provided', :skip => "fix this later" do
+    context 'xlsx file provided', skip: "fix this later" do
       let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xlsx') }
 
       it 'is valid' do
@@ -105,7 +105,7 @@ describe Nabu::Spreadsheet do
     end
   end
 
-  describe 'Formatting issues', :skip => "fix this later" do
+  describe 'Formatting issues', skip: "fix this later" do
     context 'Automatic format for identifier' do
       let(:data) { File.binread('spec/support/data/minimal_metadata/Paradisec minimal data numeric identifier 20160727a.xls') }
 
@@ -272,7 +272,7 @@ describe Nabu::Spreadsheet do
       spreadsheet.parse
       item = spreadsheet.items.first
       item_agent = item.item_agents.first
-      expect(item_agent.user.contact_only).to eq(true)
+      expect(item_agent.user.contact_only).to be(true)
     end
   end
 end

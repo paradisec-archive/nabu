@@ -8,7 +8,7 @@ RSpec.configure do |config|
     # DatabaseCleaner.strategy = :transaction
   end
 
-  config.before(:each) do
+  config.before do
     # FIXME: we want transaction but it's not worling well, deal with after upgrades
     DatabaseCleaner.strategy = :truncation
   end

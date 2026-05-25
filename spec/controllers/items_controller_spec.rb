@@ -20,22 +20,18 @@ describe ItemsController, type: :controller do
 
   let(:params) { { collection_id: collection.identifier, id: item.identifier } }
 
-  before(:all) do
-    # allow test user to access everything
-    # item.item_users << ItemUser.new({item: item, user: user})
-  end
-
   context 'when not logged in' do
     context 'when viewing' do
       context 'a private item' do
-        it 'should redirect to the sign in page with error' do
+        it 'redirects to the sign in page with error' do
           get :show, params: params.merge(id: private_item.identifier)
           expect(response).to redirect_to(new_user_session_path)
-          expect(flash[:alert]).to_not be_nil
+          expect(flash[:alert]).not_to be_nil
         end
       end
+
       context 'a public item' do
-        it 'should proceed' do
+        it 'proceeds' do
           get :show, params: params
           expect(response).to render_template(:show)
         end
@@ -47,15 +43,17 @@ describe ItemsController, type: :controller do
     before do
       sign_in(user, scope: :user)
     end
+
     context 'when viewing' do
       context 'a private item' do
-        it 'should proceed' do
+        it 'proceeds' do
           get :show, params: params
           expect(response).to render_template(:show)
         end
       end
+
       context 'a public item' do
-        it 'should proceed' do
+        it 'proceeds' do
           get :show, params: params
           expect(response).to render_template(:show)
         end
@@ -64,7 +62,7 @@ describe ItemsController, type: :controller do
 
     context 'when creating an item' do
       context 'that is invalid' do
-        it 'should fail and show create page' do
+        it 'fails and show create page' do
           post :create, params: { collection_id: collection.identifier, item: { title: 'title goes here' } }
           expect(response).to render_template(:new)
         end
@@ -73,12 +71,13 @@ describe ItemsController, type: :controller do
 
     context 'when destroying an item' do
       context 'with a non-admin user' do
-        it 'should fail and redirect with error' do
+        it 'fails and redirect with error' do
           delete :destroy, params: params
           expect(response).to redirect_to(root_path)
-          expect(flash[:alert]).to_not be_nil
+          expect(flash[:alert]).not_to be_nil
         end
       end
+
       context 'with an admin user' do
         before do
           allow(ItemDestructionService).to receive(:destroy).and_return({ success: true, messages: { notice: 'yay' } })
@@ -87,26 +86,30 @@ describe ItemsController, type: :controller do
           # log in as test user
           sign_in(manager, scope: :user)
         end
+
         context 'with no essences' do
-          it 'should proceed' do
+          it 'proceeds' do
             delete :destroy, params: params
             expect(response).to redirect_to(collection)
             expect(flash[:notice]).to eq('yay')
           end
         end
+
         context 'with essences' do
           context 'and flag set to true' do
-            it 'should proceed' do
+            it 'proceeds' do
               delete :destroy, params: params
               expect(response).to redirect_to(collection)
               expect(flash[:notice]).to eq('yay')
             end
           end
+
           context 'and flag set to false' do
             before do
               allow(ItemDestructionService).to receive(:destroy).and_return({ success: false, messages: { error: 'boo' } })
             end
-            it 'should fail and redirect with error' do
+
+            it 'fails and redirect with error' do
               delete :destroy, params: params
               expect(response).to redirect_to([collection, item])
               expect(flash[:error]).to eq('boo')
@@ -122,22 +125,23 @@ describe ItemsController, type: :controller do
         # log in as test user
         sign_in(manager, scope: :user)
       end
-      it 'should not override existing values by default' do
+
+      it 'does not override existing values by default' do
         # pending 'INVESTIGATE 2016-04-21: Sometimes but not always failing on development machines'
         patch :inherit_details, params: params
         expect(response).to redirect_to([collection, item])
-        expect(flash[:notice]).to_not be_nil
+        expect(flash[:notice]).not_to be_nil
         result_item = Item.find(item.id)
         expect(result_item.subject_languages.sort).to eq(item.subject_languages.sort)
-        expect(result_item.subject_languages.sort).to_not eq(collection.languages.sort)
+        expect(result_item.subject_languages.sort).not_to eq(collection.languages.sort)
       end
 
-      it 'should override values if flag is set to true' do
+      it 'overrides values if flag is set to true' do
         patch :inherit_details, params: params.merge(override_existing: true)
         expect(response).to redirect_to([collection, item])
-        expect(flash[:notice]).to_not be_nil
+        expect(flash[:notice]).not_to be_nil
         result_item = Item.find(item.id)
-        expect(result_item.subject_languages.sort).to_not eq(item.subject_languages.sort)
+        expect(result_item.subject_languages.sort).not_to eq(item.subject_languages.sort)
         expect(result_item.subject_languages.sort).to eq(collection.languages.sort)
       end
 
@@ -154,7 +158,7 @@ describe ItemsController, type: :controller do
   end
 
   context 'when viewing an item with essences' do
-    it 'should track the essence files' do
+    it 'tracks the essence files' do
       get :show, params: params.merge(id: item_with_essences.identifier)
       # FIXME: JF assigns might not work see 5.0 guide 7.5
       expect(assigns(:num_files)).to eq(1)

@@ -17,7 +17,7 @@ FactoryBot.define do
   end
 
   factory :oauth_access_token, class: 'Doorkeeper::AccessToken' do
-    association :application, factory: :oauth_application
+    application factory: %i[oauth_application]
     token { SecureRandom.hex }
     scopes { 'public' }
     created_at { 1.hour.ago }
@@ -32,7 +32,7 @@ FactoryBot.define do
     factory :m2m_admin_token do
       resource_owner_id { nil }
       scopes { 'public admin' }
-      association :application, factory: :oauth_application_with_admin_scope
+      application factory: %i[oauth_application_with_admin_scope]
     end
 
     # User token with public scope
@@ -52,7 +52,7 @@ FactoryBot.define do
     factory :admin_user_public_token do
       resource_owner_id { create(:admin_user).id }
       scopes { 'public read_write' }
-      association :application, factory: :oauth_application_with_read_write_scope
+      application factory: %i[oauth_application_with_read_write_scope]
     end
   end
 end

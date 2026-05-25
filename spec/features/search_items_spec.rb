@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Item Search', search: true do
+describe 'Item Search', :search do
   describe 'Searching of items' do
     let(:search) do
       Item.search(search_term)
@@ -10,7 +10,8 @@ describe 'Item Search', search: true do
       let(:language) { 'South Efate, Bislama' }
       let!(:item) { create(:item, :reindex, language: language) }
       let(:search_term) { language }
-      it 'should have a match' do
+
+      it 'has a match' do
         expect(search.total_count).to eq 1
       end
     end
@@ -25,14 +26,16 @@ describe 'Item Search', search: true do
 
         context 'using a full keyword' do
           let(:search_term) { identifier }
-          it 'should have a match' do
+
+          it 'has a match' do
             expect(search.total_count).to eq 1
           end
         end
 
         context 'using a partial keyword' do
           let(:search_term) { identifier[0..-2] }
-          it 'should have a match' do
+
+          it 'has a match' do
             expect(search.total_count).to eq 1
           end
         end
@@ -40,14 +43,16 @@ describe 'Item Search', search: true do
 
       context 'using a full keyword' do
         let(:search_term) { identifier }
-        it 'should have a match' do
+
+        it 'has a match' do
           expect(search.total_count).to eq 1
         end
       end
 
       context 'using a partial keyword' do
         let(:search_term) { identifier[0..-2] }
-        it 'should have a match' do
+
+        it 'has a match' do
           expect(search.total_count).to eq 1
         end
       end
@@ -63,14 +68,16 @@ describe 'Item Search', search: true do
 
         context 'using a full keyword' do
           let(:search_term) { item.full_identifier }
-          it 'should have a match' do
+
+          it 'has a match' do
             expect(search.total_count).to eq 1
           end
         end
 
         context 'using a partial keyword' do
           let(:search_term) { item.full_identifier[0..-2] }
-          it 'should have a match' do
+
+          it 'has a match' do
             expect(search.total_count).to eq 1
           end
         end
@@ -78,14 +85,16 @@ describe 'Item Search', search: true do
 
       context 'using a full keyword' do
         let(:search_term) { item.full_identifier }
-        it 'should have a match' do
+
+        it 'has a match' do
           expect(search.total_count).to eq 1
         end
       end
 
       context 'using a partial keyword' do
         let(:search_term) { item.full_identifier[0..-2] }
-        it 'should have a match' do
+
+        it 'has a match' do
           expect(search.total_count).to eq 1
         end
       end
@@ -105,12 +114,14 @@ describe 'Item Search', search: true do
         before do
           visit search_items_path
         end
-        it 'should not show advanced search' do
-          expect(page).to_not have_content('Advanced Search')
+
+        it 'does not show advanced search' do
+          expect(page).to have_no_text('Advanced Search')
         end
-        it 'should show all items' do
-          expect(page).to_not have_content('NO results')
-          expect(page).to have_content(item1.identifier)
+
+        it 'shows all items' do
+          expect(page).to have_no_text('NO results')
+          expect(page).to have_text(item1.identifier)
         end
       end
     end
@@ -122,31 +133,34 @@ describe 'Item Search', search: true do
       end
 
       context 'viewing the page' do
-        it 'should show advanced search' do
-          expect(page).to have_content('Advanced Search')
+        it 'shows advanced search' do
+          expect(page).to have_text('Advanced Search')
         end
       end
+
       context 'running a search' do
         context 'when selecting from the filter lists' do
-          it 'should filter other lists as well' do
+          it 'filters other lists as well' do
             uri = URI.parse(current_url).request_uri.to_s
             uri += "#{uri.include?('?') ? '&' : '?'}countries=#{country1.name.gsub(' ', '+')}"
 
-            expect(page).to have_content(country2.name)
+            expect(page).to have_text(country2.name)
 
             click_link country1.name
 
             expect(URI.parse(current_url).request_uri).to eq(uri)
-            expect(page).to_not have_content(country2.name)
+            expect(page).to have_no_text(country2.name)
           end
-          it 'should perform search immediately' do
-            expect(page).to have_content('2 search results')
+
+          it 'performs search immediately' do
+            expect(page).to have_text('2 search results')
 
             click_link country1.name
 
-            expect(page).to have_content('1 search result')
+            expect(page).to have_text('1 search result')
           end
         end
+
         context 'when searching by keyword' do
           # TODO: Fix this so that the required: true on the page actually stops this, rather than getting bypassed
           # context 'with no value' do
@@ -161,29 +175,30 @@ describe 'Item Search', search: true do
           #   end
           # end
           context 'with a value' do
-            it 'should remove facet filters' do
+            it 'removes facet filters' do
               click_link country1.name
-              expect(page).to_not have_content(country2.name)
+              expect(page).to have_no_text(country2.name)
               fill_in 'search', with: item2.identifier
               click_button 'Search'
               sleep 1
 
-              expect(page).to have_content(country2.name)
-              expect(page).to_not have_content(country1.name)
+              expect(page).to have_text(country2.name)
+              expect(page).to have_no_text(country1.name)
             end
           end
         end
+
         context 'when clearing the search' do
-          it 'should remove all params and reset search' do
-            expect(page).to have_content(country2.name)
+          it 'removes all params and reset search' do
+            expect(page).to have_text(country2.name)
 
             click_link country1.name
 
-            expect(page).to_not have_content(country2.name)
+            expect(page).to have_no_text(country2.name)
 
             click_link 'Clear'
 
-            expect(page).to have_content(country2.name)
+            expect(page).to have_text(country2.name)
 
             expect(URI.parse(current_url).request_uri).to end_with('search') # no query params
           end

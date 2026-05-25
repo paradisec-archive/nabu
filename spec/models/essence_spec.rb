@@ -36,9 +36,10 @@ require 'rails_helper'
 require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
 describe Essence, type: :model do
-  include_examples 'identifiable by doi', 'item'
-
   let(:item) { create(:item) }
+
+  it_behaves_like 'identifiable by doi', 'item'
+
 
   describe 'no zero size files' do
     it 'does allow non-zero size files' do

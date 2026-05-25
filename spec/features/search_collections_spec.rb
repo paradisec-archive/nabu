@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Collection Search', search: true do
+describe 'Collection Search', :search do
   let!(:country1) { create(:country) }
   let!(:country2) { create(:country) }
   let!(:language) { create(:language) }
@@ -14,12 +14,14 @@ describe 'Collection Search', search: true do
       before do
         visit search_collections_path
       end
-      it 'should not show advanced search' do
-        expect(page).to_not have_content('Advanced Search')
+
+      it 'does not show advanced search' do
+        expect(page).to have_no_text('Advanced Search')
       end
-      it 'should show all collections' do
-        expect(page).to_not have_content('NO results')
-        expect(page).to have_content(collection1.identifier)
+
+      it 'shows all collections' do
+        expect(page).to have_no_text('NO results')
+        expect(page).to have_text(collection1.identifier)
       end
     end
   end
@@ -31,31 +33,34 @@ describe 'Collection Search', search: true do
     end
 
     context 'viewing the page' do
-      it 'should show advanced search' do
-        expect(page).to have_content('Advanced Search')
+      it 'shows advanced search' do
+        expect(page).to have_text('Advanced Search')
       end
     end
+
     context 'running a search' do
       context 'when selecting from the filter lists' do
-        it 'should filter other lists as well' do
+        it 'filters other lists as well' do
           uri = URI.parse(current_url).request_uri.to_s
           uri += "#{uri.include?('?') ? '&' : '?'}countries=#{country1.name.gsub(' ', '+')}"
 
-          expect(page).to have_content(country2.name)
+          expect(page).to have_text(country2.name)
 
           click_link country1.name
 
           expect(URI.parse(current_url).request_uri).to eq(uri)
-          expect(page).to_not have_content(country2.name)
+          expect(page).to have_no_text(country2.name)
         end
-        it 'should perform search immediately' do
-          expect(page).to have_content('2 search results')
+
+        it 'performs search immediately' do
+          expect(page).to have_text('2 search results')
 
           click_link country1.name
 
-          expect(page).to have_content('1 search result')
+          expect(page).to have_text('1 search result')
         end
       end
+
       context 'when searching by keyword' do
         # TODO: Fix this so that the required: true on the page actually stops this, rather than getting bypassed
         # context 'with no value' do
@@ -70,29 +75,30 @@ describe 'Collection Search', search: true do
         #   end
         # end
         context 'with a value' do
-          it 'should remove facet filters' do
+          it 'removes facet filters' do
             click_link country1.name
-            expect(page).to_not have_content(country2.name)
+            expect(page).to have_no_text(country2.name)
             fill_in 'search', with: collection2.identifier
             click_button 'Search'
             sleep 1
 
-            expect(page).to have_content(country2.name)
-            expect(page).to_not have_content(country1.name)
+            expect(page).to have_text(country2.name)
+            expect(page).to have_no_text(country1.name)
           end
         end
       end
+
       context 'when clearing the search' do
-        it 'should remove all params and reset search' do
-          expect(page).to have_content(country2.name)
+        it 'removes all params and reset search' do
+          expect(page).to have_text(country2.name)
 
           click_link country1.name
 
-          expect(page).to_not have_content(country2.name)
+          expect(page).to have_no_text(country2.name)
 
           click_link 'Clear'
 
-          expect(page).to have_content(country2.name)
+          expect(page).to have_text(country2.name)
 
           expect(URI.parse(current_url).request_uri).to end_with('search') # no query params
         end
@@ -104,7 +110,7 @@ describe 'Collection Search', search: true do
         # No need to change user
 
         it 'cannot be viewed by the user' do
-          expect(page).to_not have_content(private_collection.identifier)
+          expect(page).to have_no_text(private_collection.identifier)
         end
       end
 
@@ -112,7 +118,7 @@ describe 'Collection Search', search: true do
         let!(:user) { create(:admin_user) }
 
         it 'can be viewed by the user' do
-          expect(page).to have_content(private_collection.identifier)
+          expect(page).to have_text(private_collection.identifier)
         end
       end
 
@@ -120,7 +126,7 @@ describe 'Collection Search', search: true do
         let!(:private_collection) { create(:collection, countries: [country1], languages: [language], private: true, admins: [user]) }
 
         it 'can be viewed by the user', pending: 'Fix basic search to include user items' do
-          expect(page).to have_content(private_collection.identifier)
+          expect(page).to have_text(private_collection.identifier)
         end
       end
     end

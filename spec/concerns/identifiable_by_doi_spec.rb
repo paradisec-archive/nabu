@@ -9,7 +9,7 @@ RSpec.shared_examples_for "identifiable by doi" do |parent|
   let(:json) { instance.to_doi_json('TEST') }
 
   describe '#to_doi_json' do
-    it 'should conform to the metadata schema' do
+    it 'conforms to the metadata schema' do
       object = JSON.parse(instance.to_doi_json('TEST'))['data']['attributes']
 
       expect(object).to include({ 'event' => 'publish' })
@@ -22,19 +22,18 @@ RSpec.shared_examples_for "identifiable by doi" do |parent|
       errors = schema.validate(object).to_a
 
       errors.each do |err|
-        puts "JSON Schemea Error: #{err['error']}"
       end
 
       # but hopefully there aren't any
       expect(errors.count).to eq(0)
     end
 
-    it 'should include the originating university as a reference' do
+    it 'includes the originating university as a reference' do
       next if instance.is_a?(Essence)
       expect(json).to include(instance.university_name)
     end
 
-    it 'should include the parent collection as a reference' do
+    it 'includes the parent collection as a reference' do
       next unless parent
       expect(json).to include(instance.send(parent.to_sym).doi)
     end
@@ -59,7 +58,7 @@ RSpec.shared_examples_for "identifiable by doi" do |parent|
 
       it 'uses URI' do
         expect(instance).to receive(:doi) { doi }.once
-        expect(instance).to receive(:full_path) { '' }
+        expect(instance).to receive(:full_path).and_return('')
         instance.citation
       end
 

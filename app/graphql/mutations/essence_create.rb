@@ -6,10 +6,10 @@ module Mutations
 
     field :essence, Types::EssenceType, null: false
 
-    argument :item_identifier, String
+    argument :attributes, Types::EssenceAttributes, required: true
     argument :collection_identifier, String
     argument :filename, String
-    argument :attributes, Types::EssenceAttributes, required: true
+    argument :item_identifier, String
 
     def resolve(item_identifier:, collection_identifier:, filename:, attributes:)
       collection = Collection.find_by!(identifier: collection_identifier)

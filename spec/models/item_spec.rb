@@ -73,5 +73,5 @@ require 'rails_helper'
 require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
 describe Item, type: :model do
-  include_examples "identifiable by doi", "collection"
+  it_behaves_like "identifiable by doi", "collection"
 end

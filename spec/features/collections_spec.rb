@@ -1,27 +1,27 @@
 require 'rails_helper'
 
 describe 'Collections' do
-  let(:user) { create :user }
-  let(:admin_user) { create :admin_user }
-  let!(:university) { create :university }
-  let!(:country) { create :country }
-  let!(:language) { create :language }
-  let!(:field_of_research) { create :field_of_research }
+  let(:user) { create(:user) }
+  let(:admin_user) { create(:admin_user) }
+  let!(:university) { create(:university) }
+  let!(:country) { create(:country) }
+  let!(:language) { create(:language) }
+  let!(:field_of_research) { create(:field_of_research) }
 
   describe 'Creating' do
-    it 'should fail as a guest' do
+    it 'fails as a guest' do
       visit root_path
-      expect(page).not_to have_content('Add collection')
+      expect(page).to have_no_text('Add collection')
       visit new_collection_path
-      expect(page).to have_content('You need to sign in or sign up before continuing')
+      expect(page).to have_text('You need to sign in or sign up before continuing')
     end
 
-    it 'should succeed as user' do
+    it 'succeeds as user' do
       sign_in admin_user
       visit root_path
-      expect(page).to have_content('Add new collection')
+      expect(page).to have_text('Add new collection')
       click_on 'Add new collection'
-      expect(page).to have_content('Deposit form received')
+      expect(page).to have_text('Deposit form received')
     end
 
     # it 'create collection', :js => true do

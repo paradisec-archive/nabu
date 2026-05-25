@@ -7,7 +7,7 @@ RSpec.configure do |config|
     Searchkick.disable_callbacks
   end
 
-  config.around(:each, search: true) do |example|
+  config.around(:each, :search) do |example|
     # Docs don't have the next two but without the old db entries remain in the index
     Collection.reindex
     Item.reindex

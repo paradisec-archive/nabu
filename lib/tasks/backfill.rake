@@ -12,10 +12,10 @@ namespace :catalog do
 
     essences = if ENV['ESSENCE_ID']
                  Essence.where(id: ENV['ESSENCE_ID']).includes(item: :collection)
-               else
+    else
                  extension_conditions = extensions.map { |ext| Essence.arel_table[:filename].matches("%.#{ext}") }.reduce(:or)
                  Essence.where(extracted_text: nil).where(extension_conditions).includes(item: :collection)
-               end
+    end
 
     total = essences.count
     puts "Found #{total} essences to backfill (extensions: #{extensions.join(', ')})"

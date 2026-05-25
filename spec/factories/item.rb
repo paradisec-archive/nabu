@@ -12,7 +12,7 @@ FactoryBot.define do
     west_limit { '121.122' }
     east_limit { '122.046' }
     discourse_type
-    association :collection, :with_doi
+    collection factory: %i[collection with_doi]
     originated_on { Date.today }
     created_at { Date.parse('2015/01/01') }
     private { false }
