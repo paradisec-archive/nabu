@@ -1,4 +1,6 @@
 class CommentsController < ApplicationController
+  COMMENTABLE_TYPES = { 'Item' => Item }.freeze
+
   load_and_authorize_resource except: :create
 
   def index
@@ -6,7 +8,10 @@ class CommentsController < ApplicationController
   end
 
   def create
-    resource = params[:commentable_type].constantize.find(params[:commentable_id])
+    klass = COMMENTABLE_TYPES[params[:commentable_type]]
+    raise ActionController::BadRequest, 'Invalid commentable_type' unless klass
+
+    resource = klass.find(params[:commentable_id])
     @comment = resource.comments.build(comment_params)
     authorize! :create, @comment
     @comment.owner = current_user
