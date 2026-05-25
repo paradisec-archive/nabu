@@ -22,7 +22,7 @@ jobs:
         run: bin/brakeman --no-pager
 
       - name: Scan for known security vulnerabilities in gems used
-        run: bin/bundler-audit
+        run: bin/bundle-audit
 
   lint:
     runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
 
     env:
       RAILS_ENV: test
-      DATABASE_URL: mysql2://127.0.0.1:3306
+      DB_HOST: 127.0.0.1
       OPENID_SIGNING_KEY: '1'
 
     steps:
@@ -111,7 +111,7 @@ jobs:
 
     env:
       RAILS_ENV: test
-      DATABASE_URL: mysql2://127.0.0.1:3306
+      DB_HOST: 127.0.0.1
       OPENID_SIGNING_KEY: '1'
 
     steps:
