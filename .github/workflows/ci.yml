@@ -68,25 +68,28 @@ jobs:
       #     - 6379:6379
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: mysql2://127.0.0.1:3306
+      OPENID_SIGNING_KEY: '1'
+
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y default-mysql-client libjemalloc2 libvips
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
 
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+
       - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: mysql2://127.0.0.1:3306
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test
+        run: bundle exec rspec --exclude-pattern 'spec/features/**/*_spec.rb'
 
   system-test:
     runs-on: ubuntu-latest
@@ -106,9 +109,14 @@ jobs:
       #     - 6379:6379
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: mysql2://127.0.0.1:3306
+      OPENID_SIGNING_KEY: '1'
+
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y default-libmysqlclient-dev node-gyp
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable default-mysql-client default-libmysqlclient-dev libjemalloc2 libvips
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -118,13 +126,11 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+
       - name: Run System Tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: mysql2://127.0.0.1:3306
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test:system
+        run: bundle exec rspec spec/features
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v7
