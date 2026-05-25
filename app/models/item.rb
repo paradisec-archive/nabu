@@ -73,6 +73,8 @@ class Item < ApplicationRecord
   include HasBoundaries
   include Entityable
   include ActionView::Helpers::SanitizeHelper
+  include ActionView::Helpers::TagHelper
+  include ActionView::Helpers::OutputSafetyHelper
 
   has_paper_trail
   nilify_blanks
@@ -433,30 +435,23 @@ class Item < ApplicationRecord
   end
 
   def citation
-    cite = ''
-    cite += "#{collector.name} (collector)" if collector
-    item_agents.group_by(&:user).map do |user, ias|
-      cite += ', ' unless cite == ''
-      cite += "#{user.name} (#{ias.map(&:agent_role).map(&:name).join(', ')})"
+    cite = ActiveSupport::SafeBuffer.new
+    cite << "#{collector.name} (collector)" if collector
+    item_agents.group_by(&:user).each do |user, ias|
+      cite << ', ' unless cite.empty?
+      cite << "#{user.name} (#{ias.map { |ia| ia.agent_role.name }.join(', ')})"
     end
-    cite += ", #{originated_on.year}" if originated_on
-    cite += '. ' unless cite == ''
-    cite += "<i>#{sanitize(title)}</i>. "
+    cite << ", #{originated_on.year}" if originated_on
+    cite << '. ' unless cite.empty?
+    cite << content_tag(:i, title)
+    cite << '. '
     last = essence_types.count - 1
     essence_types.each_with_index do |type, index|
-      cite += type
-      cite += if index == last
-                '. '
-      else
-                '/'
-      end
+      cite << type
+      cite << (index == last ? '. ' : '/')
     end
-    cite += " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
-    cite += if doi
-              " https://dx.doi.org/#{doi}"
-    else
-              " #{full_path}"
-    end
+    cite << " #{collection.identifier}-#{identifier} at catalog.paradisec.org.au."
+    cite << (doi ? " https://dx.doi.org/#{doi}" : " #{full_path}")
     cite
   end
 

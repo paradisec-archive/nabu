@@ -58,6 +58,8 @@ class Collection < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
   include Entityable
+  include ActionView::Helpers::TagHelper
+  include ActionView::Helpers::OutputSafetyHelper
 
   has_paper_trail
   nilify_blanks
@@ -329,15 +331,15 @@ class Collection < ApplicationRecord
   end
 
   def citation
-    cite = ''
-    cite += "#{collector.name} (collector)" if collector
-    cite += ", #{items.map(&:originated_on).compact.min.try(:year)}"
-    cite += '. ' unless cite == ''
-    cite += "<i>#{title}</i>. "
-    cite += "Collection #{identifier} at catalog.paradisec.org.au "
-    cite += "[#{access_class.capitalize} Access]. "
-    cite += doi ? " https://dx.doi.org/#{doi}" : full_path
-
+    cite = ActiveSupport::SafeBuffer.new
+    cite << "#{collector.name} (collector)" if collector
+    cite << ", #{items.map(&:originated_on).compact.min.try(:year)}"
+    cite << '. ' unless cite.empty?
+    cite << content_tag(:i, title)
+    cite << '. '
+    cite << "Collection #{identifier} at catalog.paradisec.org.au "
+    cite << "[#{access_class.capitalize} Access]. "
+    cite << (doi ? " https://dx.doi.org/#{doi}" : full_path)
     cite
   end
 
