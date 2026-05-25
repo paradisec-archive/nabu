@@ -218,6 +218,8 @@ module Api
           return
         end
 
+        @essence_terms_required = essence_terms_required?
+
         order = {}
         order[query.sort === 'relevance' ? '_score' : query.sort] = query.order
 

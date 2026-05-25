@@ -44,7 +44,7 @@ if is_item
   }
   json[:access][:content] = can?(:read, entity.entity.essences.first) && !essence_terms_required
 
-  if @essence_terms_required
+  if essence_terms_required
     json[:access][:contentAuthorizationUrl] = terms_url
     json[:access][:metadataAuthorizationUrl] = terms_url
   end
