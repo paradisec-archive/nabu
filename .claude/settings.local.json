@@ -9,10 +9,10 @@
       "Bash(git log *)",
       "mcp__plugin_context7_context7__query-docs",
       "Bash(pnpm cdk synth:*)",
-      "Bash(nabu_run bin/rails routes)"
+      "Bash(nabu_run bin/rails routes)",
+      "Bash(OPENID_SIGNING_KEY=1 bin/nabu_run bin/brakeman:*)",
+      "Bash(bin/nabu_run bin/rubocop:*)"
     ]
   },
-  "enabledMcpjsonServers": [
-    "sentry"
-  ]
+  "enabledMcpjsonServers": ["sentry"]
 }
