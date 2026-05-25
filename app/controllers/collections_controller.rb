@@ -370,8 +370,11 @@ class CollectionsController < ApplicationController
   end
 
   def advanced_search_params
-    # FIXME: Is this bad?
-    params.except(:controller, :action, :utf8).permit!
+    params.permit(*SearchableParams::COLLECTION_SEARCH_KEYS)
+  end
+
+  def permitted_search_param_keys
+    SearchableParams::COLLECTION_SEARCH_KEYS
   end
 
   def collection_params

@@ -411,8 +411,11 @@ class ItemsController < ApplicationController
   end
 
   def advanced_search_params
-    # FIXME: Is this bad?
-    params.except(:controller, :action, :utf8).permit!
+    params.permit(*SearchableParams::ITEM_SEARCH_KEYS)
+  end
+
+  def permitted_search_param_keys
+    SearchableParams::ITEM_SEARCH_KEYS
   end
 
   def item_params

@@ -58,9 +58,10 @@
 
     = paginate @collections, :param_name => :collections_page
 
+    - dashboard_page_params = params.permit(:collections_page, :collections_per_page, :items_page, :items_per_page, :sort, :direction, :format)
     %p
       - ['10', '50', "all #{@num_collections}"].each do |n|
-        = link_to "Show #{n}", params.permit!.merge(collections_per_page: n.sub('all ', ''), collections_page: n.start_with?('all') ? 1 : params[:collections_page]), class: 'button'
+        = link_to "Show #{n}", dashboard_page_params.merge(collections_per_page: n.sub('all ', ''), collections_page: n.start_with?('all') ? 1 : params[:collections_page]), class: 'button'
 
 .twoup-2.column.span-12.last
 

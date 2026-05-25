@@ -55,7 +55,8 @@
 
   = paginate @items, :param_name => :items_page
 
+  - items_page_params = params.permit(:id, :items_page, :items_per_page, :sort, :direction, :format)
   %p
     - [10, 50, 100].each do |n|
-      = link_to "Show #{n}", params.permit!.merge(items_per_page: n, items_page: (n * params[:items_page].to_i) > @num_items ? 1 : params[:items_page]), class: 'button'
-    = link_to "Show all #{@num_items}", params.permit!.merge(items_per_page: @num_items, items_page: 1), class: 'button'
+      = link_to "Show #{n}", items_page_params.merge(items_per_page: n, items_page: (n * params[:items_page].to_i) > @num_items ? 1 : params[:items_page]), class: 'button'
+    = link_to "Show all #{@num_items}", items_page_params.merge(items_per_page: @num_items, items_page: 1), class: 'button'
