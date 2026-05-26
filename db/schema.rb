@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_31_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -296,7 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_000001) do
     t.string "identifier", null: false, collation: "utf8mb4_bin"
     t.text "ingest_notes", size: :medium
     t.string "language"
-    t.boolean "metadata_exportable"
+    t.boolean "metadata_exportable", default: false, null: false
     t.datetime "metadata_exported_on", precision: nil
     t.datetime "metadata_imported_on", precision: nil
     t.float "north_limit"
@@ -380,11 +380,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_000001) do
 
   create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "admin_only", default: false, null: false
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
     t.string "name", null: false

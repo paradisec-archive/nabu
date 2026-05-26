@@ -21,7 +21,7 @@
 # **`identifier`**               | `string(255)`      | `not null`
 # **`ingest_notes`**             | `text(16777215)`   |
 # **`language`**                 | `string(255)`      |
-# **`metadata_exportable`**      | `boolean`          |
+# **`metadata_exportable`**      | `boolean`          | `default(FALSE), not null`
 # **`metadata_exported_on`**     | `datetime`         |
 # **`metadata_imported_on`**     | `datetime`         |
 # **`north_limit`**              | `float(24)`        |
