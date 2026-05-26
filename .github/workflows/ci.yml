@@ -55,7 +55,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql
+        image: mysql:8
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
         ports:
@@ -119,7 +119,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql
+        image: mysql:8
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
         ports:
