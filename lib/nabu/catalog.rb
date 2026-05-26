@@ -17,7 +17,7 @@ module Nabu
           region: 'us-east-1',
           access_key_id: 'S3RVER',
           secret_access_key: 'S3RVER',
-          endpoint: 'http://s3:9090',
+          endpoint: ENV.fetch('S3_ENDPOINT', 'http://s3:9090'),
           force_path_style: true
         )
       end
