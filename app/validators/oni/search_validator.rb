@@ -12,6 +12,7 @@ module Oni
     validate :validate_filters
     validate :validate_bounding_box
     validate :validate_originated_on
+    validate :validate_entity_type_filter
     validates :geohash_precision, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }, allow_nil: true
 
     validates :order, inclusion: { in: ORDER_FIELDS, message: '%{value} is not a valid order' }, allow_nil: true
@@ -124,6 +125,22 @@ module Oni
       if bounding_box['topRight']['lat'] == bounding_box['bottomLeft']['lat'] ||
          bounding_box['topRight']['lng'] == bounding_box['bottomLeft']['lng']
         errors.add(:boundingBox, 'topRight and bottomLeft must not have identical lat or lng values')
+      end
+    end
+
+    def validate_entity_type_filter
+      return if filters.nil? || !filters.key?('entity_type')
+
+      entity_types = filters['entity_type']
+      return unless entity_types.is_a?(Array)
+
+      allowed = Oni::EntityType::INTERNAL_TYPES + Oni::EntityType::PCDM_TYPES
+      entity_types.each do |value|
+        next unless value.is_a?(String)
+
+        unless allowed.include?(value)
+          errors.add(:filters, "'#{value}' is not a valid entity_type")
+        end
       end
     end
 

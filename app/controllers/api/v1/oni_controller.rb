@@ -36,20 +36,14 @@ module Api
           entities = entities.where(member_of: md[1].sub('/', '-'), entity_type:)
         end
 
-        case query.entity_type
-        when 'http://pcdm.org/models#Collection'
-          if query.member_of
+        internal_type = Oni::EntityType.from_pcdm(query.entity_type)
+        if internal_type
+          entities = if internal_type == 'Collection' && query.member_of
             # NOTE: We don't have collections of collections so we craft a query that will return nothing
-            entities = Entity.none
+            Entity.none
           else
-            entities = entities.where(entity_type: 'Collection')
+            entities.where(entity_type: internal_type)
           end
-        when 'http://pcdm.org/models#Object'
-          entities = entities.where(entity_type: 'Item')
-        when 'http://schema.org/MediaObject'
-          entities = entities.where(entity_type: 'Essence')
-        else
-          # Do nothing
         end
 
         entities = entities.where.not(entity_type: 'Essence') if essence_terms_required?
@@ -315,6 +309,11 @@ module Api
 
       def transform_filters(filters)
         f = filters.to_h.to_h
+
+        if f['entity_type'].is_a?(Array)
+          f['entity_type'] = f['entity_type'].map { |v| Oni::EntityType.normalise(v) }
+        end
+
         return f unless f['originatedOn']
 
         ranges = parse_originated_on_ranges(f['originatedOn'])
