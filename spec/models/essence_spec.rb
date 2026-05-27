@@ -21,15 +21,23 @@
 # **`size`**                     | `bigint`           |
 # **`created_at`**               | `datetime`         |
 # **`updated_at`**               | `datetime`         |
+# **`created_by_id`**            | `bigint`           |
 # **`item_id`**                  | `integer`          |
 #
 # ### Indexes
 #
+# * `index_essences_on_created_by_id`:
+#     * **`created_by_id`**
 # * `index_essences_on_item_id`:
 #     * **`item_id`**
 # * `index_essences_on_item_id_and_filename` (_unique_):
 #     * **`item_id`**
 #     * **`filename`**
+#
+# ### Foreign Keys
+#
+# * `fk_rails_...`:
+#     * **`created_by_id => users.id`**
 #
 
 require 'rails_helper'

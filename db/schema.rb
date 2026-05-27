@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_000002) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -179,10 +179,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
     t.index ["member_of"], name: "index_entities_on_member_of"
   end
 
+  create_table "essence_annotations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "annotation_essence_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "target_essence_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["annotation_essence_id", "target_essence_id"], name: "index_essence_annotations_unique_pair", unique: true
+    t.index ["annotation_essence_id"], name: "index_essence_annotations_on_annotation_essence_id"
+    t.index ["target_essence_id"], name: "index_essence_annotations_on_target_essence_id"
+  end
+
   create_table "essences", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "bitrate"
     t.integer "channels"
     t.datetime "created_at", precision: nil
+    t.bigint "created_by_id"
     t.boolean "derived_files_generated", default: false
     t.string "doi"
     t.float "duration"
@@ -194,6 +205,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
     t.integer "samplerate"
     t.bigint "size"
     t.datetime "updated_at", precision: nil
+    t.index ["created_by_id"], name: "index_essences_on_created_by_id"
     t.index ["item_id", "filename"], name: "index_essences_on_item_id_and_filename", unique: true
     t.index ["item_id"], name: "index_essences_on_item_id"
   end
@@ -382,6 +394,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
     t.boolean "admin_only", default: false, null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.string "secret", null: false
+    t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
@@ -476,6 +493,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_011820) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "essence_annotations", "essences", column: "annotation_essence_id", on_delete: :cascade
+  add_foreign_key "essence_annotations", "essences", column: "target_essence_id", on_delete: :cascade
+  add_foreign_key "essences", "users", column: "created_by_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

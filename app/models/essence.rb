@@ -21,15 +21,23 @@
 # **`size`**                     | `bigint`           |
 # **`created_at`**               | `datetime`         |
 # **`updated_at`**               | `datetime`         |
+# **`created_by_id`**            | `bigint`           |
 # **`item_id`**                  | `integer`          |
 #
 # ### Indexes
 #
+# * `index_essences_on_created_by_id`:
+#     * **`created_by_id`**
 # * `index_essences_on_item_id`:
 #     * **`item_id`**
 # * `index_essences_on_item_id_and_filename` (_unique_):
 #     * **`item_id`**
 #     * **`filename`**
+#
+# ### Foreign Keys
+#
+# * `fk_rails_...`:
+#     * **`created_by_id => users.id`**
 #
 
 class Essence < ApplicationRecord
@@ -64,9 +72,27 @@ class Essence < ApplicationRecord
     ])
   }
 
+  ANNOTATION_EXTENSIONS = %w[eaf trs flextext ixt textgrid cha srt vtt].freeze
+  ANNOTATABLE_EXTENSIONS = %w[mp3 ogg oga wav mp4 webm ogv mov mxf mkv].freeze
+
   belongs_to :item, counter_cache: true
+  belongs_to :created_by, class_name: 'User', optional: true
   delegate :collection, to: :item
   delegate :collector_name, to: :item
+
+  has_many :outgoing_annotation_links,
+           class_name: 'EssenceAnnotation',
+           foreign_key: :annotation_essence_id,
+           dependent: :destroy,
+           inverse_of: :annotation_essence
+  has_many :annotates, through: :outgoing_annotation_links, source: :target_essence
+
+  has_many :incoming_annotation_links,
+           class_name: 'EssenceAnnotation',
+           foreign_key: :target_essence_id,
+           dependent: :destroy,
+           inverse_of: :target_essence
+  has_many :annotated_by, through: :incoming_annotation_links, source: :annotation_essence
 
   validates :item, associated: true
   validates :filename,
@@ -142,6 +168,22 @@ class Essence < ApplicationRecord
 
   def is_archived?
     filename.ends_with?('.mxf') || filename.ends_with?('.mkv')
+  end
+
+  def extension
+    File.extname(filename).delete('.').downcase
+  end
+
+  def annotation_extension?
+    ANNOTATION_EXTENSIONS.include?(extension)
+  end
+
+  def annotatable_extension?
+    ANNOTATABLE_EXTENSIONS.include?(extension)
+  end
+
+  def unmapped_transcript?
+    annotation_extension? && outgoing_annotation_links.empty?
   end
 
   def search_data

@@ -1,0 +1,50 @@
+- content_for :title, @page_title
+
+%h1 Annotation mappings
+
+%h2= "#{@collection.identifier} / #{@item.identifier}"
+
+%p= link_to '← Back to item', [@collection, @item], class: 'button'
+
+.well
+  %p
+    Use this page to record which transcript essences (EAF, TextGrid, etc.)
+    annotate which media essences (audio, video) in this item. Mappings are
+    published in the item's RO-Crate as
+    %code hasAnnotation
+    and
+    %code annotationOf
+    properties, which downstream tools rely on to pair transcripts with
+    their corresponding media. Mappings are not inferred from filenames —
+    if you don't record them here, they won't appear.
+
+- if @transcripts.empty?
+  %p
+    %em This item contains no transcript essences. Nothing to map.
+- elsif @media.empty?
+  %p
+    %em
+      This item contains transcripts but no media essences to annotate.
+      Upload media files (audio or video) before creating mappings.
+- else
+  = form_with url: collection_item_annotations_path(@collection, @item), method: :patch, local: true do
+    - @transcripts.each do |transcript|
+      - current_targets = @existing_mappings[transcript.id] || Set.new
+      %details{ id: "transcript-#{transcript.id}", open: current_targets.empty? }
+        %summary
+          %strong= transcript.filename
+          - if current_targets.empty?
+            %span.warning  — unmapped
+          - else
+            %span  — #{pluralize(current_targets.size, 'mapping')}
+        %fieldset
+          - @media.each do |media|
+            %label{ style: 'display: block;' }
+              = check_box_tag "mappings[#{transcript.id}][]", media.id, current_targets.include?(media.id)
+              = media.filename
+              %small== (#{media.mimetype})
+          = hidden_field_tag "mappings[#{transcript.id}][]", ''
+
+    .right
+      = submit_tag 'Save mappings', class: 'button'
+      = link_to 'Cancel', [@collection, @item], class: 'button'

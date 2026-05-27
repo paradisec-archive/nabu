@@ -1,0 +1,10 @@
+- if can?(:update, @item)
+  - unmapped = @item.essences.includes(:outgoing_annotation_links).select(&:unmapped_transcript?)
+  - if unmapped.any?
+    .notice{ style: 'background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 10px 0;' }
+      %strong
+        ⚠ #{pluralize(unmapped.size, 'transcript')} in this item
+        #{unmapped.size == 1 ? 'has' : 'have'} no annotation mapping.
+      Annotation mappings are published in the RO-Crate so downstream tools can
+      pair transcripts with their media. Without them, the relationship is lost.
+      = link_to 'Manage mappings →', collection_item_annotations_path(@collection, @item), class: 'button'

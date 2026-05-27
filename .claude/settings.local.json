@@ -11,8 +11,11 @@
       "Bash(pnpm cdk synth:*)",
       "Bash(nabu_run bin/rails routes)",
       "Bash(OPENID_SIGNING_KEY=1 bin/nabu_run bin/brakeman:*)",
-      "Bash(bin/nabu_run bin/rubocop:*)"
+      "Bash(bin/nabu_run bin/rubocop:*)",
+      "Bash(nabu_run bundle *)"
     ]
   },
-  "enabledMcpjsonServers": ["sentry"]
+  "enabledMcpjsonServers": [
+    "sentry"
+  ]
 }

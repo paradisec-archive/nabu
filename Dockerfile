@@ -20,8 +20,11 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-  apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
+  apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips bzip2 && \
   ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
+  curl -fsSL https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
+  -o /usr/local/share/ca-certificates/rds-global-bundle.crt && \
+  update-ca-certificates && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment variables and enable jemalloc for reduced memory usage and latency.

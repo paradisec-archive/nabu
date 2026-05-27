@@ -1,0 +1,25 @@
+%p
+  Hi #{@user.first_name || @user.name},
+
+%p
+  You recently uploaded transcript files to Nabu that have not yet been mapped
+  to the media files they annotate. Annotation mappings let downstream tools
+  (and the RO-Crate metadata) pair each transcript with its media — without
+  them, the relationship is lost.
+
+%p Please take a moment to record the mappings:
+
+- @items_with_unmapped.each do |item, essences|
+  %h3
+    = link_to "#{item.collection.identifier} / #{item.identifier}",
+              collection_item_annotations_url(item.collection, item)
+  %ul
+    - essences.each do |essence|
+      %li
+        = link_to essence.filename,
+                  collection_item_annotations_url(item.collection, item, anchor: "transcript-#{essence.id}")
+
+%p
+  Thanks,
+  %br
+  The Nabu team

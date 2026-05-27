@@ -13,7 +13,7 @@ class ItemsController < ApplicationController
   def show
     @page_title = "Nabu - #{@item.title}"
     @num_files = @item.essences.length
-    @files = @item.essences.page(params[:files_page]).per(params[:files_per_page])
+    @files = @item.essences.includes(:outgoing_annotation_links).page(params[:files_page]).per(params[:files_per_page])
 
     @files = @files.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :filename)
   end

@@ -35,30 +35,8 @@ def item_person_json(user)
 end
 
 @essences = Set.new
-@essence_basename_lookup = nil
-
-def build_essence_basename_lookup
-  media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
-  elan_extension = 'eaf'
-  lookup = Hash.new { |h, k| h[k] = { media: [], eaf: [] } }
-
-  @data.essences.each do |essence|
-    ext = File.extname(essence.filename).delete('.').downcase
-    basename = File.basename(essence.filename, File.extname(essence.filename))
-
-    if media_extensions.include?(ext)
-      lookup[basename][:media] << essence
-    elsif ext == elan_extension
-      lookup[basename][:eaf] << essence
-    end
-  end
-
-  lookup
-end
 
 def item_essence_json(essence)
-  @essence_basename_lookup ||= build_essence_basename_lookup
-
   id = repository_essence_url(essence.collection, essence.item, essence.filename)
 
   json = {
@@ -77,20 +55,11 @@ def item_essence_json(essence)
     sampleRate: essence.samplerate
   }
 
-  # Add audio/video↔ELAN relationships
-  media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
-  ext = File.extname(essence.filename).delete('.').downcase
-  basename = File.basename(essence.filename, File.extname(essence.filename))
+  annotates = essence.annotates.map { |target| { '@id': repository_essence_url(target.collection, target.item, target.filename) } }
+  annotated_by = essence.annotated_by.map { |source| { '@id': repository_essence_url(source.collection, source.item, source.filename) } }
 
-  if media_extensions.include?(ext) && @essence_basename_lookup[basename][:eaf].any?
-    json[:hasAnnotation] = @essence_basename_lookup[basename][:eaf].map do |e|
-      { '@id': repository_essence_url(e.collection, e.item, e.filename) }
-    end
-  elsif ext == 'eaf' && @essence_basename_lookup[basename][:media].any?
-    json[:annotationOf] = @essence_basename_lookup[basename][:media].map do |e|
-      { '@id': repository_essence_url(e.collection, e.item, e.filename) }
-    end
-  end
+  json[:annotationOf] = annotates if annotates.any?
+  json[:hasAnnotation] = annotated_by if annotated_by.any?
 
   json.compact!
 
@@ -297,7 +266,7 @@ data[:identifier] << item_property_value_json('collectionIdentifier', @data.coll
 data[:languageAsGiven] = @data.language
 data[:originalMedia] = @data.original_media if @data.original_media
 data[:originatedOn] = @data.originated_on.to_date if @data.originated_on
-data[:hasPart] = @data.essences.map { |essence| { '@id': item_essence_json(essence) } }
+data[:hasPart] = @data.essences.includes(annotates: { item: :collection }, annotated_by: { item: :collection }).map { |essence| { '@id': item_essence_json(essence) } }
 data[:languageGenre] = @data.discourse_type.name if @data.discourse_type
 if @data.data_categories
   data[:communicationMode] = @data.data_categories.map do |data_category|

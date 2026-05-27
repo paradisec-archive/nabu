@@ -33,4 +33,4 @@ echo "Now run"
 echo "mysql -h 127.0.0.1 -u root nabu_devel < ../schema.sql"
 echo "pv ../data.sql | mysql -h 127.0.0.1 -u root nabu_devel"
 # Set all passwords to "password" for testing
-echo "echo \"update users set encrypted_password = \\\"\$2a\$12\$hi3ZZhR7T6aQEjpuar2LPupC12b7JQ6uG1h6vYe9M/nHGgAwvzOUG';\\\"\" | mysql -h 127.0.0.1 -u root nabu_devel"
+echo "echo \"update users set encrypted_password = '\\\$2b\\\$10\\\$CQvD8e7EGKySKelvHTm28.pUZGMzx8sa.l.Nnb320NMHv.LhzS50i';\" | mysql -h 127.0.0.1 -u root nabu_devel"

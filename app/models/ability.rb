@@ -139,6 +139,17 @@ class Ability
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_users: { user_id: user.id } } }
 
     can :create, Comment, commentable: { private: false }
+
+    #############
+    # EssenceAnnotation
+    #############
+
+    can :manage, EssenceAnnotation, target_essence: { item: { collector_id: user.id } }
+    can :manage, EssenceAnnotation, target_essence: { item: { operator_id: user.id } }
+    can :manage, EssenceAnnotation, target_essence: { item: { item_admins: { user_id: user.id } } }
+    can :manage, EssenceAnnotation, target_essence: { item: { collection: { collector_id: user.id } } }
+    can :manage, EssenceAnnotation, target_essence: { item: { collection: { operator_id: user.id } } }
+    can :manage, EssenceAnnotation, target_essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
   end
 end
 # rubocop:enable Metrics/AbcSize,Metrics/MethodLength

@@ -28,6 +28,22 @@
         %th Archive link
         %td= link_to(repository_essence_url(@collection, @item, @essence.filename), repository_essence_url(@collection, @item, @essence.filename))
 
+      - if @essence.annotates.any?
+        %tr
+          %th Annotation of
+          %td
+            - @essence.annotates.each do |target|
+              = link_to target.filename, [@collection, @item, target]
+              %br
+
+      - if @essence.annotated_by.any?
+        %tr
+          %th Has annotations
+          %td
+            - @essence.annotated_by.each do |source|
+              = link_to source.filename, [@collection, @item, source]
+              %br
+
       %tr
         %th Type
         %td= @essence.mimetype

@@ -20,7 +20,10 @@
     - else
       - @files.each do |file|
         %tr
-          %td= file.filename
+          %td
+            - if can?(:update, @item) && file.unmapped_transcript?
+              = link_to '⚠', collection_item_annotations_path(@collection, @item, anchor: "transcript-#{file.id}"), title: 'Unmapped transcript — click to add a mapping', style: 'color: #d97706; text-decoration: none; margin-right: 4px;'
+            = file.filename
           %td= file.mimetype
           %td= number_to_human_size file.size
           %td= number_to_human_duration file.duration
@@ -37,7 +40,9 @@
 = paginate @files, :param_name => :files_page
 
 - files_page_params = params.permit(:id, :collection_id, :files_page, :files_per_page, :sort, :direction, :format)
-%p
+%div
   -[10, 50].each do |n|
     = link_to "Show #{n}", files_page_params.merge(files_per_page: n, files_page: (n * params[:files_page].to_i) > @num_files ? 1 : params[:files_page]), class: 'button'
   = link_to "Show all #{@num_files}", files_page_params.merge(files_per_page: @num_files, files_page: 1), class: 'button'
+  - if can?(:update, @item) && @item.essences.any?(&:annotation_extension?)
+    = link_to 'Manage annotation mappings', collection_item_annotations_path(@collection, @item), class: 'button'

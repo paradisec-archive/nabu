@@ -74,6 +74,7 @@ Rails.application.routes.draw do
           get :display
         end
       end
+      resource :annotations, only: %i[show update], controller: 'item_annotations'
     end
   end
   resources :items, only: [] do
