@@ -1,7 +1,7 @@
 namespace :catalog do
   desc 'Backfill extracted text for essences missing it. Optional: EXTENSIONS=pdf,docx,xml ESSENCE_ID=123'
   task backfill_extracted_text: :environment do
-    all_extensions = %w[pdf eaf csv docx xlsx odt rtf srt txt textgrid xml imdi cmdi opex flextext]
+    all_extensions = %w[pdf eaf csv docx xlsx odt rtf srt txt textgrid xml imdi cmdi opex]
     extensions = ENV.fetch('EXTENSIONS', all_extensions.join(',')).split(',').map(&:strip)
 
     invalid = extensions - all_extensions

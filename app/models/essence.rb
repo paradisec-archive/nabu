@@ -72,7 +72,7 @@ class Essence < ApplicationRecord
     ])
   }
 
-  ANNOTATION_EXTENSIONS = %w[eaf trs flextext ixt textgrid cha srt vtt].freeze
+  ANNOTATION_EXTENSIONS = %w[eaf trs ixt textgrid cha srt vtt].freeze
   ANNOTATABLE_EXTENSIONS = %w[mp3 ogg oga wav mp4 webm ogv mov mxf mkv].freeze
 
   belongs_to :item, counter_cache: true
