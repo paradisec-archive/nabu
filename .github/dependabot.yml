@@ -4,7 +4,7 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   ignore:
     - dependency-name: sorbet
       update-types: ["version-update:semver-patch"]
@@ -12,4 +12,4 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0

@@ -5,9 +5,9 @@
     "@activeadmin/activeadmin": "4.0.0-beta20",
     "@googlemaps/js-api-loader": "^2.0.2",
     "@googlemaps/markerclusterer": "^2.6.2",
-    "@sentry/browser": "^10.53.1",
+    "@sentry/browser": "^10.55.0",
     "choices.js": "^11.2.3",
-    "sass": "^1.99.0",
+    "sass": "^1.100.0",
     "tailwindcss": "^4.3.0",
     "uuid": "^14.0.0"
   },
