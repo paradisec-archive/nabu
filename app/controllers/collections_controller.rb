@@ -2,6 +2,13 @@ require 'nabu/spreadsheet'
 
 # rubocop:disable Metrics/ClassLength,Metrics/MethodLength
 class CollectionsController < ApplicationController
+  # The GeoJSON feeds are consumed by third-party map viewers (e.g. TLCMap) via a cross-site
+  # fetch that cannot carry our SameSite session cookie, so they must not require authentication.
+  # They expose only public data (see index/show), and collection-level privacy is still enforced
+  # by load_and_authorize_resource. HTML pages remain login-gated.
+  skip_before_action :authenticate_user!, only: %i[index show]
+  before_action :authenticate_user!, only: %i[index show], unless: -> { request.format.geo_json? }
+
   before_action :find_item, only: %i[show edit]
   before_action :tidy_params, only: %i[create update bulk_update]
   load_and_authorize_resource find_by: :identifier, except: %i[search advanced_search bulk_update bulk_edit]
