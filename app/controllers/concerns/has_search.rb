@@ -55,7 +55,7 @@ module HasSearch
         includes: model.search_includes,
 
         page: params[:page],
-        per_page: params[:per_page] || 10,
+        per_page: (params[:export_all] && 5000) || params[:per_page] || 10,
         track: { user_id: current_user&.id, search_family: 'advanced' }
       )
     end
