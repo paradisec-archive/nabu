@@ -17,7 +17,7 @@
       %tr
         %td= collection.identifier
         %td= collection.title
-        %td= collection.collector.name
+        %td= collection.collector&.name
         %td
           - collection.countries.sort_by(&:name).each do |country|
             = country.name

@@ -26,7 +26,7 @@
       %tr
         %td= item.full_identifier
         %td= item.title
-        %td= item.collector.name
+        %td= item.collector&.name
         %td= item.language
         %td
           - item.countries.sort_by(&:name).each do |country|
