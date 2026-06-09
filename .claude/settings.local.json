@@ -20,8 +20,11 @@
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
-      "Bash(gh pr status:*)"
+      "Bash(gh pr status:*)",
+      "Bash(gh issue *)"
     ]
   },
-  "enabledMcpjsonServers": ["sentry"]
+  "enabledMcpjsonServers": [
+    "sentry"
+  ]
 }
