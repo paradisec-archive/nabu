@@ -61,7 +61,9 @@ class CollectionsController < ApplicationController
       .includes(:access_condition, :essences, :admins, :users, :item_admins, :item_users, collection: :collection_admins)
       .page(params[:items_page]).per(params[:items_per_page])
 
-    @items = @items.order(params[:sort] ? "#{params[:sort]} #{params[:direction]}" : :identifier).load
+    sort_column = Item.column_names.include?(params[:sort]) ? params[:sort] : 'identifier'
+    sort_direction = params[:direction] == 'desc' ? 'desc' : 'asc'
+    @items = @items.order("#{sort_column} #{sort_direction}").load
 
     @page_title = "Nabu - #{@collection.title}"
 

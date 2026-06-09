@@ -6,8 +6,9 @@ class PageController < ApplicationController
     @name = current_user.name
 
     collections = Collection.where('collector_id = :user_id OR operator_id = :user_id', user_id: current_user.id)
-    collections = if params[:sort]
-                    collections.order("#{params[:sort]} #{params[:direction]}")
+    collections = if Collection.column_names.include?(params[:sort])
+                    direction = params[:direction] == 'asc' ? 'asc' : 'desc'
+                    collections.order("#{params[:sort]} #{direction}")
     else
                     collections.order('created_at desc')
     end
