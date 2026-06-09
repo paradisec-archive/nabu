@@ -15,7 +15,9 @@
       "Bash(nabu_run bundle *)",
       "mcp__sentry__whoami",
       "mcp__sentry__get_sentry_resource",
-      "mcp__sentry__update_issue"
+      "mcp__sentry__update_issue",
+      "mcp__sentry__find_releases",
+      "Bash(gh pr *)"
     ]
   },
   "enabledMcpjsonServers": [
