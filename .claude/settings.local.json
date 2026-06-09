@@ -17,10 +17,11 @@
       "mcp__sentry__get_sentry_resource",
       "mcp__sentry__update_issue",
       "mcp__sentry__find_releases",
-      "Bash(gh pr *)"
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr status:*)"
     ]
   },
-  "enabledMcpjsonServers": [
-    "sentry"
-  ]
+  "enabledMcpjsonServers": ["sentry"]
 }
