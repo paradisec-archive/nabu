@@ -1,4 +1,4 @@
-FROM ghcr.io/language-research-technology/oni-ui:new-api
+FROM ghcr.io/crate-works/oni:latest
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
