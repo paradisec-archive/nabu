@@ -3,6 +3,13 @@ module Api
     class OniController < ApiController
       skip_before_action :enforce_terms_acceptance, only: %i[entities entity rocrate search]
 
+      # Cross-index search spans the Collection, Item and Essence indices. Only fields mapped
+      # in ALL three can be sorted on; sorting on a field missing from any index raises an
+      # OpenSearch query_shard_exception (HTTP 500). Of the values Oni::SearchValidator permits
+      # (id, name, title, relevance, originated_on), only originated_on is mapped everywhere, so
+      # id/name/title fall back to relevance (_score) rather than erroring.
+      SEARCH_SORT_FIELDS = %w[originated_on].freeze
+
       def entities # rubocop:disable Metrics/MethodLength
         query = Oni::ObjectsValidator.new(params)
 
@@ -214,8 +221,8 @@ module Api
 
         @essence_terms_required = essence_terms_required?
 
-        order = {}
-        order[query.sort === 'relevance' ? '_score' : query.sort] = query.order
+        sort_field = SEARCH_SORT_FIELDS.include?(query.sort) ? query.sort : '_score'
+        order = { sort_field => query.order }
 
         filters = transform_filters(query.filters)
 
