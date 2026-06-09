@@ -147,10 +147,12 @@ class Collection < ApplicationRecord
     return unless collector_id_changed?
 
     unless collector_id_was.nil?
-      collector_was = User.find(collector_id_was)
-      # we're removing one collection from the users's 'owned' collections
-      collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1).positive?
-      collector_was.save
+      collector_was = User.find_by(id: collector_id_was)
+      if collector_was # Sometimes doesn't eixst anymore, is user was merged or deleted
+        # we're removing one collection from the users's 'owned' collections
+        collector_was.collector = (collector_was.owned_items.count + collector_was.owned_collections.count - 1).positive?
+        collector_was.save
+      end
     end
 
     collector.collector = true
