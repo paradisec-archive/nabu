@@ -248,11 +248,18 @@ module HasSearch
   end
 
   def order
-    return [{ 'full_identifier' => params[:direction] == 'desc' ? 'desc' : 'asc' }] if params[:search].blank? && params[:sort].blank?
+    direction = params[:direction] == 'desc' ? 'desc' : 'asc'
 
-    return if params[:sort].blank?
+    # Only sort on whitelisted, indexed columns. An unknown sort field would otherwise
+    # trigger an OpenSearch query_shard_exception ("No mapping found for [...]").
+    sort = params[:sort].presence
+    sort = nil unless sort && model.sortable_columns.include?(sort)
 
-    [{ params[:sort] => params[:direction] == 'desc' ? 'desc' : 'asc' }]
+    return [{ 'full_identifier' => direction }] if params[:search].blank? && sort.blank?
+
+    return if sort.blank?
+
+    [{ sort => direction }]
   end
 end
 # rubocop:enable Metrics/ModuleLength
