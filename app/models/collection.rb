@@ -96,6 +96,9 @@ class Collection < ApplicationRecord
             uniqueness: { case_sensitive: false },
             format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" },
             length: { in: 3..10 }
+  # Enforce uppercase identifiers on create only, so every create path (web form and spreadsheet
+  # importer) is covered. Legacy mixed-case collections must remain editable, so this is not run on update.
+  validates :identifier, format: { with: /\A[A-Z0-9_]*\z/, message: "error - must be uppercase, only A-Z, 0-9 and '_' allowed" }, on: :create
   validates :title, presence: true
 
   validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
@@ -197,6 +200,14 @@ class Collection < ApplicationRecord
     %w[identifier title collector_sortname university_name created_at updated_at languages countries]
   end
 
+  # Map identifier sort fields to their case-insensitive (lowercased) index counterparts so
+  # collection ordering is case-insensitive. Other fields sort on themselves.
+  SORT_FIELD_OVERRIDES = { 'identifier' => 'identifier_sort', 'full_identifier' => 'full_identifier_sort' }.freeze
+
+  def self.search_sort_field(field)
+    SORT_FIELD_OVERRIDES.fetch(field, field)
+  end
+
   def self.search_includes
     [:collector, :countries, :languages, :university, :admins, items: [:admins, :users]]
   end
@@ -251,6 +262,11 @@ class Collection < ApplicationRecord
       # Full text plus advanced search
       identifier:,
       full_identifier:,
+
+      # Case-insensitive sort values (sorting on the keyword identifier is byte-ordered, so
+      # uppercase would otherwise sort before lowercase). Collection index only.
+      identifier_sort: identifier&.downcase,
+      full_identifier_sort: full_identifier&.downcase,
       title:,
       description:,
       access_narrative:,

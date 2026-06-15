@@ -57,4 +57,31 @@ require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
 describe Collection, type: :model do
   it_behaves_like "identifiable by doi"
+
+  describe 'identifier case validation', :no_catalog_upload do
+    it 'accepts an all-uppercase identifier on create' do
+      collection = build(:collection, identifier: 'ABC123')
+
+      expect(collection).to be_valid
+    end
+
+    it 'rejects an identifier containing a lowercase letter on create' do
+      collection = build(:collection, identifier: 'Abc123')
+
+      aggregate_failures do
+        expect(collection).not_to be_valid
+        expect(collection.errors[:identifier]).to be_present
+      end
+    end
+
+    it 'lets an existing mixed-case collection be saved (e.g. a title edit)' do
+      collection = create(:collection)
+      # Bypass the create-time validation to seed a legacy lowercase identifier.
+      collection.update_column(:identifier, 'legacy')
+
+      collection.title = 'A new title'
+
+      expect(collection.save).to be(true)
+    end
+  end
 end

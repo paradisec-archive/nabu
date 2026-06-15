@@ -255,11 +255,19 @@ module HasSearch
     sort = params[:sort].presence
     sort = nil unless sort && model.sortable_columns.include?(sort)
 
-    return [{ 'full_identifier' => direction }] if params[:search].blank? && sort.blank?
+    return [{ sort_field('full_identifier') => direction }] if params[:search].blank? && sort.blank?
 
     return if sort.blank?
 
-    [{ sort => direction }]
+    [{ sort_field(sort) => direction }]
+  end
+
+  # Let a model remap a sort column to a different index field (e.g. a case-insensitive
+  # variant). Models that don't define this sort on the column as-is.
+  def sort_field(field)
+    return model.search_sort_field(field) if model.respond_to?(:search_sort_field)
+
+    field
   end
 end
 # rubocop:enable Metrics/ModuleLength
