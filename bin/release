@@ -22,7 +22,7 @@ git switch main
 # Pull docker images for the new release
 docker pull node:lts-alpine
 docker pull ubuntu:24.04
-docker pull ghcr.io/language-research-technology/oni-ui:new-api
+docker pull ghcr.io/crate-works/oni:latest
 
 cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
