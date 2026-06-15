@@ -72,6 +72,7 @@ class Item < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
   include Entityable
+  include SearchSortable
   include ActionView::Helpers::SanitizeHelper
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::OutputSafetyHelper
@@ -327,6 +328,10 @@ class Item < ApplicationRecord
       collection_identifier: collection.identifier,
       full_identifier:,
       title:,
+      # Sort values for cross-index Oni search. title_sort is plain downcased prose; full_identifier_sort
+      # is number-aware (downcased + zero-padded numeric runs) so AA1-2 sorts before AA1-10.
+      title_sort: title&.downcase,
+      full_identifier_sort: self.class.natural_sort_key(full_identifier),
       description:,
       region:,
       dialect:,

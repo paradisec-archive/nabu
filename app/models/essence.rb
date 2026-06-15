@@ -43,6 +43,7 @@
 class Essence < ApplicationRecord
   include IdentifiableByDoi
   include Entityable
+  include SearchSortable
 
   has_paper_trail ignore: [:extracted_text]
 
@@ -194,6 +195,11 @@ class Essence < ApplicationRecord
       mimetype:,
       full_identifier:,
       identifier: full_identifier,
+      # Sort values for cross-index Oni search. Essences have no title, so title sorting falls back
+      # to the downcased filename; full_identifier_sort is number-aware (downcased + zero-padded
+      # numeric runs) so AA1-2 sorts before AA1-10.
+      title_sort: filename&.downcase,
+      full_identifier_sort: self.class.natural_sort_key(full_identifier),
       collection_identifier: item.collection.identifier,
       item_identifier: item.identifier,
 

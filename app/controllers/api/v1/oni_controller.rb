@@ -3,12 +3,21 @@ module Api
     class OniController < ApiController
       skip_before_action :enforce_terms_acceptance, only: %i[entities entity rocrate search]
 
-      # Cross-index search spans the Collection, Item and Essence indices. Only fields mapped
-      # in ALL three can be sorted on; sorting on a field missing from any index raises an
-      # OpenSearch query_shard_exception (HTTP 500). Of the values Oni::SearchValidator permits
-      # (id, name, title, relevance, originated_on), only originated_on is mapped everywhere, so
-      # id/name/title fall back to relevance (_score) rather than erroring.
-      SEARCH_SORT_FIELDS = %w[originated_on].freeze
+      # Cross-index search spans the Collection, Item and Essence indices. A field can only be
+      # sorted on if it is mapped in ALL three indices; sorting on a field missing from any index
+      # raises an OpenSearch query_shard_exception (HTTP 500). We map each user-facing sort value
+      # to an index field present everywhere: title/name sort on title_sort (Essences have no
+      # title, so their title_sort falls back to the filename) and id sorts on full_identifier_sort
+      # (both number-aware downcased keys); originated_on/created_at/updated_at sort on their date
+      # fields. Anything else (relevance) falls back to _score.
+      SEARCH_SORT_FIELDS = {
+        'title' => 'title_sort',
+        'name' => 'title_sort',
+        'id' => 'full_identifier_sort',
+        'originated_on' => 'originated_on',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+      }.freeze
 
       def entities # rubocop:disable Metrics/MethodLength
         query = Oni::ObjectsValidator.new(params)
@@ -221,7 +230,7 @@ module Api
 
         @essence_terms_required = essence_terms_required?
 
-        sort_field = SEARCH_SORT_FIELDS.include?(query.sort) ? query.sort : '_score'
+        sort_field = SEARCH_SORT_FIELDS.fetch(query.sort, '_score')
         order = { sort_field => query.order }
 
         filters = transform_filters(query.filters)

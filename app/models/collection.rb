@@ -58,6 +58,7 @@ class Collection < ApplicationRecord
   include IdentifiableByDoi
   include HasBoundaries
   include Entityable
+  include SearchSortable
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::OutputSafetyHelper
 
@@ -263,10 +264,13 @@ class Collection < ApplicationRecord
       identifier:,
       full_identifier:,
 
-      # Case-insensitive sort values (sorting on the keyword identifier is byte-ordered, so
-      # uppercase would otherwise sort before lowercase). Collection index only.
-      identifier_sort: identifier&.downcase,
-      full_identifier_sort: full_identifier&.downcase,
+      # Sort values for keyword fields. identifier_sort/full_identifier_sort use a number-aware key
+      # (downcased + zero-padded numeric runs) so e.g. AA2 sorts before AA10; title_sort is plain
+      # downcased prose. identifier_sort is Collection-only; title_sort and full_identifier_sort are
+      # mapped across all three indices for cross-index Oni search sorting.
+      identifier_sort: self.class.natural_sort_key(identifier),
+      full_identifier_sort: self.class.natural_sort_key(full_identifier),
+      title_sort: title&.downcase,
       title:,
       description:,
       access_narrative:,
