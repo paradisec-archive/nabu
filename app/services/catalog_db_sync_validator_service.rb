@@ -60,16 +60,12 @@ class CatalogDbSyncValidatorService
     manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
     manifest = JSON.parse(manifest_json)
 
-    files = manifest['files']
-    if files.size > 1
-      raise 'Multiple files in manifest'
-    end
-
-    file = files.first['key']
-
-    # Download the S3 Inventory CSV file
-    inventory_gzipped = @s3.get_object(bucket: @bucket, key: file).body.read
-    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
+    # S3 Inventory splits its output into multiple gzipped CSV chunks once the
+    # bucket grows large enough, so download every file and concatenate them.
+    manifest['files'].map do |file|
+      inventory_gzipped = @s3.get_object(bucket: @bucket, key: file['key']).body.read
+      Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
+    end.join
   end
 
   def find_recent_inventory_dir
