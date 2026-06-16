@@ -2,10 +2,14 @@ class CollectionDestructionService
   def self.destroy(collection)
     essences = collection.items.map(&:essences).flatten
     essence_ids = essences.map(&:id)
+    item_ids = collection.items.map(&:id)
 
-    # use efficient delete since the models don't have any relevant callbacks
+    # delete_all is efficient but skips ActiveRecord callbacks, so the `has_one :entity, dependent: :destroy`
+    # cleanup on Item/Essence never fires. Remove the denormalised entity rows ourselves to avoid orphans.
     Essence.where(id: essence_ids).delete_all
     deleted_items_count = Item.where(collection_id: collection.id).delete_all
+    Entity.where(entity_type: 'Essence', entity_id: essence_ids).delete_all
+    Entity.where(entity_type: 'Item', entity_id: item_ids).delete_all
 
     collection.items = [] # force no items
 

@@ -37,4 +37,22 @@ describe ItemDestructionService do
       end
     end
   end
+
+  # Regression: essences are removed with delete_all, which skips the `has_one :entity, dependent: :destroy`
+  # callback. Without explicit cleanup this leaves orphaned `entities` rows (see Sentry NABU-Q3).
+  context 'when the item has denormalised entity rows', :no_catalog_upload do
+    let(:essence) { create(:sound_essence) }
+    let(:item) { create(:item, essences: [essence]) }
+
+    before do
+      allow(Nabu::Catalog.instance).to receive(:delete_item).and_return(0)
+    end
+
+    it 'removes the entity rows for the item and its essences' do
+      expect(Entity.where(entity_type: 'Item', entity_id: item.id)).to exist
+      described_class.destroy(item)
+      expect(Entity.where(entity_type: 'Item', entity_id: item.id)).not_to exist
+      expect(Entity.where(entity_type: 'Essence', entity_id: essence.id)).not_to exist
+    end
+  end
 end
