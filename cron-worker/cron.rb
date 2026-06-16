@@ -13,6 +13,15 @@ ses = Aws::SES::Client.new(region: 'ap-southeast-2')
 
 scheduler = Rufus::Scheduler.new
 
+# By default rufus-scheduler swallows job errors (it only dumps them to stderr),
+# so cron failures never reach Sentry. Report them explicitly before falling back
+# to the default logging behaviour.
+def scheduler.on_error(job, error)
+  Sentry.capture_exception(error, extra: { cron_job: job&.original.to_s }) if defined?(Sentry)
+ensure
+  super
+end
+
 scheduler.cron '27 4 * * tue'  do
   name = 'Check DB S3 Sync'
   task = 'catalog:check_db_s3_sync'
