@@ -63,63 +63,15 @@ class CatalogReplicationValidatorService
   end
 
   def fetch_inventory_csv(env)
-    inventory_dir = find_recent_inventory_dir(env)
-
-    manifest_json = @s3.get_object(bucket: meta_bucket(env), key: "#{inventory_dir}manifest.json").body.read
-    manifest = JSON.parse(manifest_json)
-
-    files = manifest['files']
-    if files.size > 1
-      raise 'Multiple files in manifest'
-    end
-
-    file = files.first['key']
-
-    # Download the S3 Inventory CSV file
-    inventory_gzipped = @s3.get_object(bucket: meta_bucket(env), key: file).body.read
-    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
+    reader = S3InventoryReader.new(@s3, meta_bucket(env), inventory_prefix(env))
+    reader.csv_for(reader.most_recent_run.key)
   end
 
-  def find_recent_inventory_dir(env)
-    inventory_files = fetch_inventory_files(env)
-
-    # Extract the timestamp part from each key and convert it to Time object
-    timestamped_files = inventory_files.map do |key|
-      match = key.match(/(?:Catalog|Dr)BucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
-      if match
-        year, month, day, hour, minute = match.captures
-        time = Time.new(year, month, day, hour, minute)
-        { key: key, time: time }
-      end
-    end.compact
-
-    # Find the most recent file
-    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
-
-    most_recent_dir[:key]
-  end
-
-  def fetch_inventory_files(env)
-    prefix = env === 'prod' ? 'inventories/catalog/nabu-catalog-prod/CatalogBucketInventory0/' : 'inventories/catalogdr/nabu-catalogdr-prod/DrBucketInventory0/'
-    inventory_files = []
-    next_token = nil
-
-    loop do
-      response = @s3.list_objects_v2(
-        bucket: meta_bucket(env),
-        prefix: prefix,
-        delimiter: '/',
-        continuation_token: next_token
-      )
-
-      # Collect all object keys
-      inventory_files += response.common_prefixes.map(&:prefix)
-
-      break unless response.is_truncated
-
-      next_token = response.next_continuation_token
+  def inventory_prefix(env)
+    if env === 'prod'
+      'inventories/catalog/nabu-catalog-prod/CatalogBucketInventory0/'
+    else
+      'inventories/catalogdr/nabu-catalogdr-prod/DrBucketInventory0/'
     end
-
-    inventory_files
   end
 end

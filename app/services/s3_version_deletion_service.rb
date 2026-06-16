@@ -108,12 +108,10 @@ class S3VersionDeletionService
 
 
   def get_s3_files
-    inventory_dir = find_recent_inventory_dir
-    inventory_csv = fetch_inventory_csv(inventory_dir)
+    reader = S3InventoryReader.new(@s3, @meta_bucket, @prefix)
+    inventory_csv = reader.csv_for(reader.most_recent_run.key)
 
-    s3_files = extract_s3_files(inventory_csv)
-
-    s3_files
+    extract_s3_files(inventory_csv)
   end
 
   def extract_s3_files(inventory_csv)
@@ -149,68 +147,6 @@ class S3VersionDeletionService
     puts "We found #{s3_files.size} files in the inventory"
 
     s3_files
-  end
-
-  def fetch_inventory_csv(inventory_dir)
-    manifest_json = @s3.get_object(bucket: @meta_bucket, key: "#{inventory_dir}manifest.json").body.read
-    manifest = JSON.parse(manifest_json)
-
-    files = manifest['files']
-    if files.size > 1
-      raise 'Multiple files in manifest'
-    end
-
-    file = files.first['key']
-
-    # Download the S3 Inventory CSV file
-    puts "Downloading S3 Inventory CSV file: #{file}"
-    inventory_gzipped = @s3.get_object(bucket: @meta_bucket, key: file).body.read
-    puts "Unzipping file: #{file}\n\n"
-    inventory_csv = Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
-
-    inventory_csv
-  end
-
-  def find_recent_inventory_dir
-    inventory_files = fetch_inventory_files
-
-    # Extract the timestamp part from each key and convert it to Time object
-    timestamped_files = inventory_files.map do |key|
-      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
-      if match
-        year, month, day, hour, minute = match.captures
-        time = Time.new(year, month, day, hour, minute)
-        { key: key, time: time }
-      end
-    end.compact
-    # Find the most recent file
-    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
-
-    puts "Most recent inventory file: #{most_recent_dir[:key]}"
-    most_recent_dir[:key]
-  end
-
-  def fetch_inventory_files
-    inventory_files = []
-    next_token = nil
-
-    loop do
-      response = @s3.list_objects_v2(
-        bucket: @meta_bucket,
-        prefix: @prefix,
-        delimiter: '/',
-        continuation_token: next_token
-      )
-
-      # Collect all object keys
-      inventory_files += response.common_prefixes.map(&:prefix)
-
-      break unless response.is_truncated
-
-      next_token = response.next_continuation_token
-    end
-
-    inventory_files
   end
 end
 # rubocop:enable Metrics/MethodLength,Metrics/BlockLength

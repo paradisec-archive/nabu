@@ -106,61 +106,12 @@ class CatalogMediafluxValidatorService
   end
 
   def fetch_inventory_csv
-    inventory_dir = find_recent_inventory_dir
+    reader = S3InventoryReader.new(@s3, 'nabu-meta-prod', 'inventories/catalog/nabu-catalog-prod/CatalogBucketInventory0/')
+    run = reader.most_recent_run
 
-    manifest_json = @s3.get_object(bucket: 'nabu-meta-prod', key: "#{inventory_dir}manifest.json").body.read
-    manifest = JSON.parse(manifest_json)
+    raise 'No S3 inventory directories found' if run.nil?
+    raise "S3 inventory is stale (#{run.time}), must be within 7 days" if run.time < Time.now - 7.days
 
-    files = manifest['files']
-    raise 'Multiple files in manifest' if files.size > 1
-
-    file = files.first['key']
-
-    inventory_gzipped = @s3.get_object(bucket: 'nabu-meta-prod', key: file).body.read
-    Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
-  end
-
-  def find_recent_inventory_dir
-    inventory_files = fetch_inventory_files
-
-    timestamped_files = inventory_files.map do |key|
-      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
-      if match
-        year, month, day, hour, minute = match.captures
-        time = Time.new(year, month, day, hour, minute)
-        { key:, time: }
-      end
-    end.compact
-
-    raise 'No S3 inventory directories found' if timestamped_files.empty?
-
-    most_recent = timestamped_files.max_by { |file| file[:time] }
-
-    raise "S3 inventory is stale (#{most_recent[:time]}), must be within 7 days" if most_recent[:time] < Time.now - 7.days
-
-    most_recent[:key]
-  end
-
-  def fetch_inventory_files
-    prefix = 'inventories/catalog/nabu-catalog-prod/CatalogBucketInventory0/'
-    inventory_files = []
-    next_token = nil
-
-    loop do
-      response = @s3.list_objects_v2(
-        bucket: 'nabu-meta-prod',
-        prefix:,
-        delimiter: '/',
-        continuation_token: next_token
-      )
-
-      inventory_files += response.common_prefixes.map(&:prefix)
-
-      break unless response.is_truncated
-
-      next_token = response.next_continuation_token
-    end
-
-    inventory_files
+    reader.csv_for(run.key)
   end
 end

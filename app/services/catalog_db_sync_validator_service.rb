@@ -17,8 +17,8 @@ class CatalogDbSyncValidatorService
   end
 
   def run
-    inventory_dir = find_recent_inventory_dir
-    inventory_csv = fetch_inventory_csv(inventory_dir)
+    reader = S3InventoryReader.new(@s3, @bucket, @prefix)
+    inventory_csv = reader.csv_for(reader.most_recent_run.key)
 
     s3_files = extract_s3_files(inventory_csv)
 
@@ -54,59 +54,5 @@ class CatalogDbSyncValidatorService
     end
 
     s3_files
-  end
-
-  def fetch_inventory_csv(inventory_dir)
-    manifest_json = @s3.get_object(bucket: @bucket, key: "#{inventory_dir}manifest.json").body.read
-    manifest = JSON.parse(manifest_json)
-
-    # S3 Inventory splits its output into multiple gzipped CSV chunks once the
-    # bucket grows large enough, so download every file and concatenate them.
-    manifest['files'].map do |file|
-      inventory_gzipped = @s3.get_object(bucket: @bucket, key: file['key']).body.read
-      Zlib::GzipReader.new(StringIO.new(inventory_gzipped)).read
-    end.join
-  end
-
-  def find_recent_inventory_dir
-    inventory_files = fetch_inventory_files
-
-    # Extract the timestamp part from each key and convert it to Time object
-    timestamped_files = inventory_files.map do |key|
-      match = key.match(/CatalogBucketInventory0\/(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})Z/)
-      if match
-        year, month, day, hour, minute = match.captures
-        time = Time.new(year, month, day, hour, minute)
-        { key: key, time: time }
-      end
-    end.compact
-
-    # Find the most recent file
-    most_recent_dir = timestamped_files.max_by { |file| file[:time] }
-
-    most_recent_dir[:key]
-  end
-
-  def fetch_inventory_files
-    inventory_files = []
-    next_token = nil
-
-    loop do
-      response = @s3.list_objects_v2(
-        bucket: @bucket,
-        prefix: @prefix,
-        delimiter: '/',
-        continuation_token: next_token
-      )
-
-      # Collect all object keys
-      inventory_files += response.common_prefixes.map(&:prefix)
-
-      break unless response.is_truncated
-
-      next_token = response.next_continuation_token
-    end
-
-    inventory_files
   end
 end
