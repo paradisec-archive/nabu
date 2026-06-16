@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
+import { AwsSolutionsChecks } from 'cdk-nag';
 import { AppStack } from '../lib/app-stack';
 import { DrStack } from '../lib/dr-stack';
 import { MainStack } from '../lib/main-stack';
@@ -88,12 +88,16 @@ environments.forEach((environment) => {
     env: { account: environment.account, region: environment.region },
     crossRegionReferences: true,
   });
-  NagSuppressions.addStackSuppressions(stack, [
-    { id: 'AwsSolutions-IAM4', reason: 'Managed Policies are fine for us, we can live with the resource wildcard' },
-    { id: 'AwsSolutions-IAM5', reason: 'Too many false positives' },
-    { id: 'AwsSolutions-EC26', reason: 'Too many false positives' },
-    { id: 'AwsSolutions-L1', reason: 'This is almost always a CDK created thing with an older runtime' },
-  ]);
+  cdk.Validations.of(stack).acknowledge({
+    id: 'AwsSolutions-IAM4',
+    reason: 'Managed Policies are fine for us, we can live with the resource wildcard',
+  });
+  cdk.Validations.of(stack).acknowledge({ id: 'AwsSolutions-IAM5', reason: 'Too many false positives' });
+  cdk.Validations.of(stack).acknowledge({ id: 'AwsSolutions-EC26', reason: 'Too many false positives' });
+  cdk.Validations.of(stack).acknowledge({
+    id: 'AwsSolutions-L1',
+    reason: 'This is almost always a CDK created thing with an older runtime',
+  });
 });
 
-cdk.Aspects.of(app).add(new AwsSolutionsChecks({ verbose: true }));
+cdk.Validations.of(app).addPlugins(new AwsSolutionsChecks(app, { verbose: true }));
