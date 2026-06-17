@@ -64,13 +64,17 @@ class Ability
     can :read, Collection, private: false
     can :read, Entity, entity_type: 'Collection', collection: { private: false }
 
-    # Only collection_admins can manage a collection
+    # Members of any item in a collection can read the collection
     can :read, Collection, items: { item_users: { user_id: user.id } }
     can :read, Entity, entity_type: 'Collection', collection: { items: { item_users: { user_id: user.id } } }
     can :read, Collection, items: { item_admins: { user_id: user.id } }
     can :read, Entity, entity_type: 'Collection', collection: { items: { item_admins: { user_id: user.id } } }
     can %i[read update], Collection, collection_admins: { user_id: user.id }
     can :read, Entity, entity_type: 'Collection', collection: { collection_admins: { user_id: user.id } }
+
+    # collection_users are read-only grantees of the whole collection
+    can :read, Collection, collection_users: { user_id: user.id }
+    can :read, Entity, entity_type: 'Collection', collection: { collection_users: { user_id: user.id } }
 
     # Only admins can create a collection
     cannot :create, Collection
@@ -92,6 +96,9 @@ class Ability
     can :read, Entity, entity_type: 'Item', item: { item_users: { user_id: user.id } }
     can %i[read data], Item, item_admins: { user_id: user.id }
     can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
+
+    can %i[read data], Item, collection: { collection_users: { user_id: user.id } }
+    can :read, Entity, entity_type: 'Item', item: { collection: { collection_users: { user_id: user.id } } }
 
     can :manage, Item, collection: { collection_admins: { user_id: user.id } }
     can :read, Entity, entity_type: 'Item', item: { collection: { collection_admins: { user_id: user.id } } }
@@ -118,7 +125,10 @@ class Ability
     can %i[read download display entities], Essence,
       item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } } }
+    can %i[read download display], Essence, item: { collection: { collection_admins: { user_id: user.id } } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
+    can %i[read download display], Essence, item: { collection: { collection_users: { user_id: user.id } } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_users: { user_id: user.id } } } }
     can %i[read download display], Essence, item: { item_admins: { user_id: user.id } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_admins: { user_id: user.id } } }
     can %i[read download display], Essence, item: { item_users: { user_id: user.id } }

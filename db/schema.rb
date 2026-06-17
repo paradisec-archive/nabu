@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -61,6 +61,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_000002) do
     t.integer "collection_id"
     t.integer "language_id"
     t.index ["collection_id", "language_id"], name: "index_collection_languages_on_collection_id_and_language_id", unique: true
+  end
+
+  create_table "collection_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.integer "user_id", null: false
+    t.index ["collection_id", "user_id"], name: "index_collection_users_on_collection_id_and_user_id", unique: true
+    t.index ["collection_id"], name: "index_collection_users_on_collection_id"
+    t.index ["user_id"], name: "index_collection_users_on_user_id"
   end
 
   create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

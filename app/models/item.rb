@@ -275,7 +275,7 @@ class Item < ApplicationRecord
   end
 
   def self.search_user_fields
-    %i[admin_ids user_ids]
+    %i[admin_ids user_ids collection_user_ids]
   end
 
   def self.search_agg_fields
@@ -313,9 +313,10 @@ class Item < ApplicationRecord
   scope :search_import,
         lambda {
           includes(:users, :content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
-                   :essences, :collection, :collector, :operator,
+                   :essences, :collector, :operator,
                    :item_admins, :item_agents, :item_users,
-                   :access_condition
+                   :access_condition,
+                   collection: :collection_users
                   )
         }
 
@@ -382,6 +383,7 @@ class Item < ApplicationRecord
       admin_ids: item_admins.map(&:user_id).uniq,
       agent_ids: item_agents.map(&:user_id).uniq,
       user_ids: item_users.map(&:user_id).uniq,
+      collection_user_ids: collection.collection_users.map(&:user_id).uniq,
       originated_on:,
       metadata_exportable:,
       born_digital:,

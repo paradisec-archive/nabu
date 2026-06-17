@@ -91,6 +91,9 @@ class Collection < ApplicationRecord
   has_many :collection_admins, dependent: :destroy, autosave: true
   has_many :admins, through: :collection_admins, validate: true, source: :user, autosave: true
 
+  has_many :collection_users, dependent: :destroy, autosave: true
+  has_many :users, through: :collection_users, validate: true, source: :user, autosave: true
+
   # require presence of these three fields
   validates :identifier,
             presence: true,
@@ -210,11 +213,11 @@ class Collection < ApplicationRecord
   end
 
   def self.search_includes
-    [:collector, :countries, :languages, :university, :admins, items: [:admins, :users]]
+    [:collector, :countries, :languages, :university, :admins, :users, items: [:admins, :users]]
   end
 
   def self.search_user_fields
-    %i[admin_ids item_admin_ids item_user_ids]
+    %i[admin_ids user_ids item_admin_ids item_user_ids]
   end
 
   def self.search_agg_fields
@@ -239,7 +242,7 @@ class Collection < ApplicationRecord
     %i[title description]
   end
   scope :search_import, lambda {
-                          includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :grants, :access_condition, :content_languages, :essences, items: %i[admins users])
+                          includes(:university, :collector, :operator, :field_of_research, :languages, :countries, :admins, :users, :grants, :access_condition, :content_languages, :essences, items: %i[admins users])
                         }
 
   def search_data
@@ -291,6 +294,7 @@ class Collection < ApplicationRecord
       country_ids: countries.map(&:id).uniq,
       language_ids: languages.map(&:id).uniq,
       admin_ids: admins.map(&:id).uniq,
+      user_ids: users.map(&:id).uniq,
       item_admin_ids: items.flat_map(&:admin_ids).uniq,
       item_user_ids: items.flat_map(&:user_ids).uniq,
       access_condition_id:,
