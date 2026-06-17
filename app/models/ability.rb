@@ -71,10 +71,6 @@ class Ability
     can :read, Entity, entity_type: 'Collection', collection: { items: { item_admins: { user_id: user.id } } }
     can %i[read update], Collection, collection_admins: { user_id: user.id }
     can :read, Entity, entity_type: 'Collection', collection: { collection_admins: { user_id: user.id } }
-    can %i[read update], Collection, operator_id: user.id
-    can :read, Entity, entity_type: 'Collection', collection: { operator_id: user.id }
-    can %i[read update], Collection, collector_id: user.id
-    can :read, Entity, entity_type: 'Collection', collection: { collector_id: user.id }
 
     # Only admins can create a collection
     cannot :create, Collection
@@ -97,16 +93,8 @@ class Ability
     can %i[read data], Item, item_admins: { user_id: user.id }
     can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
 
-    can :manage, Item, collector_id: user.id
-    can :read, Entity, entity_type: 'Item', item: { collector_id: user.id }
-    can :manage, Item, operator_id: user.id
-    can :read, Entity, entity_type: 'Item', item: { operator_id: user.id }
     can :manage, Item, collection: { collection_admins: { user_id: user.id } }
     can :read, Entity, entity_type: 'Item', item: { collection: { collection_admins: { user_id: user.id } } }
-    can :manage, Item, collection: { collector_id: user.id }
-    can :read, Entity, entity_type: 'Item', item: { collection: { collector_id: user.id } }
-    can :manage, Item, collection: { operator_id: user.id }
-    can :read, Entity, entity_type: 'Item', item: { collection: { operator_id: user.id } }
     can :manage, Item, item_admins: { user_id: user.id }
     can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
 
@@ -131,8 +119,6 @@ class Ability
       item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
-    can %i[read download display], Essence, item: { collection: { collector_id: user.id } }
-    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collector_id: user.id } } }
     can %i[read download display], Essence, item: { item_admins: { user_id: user.id } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_admins: { user_id: user.id } } }
     can %i[read download display], Essence, item: { item_users: { user_id: user.id } }
@@ -144,11 +130,7 @@ class Ability
     # EssenceAnnotation
     #############
 
-    can :manage, EssenceAnnotation, target_essence: { item: { collector_id: user.id } }
-    can :manage, EssenceAnnotation, target_essence: { item: { operator_id: user.id } }
     can :manage, EssenceAnnotation, target_essence: { item: { item_admins: { user_id: user.id } } }
-    can :manage, EssenceAnnotation, target_essence: { item: { collection: { collector_id: user.id } } }
-    can :manage, EssenceAnnotation, target_essence: { item: { collection: { operator_id: user.id } } }
     can :manage, EssenceAnnotation, target_essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
   end
 end
