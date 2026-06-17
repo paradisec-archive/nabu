@@ -157,6 +157,52 @@ describe ItemsController, type: :controller do
     end
   end
 
+  context 'when assigning grants via the item form' do
+    let(:editor) { create(:user) }
+    let(:grantee) { create(:user) }
+    let(:evil) { create(:user) }
+    let(:granted_item) do
+      create(
+        :item,
+        collection: collection,
+        item_admins: [ItemAdmin.new(user: editor)],
+        item_users: [ItemUser.new(user: grantee)]
+      )
+    end
+    let(:update_params) do
+      {
+        collection_id: collection.identifier,
+        id: granted_item.identifier,
+        item: { title: 'Updated title', admin_ids: [evil.id.to_s], user_ids: [''] }
+      }
+    end
+
+    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
+
+    context 'as a non-admin editor' do
+      before { sign_in(editor, scope: :user) }
+
+      it 'saves metadata changes but leaves grants untouched' do
+        patch :update, params: update_params
+        granted_item.reload
+        expect(granted_item.title).to eq('Updated title')
+        expect(granted_item.admins).to contain_exactly(editor)
+        expect(granted_item.users).to contain_exactly(grantee)
+      end
+    end
+
+    context 'as an admin' do
+      before { sign_in(manager, scope: :user) }
+
+      it 'applies the grant changes' do
+        patch :update, params: update_params
+        granted_item.reload
+        expect(granted_item.admins).to contain_exactly(evil)
+        expect(granted_item.users).to be_empty
+      end
+    end
+  end
+
   context 'when viewing an item with essences' do
     it 'tracks the essence files' do
       get :show, params: params.merge(id: item_with_essences.identifier)

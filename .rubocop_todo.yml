@@ -167,6 +167,7 @@ RSpec/MessageSpies:
 RSpec/MultipleExpectations:
   Exclude:
     - 'spec/concerns/identifiable_by_doi_spec.rb'
+    - 'spec/controllers/collections_controller_spec.rb'
     - 'spec/controllers/essences_controller_spec.rb'
     - 'spec/controllers/items_controller_spec.rb'
     - 'spec/controllers/terms_controller_spec.rb'
