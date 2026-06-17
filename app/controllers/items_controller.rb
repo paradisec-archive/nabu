@@ -417,34 +417,42 @@ class ItemsController < ApplicationController
   def item_params
     tidy_params! if %w[create update bulk_update].include?(params[:action])
 
-    params
-      .require(:item)
-      .permit(
-        :identifier, :title, :external, :url, :description, :region, :collection_id,
-        :north_limit, :south_limit, :west_limit, :east_limit,
-        :collector_id, :university_id, :operator_id,
-        :country_ids, :data_category_ids, :data_type_ids,
-        :content_language_ids, :subject_language_ids,
-        :admin_ids, :agent_ids, :user_ids,
-        :access_condition_id,
-        :access_narrative, :private,
-        :admin_comment,
-        :originated_on, :originated_on_narrative, :language,
-        :dialect, :discourse_type_id,
-        :metadata_exportable, :born_digital, :tapes_returned,
-        :original_media, :ingest_notes, :tracking,
-        :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on,
-        :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
-        :bulk_edit_append_originated_on_narrative, :bulk_edit_append_url, :bulk_edit_append_language,
-        :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
-        :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
-        :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
-        :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids, :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids,
-        :bulk_delete_country_ids, :bulk_delete_subject_language_ids,
-        :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids,
+    permitted = [
+      :identifier, :title, :external, :url, :description, :region, :collection_id,
+      :north_limit, :south_limit, :west_limit, :east_limit,
+      :collector_id, :university_id, :operator_id,
+      :country_ids, :data_category_ids, :data_type_ids,
+      :content_language_ids, :subject_language_ids,
+      :agent_ids,
+      :access_condition_id,
+      :access_narrative, :private,
+      :admin_comment,
+      :originated_on, :originated_on_narrative, :language,
+      :dialect, :discourse_type_id,
+      :metadata_exportable, :born_digital, :tapes_returned,
+      :original_media, :ingest_notes, :tracking,
+      :received_on, :digitised_on, :metadata_imported_on, :metadata_exported_on,
+      :bulk_edit_append_title, :bulk_edit_append_description, :bulk_edit_append_region,
+      :bulk_edit_append_originated_on_narrative, :bulk_edit_append_url, :bulk_edit_append_language,
+      :bulk_edit_append_dialect, :bulk_edit_append_original_media, :bulk_edit_append_ingest_notes,
+      :bulk_edit_append_tracking, :bulk_edit_append_access_narrative, :bulk_edit_append_admin_comment,
+      :bulk_edit_append_country_ids, :bulk_edit_append_subject_language_ids, :bulk_edit_append_content_language_ids,
+      :bulk_edit_append_data_category_ids, :bulk_edit_append_data_type_ids,
+      :bulk_delete_country_ids, :bulk_delete_subject_language_ids,
+      :bulk_delete_content_language_ids, :bulk_delete_data_category_ids, :bulk_delete_data_type_ids,
 
-        item_agents_attributes: {},
-        country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [], admin_ids: [], user_ids: []
-      )
+      { item_agents_attributes: {},
+        country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [] }
+    ]
+    # Only admins may assign or remove grants (edit + read/download access).
+    if current_user.admin?
+      permitted += [
+        :admin_ids, :user_ids,
+        :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids,
+        { admin_ids: [], user_ids: [] }
+      ]
+    end
+
+    params.require(:item).permit(*permitted)
   end
 end

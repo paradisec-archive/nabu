@@ -399,12 +399,12 @@ class CollectionsController < ApplicationController
       :bulk_edit_append_access_narrative, :bulk_edit_append_metadata_source,
       :bulk_edit_append_orthographic_notes, :bulk_edit_append_media, :bulk_edit_append_comments,
       :bulk_edit_append_tape_location, # :bulk_edit_append_grant_identifier,
-      :bulk_edit_append_country_ids, :bulk_edit_append_language_ids, :bulk_edit_append_admin_ids,
+      :bulk_edit_append_country_ids, :bulk_edit_append_language_ids,
 
       :complete, :private, :access_narrative, :metadata_source, :orthographic_notes, :media, :comments,
       :deposit_form_received, :tape_location,
 
-      { language_ids: [], country_ids: [], admin_ids: [],
+      { language_ids: [], country_ids: [],
         grants_attributes: [
           :id,
           :funding_body_id,
@@ -412,8 +412,8 @@ class CollectionsController < ApplicationController
           :_destroy
         ] }
     ]
-    # Only admins may assign or remove the read-only grant.
-    permitted << { user_ids: [] } if current_user.admin?
+    # Only admins may assign or remove grants (edit + read-only access).
+    permitted += [:bulk_edit_append_admin_ids, { admin_ids: [], user_ids: [] }] if current_user.admin?
 
     params.require(:collection).permit(*permitted)
   end

@@ -119,15 +119,15 @@
   %fieldset
     %legend Access Information
     %table.form
-      %tr
-        %th= f.label :admin_ids, 'Edit access'
-        %td= f.user_select :admin_ids, placeholder: 'Choose a user...', multiple: true
-        - if params[:action] == 'bulk_edit'
-          %td.append
-            %small Append
-            = f.check_box :bulk_edit_append_admin_ids
-
       - if current_user&.admin?
+        %tr
+          %th= f.label :admin_ids, 'Edit access'
+          %td= f.user_select :admin_ids, placeholder: 'Choose a user...', multiple: true
+          - if params[:action] == 'bulk_edit'
+            %td.append
+              %small Append
+              = f.check_box :bulk_edit_append_admin_ids
+
         %tr
           %th= f.label :user_ids, 'Read-only access'
           %td= f.user_select :user_ids, placeholder: 'Choose a user...', multiple: true
