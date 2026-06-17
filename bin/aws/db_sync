@@ -1,0 +1,220 @@
+#!/usr/bin/env bash
+
+# db_sync — produce a raw, verbatim copy of the production `nabu` database and
+# restore it into one of two targets:
+#
+#   dev      restore prod data into your local nabu_devel (+ reset passwords)
+#   staging  OVERWRITE the staging database with prod data (destructive)
+#
+# See docs/runbooks/db-sync.md for the design, preconditions, and guards.
+#
+# This is a ready-for-human task. The staging path runs destructively against a
+# live environment and must be executed by a person holding both nabu-prod and
+# nabu-stage AWS credentials.
+
+set -euo pipefail
+
+export AWS_OUTPUT='json'
+
+PROD_PROFILE='nabu-prod'
+STAGE_PROFILE='nabu-stage'
+PROD_BUCKET='nabu-meta-prod'
+STAGE_BUCKET='nabu-meta-stage'
+# Known account IDs (cdk/bin/app.ts). The staging guard asserts against this.
+STAGE_ACCOUNT_ID='847483222616'
+
+# Local dev restore target (matches the old bin/aws/db_backup flow).
+DEV_DB_HOST="${DB_HOST:-127.0.0.1}"
+DEV_DB_NAME='nabu_devel'
+# bcrypt('password') — every dev user logs in with "password" after a restore.
+DEV_PASSWORD_HASH='$2b$10$CQvD8e7EGKySKelvHTm28.pUZGMzx8sa.l.Nnb320NMHv.LhzS50i'
+
+# versions (PaperTrail audit log) data is skipped by default to keep the dump
+# small; the table *structure* is always present via the --no-data pass.
+VERSIONS_FLAG='--ignore-table=nabu.versions'
+
+for arg in "$@"; do
+  case "$arg" in
+    --with-versions) VERSIONS_FLAG='' ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
+TS=$(date +%Y%m%d-%H%M%S)
+KEY="db-transfer/dump-${TS}.sql.bz2"
+
+# ////////////////////////////////////////////////////////////////////////////
+# Helpers
+# ////////////////////////////////////////////////////////////////////////////
+
+discover_cluster() {
+  local profile=$1
+  aws ecs list-clusters --profile "$profile" | jq -r '.clusterArns | .[]' | grep 'nabu$'
+}
+
+discover_app_task_def() {
+  local profile=$1
+  aws ecs list-task-definitions --profile "$profile" | jq -r '.taskDefinitionArns | .[]' | grep -i 'appTask' | tail -1
+}
+
+# Fire a detached run-task in the app container with a bash command override.
+# Echoes the task ARN.
+fire_task() {
+  local profile=$1 cluster=$2 task_def=$3 cmd=$4
+  local cmd_json
+  cmd_json=$(jq -n --arg c "$cmd" '["/bin/bash", "-c", $c]')
+  aws ecs run-task \
+    --profile "$profile" \
+    --cluster "$cluster" \
+    --task-definition "$task_def" \
+    --launch-type EC2 \
+    --overrides "{\"containerOverrides\": [{\"name\": \"app\", \"command\": $cmd_json}]}" \
+    | jq -r '.tasks[0].taskArn'
+}
+
+# Poll a task to completion. Returns non-zero if the container exits non-zero.
+wait_task() {
+  local profile=$1 cluster=$2 arn=$3
+  local status exit_code
+  while true; do
+    status=$(aws ecs describe-tasks --profile "$profile" --cluster "$cluster" --tasks "$arn" \
+      | jq -r '.tasks[0].lastStatus')
+    [ "$status" = 'STOPPED' ] && break
+    echo "  ... $status"
+    sleep 15
+  done
+  exit_code=$(aws ecs describe-tasks --profile "$profile" --cluster "$cluster" --tasks "$arn" \
+    | jq -r '.tasks[0].containers[0].exitCode')
+  if [ "$exit_code" != '0' ]; then
+    echo "Task exited with code ${exit_code} — check CloudWatch logs for ${arn##*/}" >&2
+    return 1
+  fi
+}
+
+# Shared step: dump prod -> prod S3 as a detached ECS run-task.
+dump_prod_to_s3() {
+  echo 'Discovering prod cluster + app task definition...' >&2
+  local cluster task_def arn
+  cluster=$(discover_cluster "$PROD_PROFILE")
+  task_def=$(discover_app_task_def "$PROD_PROFILE")
+
+  # Runs inside the prod app container; env vars resolve there, not locally.
+  local cmd
+  cmd="set -euo pipefail
+( mysqldump -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" --no-data nabu;
+  mysqldump -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" ${VERSIONS_FLAG} nabu ) \\
+  | sed 's/DEFINER=\`[^\`]*\`/DEFINER=\`root\`/' \\
+  | bzip2 \\
+  | aws s3 cp - s3://${PROD_BUCKET}/${KEY}"
+
+  echo "Firing prod dump task -> s3://${PROD_BUCKET}/${KEY}" >&2
+  arn=$(fire_task "$PROD_PROFILE" "$cluster" "$task_def" "$cmd")
+  echo "  task: $arn" >&2
+  echo '  (logs in CloudWatch under the AppService stream prefix)' >&2
+  echo 'Waiting for dump to finish (this is long and quiet)...' >&2
+  wait_task "$PROD_PROFILE" "$cluster" "$arn"
+  echo 'Dump complete.' >&2
+}
+
+# ////////////////////////////////////////////////////////////////////////////
+# Targets
+# ////////////////////////////////////////////////////////////////////////////
+
+target_dev() {
+  dump_prod_to_s3
+
+  echo "Pulling dump from prod S3 and restoring into ${DEV_DB_NAME}..."
+  aws s3 cp "s3://${PROD_BUCKET}/${KEY}" - --profile "$PROD_PROFILE" \
+    | bunzip2 \
+    | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
+
+  echo 'Resetting all passwords to "password"...'
+  echo "update users set encrypted_password = '${DEV_PASSWORD_HASH}';" \
+    | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
+
+  echo "Done. Local ${DEV_DB_NAME} now holds prod data; every user logs in with \"password\"."
+  echo 'You may want to run: nabu_run bin/rake searchkick:reindex:all'
+}
+
+target_staging() {
+  echo
+  echo '*** STAGING is DESTRUCTIVE — it OVERWRITES the staging database with prod data. ***'
+  echo
+
+  # Guard: account. The stage profile must point at the known staging account.
+  echo 'Resolving staging credentials...'
+  local acct cluster
+  acct=$(aws sts get-caller-identity --profile "$STAGE_PROFILE" --query Account --output text)
+  if [ "$acct" != "$STAGE_ACCOUNT_ID" ]; then
+    echo "Refusing: nabu-stage profile resolves to account ${acct}, expected ${STAGE_ACCOUNT_ID}." >&2
+    exit 1
+  fi
+  cluster=$(discover_cluster "$STAGE_PROFILE")
+
+  # Guard: human. Show the resolved target and require typing the word staging.
+  echo
+  echo "  Account: ${acct}"
+  echo "  Cluster: ${cluster}"
+  echo "  Restore: s3://${STAGE_BUCKET}/${KEY} -> staging nabu database"
+  echo
+  read -r -p "Type 'staging' to overwrite the above: " confirm
+  if [ "$confirm" != 'staging' ]; then
+    echo 'Aborted.'
+    exit 1
+  fi
+
+  # 1. Dump prod -> prod S3.
+  dump_prod_to_s3
+
+  # 2. Relay prod S3 -> stage S3 from the laptop (holds both profiles).
+  echo 'Relaying dump prod S3 -> stage S3...'
+  aws s3 cp "s3://${PROD_BUCKET}/${KEY}" - --profile "$PROD_PROFILE" \
+    | aws s3 cp - "s3://${STAGE_BUCKET}/${KEY}" --profile "$STAGE_PROFILE"
+
+  # 3. Restore — detached run-task in the staging container. The in-container
+  #    hostname grep is the last-line structural guard before mysql runs.
+  local task_def restore_cmd restore_arn
+  task_def=$(discover_app_task_def "$STAGE_PROFILE")
+  restore_cmd="set -euo pipefail
+echo \"\$NABU_DATABASE_HOSTNAME\" | grep -q stage || { echo 'target is not staging RDS'; exit 1; }
+aws s3 cp s3://${STAGE_BUCKET}/${KEY} - | bunzip2 | mysql -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" nabu"
+
+  echo 'Firing staging restore task...'
+  restore_arn=$(fire_task "$STAGE_PROFILE" "$cluster" "$task_def" "$restore_cmd")
+  echo "  task: $restore_arn"
+  echo '  (logs in CloudWatch under the AppService stream prefix)'
+  wait_task "$STAGE_PROFILE" "$cluster" "$restore_arn"
+  echo 'Restore complete.'
+
+  # 4. Reindex — OpenSearch/searchkick index must be rebuilt to match the data.
+  local reindex_arn
+  echo 'Firing staging reindex task (search:reindex)...'
+  reindex_arn=$(fire_task "$STAGE_PROFILE" "$cluster" "$task_def" 'bundle exec rake search:reindex')
+  echo "  task: $reindex_arn"
+  echo '  (follow in CloudWatch; reindex runs detached)'
+
+  # 5. Cleanup — lifecycle expires db-transfer/ in ~2 days; tidy up explicitly.
+  echo 'Cleaning up transfer objects...'
+  aws s3 rm "s3://${PROD_BUCKET}/${KEY}" --profile "$PROD_PROFILE" || true
+  aws s3 rm "s3://${STAGE_BUCKET}/${KEY}" --profile "$STAGE_PROFILE" || true
+
+  echo 'Done. Staging now holds prod data; reindex is running.'
+}
+
+# ////////////////////////////////////////////////////////////////////////////
+# Interactive target selection — no default; empty/invalid input re-prompts so
+# pressing Enter never does anything destructive.
+# ////////////////////////////////////////////////////////////////////////////
+
+echo 'Select target:'
+echo '  1) dev      — restore prod data into your local nabu_devel (+ reset passwords)'
+echo '  2) staging  — OVERWRITE the staging database with prod data'
+
+while true; do
+  read -r -p 'Choice [1/2]: ' choice
+  case "$choice" in
+    1) target_dev; break ;;
+    2) target_staging; break ;;
+    *) echo 'Please enter 1 or 2.' ;;
+  esac
+done

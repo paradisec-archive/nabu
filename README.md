@@ -75,10 +75,12 @@ bin/aws/ecs_rake app searchkick:reindex
 
 ## Importing a production database into your development environment
 
+`bin/aws/db_sync` dumps the production database to S3, restores it into your
+local `nabu_devel`, and resets every user's password to `password`. See
+`docs/runbooks/db-sync.md` for the full design (it can also overwrite staging).
+
 ``` bash
-AWS_PROFILE=nabu-prod bin/aws/db_backup
-mysql -h 127.0.0.1 -u root nabu_devel < ../schema.sql
-pv ../data.sql | mysql -h 127.0.0.1 -u root nabu_devel
+bin/aws/db_sync   # choose target 1) dev
 nabu_run bin/rails db:environment:set RAILS_ENV=development
 nabu_run bin/rake db:migrate
 nabu_run bin/rake searchkick:reindex:all

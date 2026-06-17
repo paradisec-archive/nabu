@@ -481,6 +481,8 @@ export class AppStack extends cdk.Stack {
     loadBalancer.connections.allowTo(autoScalingGroup, ec2.Port.allTcp(), 'Allow from LB to ECS service');
     searchDomain.grantReadWrite(appTaskDefinition.taskRole);
     catalogBucket.grantReadWrite(appTaskDefinition.taskRole);
+    // db_sync dumps prod (write) / restores staging (read) via the db-transfer/ prefix
+    metaBucket.grantReadWrite(appTaskDefinition.taskRole, 'db-transfer/*');
     searchDomain.connections.allowDefaultPortFrom(autoScalingGroup, 'Allow from ECS service');
 
     const appTargetGroup = new elbv2.ApplicationTargetGroup(this, 'AppTargetGroup', {

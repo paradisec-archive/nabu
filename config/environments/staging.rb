@@ -10,4 +10,8 @@ Nabu::Application.configure do
   config.log_level = :debug
 
   config.oni_url = 'https://catalog.nabu-stage.paradisec.org.au'
+
+  # Staging may hold a verbatim clone of the production database (see bin/aws/db_sync).
+  # Rewrite every outbound recipient so a cloned DB can never email a real user.
+  config.action_mailer.interceptors = ['StagingMailInterceptor']
 end

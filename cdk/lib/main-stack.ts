@@ -109,11 +109,13 @@ export class MainStack extends cdk.Stack {
           prefix: 'mediaflux-inventory/',
           expiration: cdk.Duration.days(14),
         },
+        {
+          prefix: 'db-transfer/',
+          expiration: cdk.Duration.days(2),
+        },
       ],
     });
-    cdk.Validations.of(this.metaBucket).acknowledge(
-      { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
-    );
+    cdk.Validations.of(this.metaBucket).acknowledge({ id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" });
 
     // Allow ALBs to log
     const albLogBucketPolicy = new iam.PolicyStatement({
