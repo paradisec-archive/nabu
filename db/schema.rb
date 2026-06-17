@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_000002) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -45,7 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
 
   create_table "collection_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["collection_id", "user_id"], name: "index_collection_admins_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_collection_admins_on_collection_id"
     t.index ["user_id"], name: "index_collection_admins_on_user_id"
@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
 
   create_table "collection_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "collection_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["collection_id", "user_id"], name: "index_collection_users_on_collection_id_and_user_id", unique: true
     t.index ["collection_id"], name: "index_collection_users_on_collection_id"
     t.index ["user_id"], name: "index_collection_users_on_user_id"
@@ -249,8 +249,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
 
   create_table "item_admins", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["item_id", "user_id"], name: "index_item_admins_on_item_id_and_user_id", unique: true
+    t.index ["user_id"], name: "index_item_admins_on_user_id"
   end
 
   create_table "item_agents", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -293,8 +294,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
 
   create_table "item_users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "item_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["item_id", "user_id"], name: "index_item_users_on_item_id_and_user_id", unique: true
+    t.index ["user_id"], name: "index_item_users_on_user_id"
   end
 
   create_table "items", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -501,9 +503,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000001) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "collection_admins", "collections", on_delete: :cascade
+  add_foreign_key "collection_admins", "users", on_delete: :cascade
+  add_foreign_key "collection_users", "collections", on_delete: :cascade
+  add_foreign_key "collection_users", "users", on_delete: :cascade
   add_foreign_key "essence_annotations", "essences", column: "annotation_essence_id", on_delete: :cascade
   add_foreign_key "essence_annotations", "essences", column: "target_essence_id", on_delete: :cascade
   add_foreign_key "essences", "users", column: "created_by_id"
+  add_foreign_key "item_admins", "items", on_delete: :cascade
+  add_foreign_key "item_admins", "users", on_delete: :cascade
+  add_foreign_key "item_users", "items", on_delete: :cascade
+  add_foreign_key "item_users", "users", on_delete: :cascade
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
