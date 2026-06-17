@@ -25,6 +25,7 @@ const setupAjaxSearch = (element: HTMLSelectElement, instance: Choices) => {
   const extraName = element.dataset.extraName;
   const extraSelector = element.dataset.extraSelector;
   const hasTags = element.dataset.tags === 'true';
+  const excludeContacts = element.dataset.excludeContacts === 'true';
   let abortController: AbortController | null = null;
 
   const doSearch = debounce(async (_detail: unknown) => {
@@ -34,6 +35,10 @@ const setupAjaxSearch = (element: HTMLSelectElement, instance: Choices) => {
     abortController = new AbortController();
 
     const params = new URLSearchParams({ q: searchTerm });
+
+    if (excludeContacts) {
+      params.append('exclude_contacts', 'true');
+    }
 
     if (extraName && extraSelector) {
       const extraElement = document.querySelector(extraSelector) as HTMLSelectElement | null;

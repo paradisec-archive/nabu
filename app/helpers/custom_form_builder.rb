@@ -7,6 +7,7 @@ class CustomFormBuilder < ActionView::Helpers::FormBuilder
     }
     html_data[:required] = true if options[:required]
     html_data[:tags] = true if options[:tags]
+    html_data[:'exclude-contacts'] = true if options[:exclude_contacts]
 
     select_options = {}
     select_options[:multiple] = options[:multiple] if options[:multiple]

@@ -23,6 +23,8 @@
 #
 
 class CollectionAdmin < ApplicationRecord
+  include RejectsContactGrants
+
   has_paper_trail
 
   belongs_to :user
