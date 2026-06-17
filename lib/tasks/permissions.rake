@@ -37,4 +37,13 @@ namespace :permissions do
       end
     end
   end
+
+  desc 'Backfill read-only grants for real, logged-in collectors (idempotent; no reindex)'
+  task collector_backfill: :environment do
+    inserted = Permissions::CollectorBackfill.new.call
+
+    puts 'Inserted read-only grants for real, logged-in collectors:'
+    puts format('  %-44s %d', 'collection read-only (collection_users)', inserted.fetch(:collection_read_only))
+    puts format('  %-44s %d', 'item read-only (item_users)', inserted.fetch(:item_read_only))
+  end
 end
