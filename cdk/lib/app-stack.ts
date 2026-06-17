@@ -16,7 +16,6 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { NagSuppressions } from 'cdk-nag';
 import type { Construct } from 'constructs';
 
 import type { AppProps } from './types';
@@ -93,15 +92,11 @@ export class AppStack extends cdk.Stack {
       enablePerformanceInsights: true,
       deletionProtection: true,
     });
-    NagSuppressions.addResourceSuppressions(
-      db,
-      [
-        { id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' },
-        { id: 'AwsSolutions-RDS11', reason: 'Standard port is fine' },
-        { id: 'AwsSolutions-SMG4', reason: "Rails doesn't support rotation" },
-        { id: 'AwsSolutions-RDS2', reason: 'FIXME: We should have encryption' }, // FIXME: We should really fix this
-      ],
-      true,
+    cdk.Validations.of(db).acknowledge(
+      { id: 'AwsSolutions-RDS3', reason: 'Single AZ app, HA not needed' },
+      { id: 'AwsSolutions-RDS11', reason: 'Standard port is fine' },
+      { id: 'AwsSolutions-SMG4', reason: "Rails doesn't support rotation" },
+      { id: 'AwsSolutions-RDS2', reason: 'FIXME: We should have encryption' }, // FIXME: We should really fix this
     );
 
     // ////////////////////////
@@ -144,7 +139,7 @@ export class AppStack extends cdk.Stack {
         slowIndexLogEnabled: true,
       },
     });
-    NagSuppressions.addResourceSuppressions(searchDomain, [
+    cdk.Validations.of(searchDomain).acknowledge(
       {
         id: 'AwsSolutions-OS3',
         reason: 'We are indise a VPC, not on the Internet',
@@ -157,7 +152,7 @@ export class AppStack extends cdk.Stack {
         id: 'AwsSolutions-OS5',
         reason: 'Should not trigger as anonymous disabled',
       },
-    ]);
+    );
 
     // ////////////////////////
     // ECS Cluster
@@ -172,12 +167,10 @@ export class AppStack extends cdk.Stack {
       name: 'nabu',
       useForServiceConnect: true,
     });
-    NagSuppressions.addResourceSuppressions(cluster, [
-      {
-        id: 'AwsSolutions-ECS4',
-        reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
-      },
-    ]);
+    cdk.Validations.of(cluster).acknowledge({
+      id: 'AwsSolutions-ECS4',
+      reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
+    });
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'EcsASG', {
       vpc,
@@ -198,7 +191,7 @@ export class AppStack extends cdk.Stack {
 
       // keyName: 'nabu',
     });
-    NagSuppressions.addResourceSuppressions(autoScalingGroup, [
+    cdk.Validations.of(autoScalingGroup).acknowledge(
       {
         id: 'AwsSolutions-EC26',
         reason: 'EBS coume already encrypted due to AMI defaults',
@@ -207,7 +200,7 @@ export class AppStack extends cdk.Stack {
         id: 'AwsSolutions-AS3',
         reason: 'We can live without the other notifications',
       },
-    ]);
+    );
     // needed by service connect
     autoScalingGroup.addToRolePolicy(
       new iam.PolicyStatement({
@@ -248,10 +241,10 @@ export class AppStack extends cdk.Stack {
         SESSION_SECRET: cdk.SecretValue.unsafePlainText('secret'),
       },
     });
-    NagSuppressions.addResourceSuppressions(downloaderSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
+    cdk.Validations.of(downloaderSecrets).acknowledge({ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' });
 
     const downloaderTaskDefinition = new ecs.Ec2TaskDefinition(this, 'DownloaderTaskDefinition');
-    NagSuppressions.addResourceSuppressions(downloaderTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    cdk.Validations.of(downloaderTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
     downloaderTaskDefinition.addContainer('DownloaderContainer', {
       containerName: 'downloader',
       memoryLimitMiB: 2048,
@@ -313,7 +306,7 @@ export class AppStack extends cdk.Stack {
     const sentryTaskDefinition = new ecs.Ec2TaskDefinition(this, 'SentryTaskDefinition', {
       networkMode: ecs.NetworkMode.AWS_VPC,
     });
-    NagSuppressions.addResourceSuppressions(sentryTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    cdk.Validations.of(sentryTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
 
     // Sentry container - not exposed externally
     sentryTaskDefinition.addContainer('SentryContainer', {
@@ -359,7 +352,7 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const oniTaskDefinition = new ecs.Ec2TaskDefinition(this, 'OniTaskDefinition');
-    NagSuppressions.addResourceSuppressions(oniTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    cdk.Validations.of(oniTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
     oniTaskDefinition.addContainer('OniContainer', {
       containerName: 'oni',
       memoryLimitMiB: 128,
@@ -411,7 +404,7 @@ export class AppStack extends cdk.Stack {
         datacite_pass: cdk.SecretValue.unsafePlainText('secret'),
       },
     });
-    NagSuppressions.addResourceSuppressions(appSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
+    cdk.Validations.of(appSecrets).acknowledge({ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' });
 
     // ////////////////////////
     // App
@@ -454,7 +447,7 @@ export class AppStack extends cdk.Stack {
     };
 
     const appTaskDefinition = new ecs.Ec2TaskDefinition(this, 'AppTaskDefinition');
-    NagSuppressions.addResourceSuppressions(appTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    cdk.Validations.of(appTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
     appTaskDefinition.addContainer('AppContainer', {
       containerName: 'app',
       ...commonAppImageOptions,
@@ -544,7 +537,7 @@ export class AppStack extends cdk.Stack {
     // ////////////////////////
 
     const jobsTaskDefinition = new ecs.Ec2TaskDefinition(this, 'JobsTaskDefinition');
-    NagSuppressions.addResourceSuppressions(jobsTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+    cdk.Validations.of(jobsTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
     jobsTaskDefinition.addContainer('JobsContainer', {
       containerName: 'jobs',
       ...commonAppImageOptions,
@@ -572,7 +565,7 @@ export class AppStack extends cdk.Stack {
 
     if (env === 'prod') {
       const cronTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CronTaskDefinition');
-      NagSuppressions.addResourceSuppressions(cronTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+      cdk.Validations.of(cronTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
       cronTaskDefinition.addContainer('CronContainer', {
         containerName: 'cron',
         ...commonAppImageOptions,
@@ -710,7 +703,7 @@ export class AppStack extends cdk.Stack {
         memoryLimitMiB: 32768,
         ephemeralStorageGiB: 200,
       });
-      NagSuppressions.addResourceSuppressions(searchDomain, [{ id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' }]);
+      cdk.Validations.of(searchDomain).acknowledge({ id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' });
 
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
         secretName: '/nabu/mediaflux',
@@ -718,7 +711,7 @@ export class AppStack extends cdk.Stack {
           password: cdk.SecretValue.unsafePlainText('secret'),
         },
       });
-      NagSuppressions.addResourceSuppressions(mediafluxSecrets, [{ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' }]);
+      cdk.Validations.of(mediafluxSecrets).acknowledge({ id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' });
 
       taskDefinition.addContainer('MediafluxContainer', {
         containerName: 'mediaflux',
@@ -733,19 +726,17 @@ export class AppStack extends cdk.Stack {
           MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
         },
       });
-      NagSuppressions.addResourceSuppressions(taskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }]);
+      cdk.Validations.of(taskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
       catalogBucket.grantRead(taskDefinition.taskRole);
 
       const cluster = new ecs.Cluster(this, 'NabuCluster', {
         vpc,
         containerInsightsV2: ecs.ContainerInsights.ENHANCED,
       });
-      NagSuppressions.addResourceSuppressions(cluster, [
-        {
-          id: 'AwsSolutions-ECS4',
-          reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
-        },
-      ]);
+      cdk.Validations.of(cluster).acknowledge({
+        id: 'AwsSolutions-ECS4',
+        reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
+      });
 
       const mediaFluxTask = new targets.EcsTask({
         cluster,
@@ -809,7 +800,7 @@ export class AppStack extends cdk.Stack {
       });
 
       metaBucket.grantWrite(inventoryTaskDefinition.taskRole, 'mediaflux-inventory/*');
-      NagSuppressions.addResourceSuppressions(inventoryTaskDefinition, [{ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' }], true);
+      cdk.Validations.of(inventoryTaskDefinition).acknowledge({ id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
 
       const inventoryTask = new targets.EcsTask({
         cluster,

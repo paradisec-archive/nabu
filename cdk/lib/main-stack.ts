@@ -7,7 +7,6 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { NagSuppressions } from 'cdk-nag';
 import type { Construct } from 'constructs';
 
 import type { Environment } from './types';
@@ -112,9 +111,9 @@ export class MainStack extends cdk.Stack {
         },
       ],
     });
-    NagSuppressions.addResourceSuppressions(this.metaBucket, [
+    cdk.Validations.of(this.metaBucket).acknowledge(
       { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
-    ]);
+    );
 
     // Allow ALBs to log
     const albLogBucketPolicy = new iam.PolicyStatement({
@@ -204,10 +203,10 @@ export class MainStack extends cdk.Stack {
       eventBridgeEnabled: true,
     });
 
-    NagSuppressions.addStackSuppressions(this, [
+    cdk.Validations.of(this).acknowledge(
       { id: 'AwsSolutions-IAM4', reason: 'OK with * resources' },
       { id: 'AwsSolutions-IAM5', reason: 'OK with * resources' },
-    ]);
+    );
 
     cdk.Tags.of(this).add('uni:billing:application', 'para');
   }
