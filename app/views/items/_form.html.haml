@@ -297,7 +297,7 @@
       - if current_user&.admin?
         %tr
           %th= f.label :admin_ids, 'Edit access'
-          %td= f.user_select :admin_ids, placeholder: 'Choose a user...', multiple: true
+          %td= f.user_select :admin_ids, placeholder: 'Choose a user...', multiple: true, exclude_contacts: true
           - if params[:action] == 'bulk_edit'
             %td.append
               %small Append
@@ -305,7 +305,7 @@
 
         %tr
           %th= f.label :user_ids, 'Read/Download access'
-          %td= f.user_select :user_ids, placeholder: 'Choose a user...', multiple: true
+          %td= f.user_select :user_ids, placeholder: 'Choose a user...', multiple: true, exclude_contacts: true
           - if params[:action] == 'bulk_edit'
             %td.append
               %small Append

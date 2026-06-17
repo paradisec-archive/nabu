@@ -11,5 +11,11 @@ FactoryBot.define do
     factory :admin_user do
       admin { true }
     end
+
+    trait :contact_only do
+      contact_only { true }
+      email { nil }
+      confirmed_at { nil }
+    end
   end
 end
