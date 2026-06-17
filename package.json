@@ -5,7 +5,7 @@
     "@activeadmin/activeadmin": "4.0.0-beta20",
     "@googlemaps/js-api-loader": "^2.1.1",
     "@googlemaps/markerclusterer": "^2.6.2",
-    "@sentry/browser": "^10.57.0",
+    "@sentry/browser": "^10.58.0",
     "choices.js": "^11.2.3",
     "sass": "^1.101.0",
     "tailwindcss": "^4.3.1",
