@@ -127,6 +127,11 @@
             %small Append
             = f.check_box :bulk_edit_append_admin_ids
 
+      - if current_user&.admin?
+        %tr
+          %th= f.label :user_ids, 'Read-only access'
+          %td= f.user_select :user_ids, placeholder: 'Choose a user...', multiple: true
+
       %tr
         %th= f.label :access_condition, 'Data access conditions'
         %td= f.access_condition_select :access_condition_id, placeholder: 'Choose an access condition...'

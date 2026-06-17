@@ -25,6 +25,11 @@ RSpec.describe Ability do
     create(:item, access_condition: closed_access, private: true, **attrs)
   end
 
+  # The denormalised Entity record the API authorises against.
+  def entity_for(record)
+    Entity.find_by!(entity_type: record.class.name, entity_id: record.id)
+  end
+
   describe 'collection collector attribution confers no rights' do
     let(:user) { create(:user) }
     let(:collection) { private_collection(collector: user) }
@@ -84,6 +89,7 @@ RSpec.describe Ability do
     let(:user) { create(:user) }
     let(:collection) { private_collection }
     let(:item) { closed_item(collection:) }
+    let(:essence) { create(:sound_essence, item:) }
 
     before { collection.admins << user }
 
@@ -92,6 +98,54 @@ RSpec.describe Ability do
         expect(ability).to be_able_to(:update, collection)
         expect(ability).to be_able_to(:manage, item)
       end
+    end
+
+    it 'can download essences via the primary rule' do
+      expect(ability).to be_able_to(:download, essence)
+    end
+  end
+
+  describe 'collection read-only grantee (collection_users) gets cascading read' do
+    let(:user) { create(:user) }
+    let(:collection) { private_collection }
+    let(:item) { closed_item(collection:) }
+    let(:essence) { create(:sound_essence, item:) }
+
+    before { collection.users << user }
+
+    it 'can read the collection, its private items and the item data view' do
+      aggregate_failures do
+        expect(ability).to be_able_to(:read, collection)
+        expect(ability).to be_able_to(:read, item)
+        expect(ability).to be_able_to(:data, item)
+      end
+    end
+
+    it 'can read, download and display the closed essences' do
+      aggregate_failures do
+        expect(ability).to be_able_to(:read, essence)
+        expect(ability).to be_able_to(:download, essence)
+        expect(ability).to be_able_to(:display, essence)
+      end
+    end
+
+    it 'gets the same read/download via the denormalised Entity records' do
+      aggregate_failures do
+        expect(ability).to be_able_to(:read, entity_for(collection))
+        expect(ability).to be_able_to(:read, entity_for(item))
+        expect(ability).to be_able_to(:download, entity_for(essence))
+      end
+    end
+
+    it 'cannot edit the collection or its items' do
+      aggregate_failures do
+        expect(ability).not_to be_able_to(:update, collection)
+        expect(ability).not_to be_able_to(:update, item)
+      end
+    end
+
+    it 'cannot manage essence annotations' do
+      expect(ability).not_to be_able_to(:manage, EssenceAnnotation.new(target_essence: essence))
     end
   end
 

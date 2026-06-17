@@ -69,7 +69,7 @@ class Essence < ApplicationRecord
       :collection, :collector, :operator,
       :content_languages, :countries,
       :item_admins, :item_users,
-      { collection: :collection_admins }
+      { collection: %i[collection_admins collection_users] }
     ])
   }
 
@@ -220,6 +220,7 @@ class Essence < ApplicationRecord
       collector_id: item.collector_id,
       operator_id: item.operator_id,
       collection_admin_ids: item.collection.collection_admins.map(&:user_id).uniq,
+      collection_user_ids: item.collection.collection_users.map(&:user_id).uniq,
 
       originated_on: item.originated_on,
       created_at: created_at&.to_date,
@@ -228,7 +229,7 @@ class Essence < ApplicationRecord
   end
 
   def self.search_user_fields
-    %i[admin_ids user_ids collection_admin_ids]
+    %i[admin_ids user_ids collection_admin_ids collection_user_ids]
   end
 
   def self.search_agg_fields
@@ -249,7 +250,7 @@ class Essence < ApplicationRecord
 
   def self.search_includes
     [{ item: [:collection, :collector, :content_languages, :countries, :item_admins, :item_users,
-              { collection: :collection_admins }] }, :entity]
+              { collection: %i[collection_admins collection_users] }] }, :entity]
   end
 
   def self.ransackable_attributes(_ = nil)
