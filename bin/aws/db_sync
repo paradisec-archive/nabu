@@ -20,6 +20,7 @@ PROD_PROFILE='nabu-prod'
 STAGE_PROFILE='nabu-stage'
 PROD_BUCKET='nabu-meta-prod'
 STAGE_BUCKET='nabu-meta-stage'
+REGION='ap-southeast-2'
 # Known account IDs (cdk/bin/app.ts). The staging guard asserts against this.
 STAGE_ACCOUNT_ID='847483222616'
 
@@ -99,13 +100,16 @@ dump_prod_to_s3() {
   task_def=$(discover_app_task_def "$PROD_PROFILE")
 
   # Runs inside the prod app container; env vars resolve there, not locally.
+  # The upload uses the bundled aws-sdk-s3 gem (no aws CLI in the image); the
+  # ECS task role supplies credentials, and upload_stream does a bounded-memory
+  # multipart upload straight from the pipe.
   local cmd
   cmd="set -euo pipefail
 ( mysqldump -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" --no-data nabu;
   mysqldump -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" ${VERSIONS_FLAG} nabu ) \\
   | sed 's/DEFINER=\`[^\`]*\`/DEFINER=\`root\`/' \\
   | bzip2 \\
-  | aws s3 cp - s3://${PROD_BUCKET}/${KEY}"
+  | bundle exec ruby -raws-sdk-s3 -e '\$stdin.binmode; Aws::S3::Resource.new(region: %q{${REGION}}).bucket(%q{${PROD_BUCKET}}).object(%q{${KEY}}).upload_stream { |w| IO.copy_stream(\$stdin, w) }'"
 
   echo "Firing prod dump task -> s3://${PROD_BUCKET}/${KEY}" >&2
   arn=$(fire_task "$PROD_PROFILE" "$cluster" "$task_def" "$cmd")
@@ -177,7 +181,8 @@ target_staging() {
   task_def=$(discover_app_task_def "$STAGE_PROFILE")
   restore_cmd="set -euo pipefail
 echo \"\$NABU_DATABASE_HOSTNAME\" | grep -q stage || { echo 'target is not staging RDS'; exit 1; }
-aws s3 cp s3://${STAGE_BUCKET}/${KEY} - | bunzip2 | mysql -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" nabu"
+bundle exec ruby -raws-sdk-s3 -e '\$stdout.binmode; Aws::S3::Client.new(region: %q{${REGION}}).get_object(bucket: %q{${STAGE_BUCKET}}, key: %q{${KEY}}) { |chunk| \$stdout.write(chunk) }' \\
+  | bunzip2 | mysql -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" nabu"
 
   echo 'Firing staging restore task...'
   restore_arn=$(fire_task "$STAGE_PROFILE" "$cluster" "$task_def" "$restore_cmd")
