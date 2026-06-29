@@ -312,16 +312,13 @@ class CollectionsController < ApplicationController
         saved_items += 1
         added_items += "#{item.identifier}, "
       end
-      flash[:notice] = "SUCCESS: <b>#{saved_items}</b> items created/updated for collection #{@collection.identifier}<br/>"
-      flash[:notice] += sheet.notices.join('<br/>').truncate(1000) unless sheet.notices.empty?
-      flash[:notice] += '<br />'
-      if added_items.chomp(', ').length > 0
-        flash[:notice] += "<br /><b>Added items:</b> #{added_items.chomp(', ')}".truncate(1000)
-        flash[:notice] += '<br />'
-        if added_items.chomp(', ').length > 1000
-          flash[:notice] += ' Truncated...'
-        end
-      end
+      notice = +"SUCCESS: <b>#{saved_items}</b> items created/updated for collection #{@collection.identifier}<br/>"
+      notice << sheet.notices.join('<br/>').truncate(500) << '<br />' unless sheet.notices.empty?
+      added = added_items.chomp(', ')
+      notice << "<br /><b>Added items:</b> #{added}".truncate(500) << '<br />' if added.present?
+      # The session uses the cookie store (4 KB hard limit); keep the flash small enough to fit alongside the rest
+      # of the session, otherwise the redirect raises ActionDispatch::Cookies::CookieOverflow after all the work is done.
+      flash[:notice] = notice.truncate(1500)
 
       redirect_to @collection
     else
