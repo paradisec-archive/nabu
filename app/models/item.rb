@@ -274,8 +274,12 @@ class Item < ApplicationRecord
     includes
   end
 
+  # Fields holding the user ids allowed to see a private item. Consumed by
+  # HasSearch#visibility_clauses to filter search results. This list is the denormalised
+  # mirror of the Item :read grants in app/models/ability.rb - keep the two in step. The
+  # consistency is pinned by spec/features/search_authorisation_consistency_spec.rb.
   def self.search_user_fields
-    %i[admin_ids user_ids collection_user_ids]
+    %i[admin_ids user_ids collection_user_ids collection_admin_ids]
   end
 
   def self.search_agg_fields
@@ -384,6 +388,7 @@ class Item < ApplicationRecord
       agent_ids: item_agents.map(&:user_id).uniq,
       user_ids: item_users.map(&:user_id).uniq,
       collection_user_ids: collection.collection_users.map(&:user_id).uniq,
+      collection_admin_ids: collection.collection_admins.map(&:user_id).uniq,
       originated_on:,
       metadata_exportable:,
       born_digital:,

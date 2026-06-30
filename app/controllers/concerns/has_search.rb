@@ -65,26 +65,49 @@ module HasSearch
     self.class.search_model
   end
 
-  def user_filter
-    return if current_user&.admin?
+  # Single source of truth for "which documents may current_user see" in search.
+  #
+  # Returns :all for admins (no restriction), otherwise a list of alternative match clauses
+  # with OR semantics: a document is visible if it is public OR current_user is listed in any
+  # of the model's permission fields. This mirrors the :read grants in app/models/ability.rb -
+  # model.search_user_fields is the denormalised mirror of those grants.
+  #
+  # Both search families consume this one method so they cannot drift: the basic search
+  # (Searchkick `where`, via basic_search_where) and the advanced search (raw OpenSearch
+  # `body`, via user_filter). spec/features/search_authorisation_consistency_spec.rb pins the
+  # result of this filtering to Ability for every read path.
+  def visibility_clauses
+    return :all if current_user&.admin?
 
-    user_filter = []
-
-    params.delete(:private)
-    user_filter.push(where_exact(:private, false))
-
-    model.search_user_fields.each do |field|
-      params.delete(field)
-      # FIXME this is a dirty hack for M2M oauth apps with public only
-      user_filter.push(where_exact(field, current_user.id)) if current_user.id.is_a?(Numeric)
+    clauses = [{ private: false }]
+    if user_id_filterable?
+      model.search_user_fields.each { |field| clauses << { field => current_user.id } }
     end
 
-    user_filter
+    clauses
+  end
+
+  # Non-numeric ids belong to M2M OAuth apps, which only ever get public records.
+  def user_id_filterable?
+    current_user&.id.is_a?(Numeric)
+  end
+
+  # Advanced search (raw OpenSearch body) adapter for visibility_clauses.
+  def user_filter
+    clauses = visibility_clauses
+    return if clauses == :all
+
+    # Strip any user-supplied permission params so they cannot widen their own visibility.
+    params.delete(:private)
+    model.search_user_fields.each { |field| params.delete(field) }
+
+    clauses.map { |clause| where_exact(*clause.first) }
   end
 
   def filter
     filter = []
-    filter.push({ bool: { should: user_filter } }) if user_filter&.any?
+    should = user_filter
+    filter.push({ bool: { should: } }) if should&.any?
     filter += model.search_filter_fields.map { |name| where_exact(name, params[name]) if params[name].present? }.compact
 
     filter.push(where_geo) if params[:north_limit]
@@ -183,18 +206,15 @@ module HasSearch
   end
   # rubocop:enable Metrics/MethodLength
 
+  # Basic search (Searchkick `where`) adapter for visibility_clauses.
   def basic_search_where
     where = {}
     model.search_agg_fields.each do |field|
       where[field] = params[field] if params[field].present?
     end
 
-    return where if current_user&.admin?
-
-    where[:_or] = [{ private: false }]
-    model.search_user_fields.each do |field|
-      where[:_or].push({ field => current_user.id }) if current_user
-    end
+    clauses = visibility_clauses
+    where[:_or] = clauses unless clauses == :all
 
     where
   end

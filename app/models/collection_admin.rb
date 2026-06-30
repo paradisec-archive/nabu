@@ -46,11 +46,12 @@ class CollectionAdmin < ApplicationRecord
 
   private
 
-  # A collection admin appears in the search index of the collection (admin_ids)
-  # and its essences (collection_admin_ids), so both must be reindexed when access
-  # is granted or revoked. Items do not index collection admins.
+  # A collection admin is denormalised onto the collection (admin_ids), every item in it
+  # (collection_admin_ids) and its essences (collection_admin_ids), so all three indexes
+  # must be reindexed when access is granted or revoked.
   def reindex_search_documents
     collection.reindex(mode: :async)
+    collection.items.reindex(mode: :async)
     collection.essences.reindex(mode: :async)
   end
 end

@@ -89,6 +89,11 @@ class Ability
     # Items
     #############
 
+    # NOTE: these Item :read grants are the canonical visibility policy. The search indexes
+    # mirror them via denormalised id fields (Item.search_user_fields -> admin_ids, user_ids,
+    # collection_user_ids, collection_admin_ids) consumed by HasSearch#visibility_clauses.
+    # If you add or remove a read path here, update the matching index field and
+    # spec/features/search_authorisation_consistency_spec.rb, which pins the two together.
     can %i[read data], Item, { private: false, collection: { private: false } }
     can :read, Entity, entity_type: 'Item', item: { private: false, collection: { private: false } }
 

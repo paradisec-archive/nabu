@@ -123,9 +123,13 @@ describe 'Collection Search', :search do
       end
 
       context 'user has edit rights' do
-        let!(:private_collection) { create(:collection, countries: [country1], languages: [language], private: true, admins: [user]) }
+        let!(:private_collection) { create(:collection, :reindex, countries: [country1], languages: [language], private: true, admins: [user]) }
 
-        it 'can be viewed by the user', pending: 'Fix basic search to include user items' do
+        # Re-visit after the override collection (with its admin grant) exists and is indexed;
+        # the ancestor `before` rendered the page before this fixture was created.
+        before { visit search_collections_path }
+
+        it 'can be viewed by the user' do
           expect(page).to have_text(private_collection.identifier)
         end
       end
