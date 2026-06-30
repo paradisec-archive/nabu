@@ -42,11 +42,15 @@ class CollectionAdmin < ApplicationRecord
   validates :user_id, presence: true
   validates :collection_id, uniqueness: { scope: [:collection_id, :user_id] }
 
-  after_commit :reindex_collection_essences
+  after_commit :reindex_search_documents
 
   private
 
-  def reindex_collection_essences
+  # A collection admin appears in the search index of the collection (admin_ids)
+  # and its essences (collection_admin_ids), so both must be reindexed when access
+  # is granted or revoked. Items do not index collection admins.
+  def reindex_search_documents
+    collection.reindex(mode: :async)
     collection.essences.reindex(mode: :async)
   end
 end

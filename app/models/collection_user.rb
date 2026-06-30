@@ -40,11 +40,16 @@ class CollectionUser < ApplicationRecord
   validates :user_id, presence: true
   validates :collection_id, uniqueness: { scope: [:collection_id, :user_id] }
 
-  after_commit :reindex_collection_essences
+  after_commit :reindex_search_documents
 
   private
 
-  def reindex_collection_essences
+  # A collection user appears in the search index of the collection (user_ids),
+  # its items (collection_user_ids) and its essences (collection_user_ids), so all
+  # three must be reindexed when access is granted or revoked.
+  def reindex_search_documents
+    collection.reindex(mode: :async)
+    collection.items.reindex(mode: :async)
     collection.essences.reindex(mode: :async)
   end
 end

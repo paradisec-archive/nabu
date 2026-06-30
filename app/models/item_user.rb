@@ -39,11 +39,16 @@ class ItemUser < ApplicationRecord
   # RAILS bug - can't save item_user without item having been saved
   #  validates :item_id, :presence => true
 
-  after_commit :reindex_item_essences
+  after_commit :reindex_search_documents
 
   private
 
-  def reindex_item_essences
+  # An item user appears in the search index of the item (user_ids), its collection
+  # (item_user_ids) and its essences (user_ids), so all three must be reindexed when
+  # access is granted or revoked.
+  def reindex_search_documents
+    item.reindex(mode: :async)
+    item.collection.reindex(mode: :async)
     item.essences.reindex(mode: :async)
   end
 end
