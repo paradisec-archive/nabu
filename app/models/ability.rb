@@ -1,3 +1,43 @@
+# Authorisation policy for Nabu — the single source of truth for "who can do what".
+#
+# CORE PRINCIPLE: attribution is not access.
+#   The `collector` and `operator` fields (on collections and items) and item agents are
+#   pure historical metadata — they record *who did the work* and confer NO rights. All
+#   access comes from explicit, admin-assigned grants. Nothing here keys off collector_id
+#   or operator_id; if you find yourself adding such a rule, stop — that was Phase 1's bug.
+#
+# ACCESS TIERS (each tier is a superset of the one above):
+#
+#   Tier      | View private | Download incl. closed | Edit | Preservation masters
+#   --------- | ------------ | --------------------- | ---- | --------------------
+#   Read-only | yes          | yes                   | no   | no
+#   Edit      | yes          | yes                   | yes  | no
+#   Admin     | yes          | yes                   | yes  | yes
+#
+# Each non-admin tier is backed by a membership join table (user_id + the record):
+#
+#   Tier      | Collection level  | Item level
+#   --------- | ----------------- | ----------
+#   Read-only | collection_users  | item_users
+#   Edit      | collection_admins | item_admins
+#
+#   A collection_users grant CASCADES to every item in the collection and its essences —
+#   see the `collection: { collection_users: ... }` rules below. Admin is the `admin`
+#   boolean on User and short-circuits everything via `can :manage, :all`.
+#
+# CROSS-CUTTING RULES — enforced elsewhere, noted here so the whole policy reads in one place:
+#   * Preservation masters (.mxf/.mkv, Essence#is_archived?) are admin-only. NOT enforced
+#     here — see EssencesController#download/#display and Api::V1::OniController, which
+#     reject non-admins regardless of any grant below.
+#   * Contacts (contact_only users) can never hold a grant. Enforced by the
+#     RejectsContactGrants concern on the four membership models, not here.
+#   * Grant assignment is admin-only — the grant fields are admin-gated in the collection
+#     and item controllers/forms, so a non-admin's save never adds or removes a grant.
+#
+# SEARCH VISIBILITY: the :read rules here are the canonical policy; the search indexes
+#   mirror them via denormalised id fields (see the Item note below and
+#   spec/features/search_authorisation_consistency_spec.rb). Change a read path here and
+#   you must update the matching index field and that spec.
 # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
 class Ability
   include CanCan::Ability
