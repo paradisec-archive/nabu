@@ -4,25 +4,17 @@ describe 'Collection Search', :search do
   let!(:country1) { create(:country) }
   let!(:country2) { create(:country) }
   let!(:language) { create(:language) }
-  let!(:collection1) { create(:collection, :reindex, countries: [country1], languages: [language]) }
   let!(:collection2) { create(:collection, :reindex, countries: [country2], languages: [language]) }
   let!(:private_collection) { create(:collection, :reindex, countries: [country1], languages: [language], private: true) }
   let!(:user) { create(:user) }
 
+  # Background public collection so the country1/language facets appear for signed-in users.
+  before { create(:collection, :reindex, countries: [country1], languages: [language]) }
+
   context 'when user is not signed in' do
-    context 'viewing the page' do
-      before do
-        visit search_collections_path
-      end
-
-      it 'does not show advanced search' do
-        expect(page).to have_no_text('Advanced Search')
-      end
-
-      it 'shows all collections' do
-        expect(page).to have_no_text('NO results')
-        expect(page).to have_text(collection1.identifier)
-      end
+    it 'redirects to the login page' do
+      visit search_collections_path
+      expect(page).to have_current_path(new_user_session_path)
     end
   end
 

@@ -110,19 +110,9 @@ describe 'Item Search', :search do
     let!(:user) { create(:user) }
 
     context 'when user is not signed in' do
-      context 'viewing the page' do
-        before do
-          visit search_items_path
-        end
-
-        it 'does not show advanced search' do
-          expect(page).to have_no_text('Advanced Search')
-        end
-
-        it 'shows all items' do
-          expect(page).to have_no_text('NO results')
-          expect(page).to have_text(item1.identifier)
-        end
+      it 'redirects to the login page' do
+        visit search_items_path
+        expect(page).to have_current_path(new_user_session_path)
       end
     end
 
