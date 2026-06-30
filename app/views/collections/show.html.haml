@@ -108,6 +108,13 @@
               %br
 
         %tr
+          %th View/Download access
+          %td
+            - @collection.users.each do |user|
+              = user.name
+              %br
+
+        %tr
           %th Data access conditions
           %td= @collection.access_condition_name
 
