@@ -33,7 +33,7 @@
 
   <br />
 
-  <%= recaptcha_tags %>
+  <%= recaptcha_tags unless ENV['RECAPTCHA_DISABLED'] == 'true' %>
 
   <br />
 

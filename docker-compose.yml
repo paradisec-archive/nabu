@@ -20,6 +20,7 @@ services:
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
       RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
       RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
+      RECAPTCHA_DISABLED: true
     volumes:
       - .:/rails
       - ./vendor/bundle:/usr/local/bundle
