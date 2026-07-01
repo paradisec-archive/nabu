@@ -60,6 +60,7 @@ describe ItemAnnotationsController, type: :controller do
 
   context 'when logged in as an unrelated user' do
     let(:other_user) { create(:user) }
+
     before { sign_in(other_user, scope: :user) }
 
     it 'denies access' do

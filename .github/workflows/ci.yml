@@ -95,6 +95,7 @@ jobs:
       DB_HOST: 127.0.0.1
       OPENID_SIGNING_KEY: '1'
       S3_ENDPOINT: http://127.0.0.1:9090
+      NABU_CATALOG_BUCKET: nabu-catalog-prod
 
     steps:
       - name: Install packages
@@ -110,6 +111,12 @@ jobs:
 
       - name: Prepare test database
         run: bin/rails db:test:prepare
+
+      - name: Precompile assets
+        env:
+          ASSET_PRECOMPILE: '1'
+          SECRET_KEY_BASE_DUMMY: '1'
+        run: bin/rails assets:precompile
 
       - name: Run tests
         run: bundle exec rspec --exclude-pattern 'spec/features/**/*_spec.rb'
@@ -159,6 +166,7 @@ jobs:
       DB_HOST: 127.0.0.1
       OPENID_SIGNING_KEY: '1'
       S3_ENDPOINT: http://127.0.0.1:9090
+      NABU_CATALOG_BUCKET: nabu-catalog-prod
 
     steps:
       - name: Install packages
