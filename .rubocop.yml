@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
@@ -47,3 +45,43 @@ Rails/I18nLocaleTexts:
 
 Layout/LineLength:
   Max: 160
+
+# GraphQL: we deliberately don't document every field/type/argument, and we
+# don't want the linter dictating the shape of our public API.
+GraphQL/ArgumentDescription:
+  Enabled: false
+
+GraphQL/FieldDescription:
+  Enabled: false
+
+GraphQL/ObjectDescription:
+  Enabled: false
+
+GraphQL/ExtractType:
+  Enabled: false
+
+GraphQL/ExtractInputType:
+  Enabled: false
+
+# RSpec: our specs favour readability over these structural limits, consistent
+# with the relaxed Metrics settings above.
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/IndexedLet:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive

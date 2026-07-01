@@ -1,5 +1,11 @@
 require 'rails_helper'
 
+# These let! blocks seed items that the search matches by content rather than
+# referencing them by name, so RSpec/LetSetup flags them. They can't move to a
+# `before` hook because nested contexts override the same `item` let; a hook
+# would run in addition to the override and double-seed, breaking the expected
+# search counts.
+# rubocop:disable RSpec/LetSetup
 describe 'Item Search', :search do
   describe 'Searching of items' do
     let(:search) do
@@ -197,3 +203,4 @@ describe 'Item Search', :search do
     end
   end
 end
+# rubocop:enable RSpec/LetSetup

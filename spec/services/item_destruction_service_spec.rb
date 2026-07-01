@@ -4,14 +4,7 @@ describe ItemDestructionService do
   context 'when item has no files' do
     let(:item_with_no_files) { create(:item, essences: []) }
 
-    it 'proceeds without errors when not deleting files' do
-      response = described_class.destroy(item_with_no_files)
-      expect(response[:success]).to be(true)
-      expect(response[:messages]).to have_key(:notice)
-      expect(response[:messages]).not_to have_key(:error)
-    end
-
-    it 'proceeds without errors when attempting to delete files' do
+    it 'proceeds without errors' do
       response = described_class.destroy(item_with_no_files)
       expect(response[:success]).to be(true)
       expect(response[:messages]).to have_key(:notice)

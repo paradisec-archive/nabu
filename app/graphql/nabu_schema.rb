@@ -1,3 +1,7 @@
+# max_complexity / max_depth are intentionally left unset: declaring them is a
+# runtime behaviour change (it can start rejecting legitimate deep or complex
+# queries) that needs a deliberate decision on the limits, not a lint fix.
+# rubocop:disable GraphQL/MaxComplexitySchema, GraphQL/MaxDepthSchema
 class NabuSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
@@ -48,3 +52,4 @@ class NabuSchema < GraphQL::Schema
     GlobalID.find(global_id)
   end
 end
+# rubocop:enable GraphQL/MaxComplexitySchema, GraphQL/MaxDepthSchema

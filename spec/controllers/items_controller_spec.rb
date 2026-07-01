@@ -46,6 +46,11 @@ describe ItemsController, type: :controller do
     end
 
     context 'when viewing' do
+      # The two contexts share a body because the 'private item' context
+      # actually exercises the public item. Making it distinct means pointing it
+      # at private_item and asserting the authorisation outcome (CanCanCan denies
+      # read to a non-owner), which is a behavioural rewrite rather than a dedup.
+      # rubocop:disable RSpec/RepeatedExampleGroupBody
       context 'a private item' do
         it 'proceeds' do
           get :show, params: params
@@ -59,6 +64,7 @@ describe ItemsController, type: :controller do
           expect(response).to render_template(:show)
         end
       end
+      # rubocop:enable RSpec/RepeatedExampleGroupBody
     end
 
     context 'when creating an item' do
@@ -99,7 +105,7 @@ describe ItemsController, type: :controller do
         before do
           allow(ItemDestructionService).to receive(:destroy).and_return({ success: true, messages: { notice: 'yay' } })
 
-          @request.env['devise.mapping'] = Devise.mappings[:user]
+          request.env['devise.mapping'] = Devise.mappings[:user]
           # log in as test user
           sign_in(manager, scope: :user)
         end
@@ -138,7 +144,7 @@ describe ItemsController, type: :controller do
 
     context 'when inheriting from collection' do
       before do
-        @request.env['devise.mapping'] = Devise.mappings[:user]
+        request.env['devise.mapping'] = Devise.mappings[:user]
         # log in as test user
         sign_in(manager, scope: :user)
       end
@@ -194,7 +200,7 @@ describe ItemsController, type: :controller do
       }
     end
 
-    before { @request.env['devise.mapping'] = Devise.mappings[:user] }
+    before { request.env['devise.mapping'] = Devise.mappings[:user] }
 
     context 'as a non-admin editor' do
       before { sign_in(editor, scope: :user) }

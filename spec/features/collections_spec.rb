@@ -3,14 +3,18 @@ require 'rails_helper'
 describe 'Collections' do
   let(:user) { create(:user) }
   let(:admin_user) { create(:admin_user) }
-  let!(:university) { create(:university) }
-  let!(:country) { create(:country) }
-  let!(:language) { create(:language) }
-  let!(:field_of_research) { create(:field_of_research) }
+
+  before do
+    create(:university)
+    create(:country)
+    create(:language)
+    create(:field_of_research)
+  end
 
   describe 'Creating' do
     it 'fails as a guest' do
       visit root_path
+      expect(page).to have_current_path(new_user_session_path)
       expect(page).to have_no_text('Add collection')
       visit new_collection_path
       expect(page).to have_text('You need to sign in or sign up before continuing')

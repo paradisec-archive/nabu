@@ -94,25 +94,25 @@ describe EssenceAnnotation, type: :model do
       expect { mp3.destroy }.to change(described_class, :count).by(-1)
     end
   end
-end
 
-describe Essence, type: :model do
-  describe '#unmapped_transcript?' do
-    let(:item) { create(:item) }
-    let(:eaf) { create(:essence, item: item, filename: 'sample.eaf', mimetype: 'text/xml', size: 100) }
-    let(:mp3) { create(:essence, item: item, filename: 'sample.mp3', mimetype: 'audio/mp3', size: 100) }
+  describe Essence, type: :model do
+    describe '#unmapped_transcript?' do
+      let(:item) { create(:item) }
+      let(:eaf) { create(:essence, item: item, filename: 'sample.eaf', mimetype: 'text/xml', size: 100) }
+      let(:mp3) { create(:essence, item: item, filename: 'sample.mp3', mimetype: 'audio/mp3', size: 100) }
 
-    it 'is true for a transcript with no outgoing mappings' do
-      expect(eaf.unmapped_transcript?).to be true
-    end
+      it 'is true for a transcript with no outgoing mappings' do
+        expect(eaf.unmapped_transcript?).to be true
+      end
 
-    it 'is false for a transcript with an outgoing mapping' do
-      EssenceAnnotation.create!(annotation_essence: eaf, target_essence: mp3)
-      expect(eaf.reload.unmapped_transcript?).to be false
-    end
+      it 'is false for a transcript with an outgoing mapping' do
+        EssenceAnnotation.create!(annotation_essence: eaf, target_essence: mp3)
+        expect(eaf.reload.unmapped_transcript?).to be false
+      end
 
-    it 'is false for a media file (regardless of mappings)' do
-      expect(mp3.unmapped_transcript?).to be false
+      it 'is false for a media file (regardless of mappings)' do
+        expect(mp3.unmapped_transcript?).to be false
+      end
     end
   end
 end

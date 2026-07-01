@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :essence do
-    item { build(:item, :with_doi) }
+    item { association(:item, :with_doi) }
     filename { 'unknown.csv' }
     mimetype { 'application/unknown' }
     created_at { Date.parse('2015/01/01') }

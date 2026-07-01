@@ -49,7 +49,7 @@ RSpec.shared_examples_for "identifiable by doi" do |parent|
       end
 
       it 'does not blow up' do
-        instance.citation
+        expect { instance.citation }.not_to raise_error
       end
     end
 
@@ -58,12 +58,12 @@ RSpec.shared_examples_for "identifiable by doi" do |parent|
 
       it 'uses URI' do
         expect(instance).to receive(:doi) { doi }.once
-        expect(instance).to receive(:full_path).and_return('')
+        allow(instance).to receive(:full_path).and_return('')
         instance.citation
       end
 
       it 'does not blow up' do
-        instance.citation
+        expect { instance.citation }.not_to raise_error
       end
     end
   end

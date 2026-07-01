@@ -10,9 +10,10 @@ create(:item, collection: collection, access_condition: AccessCondition.new({ na
 collector_id: user.id) }
   let!(:essence) { create(:sound_essence, item: item) }
 
-  let!(:download) { create(:download, essence: essence, user_id: downloader.id) }
   let!(:downloads_report_service_valid_date) { described_class.new('21 Jan 2015', '', user) }
   let!(:downloads_report_service_invalid_date) { described_class.new('21 Apr 2015', (Time.now - 1.day).strftime('%d %b %Y'), user) }
+
+  before { create(:download, essence: essence, user_id: downloader.id) }
 
   context 'with a valid date range' do
     it 'retrieves the correct joined table' do

@@ -11,7 +11,7 @@ FactoryBot.define do
     east_limit { '122.046' }
     field_of_research
     university
-    collector { create(:user) }
+    collector { association(:user) }
     created_at { Date.parse('2015/01/01') }
     private { false }
     after(:build) do |item|
