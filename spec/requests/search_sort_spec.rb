@@ -9,6 +9,8 @@ describe 'Search sorting', :no_catalog_upload, :search, type: :request do
   let!(:item) { create(:item, :reindex, collection:, countries: [country]) }
 
   describe 'collections search' do
+    before { sign_in create(:user) }
+
     it 'renders results when given a valid sort column' do
       get search_collections_path(sort: 'updated_at', direction: 'desc')
 

@@ -21,7 +21,7 @@ describe EssencesController, type: :controller do
       it 'redirects to the sign in page with error' do
         get :show, params: params
         expect(response).to redirect_to(new_user_session_path)
-        expect(flash[:notice]).not_to be_nil
+        expect(flash[:alert]).not_to be_nil
       end
     end
   end

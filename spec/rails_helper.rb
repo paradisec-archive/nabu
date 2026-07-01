@@ -7,6 +7,12 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# Rails 8.1 loads routes lazily. Devise configures Warden's session serializer
+# during route finalization, so routes must be loaded before any `sign_in` runs
+# in controller specs; otherwise the raw user object is stored in the session and
+# deserialization later raises an ArgumentError.
+Rails.application.reload_routes_unless_loaded
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -55,6 +61,9 @@ RSpec.configure do |config|
   # The different available types are documented in the features, such as in
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
+
+  # Provides freeze_time / travel_to helpers in specs.
+  config.include ActiveSupport::Testing::TimeHelpers
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!

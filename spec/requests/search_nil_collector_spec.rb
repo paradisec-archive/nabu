@@ -10,6 +10,7 @@ describe 'Search with a dangling collector', :no_catalog_upload, :search, type: 
   let!(:item) { create(:item, :reindex, collection:, countries: [country]) }
 
   it 'renders the collections results when a collection has a deleted collector' do
+    sign_in create(:user)
     User.where(id: collection.collector_id).delete_all
 
     get search_collections_path

@@ -31,9 +31,10 @@ describe ItemsController, type: :controller do
       end
 
       context 'a public item' do
-        it 'proceeds' do
+        it 'redirects to the sign in page with error' do
           get :show, params: params
-          expect(response).to render_template(:show)
+          expect(response).to redirect_to(new_user_session_path)
+          expect(flash[:alert]).not_to be_nil
         end
       end
     end
@@ -62,6 +63,8 @@ describe ItemsController, type: :controller do
 
     context 'when creating an item' do
       context 'that is invalid' do
+        before { collection.admins << user }
+
         it 'fails and show create page' do
           post :create, params: { collection_id: collection.identifier, item: { title: 'title goes here' } }
           expect(response).to render_template(:new)
@@ -218,6 +221,8 @@ describe ItemsController, type: :controller do
   end
 
   context 'when viewing an item with essences' do
+    before { sign_in(manager, scope: :user) }
+
     it 'tracks the essence files' do
       get :show, params: params.merge(id: item_with_essences.identifier)
       # FIXME: JF assigns might not work see 5.0 guide 7.5
