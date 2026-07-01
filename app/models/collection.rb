@@ -88,11 +88,22 @@ class Collection < ApplicationRecord
   has_many :countries, through: :collection_countries, validate: true
   has_many :item_countries, -> { distinct }, through: :items, source: :countries
 
-  has_many :collection_admins, dependent: :destroy, autosave: true
-  has_many :admins, through: :collection_admins, validate: true, source: :user, autosave: true
+  # Access grants live in the single polymorphic `permissions` table (see Permission). Exposed to
+  # Ability/CanCanCan as a plain (non-polymorphic) association keyed on grantable_id with a
+  # grantable_type scope, so accessible_by builds correctly-aliased SQL joins. Named differently
+  # from Item#item_permissions so a query joining both (item reachable via its collection's grant)
+  # gets distinct join aliases — the collision the four distinct old tables used to avoid.
+  has_many :collection_permissions, -> { where(grantable_type: 'Collection') }, foreign_key: :grantable_id, class_name: 'Permission', dependent: :destroy
 
-  has_many :collection_users, dependent: :destroy, autosave: true
-  has_many :users, through: :collection_users, validate: true, source: :user, autosave: true
+  # The `admins`/`users` names are preserved as level-scoped (polymorphic) associations so the
+  # `admin_ids=`/`user_ids=` form setters and the show views stay unchanged: admins are edit-level
+  # grantees, users are read-level grantees.
+
+  has_many :edit_permissions, -> { where(level: :edit) }, as: :grantable, class_name: 'Permission', autosave: true
+  has_many :admins, through: :edit_permissions, validate: true, source: :user, autosave: true
+
+  has_many :read_permissions, -> { where(level: :read) }, as: :grantable, class_name: 'Permission', autosave: true
+  has_many :users, through: :read_permissions, validate: true, source: :user, autosave: true
 
   # require presence of these three fields
   validates :identifier,

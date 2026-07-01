@@ -43,7 +43,7 @@ module Nabu
     def parse
       coll_id = parse_coll_id
       @collection = Collection
-                    .includes(:languages, :countries, collection_admins: [:user], items: { item_admins: [:user] })
+                    .includes(:languages, :countries, :admins, items: :admins)
                     .find_by(identifier: coll_id)
       collector = parse_user
       unless collector

@@ -13,7 +13,7 @@ describe EssencesController, type: :controller do
 
   before do
     # allow test user to access everything
-    item.item_users << ItemUser.new({ item: item, user: user })
+    item.users << user
   end
 
   context 'when not logged in' do

@@ -14,23 +14,31 @@
 #   Edit      | yes          | yes                   | yes  | no
 #   Admin     | yes          | yes                   | yes  | yes
 #
-# Each non-admin tier is backed by a membership join table (user_id + the record):
+# Each non-admin tier is backed by a row in the single polymorphic `permissions` table
+# (user_id + the polymorphic `grantable` record + a `level` of read or edit):
 #
-#   Tier      | Collection level  | Item level
-#   --------- | ----------------- | ----------
-#   Read-only | collection_users  | item_users
-#   Edit      | collection_admins | item_admins
+#   Tier      | Grantable  | level
+#   --------- | ---------- | -----
+#   Read-only | Collection | read
+#   Edit      | Collection | edit
+#   Read-only | Item       | read
+#   Edit      | Item       | edit
 #
-#   A collection_users grant CASCADES to every item in the collection and its essences —
-#   see the `collection: { collection_users: ... }` rules below. Admin is the `admin`
-#   boolean on User and short-circuits everything via `can :manage, :all`.
+#   A collection-level read grant CASCADES to every item in the collection and its essences —
+#   see the `collection: { collection_permissions: { level: 'read' } }` rules below. Admin is
+#   the `admin` boolean on User and short-circuits everything via `can :manage, :all`.
+#   Grants are read through polymorphic associations that inject the correct `grantable_type`;
+#   the explicit `level:` keeps read and edit genuinely distinguished. Collection and Item name
+#   these associations differently (`collection_permissions` vs `item_permissions`) so that
+#   accessible_by, when one rule traverses both levels, generates distinct join aliases rather
+#   than colliding on a single `permissions` name.
 #
 # CROSS-CUTTING RULES — enforced elsewhere, noted here so the whole policy reads in one place:
 #   * Preservation masters (.mxf/.mkv, Essence#is_archived?) are admin-only. NOT enforced
 #     here — see EssencesController#download/#display and Api::V1::OniController, which
 #     reject non-admins regardless of any grant below.
 #   * Contacts (contact_only users) can never hold a grant. Enforced by the
-#     RejectsContactGrants concern on the four membership models, not here.
+#     RejectsContactGrants concern on the Permission model, not here.
 #   * Grant assignment is admin-only — the grant fields are admin-gated in the collection
 #     and item controllers/forms, so a non-admin's save never adds or removes a grant.
 #
@@ -105,16 +113,16 @@ class Ability
     can :read, Entity, entity_type: 'Collection', collection: { private: false }
 
     # Members of any item in a collection can read the collection
-    can :read, Collection, items: { item_users: { user_id: user.id } }
-    can :read, Entity, entity_type: 'Collection', collection: { items: { item_users: { user_id: user.id } } }
-    can :read, Collection, items: { item_admins: { user_id: user.id } }
-    can :read, Entity, entity_type: 'Collection', collection: { items: { item_admins: { user_id: user.id } } }
-    can %i[read update], Collection, collection_admins: { user_id: user.id }
-    can :read, Entity, entity_type: 'Collection', collection: { collection_admins: { user_id: user.id } }
+    can :read, Collection, items: { item_permissions: { user_id: user.id, level: 'read' } }
+    can :read, Entity, entity_type: 'Collection', collection: { items: { item_permissions: { user_id: user.id, level: 'read' } } }
+    can :read, Collection, items: { item_permissions: { user_id: user.id, level: 'edit' } }
+    can :read, Entity, entity_type: 'Collection', collection: { items: { item_permissions: { user_id: user.id, level: 'edit' } } }
+    can %i[read update], Collection, collection_permissions: { user_id: user.id, level: 'edit' }
+    can :read, Entity, entity_type: 'Collection', collection: { collection_permissions: { user_id: user.id, level: 'edit' } }
 
-    # collection_users are read-only grantees of the whole collection
-    can :read, Collection, collection_users: { user_id: user.id }
-    can :read, Entity, entity_type: 'Collection', collection: { collection_users: { user_id: user.id } }
+    # read-level permissions are read-only grantees of the whole collection
+    can :read, Collection, collection_permissions: { user_id: user.id, level: 'read' }
+    can :read, Entity, entity_type: 'Collection', collection: { collection_permissions: { user_id: user.id, level: 'read' } }
 
     # Only admins can create a collection
     cannot :create, Collection
@@ -137,18 +145,22 @@ class Ability
     can %i[read data], Item, { private: false, collection: { private: false } }
     can :read, Entity, entity_type: 'Item', item: { private: false, collection: { private: false } }
 
-    can %i[read data], Item, item_users: { user_id: user.id }
-    can :read, Entity, entity_type: 'Item', item: { item_users: { user_id: user.id } }
-    can %i[read data], Item, item_admins: { user_id: user.id }
-    can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
+    can %i[read data], Item, item_permissions: { user_id: user.id, level: 'read' }
+    can :read, Entity, entity_type: 'Item', item: { item_permissions: { user_id: user.id, level: 'read' } }
+    can %i[read data], Item, item_permissions: { user_id: user.id, level: 'edit' }
+    can :read, Entity, entity_type: 'Item', item: { item_permissions: { user_id: user.id, level: 'edit' } }
 
-    can %i[read data], Item, collection: { collection_users: { user_id: user.id } }
-    can :read, Entity, entity_type: 'Item', item: { collection: { collection_users: { user_id: user.id } } }
+    # The collection cascade: the Item rule reaches the collection's grant directly via
+    # collection_grant_permissions (top-level, so accessible_by aligns its aliases — see Item),
+    # while the Entity rule nests through item/collection because Entity is polymorphic and its
+    # accessible_by already tolerates the nested form. Both express the same access.
+    can %i[read data], Item, collection_grant_permissions: { user_id: user.id, level: 'read' }
+    can :read, Entity, entity_type: 'Item', item: { collection: { collection_permissions: { user_id: user.id, level: 'read' } } }
 
-    can :manage, Item, collection: { collection_admins: { user_id: user.id } }
-    can :read, Entity, entity_type: 'Item', item: { collection: { collection_admins: { user_id: user.id } } }
-    can :manage, Item, item_admins: { user_id: user.id }
-    can :read, Entity, entity_type: 'Item', item: { item_admins: { user_id: user.id } }
+    can :manage, Item, collection_grant_permissions: { user_id: user.id, level: 'edit' }
+    can :read, Entity, entity_type: 'Item', item: { collection: { collection_permissions: { user_id: user.id, level: 'edit' } } }
+    can :manage, Item, item_permissions: { user_id: user.id, level: 'edit' }
+    can :read, Entity, entity_type: 'Item', item: { item_permissions: { user_id: user.id, level: 'edit' } }
 
     can :advanced_search, Item
     can :new_report, Item
@@ -170,14 +182,14 @@ class Ability
     can %i[read download display entities], Essence,
       item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } }
     can %i[read download], Entity, entity_type: 'Essence', essence: { item: { access_condition: { name: 'Open (subject to agreeing to PDSC access conditions)' } } }
-    can %i[read download display], Essence, item: { collection: { collection_admins: { user_id: user.id } } }
-    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
-    can %i[read download display], Essence, item: { collection: { collection_users: { user_id: user.id } } }
-    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_users: { user_id: user.id } } } }
-    can %i[read download display], Essence, item: { item_admins: { user_id: user.id } }
-    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_admins: { user_id: user.id } } }
-    can %i[read download display], Essence, item: { item_users: { user_id: user.id } }
-    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_users: { user_id: user.id } } }
+    can %i[read download display], Essence, item: { collection: { collection_permissions: { user_id: user.id, level: 'edit' } } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_permissions: { user_id: user.id, level: 'edit' } } } }
+    can %i[read download display], Essence, item: { collection: { collection_permissions: { user_id: user.id, level: 'read' } } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { collection: { collection_permissions: { user_id: user.id, level: 'read' } } } }
+    can %i[read download display], Essence, item: { item_permissions: { user_id: user.id, level: 'edit' } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_permissions: { user_id: user.id, level: 'edit' } } }
+    can %i[read download display], Essence, item: { item_permissions: { user_id: user.id, level: 'read' } }
+    can %i[read download], Entity, entity_type: 'Essence', essence: { item: { item_permissions: { user_id: user.id, level: 'read' } } }
 
     can :create, Comment, commentable: { private: false }
 
@@ -185,8 +197,8 @@ class Ability
     # EssenceAnnotation
     #############
 
-    can :manage, EssenceAnnotation, target_essence: { item: { item_admins: { user_id: user.id } } }
-    can :manage, EssenceAnnotation, target_essence: { item: { collection: { collection_admins: { user_id: user.id } } } }
+    can :manage, EssenceAnnotation, target_essence: { item: { item_permissions: { user_id: user.id, level: 'edit' } } }
+    can :manage, EssenceAnnotation, target_essence: { item: { collection: { collection_permissions: { user_id: user.id, level: 'edit' } } } }
   end
 end
 # rubocop:enable Metrics/AbcSize,Metrics/MethodLength

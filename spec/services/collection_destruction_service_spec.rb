@@ -23,25 +23,25 @@ describe CollectionDestructionService do
   end
 
   # Regression: items are removed with delete_all, which bypasses the `dependent: :destroy`
-  # cleanup on item_admins/item_users. Combined with the collection's own collection_users
-  # read-only grants, this previously left orphaned membership/grant rows behind.
-  context 'when the collection and its items have membership grants', :no_catalog_upload do
+  # cleanup on their permissions. Combined with the collection's own grants, and because
+  # Permission has no database foreign key to its polymorphic grantable, this would otherwise
+  # leave orphaned grant rows behind.
+  context 'when the collection and its items have access grants', :no_catalog_upload do
     let(:collection) { create(:collection) }
     let(:item) { create(:item, collection:) }
     let(:grantee) { create(:user) }
 
     before do
       allow(Nabu::Catalog.instance).to receive_messages(delete_item: 0, delete_collection: 0)
-      collection.collection_users << CollectionUser.new(user: grantee)
-      item.item_admins << ItemAdmin.new(user: grantee)
-      item.item_users << ItemUser.new(user: grantee)
+      collection.users << grantee
+      item.admins << grantee
+      item.users << grantee
     end
 
-    it 'removes the items edit and read-only membership rows and the collection read-only grants' do
+    it 'removes the items edit and read-only grants and the collection grants' do
       expect(described_class.destroy(collection)[:success]).to be(true)
-      expect(ItemAdmin.where(item_id: item.id)).not_to exist
-      expect(ItemUser.where(item_id: item.id)).not_to exist
-      expect(CollectionUser.where(collection_id: collection.id)).not_to exist
+      expect(Permission.where(grantable: item)).not_to exist
+      expect(Permission.where(grantable: collection)).not_to exist
     end
   end
 end

@@ -6,11 +6,12 @@ class CollectionDestructionService
 
     # delete_all is efficient but skips ActiveRecord callbacks, so the `dependent: :destroy`
     # cleanup on Item/Essence never fires. Remove the dependent rows ourselves to avoid orphans:
-    # the denormalised entity rows and the items' edit/read-only membership grants.
+    # the denormalised entity rows and the items' and collection's access grants. Permission has
+    # no DB foreign key to its polymorphic grantable, so deleting items would otherwise strand
+    # their grant rows.
     Essence.where(id: essence_ids).delete_all
-    ItemAdmin.where(item_id: item_ids).delete_all
-    ItemUser.where(item_id: item_ids).delete_all
-    CollectionUser.where(collection_id: collection.id).delete_all
+    Permission.where(grantable_type: 'Item', grantable_id: item_ids).delete_all
+    Permission.where(grantable_type: 'Collection', grantable_id: collection.id).delete_all
     deleted_items_count = Item.where(collection_id: collection.id).delete_all
     Entity.where(entity_type: 'Essence', entity_id: essence_ids).delete_all
     Entity.where(entity_type: 'Item', entity_id: item_ids).delete_all

@@ -148,14 +148,14 @@ class UnconfirmedUsersService
     # Collection references
     referenced_ids.merge(Collection.pluck(:collector_id))
     referenced_ids.merge(Collection.where.not(operator_id: nil).pluck(:operator_id))
-    referenced_ids.merge(CollectionAdmin.pluck(:user_id))
 
     # Item references
     referenced_ids.merge(Item.pluck(:collector_id))
     referenced_ids.merge(Item.where.not(operator_id: nil).pluck(:operator_id))
-    referenced_ids.merge(ItemAdmin.pluck(:user_id))
     referenced_ids.merge(ItemAgent.pluck(:user_id))
-    referenced_ids.merge(ItemUser.pluck(:user_id))
+
+    # Access grant references (collection/item, read/edit) all live in the permissions table
+    referenced_ids.merge(Permission.pluck(:user_id))
 
     # Comment references
     referenced_ids.merge(Comment.pluck(:owner_id))
@@ -184,12 +184,10 @@ class UnconfirmedUsersService
     references = []
     references << 'Collection collector' if Collection.where(collector_id: user_id).exists?
     references << 'Collection operator' if Collection.where(operator_id: user_id).exists?
-    references << 'CollectionAdmin' if CollectionAdmin.where(user_id: user_id).exists?
     references << 'Item collector' if Item.where(collector_id: user_id).exists?
     references << 'Item operator' if Item.where(operator_id: user_id).exists?
-    references << 'ItemAdmin' if ItemAdmin.where(user_id: user_id).exists?
     references << 'ItemAgent' if ItemAgent.where(user_id: user_id).exists?
-    references << 'ItemUser' if ItemUser.where(user_id: user_id).exists?
+    references << 'Permission' if Permission.where(user_id: user_id).exists?
     references << 'Comment owner' if Comment.where(owner_id: user_id).exists?
     references << 'Rights transferred to' if User.where(rights_transferred_to_id: user_id).exists?
     references << 'Download' if Download.where(user_id: user_id).exists?

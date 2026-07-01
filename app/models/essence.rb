@@ -68,8 +68,8 @@ class Essence < ApplicationRecord
     includes(item: [
       :collection, :collector, :operator,
       :content_languages, :countries,
-      :item_admins, :item_users,
-      { collection: %i[collection_admins collection_users] }
+      :admins, :users,
+      { collection: %i[admins users] }
     ])
   }
 
@@ -215,12 +215,12 @@ class Essence < ApplicationRecord
       collection_title: item.collection.title,
 
       private: item.private? || item.collection.private?,
-      admin_ids: item.item_admins.map(&:user_id).uniq,
-      user_ids: item.item_users.map(&:user_id).uniq,
+      admin_ids: item.admins.map(&:id).uniq,
+      user_ids: item.users.map(&:id).uniq,
       collector_id: item.collector_id,
       operator_id: item.operator_id,
-      collection_admin_ids: item.collection.collection_admins.map(&:user_id).uniq,
-      collection_user_ids: item.collection.collection_users.map(&:user_id).uniq,
+      collection_admin_ids: item.collection.admins.map(&:id).uniq,
+      collection_user_ids: item.collection.users.map(&:id).uniq,
 
       originated_on: item.originated_on,
       created_at: created_at&.to_date,
@@ -249,8 +249,8 @@ class Essence < ApplicationRecord
   end
 
   def self.search_includes
-    [{ item: [:collection, :collector, :content_languages, :countries, :item_admins, :item_users,
-              { collection: %i[collection_admins collection_users] }] }, :entity]
+    [{ item: [:collection, :collector, :content_languages, :countries, :admins, :users,
+              { collection: %i[admins users] }] }, :entity]
   end
 
   def self.ransackable_attributes(_ = nil)

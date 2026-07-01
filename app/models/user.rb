@@ -83,13 +83,9 @@ class User < ApplicationRecord
 
   scope :alpha, -> { order(:first_name, :last_name) }
 
-  has_many :collection_admins
-  has_many :collections, through: :collection_admins, dependent: :destroy
-
-  has_many :item_admins
-  has_many :items, through: :item_admins, dependent: :destroy
-
-  has_many :item_users
+  # A user's access grants live in the polymorphic permissions table; the database foreign key
+  # (permissions.user_id, ON DELETE cascade) removes them when the user is destroyed.
+  has_many :permissions, dependent: :destroy
 
   has_many :item_agents, dependent: :destroy
 

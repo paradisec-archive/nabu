@@ -60,7 +60,7 @@ class CollectionsController < ApplicationController
 
     # Preload the associations CanCan traverses in can?(:read/:update, item) to avoid N+1 queries
     @items = @collection.items
-      .includes(:access_condition, :essences, :admins, :users, :item_admins, :item_users, collection: :collection_admins)
+      .includes(:access_condition, :essences, :admins, :users, :item_permissions, collection: :collection_permissions)
       .page(params[:items_page]).per(params[:items_per_page])
 
     sort_column = Item.column_names.include?(params[:sort]) ? params[:sort] : 'identifier'

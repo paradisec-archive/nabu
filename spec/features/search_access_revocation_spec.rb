@@ -4,8 +4,7 @@ require 'rails_helper'
 # Collection, Item and Essence search documents each embed the ids of the users allowed to
 # see them (user_ids, admin_ids, collection_user_ids, item_user_ids, ...). When a grant is
 # added or removed the affected documents must be reindexed, otherwise a revoked user keeps
-# finding private records via search. The reindex is driven by
-# CollectionUser/CollectionAdmin/ItemUser/ItemAdmin#reindex_search_documents.
+# finding private records via search. The reindex is driven by Permission#reindex_search_documents.
 describe 'Search visibility when access is granted and revoked', :search do
   let!(:user) { create(:user) }
   let!(:collection) { create(:collection, :reindex, identifier: 'PRIVCOLL', private: true) }
@@ -22,14 +21,14 @@ describe 'Search visibility when access is granted and revoked', :search do
   end
 
   def grant_then_revoke_collection_user
-    collection_user = CollectionUser.create!(collection:, user:)
+    collection_user = Permission.create!(grantable: collection, user:, level: :read)
     refresh_search_indexes
     collection_user.destroy!
     refresh_search_indexes
   end
 
   def grant_then_revoke_item_user
-    item_user = ItemUser.create!(item:, user:)
+    item_user = Permission.create!(grantable: item, user:, level: :read)
     refresh_search_indexes
     item_user.destroy!
     refresh_search_indexes
@@ -48,7 +47,7 @@ describe 'Search visibility when access is granted and revoked', :search do
 
     context 'when access has been granted' do
       before do
-        CollectionUser.create!(collection:, user:)
+        Permission.create!(grantable: collection, user:, level: :read)
         refresh_search_indexes
       end
 
@@ -98,7 +97,7 @@ describe 'Search visibility when access is granted and revoked', :search do
 
     context 'when access has been granted' do
       before do
-        ItemUser.create!(item:, user:)
+        Permission.create!(grantable: item, user:, level: :read)
         refresh_search_indexes
       end
 

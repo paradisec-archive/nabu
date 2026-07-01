@@ -96,11 +96,25 @@ class Item < ApplicationRecord
   has_many :item_content_languages, dependent: :destroy
   has_many :content_languages, through: :item_content_languages, source: :language, validate: true
 
-  has_many :item_admins, dependent: :destroy
-  has_many :admins, through: :item_admins, validate: true, source: :user
+  # Access grants live in the single polymorphic `permissions` table (see Permission). These are
+  # exposed to Ability/CanCanCan as plain (non-polymorphic) associations keyed on grantable_id
+  # with a grantable_type scope: unlike a polymorphic `as: :grantable` association, this lets
+  # accessible_by build correctly-aliased SQL joins. `item_permissions` is the item's own grants.
+  has_many :item_permissions, -> { where(grantable_type: 'Item') }, foreign_key: :grantable_id, class_name: 'Permission', dependent: :destroy
+  # The item's collection's grants, reached directly (permissions.grantable_id = items.collection_id)
+  # rather than nested under `collection:`. Keeping every permission join at the top level of the
+  # Item ruleset is what lets accessible_by align its JOIN and WHERE aliases for the one table.
+  has_many :collection_grant_permissions, -> { where(grantable_type: 'Collection') },
+           primary_key: :collection_id, foreign_key: :grantable_id, class_name: 'Permission'
 
-  has_many :item_users, dependent: :destroy
-  has_many :users, through: :item_users, validate: true, source: :user
+  # The `admins`/`users` names are preserved as level-scoped (polymorphic) associations so the
+  # `admin_ids=`/`user_ids=` form setters and the show views stay unchanged: admins are edit-level
+  # grantees, users are read-level grantees.
+  has_many :edit_permissions, -> { where(level: :edit) }, as: :grantable, class_name: 'Permission'
+  has_many :admins, through: :edit_permissions, validate: true, source: :user
+
+  has_many :read_permissions, -> { where(level: :read) }, as: :grantable, class_name: 'Permission'
+  has_many :users, through: :read_permissions, validate: true, source: :user
 
   has_many :item_agents, dependent: :destroy
   has_many :agents, through: :item_agents, validate: true, source: :user
@@ -267,7 +281,7 @@ class Item < ApplicationRecord
   def self.search_includes
     includes = %i[
       collection collector countries operator essences university content_languages
-      data_categories data_types discourse_type access_condition subject_languages item_admins
+      data_categories data_types discourse_type access_condition subject_languages admins users
     ]
     includes << { item_agents: %i[user agent_role] }
 
@@ -316,11 +330,11 @@ class Item < ApplicationRecord
 
   scope :search_import,
         lambda {
-          includes(:users, :content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
+          includes(:content_languages, :subject_languages, :countries, :university, :data_types, :data_categories, :discourse_type,
                    :essences, :collector, :operator,
-                   :item_admins, :item_agents, :item_users,
+                   :admins, :users, :item_agents,
                    :access_condition,
-                   collection: :collection_users
+                   collection: %i[admins users]
                   )
         }
 
@@ -384,11 +398,11 @@ class Item < ApplicationRecord
       university_id:,
       access_condition_id:,
       discourse_type_id:,
-      admin_ids: item_admins.map(&:user_id).uniq,
+      admin_ids: admins.map(&:id).uniq,
       agent_ids: item_agents.map(&:user_id).uniq,
-      user_ids: item_users.map(&:user_id).uniq,
-      collection_user_ids: collection.collection_users.map(&:user_id).uniq,
-      collection_admin_ids: collection.collection_admins.map(&:user_id).uniq,
+      user_ids: users.map(&:id).uniq,
+      collection_user_ids: collection.users.map(&:id).uniq,
+      collection_admin_ids: collection.admins.map(&:id).uniq,
       originated_on:,
       metadata_exportable:,
       born_digital:,
@@ -720,9 +734,9 @@ class Item < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[
       access_condition admins agents collection collector comments content_languages countries
-      data_categories data_types discourse_type essences item_admins item_agents
+      data_categories data_types discourse_type essences item_agents permissions
       item_content_languages item_countries item_data_categories item_data_types
-      item_subject_languages item_users operator subject_languages university users versions
+      item_subject_languages operator subject_languages university users versions
     ]
   end
 

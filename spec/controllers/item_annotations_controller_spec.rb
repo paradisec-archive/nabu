@@ -10,7 +10,7 @@ describe ItemAnnotationsController, type: :controller do
 
   let(:base_params) { { collection_id: collection.identifier, item_id: item.identifier } }
 
-  before { item.item_admins << ItemAdmin.new(user: user) }
+  before { item.admins << user }
 
   context 'when not logged in' do
     it 'redirects from show' do

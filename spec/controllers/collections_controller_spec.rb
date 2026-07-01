@@ -9,8 +9,8 @@ describe CollectionsController, type: :controller do
   let(:collection) do
     create(
       :collection,
-      collection_admins: [CollectionAdmin.new(user: editor)],
-      collection_users: [CollectionUser.new(user: grantee)]
+      admins: [editor],
+      users: [grantee]
     )
   end
 

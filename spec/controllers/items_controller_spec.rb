@@ -12,7 +12,7 @@ describe ItemsController, type: :controller do
     collection: collection,
     access_condition: AccessCondition.new({ name: 'Open (subject to agreeing to PDSC access conditions)' }),
     subject_languages: subject_languages,
-    item_users: [ItemUser.new({ user: user })]
+    users: [user]
   )}
   let(:private_item) { create(:item, collection: collection, private: true) }
   let(:essence) { create(:sound_essence) }
@@ -165,8 +165,8 @@ describe ItemsController, type: :controller do
       create(
         :item,
         collection: collection,
-        item_admins: [ItemAdmin.new(user: editor)],
-        item_users: [ItemUser.new(user: grantee)]
+        admins: [editor],
+        users: [grantee]
       )
     end
     let(:update_params) do

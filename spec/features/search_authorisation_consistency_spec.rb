@@ -35,18 +35,18 @@ describe 'Search/Ability authorisation consistency', :search do
 
   # Every relationship that ability.rb grants :read on a private Item through.
   item_grants = {
-    'item admin' => ->(item, user) { ItemAdmin.create!(item:, user:) },
-    'item user' => ->(item, user) { ItemUser.create!(item:, user:) },
-    'collection user' => ->(item, user) { CollectionUser.create!(collection: item.collection, user:) },
-    'collection admin' => ->(item, user) { CollectionAdmin.create!(collection: item.collection, user:) }
+    'item admin' => ->(item, user) { Permission.create!(grantable: item, user:, level: :edit) },
+    'item user' => ->(item, user) { Permission.create!(grantable: item, user:, level: :read) },
+    'collection user' => ->(item, user) { Permission.create!(grantable: item.collection, user:, level: :read) },
+    'collection admin' => ->(item, user) { Permission.create!(grantable: item.collection, user:, level: :edit) }
   }
 
   # Every relationship that ability.rb grants :read on a private Collection through.
   collection_grants = {
-    'collection admin' => ->(collection, user) { CollectionAdmin.create!(collection:, user:) },
-    'collection user' => ->(collection, user) { CollectionUser.create!(collection:, user:) },
-    'item admin' => ->(collection, user) { ItemAdmin.create!(item: collection.items.reload.first, user:) },
-    'item user' => ->(collection, user) { ItemUser.create!(item: collection.items.reload.first, user:) }
+    'collection admin' => ->(collection, user) { Permission.create!(grantable: collection, user:, level: :edit) },
+    'collection user' => ->(collection, user) { Permission.create!(grantable: collection, user:, level: :read) },
+    'item admin' => ->(collection, user) { Permission.create!(grantable: collection.items.reload.first, user:, level: :edit) },
+    'item user' => ->(collection, user) { Permission.create!(grantable: collection.items.reload.first, user:, level: :read) }
   }
 
   describe 'a private item' do

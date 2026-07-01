@@ -81,7 +81,7 @@ module Api
         if items.any?
           ActiveRecord::Associations::Preloader.new(
             records: items,
-            associations: [:item_admins, :item_users, :access_condition, { collection: :collection_admins }]
+            associations: [:item_permissions, :access_condition, { collection: :collection_permissions }]
           ).call
         end
 
@@ -91,7 +91,7 @@ module Api
         if collections.any?
           ActiveRecord::Associations::Preloader.new(
             records: collections,
-            associations: [:collection_admins, { items: [:essences, :item_admins, :item_users, :access_condition] }]
+            associations: [:collection_permissions, { items: [:essences, :item_permissions, :access_condition] }]
           ).call
         end
       end
