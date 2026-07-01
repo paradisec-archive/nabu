@@ -222,6 +222,8 @@
           %th Data access narrative
           %td= h(@item.access_narrative).gsub(/\n/, '<br/>').html_safe
 
+    = render 'inherited_access'
+
   - if can? :manage, @item
     %fieldset
       %legend Archive Information

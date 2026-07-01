@@ -1,0 +1,24 @@
+-# Read-only view of the access this item inherits from its collection. Collection editors (edit-level
+-# grants) and read-only grantees (read-level grants) cascade to every item automatically, so they are
+-# not item-level rows and are not editable here — the item's own pickers hold the additional grants.
+%fieldset.inherited-access
+  %legend Inherited from collection
+  %p
+    %em
+      These editors and read-only grantees are granted by the collection and apply to this item automatically.
+      They are not editable here.
+  %table.form.show
+    %tr
+      %th Collection editors
+      %td
+        - @item.collection.admins.each do |admin|
+          = admin.name
+          %br
+    %tr
+      %th Collection read/download access
+      %td
+        - @item.collection.users.each do |user|
+          = user.name
+          %br
+  - if can? :manage, @item.collection
+    %p= link_to 'Manage access on the collection', edit_collection_path(@item.collection)

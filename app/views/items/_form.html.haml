@@ -331,6 +331,9 @@
             %small Append
             = f.check_box :bulk_edit_append_admin_comment
 
+  - unless params[:action] == 'bulk_edit'
+    = render 'inherited_access'
+
   - if params[:action] == 'bulk_edit'
     %fieldset
       %legend Bulk Delete
