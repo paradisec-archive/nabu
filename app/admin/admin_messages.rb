@@ -16,7 +16,7 @@
 #
 ActiveAdmin.register AdminMessage do
   menu parent: 'Other Entities'
-  config.sort_order = 'message_asc'
+  config.sort_order = 'start_at_desc'
   actions :all
 
   permit_params :finish_at, :message, :start_at
