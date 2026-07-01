@@ -134,6 +134,8 @@ RSpec/ExampleLength:
     - 'spec/models/permission_spec.rb'
     - 'spec/models/user_duplicate_name_spec.rb'
     - 'spec/requests/api/v1/graphql_oauth_spec.rb'
+    - 'spec/services/permissions/backfill_spec.rb'
+    - 'spec/services/permissions/item_edit_dedup_auditor_spec.rb'
     - 'spec/services/user_merger_service_spec.rb'
 
 # Offense count: 8

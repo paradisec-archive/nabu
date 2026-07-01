@@ -46,4 +46,27 @@ namespace :permissions do
     puts format('  %-44s %d', 'collection read-only (collection_users)', inserted.fetch(:collection_read_only))
     puts format('  %-44s %d', 'item read-only (item_users)', inserted.fetch(:item_read_only))
   end
+
+  desc 'Backfill the permissions table from the four old membership tables (idempotent; skips contacts; no reindex)'
+  task backfill: :environment do
+    inserted = Permissions::Backfill.new.call
+
+    print_section.call('Inserted permission grants from the four old membership tables:', inserted)
+  end
+
+  desc 'Report item-edit permission grants redundant against a collection-edit grant the same user holds'
+  task item_edit_dedup_report: :environment do
+    report = Searchkick.callbacks(false) { Permissions::ItemEditDedupAuditor.new.report }
+
+    puts 'Redundant item-edit grants (user already holds collection-edit on the item\'s collection):'
+    puts format('  %-44s %d', 'redundant item-edit grants', report.fetch(:redundant_item_edit_grants))
+  end
+
+  desc 'Delete only the redundant item-edit grants; genuine item-only edit grants are preserved'
+  task item_edit_dedup_cleanup: :environment do
+    deleted = Searchkick.callbacks(false) { Permissions::ItemEditDedupAuditor.new.cleanup }
+
+    puts 'Deleted redundant item-edit grants (genuine item-only edit grants preserved):'
+    puts format('  %-44s %d', 'deleted item-edit grants', deleted.fetch(:deleted_item_edit_grants))
+  end
 end
