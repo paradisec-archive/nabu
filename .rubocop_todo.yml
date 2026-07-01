@@ -131,6 +131,7 @@ RSpec/ExampleLength:
     - 'spec/controllers/items_controller_spec.rb'
     - 'spec/features/search_collections_spec.rb'
     - 'spec/features/search_items_spec.rb'
+    - 'spec/models/permission_spec.rb'
     - 'spec/models/user_duplicate_name_spec.rb'
     - 'spec/requests/api/v1/graphql_oauth_spec.rb'
     - 'spec/services/user_merger_service_spec.rb'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_17_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -419,6 +419,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000002) do
     t.index ["access_grant_id"], name: "index_oauth_openid_requests_on_access_grant_id"
   end
 
+  create_table "permissions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "grantable_id", null: false
+    t.string "grantable_type", null: false
+    t.string "level", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["grantable_type", "grantable_id", "user_id", "level"], name: "index_permissions_on_grantable_and_user_and_level", unique: true
+    t.index ["user_id"], name: "index_permissions_on_user_id"
+  end
+
   create_table "searchjoy_conversions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "convertable_id"
     t.string "convertable_type"
@@ -519,4 +530,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_17_000002) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
+  add_foreign_key "permissions", "users", on_delete: :cascade
 end
