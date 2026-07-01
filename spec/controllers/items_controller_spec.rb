@@ -67,6 +67,20 @@ describe ItemsController, type: :controller do
           expect(response).to render_template(:new)
         end
       end
+
+      context 'in a collection that has an editor' do
+        before do
+          collection.admins << create(:user)
+          sign_in(manager, scope: :user)
+        end
+
+        it 'does not copy the collection editor down as an item-edit grant' do
+          post :create, params: { collection_id: collection.identifier, item: { identifier: 'newitem', title: 'New item title', description: 'New item description' } }
+          created = collection.items.find_by(identifier: 'newitem')
+          expect(created).to be_present
+          expect(created.admins).to be_empty
+        end
+      end
     end
 
     context 'when destroying an item' do

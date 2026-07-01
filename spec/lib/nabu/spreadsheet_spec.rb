@@ -274,5 +274,19 @@ describe Nabu::Spreadsheet do
       item_agent = item.item_agents.first
       expect(item_agent.user.contact_only).to be(true)
     end
+
+    context 'when importing into a collection that already has an editor' do
+      before do
+        collector = User.find_by(first_name: 'VKS')
+        existing = create(:collection, identifier: 'VKS', collector: collector)
+        existing.admins << create(:user)
+      end
+
+      it 'does not copy the collection editor onto each imported item' do
+        spreadsheet.parse
+
+        expect(spreadsheet.items.flat_map(&:admins)).to be_empty
+      end
+    end
   end
 end

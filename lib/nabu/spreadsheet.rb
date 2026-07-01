@@ -43,7 +43,7 @@ module Nabu
     def parse
       coll_id = parse_coll_id
       @collection = Collection
-                    .includes(:languages, :countries, :admins, items: :admins)
+                    .includes(:languages, :countries)
                     .find_by(identifier: coll_id)
       collector = parse_user
       unless collector
@@ -141,7 +141,6 @@ module Nabu
         item.east_limit = @collection.east_limit
         item.access_condition_id = @collection.access_condition_id
         item.access_narrative = @collection.access_narrative
-        item.admin_ids = @collection.admin_ids
         item.title = 'PLEASE PROVIDE TITLE'
         item.description = 'PLEASE PROVIDE DESCRIPTION'
       end

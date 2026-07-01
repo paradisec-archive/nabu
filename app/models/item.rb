@@ -235,7 +235,6 @@ class Item < ApplicationRecord
     self.access_condition_id ||= collection.access_condition_id
     self.access_narrative ||= collection.access_narrative
     self.private ||= collection.private
-    self.admin_ids ||= collection.admin_ids
   end
 
   def inherit_details_from_collection(override = false)
