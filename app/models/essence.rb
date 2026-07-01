@@ -215,12 +215,13 @@ class Essence < ApplicationRecord
       collection_title: item.collection.title,
 
       private: item.private? || item.collection.private?,
-      admin_ids: item.admins.map(&:id).uniq,
-      user_ids: item.users.map(&:id).uniq,
       collector_id: item.collector_id,
       operator_id: item.operator_id,
-      collection_admin_ids: item.collection.admins.map(&:id).uniq,
-      collection_user_ids: item.collection.users.map(&:id).uniq,
+      # Read-visibility union: item editors + read-grantees + collection editors + read-grantees.
+      # Consumed by HasSearch#visibility_clauses (an essence inherits its item's/collection's visibility).
+      # Essences have no advanced-search facets, so unlike Collection/Item they carry no separate
+      # admin_ids/user_ids fields - the union is the only permission data indexed here.
+      access_user_ids: (item.admins.map(&:id) + item.users.map(&:id) + item.collection.admins.map(&:id) + item.collection.users.map(&:id)).uniq,
 
       originated_on: item.originated_on,
       created_at: created_at&.to_date,
@@ -229,7 +230,7 @@ class Essence < ApplicationRecord
   end
 
   def self.search_user_fields
-    %i[admin_ids user_ids collection_admin_ids collection_user_ids]
+    %i[access_user_ids]
   end
 
   def self.search_agg_fields
@@ -241,7 +242,7 @@ class Essence < ApplicationRecord
   end
 
   def self.search_filter_fields
-    %i[private collector_id operator_id admin_ids user_ids collection_admin_ids mimetype]
+    %i[private collector_id operator_id mimetype]
   end
 
   def self.search_highlight_fields

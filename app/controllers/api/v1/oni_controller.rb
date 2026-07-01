@@ -238,19 +238,10 @@ module Api
         perms = []
         unless current_user&.admin?
           perms << { private: false }
-          if current_user
-            Collection.search_user_fields.each do |field|
-              perms << { field => current_user.id }
-            end
-
-            Item.search_user_fields.each do |field|
-              perms << { field => current_user.id }
-            end
-
-            Essence.search_user_fields.each do |field|
-              perms << { field => current_user.id }
-            end
-          end
+          # Collection, Item and Essence documents all carry a single deduped access_user_ids union
+          # (the full read-visibility set), so one clause covers every entity type in this cross-index
+          # search. Mirrors HasSearch#visibility_clauses.
+          perms << { access_user_ids: current_user.id } if current_user
         end
 
         where = {

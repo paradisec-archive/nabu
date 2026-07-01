@@ -43,9 +43,9 @@
 #     and item controllers/forms, so a non-admin's save never adds or removes a grant.
 #
 # SEARCH VISIBILITY: the :read rules here are the canonical policy; the search indexes
-#   mirror them via denormalised id fields (see the Item note below and
-#   spec/features/search_authorisation_consistency_spec.rb). Change a read path here and
-#   you must update the matching index field and that spec.
+#   mirror them via a single denormalised access_user_ids union per document (see the Item note
+#   below and spec/features/search_authorisation_consistency_spec.rb). Change a read path here and
+#   you must update the access_user_ids union in search_data and that spec.
 # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
 class Ability
   include CanCan::Ability
@@ -138,10 +138,11 @@ class Ability
     #############
 
     # NOTE: these Item :read grants are the canonical visibility policy. The search indexes
-    # mirror them via denormalised id fields (Item.search_user_fields -> admin_ids, user_ids,
-    # collection_user_ids, collection_admin_ids) consumed by HasSearch#visibility_clauses.
-    # If you add or remove a read path here, update the matching index field and
-    # spec/features/search_authorisation_consistency_spec.rb, which pins the two together.
+    # mirror them via a single denormalised access_user_ids union (Item.search_user_fields ->
+    # access_user_ids = item editors + read-grantees + collection editors + read-grantees)
+    # consumed by HasSearch#visibility_clauses. If you add or remove a read path here, update the
+    # access_user_ids union in search_data and spec/features/search_authorisation_consistency_spec.rb,
+    # which pins the two together.
     can %i[read data], Item, { private: false, collection: { private: false } }
     can :read, Entity, entity_type: 'Item', item: { private: false, collection: { private: false } }
 

@@ -68,9 +68,9 @@ module HasSearch
   # Single source of truth for "which documents may current_user see" in search.
   #
   # Returns :all for admins (no restriction), otherwise a list of alternative match clauses
-  # with OR semantics: a document is visible if it is public OR current_user is listed in any
-  # of the model's permission fields. This mirrors the :read grants in app/models/ability.rb -
-  # model.search_user_fields is the denormalised mirror of those grants.
+  # with OR semantics: a document is visible if it is public OR current_user is in the document's
+  # access_user_ids union (the deduped set of everyone-who-can-read). This mirrors the :read grants
+  # in app/models/ability.rb - model.search_user_fields is the denormalised mirror of those grants.
   #
   # Both search families consume this one method so they cannot drift: the basic search
   # (Searchkick `where`, via basic_search_where) and the advanced search (raw OpenSearch

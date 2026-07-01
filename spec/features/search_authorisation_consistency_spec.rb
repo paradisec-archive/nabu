@@ -4,14 +4,16 @@ require 'cancan/matchers'
 # Consistency oracle between Ability (the canonical read policy) and the search indexes.
 #
 # Ability (app/models/ability.rb) is the single source of truth for who may :read a
-# Collection or Item. The search indexes filter results separately, using denormalised
-# permission fields (admin_ids, user_ids, collection_user_ids, collection_admin_ids,
-# item_admin_ids, item_user_ids) consumed by HasSearch#visibility_clauses.
+# Collection or Item. The search indexes filter results separately, using a single denormalised
+# access_user_ids union per document (the deduped set of everyone-who-can-read) consumed by
+# HasSearch#visibility_clauses.
 #
 # Those two mechanisms must agree: every relationship that Ability says grants :read must
 # also make the record findable in search, and vice versa. This spec pins them together so
-# they cannot drift - if you add a new read grant to ability.rb, add the matching index field
-# (and a row here) or this spec fails. See the cross-reference notes in ability.rb and
+# they cannot drift - if you add a new read grant to ability.rb, extend the access_user_ids union
+# in search_data (and add a row here) or this spec fails. Each grant case below is exercised at
+# every level (item edit/read, collection edit/read) so the union is verified to mirror all four
+# read paths for items, collections and essences. See the cross-reference notes in ability.rb and
 # app/controllers/concerns/has_search.rb.
 describe 'Search/Ability authorisation consistency', :search do
   let!(:user) { create(:user) }
@@ -89,6 +91,48 @@ describe 'Search/Ability authorisation consistency', :search do
         it 'is visible in advanced item search' do
           visit_advanced_item_search
           expect(page).to have_text(item.full_identifier)
+        end
+      end
+    end
+  end
+
+  describe 'a private essence' do
+    let!(:essence) { create(:essence, item:, size: 1234) }
+
+    def refresh_essence_index
+      Essence.search_index.refresh
+    end
+
+    # No web page renders an essence search (essences are Oni-API only), so assert directly against
+    # the Essence index the same way HasSearch#visibility_clauses does: an essence is visible when it
+    # is public OR current_user is in its access_user_ids union. This pins the union to Ability's
+    # essence :read paths, which cascade from the item and collection grants.
+    def essence_visible_to?(reader)
+      Essence.search('*', where: { _or: [{ private: false }, { access_user_ids: reader.id }] }, load: false).map(&:id).include?(essence.id)
+    end
+
+    it 'is denied read by ability when there is no grant' do
+      expect(Ability.new(user)).not_to be_able_to(:read, essence)
+    end
+
+    it 'is hidden in essence search when there is no grant' do
+      refresh_essence_index
+      expect(essence_visible_to?(user)).to be(false)
+    end
+
+    item_grants.each do |relationship, grant|
+      context "when the user is a #{relationship}" do
+        before do
+          grant.call(item, user)
+          refresh_essence_index
+        end
+
+        it 'is granted read by ability' do
+          expect(Ability.new(user)).to be_able_to(:read, essence.reload)
+        end
+
+        it 'is visible in essence search' do
+          expect(essence_visible_to?(user)).to be(true)
         end
       end
     end

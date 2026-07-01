@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-# Regression coverage for the denormalised permission fields in the search indexes.
-# Collection, Item and Essence search documents each embed the ids of the users allowed to
-# see them (user_ids, admin_ids, collection_user_ids, item_user_ids, ...). When a grant is
-# added or removed the affected documents must be reindexed, otherwise a revoked user keeps
-# finding private records via search. The reindex is driven by Permission#reindex_search_documents.
+# Regression coverage for the denormalised access_user_ids union in the search indexes.
+# Collection, Item and Essence search documents each embed a single access_user_ids field holding
+# the ids of everyone allowed to see them. When a grant is added or removed the affected documents
+# must be reindexed, otherwise a revoked user keeps finding private records via search. The reindex
+# is driven by Permission#reindex_search_documents.
 describe 'Search visibility when access is granted and revoked', :search do
   let!(:user) { create(:user) }
   let!(:collection) { create(:collection, :reindex, identifier: 'PRIVCOLL', private: true) }
@@ -34,8 +34,8 @@ describe 'Search visibility when access is granted and revoked', :search do
     refresh_search_indexes
   end
 
-  # A collection user is denormalised onto the collection (user_ids) and every item in it
-  # (collection_user_ids), so both indexes must follow the grant.
+  # A collection read grant lands in the access_user_ids union of the collection and every item in
+  # it (and their essences), so all those indexes must follow the grant.
   describe 'a collection user grant' do
     context 'when no grant exists' do
       before { visit search_collections_path }
@@ -85,7 +85,7 @@ describe 'Search visibility when access is granted and revoked', :search do
     end
   end
 
-  # An item user is denormalised onto the item (user_ids) and its collection (item_user_ids).
+  # An item read grant lands in the access_user_ids union of the item and its collection.
   describe 'an item user grant' do
     context 'when no grant exists' do
       before { visit search_items_path }

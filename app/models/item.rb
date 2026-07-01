@@ -288,12 +288,12 @@ class Item < ApplicationRecord
     includes
   end
 
-  # Fields holding the user ids allowed to see a private item. Consumed by
-  # HasSearch#visibility_clauses to filter search results. This list is the denormalised
-  # mirror of the Item :read grants in app/models/ability.rb - keep the two in step. The
-  # consistency is pinned by spec/features/search_authorisation_consistency_spec.rb.
+  # Single field holding the deduped union of user ids allowed to see a private item. Consumed by
+  # HasSearch#visibility_clauses to filter search results. This is the denormalised mirror of the
+  # Item :read grants in app/models/ability.rb - keep the two in step (see access_user_ids in
+  # search_data). The consistency is pinned by spec/features/search_authorisation_consistency_spec.rb.
   def self.search_user_fields
-    %i[admin_ids user_ids collection_user_ids collection_admin_ids]
+    %i[access_user_ids]
   end
 
   def self.search_agg_fields
@@ -339,6 +339,12 @@ class Item < ApplicationRecord
         }
 
   def search_data
+    # Computed once and reused for both the facet fields and the access_user_ids union below.
+    admin_ids = admins.map(&:id)
+    user_ids = users.map(&:id)
+    collection_admin_ids = collection.admins.map(&:id)
+    collection_user_ids = collection.users.map(&:id)
+
     data = {
       # Full text plus advanced search
       entity_type: 'Item',
@@ -398,11 +404,14 @@ class Item < ApplicationRecord
       university_id:,
       access_condition_id:,
       discourse_type_id:,
-      admin_ids: admins.map(&:id).uniq,
+      # admin_ids/user_ids survive as the advanced-search "Edit access"/"Read/Download access" facets
+      # (see search_filter_fields).
+      admin_ids: admin_ids.uniq,
       agent_ids: item_agents.map(&:user_id).uniq,
-      user_ids: users.map(&:id).uniq,
-      collection_user_ids: collection.users.map(&:id).uniq,
-      collection_admin_ids: collection.admins.map(&:id).uniq,
+      user_ids: user_ids.uniq,
+      # Read-visibility union: item editors + read-grantees + collection editors + read-grantees.
+      # Consumed by HasSearch#visibility_clauses.
+      access_user_ids: (admin_ids + user_ids + collection_admin_ids + collection_user_ids).uniq,
       originated_on:,
       metadata_exportable:,
       born_digital:,

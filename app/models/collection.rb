@@ -227,8 +227,12 @@ class Collection < ApplicationRecord
     [:collector, :countries, :languages, :university, :admins, :users, items: [:admins, :users]]
   end
 
+  # Search only ever answers "can this person read this?", so visibility collapses to a single
+  # deduped union of everyone-who-can-read (see access_user_ids in search_data). This mirrors the
+  # Collection :read grants in app/models/ability.rb - keep the two in step. The consistency is
+  # pinned by spec/features/search_authorisation_consistency_spec.rb.
   def self.search_user_fields
-    %i[admin_ids user_ids item_admin_ids item_user_ids]
+    %i[access_user_ids]
   end
 
   def self.search_agg_fields
@@ -257,6 +261,9 @@ class Collection < ApplicationRecord
                         }
 
   def search_data
+    # Computed once and reused for both the admin_ids facet field and the access_user_ids union below.
+    admin_ids = admins.map(&:id)
+
     data = {
       # Extra things for basic full text search
       entity_type: 'Collection',
@@ -304,10 +311,11 @@ class Collection < ApplicationRecord
       university_id:,
       country_ids: countries.map(&:id).uniq,
       language_ids: languages.map(&:id).uniq,
-      admin_ids: admins.map(&:id).uniq,
-      user_ids: users.map(&:id).uniq,
-      item_admin_ids: items.flat_map(&:admin_ids).uniq,
-      item_user_ids: items.flat_map(&:user_ids).uniq,
+      # admin_ids survives as the advanced-search "Edit access" facet (see search_filter_fields).
+      admin_ids: admin_ids.uniq,
+      # Read-visibility union: collection editors + read-grantees + every item's editors + read-grantees
+      # (preserving "member of any item => can read the collection"). Consumed by HasSearch#visibility_clauses.
+      access_user_ids: (admin_ids + users.map(&:id) + items.flat_map(&:admin_ids) + items.flat_map(&:user_ids)).uniq,
       access_condition_id:,
       field_of_research_id:,
       funding_body_id: grants.map(&:funding_body_id).uniq,
