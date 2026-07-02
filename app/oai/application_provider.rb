@@ -5,6 +5,22 @@ class ApplicationProvider < OAI::Provider::Base
   record_prefix 'oai:paradisec.org.au'
   admin_email 'thien@unimelb.edu.au'
   update_granularity OAI::Const::Granularity::LOW
+
+  class << self
+    # Subclasses narrow the advertised formats by overriding `.formats` (e.g. a collection serves
+    # oai_dc + rif, not olac). The gem's own format_supported?/format read the *global* @formats
+    # registry, so a format registered by another provider (olac is item-only, rif is collection-only)
+    # still resolves here and then blows up in encode because the model has no to_<prefix> and the
+    # format defines no fields. Consult the provider's advertised `.formats` so an unsupported prefix
+    # returns a proper cannotDisseminateFormat error instead of raising NoMethodError -> HTTP 500.
+    def format_supported?(prefix)
+      formats.key?(prefix)
+    end
+
+    def format(prefix)
+      formats[prefix] || raise(OAI::FormatException.new)
+    end
+  end
 end
 
 module OAI::Provider::Metadata
