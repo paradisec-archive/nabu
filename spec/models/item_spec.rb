@@ -89,4 +89,34 @@ describe Item, type: :model do
       end
     end
   end
+
+  # Regression for NABU-Q0: an item with a mistyped originated_on year (e.g. 4 AD) produced a
+  # single-digit DataCite publicationYear, which failed the required 4-digit pattern at mint time.
+  describe 'date sanity validation', :no_catalog_upload do
+    it 'accepts an originated_on from 1000 AD onwards' do
+      expect(build(:item, originated_on: Date.new(1901, 1, 1))).to be_valid
+    end
+
+    it 'rejects an originated_on before 1000 AD' do
+      item = build(:item, originated_on: Date.new(4, 1, 1))
+
+      aggregate_failures do
+        expect(item).not_to be_valid
+        expect(item.errors[:originated_on]).to include('must not be before 1000 AD')
+      end
+    end
+
+    it 'rejects a received_on before 1000 AD' do
+      item = build(:item, received_on: Time.utc(4, 1, 1))
+
+      aggregate_failures do
+        expect(item).not_to be_valid
+        expect(item.errors[:received_on]).to include('must not be before 1000 AD')
+      end
+    end
+
+    it 'ignores blank dates' do
+      expect(build(:item, originated_on: nil, received_on: nil, digitised_on: nil)).to be_valid
+    end
+  end
 end

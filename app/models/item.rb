@@ -141,6 +141,10 @@ class Item < ApplicationRecord
   validates :west_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
   validates :east_limit, numericality: { greater_than_or_equal_to: -180, less_then_or_equal_to: 180 }, allow_nil: true
 
+  # Reject implausible historical dates such as a mistyped year like '0004'. These break downstream
+  # consumers - notably DataCite DOI minting, whose publicationYear must match a 4-digit pattern.
+  validate :dates_not_before_1000_ad
+
   bulk = %i[
     bulk_edit_append_title bulk_edit_append_description bulk_edit_append_region
     bulk_edit_append_originated_on_narrative bulk_edit_append_url bulk_edit_append_language
@@ -749,6 +753,14 @@ class Item < ApplicationRecord
   end
 
   private
+
+  def dates_not_before_1000_ad
+    { originated_on:, received_on:, digitised_on: }.each do |field, value|
+      next if value.blank?
+
+      errors.add(field, 'must not be before 1000 AD') if value.year < 1000
+    end
+  end
 
   def sync_collection_entity
     return unless previously_new_record? || destroyed? || saved_change_to_collection_id?
