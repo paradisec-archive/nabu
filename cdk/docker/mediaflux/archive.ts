@@ -94,13 +94,18 @@ const main = async () => {
         `/projects/proj-1190_paradisec_backup-1128.4.248/paradisec/${dir}`,
         tmpPath,
       ],
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] },
+      // Capture stderr (rather than inheriting it) so the upload binary's actual failure output is
+      // attached to the Sentry report — inheriting left err.stderr null and the failures undiagnosable.
+      // maxBuffer is raised because a verbose failure can exceed the 1 MiB default and mask the real error.
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 50 * 1024 * 1024 },
     );
   } catch (error) {
     const err = error as Error & { status?: number; stdout?: string; stderr?: string };
     const message = `Upload binary failed for ${key} (exit code ${err.status})`;
     console.error(message);
     console.error(err.stdout ?? '');
+    // Keep the binary's stderr in the container logs too, now that it is no longer inherited.
+    console.error(err.stderr ?? '');
     Sentry.captureException(new Error(message), {
       extra: { bucket, key, stdout: err.stdout, stderr: err.stderr },
     });
