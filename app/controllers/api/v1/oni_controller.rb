@@ -181,7 +181,16 @@ module Api
 
         @total = files.count
 
-        @entities = files.order("#{sort} #{query.order}").offset(query.offset).limit(query.limit).includes(entity: [:collections, :items, :essences]).load
+        # Every row here is an Essence entity. The view walks essence.item and essence.collection
+        # (delegated to item.collection) and calls can?(:read, essence), which checks the item's
+        # access_condition plus item/collection permission grants. Preload all of it to avoid the
+        # per-essence item/collection N+1 (NABU-MZ) and the latent permission-check N+1.
+        @entities = files
+          .order("#{sort} #{query.order}")
+          .offset(query.offset)
+          .limit(query.limit)
+          .includes(entity: { item: [:access_condition, :item_permissions, { collection: :collection_permissions }] })
+          .load
       end
 
       def file
