@@ -48,6 +48,38 @@ describe CollectionsController, type: :controller do
     end
   end
 
+  # Regression for NABU-KW/QG: can?(:read, item) in the show view re-queried the polymorphic
+  # `permissions` table once per item because collection_grant_permissions was not preloaded, so
+  # the permission query count scaled with the number of items on the page. It must now be constant.
+  describe 'GET #show permission preloading', :no_catalog_upload do
+    render_views
+
+    before do
+      request.env['devise.mapping'] = Devise.mappings[:user]
+      sign_in(editor, scope: :user)
+    end
+
+    def permission_queries_for(item_count)
+      create_list(:item, item_count, collection:)
+      queries = 0
+      counter = lambda do |_name, _start, _finish, _id, payload|
+        queries += 1 if payload[:sql] =~ /\bpermissions\b/i && payload[:name] != 'SCHEMA'
+      end
+      ActiveSupport::Notifications.subscribed(counter, 'sql.active_record') do
+        get :show, params: { id: collection.identifier }
+      end
+      queries
+    end
+
+    it 'does not issue more permission queries as the number of items grows' do
+      one_item = permission_queries_for(1)
+      Item.where(collection:).destroy_all
+      many_items = permission_queries_for(5)
+
+      expect(many_items).to eq(one_item)
+    end
+  end
+
   # Regression for NABU-QA: a spreadsheet row whose title exceeds the column length used to make
   # item.save! raise ActiveRecord::ValueTooLong and 500 the whole upload. The bad row should now be
   # reported back to the uploader while the good rows still save.

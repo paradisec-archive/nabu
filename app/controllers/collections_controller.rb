@@ -58,9 +58,13 @@ class CollectionsController < ApplicationController
     @num_items_ready = @collection.items.where.not(digitised_on: nil).count
     @num_essences = Essence.where(item_id: @collection.items).count
 
-    # Preload the associations CanCan traverses in can?(:read/:update, item) to avoid N+1 queries
+    # Preload the associations CanCan traverses in can?(:read/:update, item) to avoid N+1 queries.
+    # The Item :read/:manage rules match on item_permissions (the item's own grants) and
+    # collection_grant_permissions (the parent collection's grants, reached via collection_id);
+    # both must be preloaded or can? re-queries the permissions table once per item. :collection
+    # is loaded for the `collection: { private: false }` rule and the view's per-item links.
     @items = @collection.items
-      .includes(:access_condition, :essences, :admins, :users, :item_permissions, collection: :collection_permissions)
+      .includes(:access_condition, :essences, :admins, :users, :item_permissions, :collection_grant_permissions, :collection)
       .page(params[:items_page]).per(params[:items_per_page])
 
     sort_column = Item.column_names.include?(params[:sort]) ? params[:sort] : 'identifier'
