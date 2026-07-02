@@ -114,7 +114,7 @@ class Collection < ApplicationRecord
   # Enforce uppercase identifiers on create only, so every create path (web form and spreadsheet
   # importer) is covered. Legacy mixed-case collections must remain editable, so this is not run on update.
   validates :identifier, format: { with: /\A[A-Z0-9_]*\z/, message: "error - must be uppercase, only A-Z, 0-9 and '_' allowed" }, on: :create
-  validates :title, presence: true
+  validates :title, presence: true, length: { maximum: 255 }
 
   validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
   validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true

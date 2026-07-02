@@ -84,4 +84,19 @@ describe Collection, type: :model do
       expect(collection.save).to be(true)
     end
   end
+
+  describe 'title length validation', :no_catalog_upload do
+    it 'accepts a title at the 255 character column limit' do
+      expect(build(:collection, title: 'a' * 255)).to be_valid
+    end
+
+    it 'rejects a title longer than the column allows rather than overflowing the DB' do
+      collection = build(:collection, title: 'a' * 256)
+
+      aggregate_failures do
+        expect(collection).not_to be_valid
+        expect(collection.errors[:title]).to be_present
+      end
+    end
+  end
 end

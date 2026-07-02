@@ -74,4 +74,19 @@ require Rails.root.join "spec/concerns/identifiable_by_doi_spec.rb"
 
 describe Item, type: :model do
   it_behaves_like "identifiable by doi", "collection"
+
+  describe 'title length validation', :no_catalog_upload do
+    it 'accepts a title at the 255 character column limit' do
+      expect(build(:item, title: 'a' * 255)).to be_valid
+    end
+
+    it 'rejects a title longer than the column allows rather than overflowing the DB' do
+      item = build(:item, title: 'a' * 256)
+
+      aggregate_failures do
+        expect(item).not_to be_valid
+        expect(item.errors[:title]).to be_present
+      end
+    end
+  end
 end

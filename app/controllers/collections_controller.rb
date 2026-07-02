@@ -309,10 +309,15 @@ class CollectionsController < ApplicationController
       @collection.save!
       saved_items = 0
       added_items = ''
+      failed_items = []
       sheet.items.each do |item|
         item.save!
         saved_items += 1
         added_items += "#{item.identifier}, "
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::ValueTooLong => e
+        # A bad row (e.g. a title longer than the column allows) shouldn't abort the whole import or
+        # surface as a 500 — record it, keep the good rows, and report it back to the uploader.
+        failed_items << "#{item.identifier}: #{item.errors.full_messages.presence&.join(', ') || e.message}"
       end
       notice = +"SUCCESS: <b>#{saved_items}</b> items created/updated for collection #{@collection.identifier}<br/>"
       notice << sheet.notices.join('<br/>').truncate(500) << '<br />' unless sheet.notices.empty?
@@ -321,12 +326,14 @@ class CollectionsController < ApplicationController
       # The session uses the cookie store (4 KB hard limit); keep the flash small enough to fit alongside the rest
       # of the session, otherwise the redirect raises ActionDispatch::Cookies::CookieOverflow after all the work is done.
       flash[:notice] = notice.truncate(1500)
+      flash[:error] = "Some items could not be saved:<br/>#{failed_items.join('<br/>')}".truncate(1000) if failed_items.any?
 
       redirect_to @collection
     else
       @collection ||= Collection.new
       flash.now[:notice] = sheet.notices.join('<br/>').truncate(1000) unless sheet.notices.empty?
-      flash.now[:error] = sheet.errors.join('<br/>').truncate(1000) unless sheet.errors.empty?
+      errors = sheet.errors + (sheet.collection&.errors&.full_messages || [])
+      flash.now[:error] = errors.join('<br/>').truncate(1000) unless errors.empty?
       render 'new_from_metadata'
     end
   end

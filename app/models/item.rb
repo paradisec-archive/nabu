@@ -134,7 +134,7 @@ class Item < ApplicationRecord
             uniqueness: { case_sensitive: false, scope: %i[collection_id identifier] },
             format: { with: /\A[a-zA-Z0-9_]*\z/, message: "error - only letters and numbers and '_' allowed" },
             length: { in: 2..30 }
-  validates :title, presence: true
+  validates :title, presence: true, length: { maximum: 255 }
 
   validates :north_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
   validates :south_limit, numericality: { greater_than_or_equal_to: -90, less_then_or_equal_to: 90 }, allow_nil: true
