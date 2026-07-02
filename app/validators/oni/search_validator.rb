@@ -77,6 +77,11 @@ module Oni
     def validate_filters
       return if filters.nil?
 
+      unless filters.is_a?(Hash)
+        errors.add(:filters, 'must be an object')
+        return
+      end
+
       filters.each do |key, value|
         unless key.is_a?(String)
           errors.add(:filters, "key '#{key}' must be a string")
@@ -129,7 +134,7 @@ module Oni
     end
 
     def validate_entity_type_filter
-      return if filters.nil? || !filters.key?('entity_type')
+      return unless filters.is_a?(Hash) && filters.key?('entity_type')
 
       entity_types = filters['entity_type']
       return unless entity_types.is_a?(Array)
@@ -145,7 +150,7 @@ module Oni
     end
 
     def validate_originated_on
-      return if filters.nil? || !filters.key?('originatedOn')
+      return unless filters.is_a?(Hash) && filters.key?('originatedOn')
 
       originated_on = filters['originatedOn']
 

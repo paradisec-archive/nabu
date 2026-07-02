@@ -28,4 +28,14 @@ describe 'Oni search sorting', :no_catalog_upload, :search, type: :request do
 
     expect(response).to have_http_status(:unprocessable_content)
   end
+
+  # Per the RO-Crate search spec, `filters` is an object mapping field names to arrays of strings.
+  # A client sending `filters` as a top-level array used to reach filters.key?(...) in the validator
+  # and raise NoMethodError -> HTTP 500. It must be rejected as invalid input instead (NABU-N9).
+  it 'returns 422 (not a 500) when filters is an array rather than an object' do
+    post search_path, params: { query: '*', filters: ['2020-01-01T00:00:00.000Z TO 2021-01-01T00:00:00.000Z'] }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body['errors']).to include('Filters must be an object')
+  end
 end
