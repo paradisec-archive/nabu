@@ -289,4 +289,23 @@ describe Nabu::Spreadsheet do
       end
     end
   end
+
+  describe '#parse_row' do
+    let(:collector) { create(:user) }
+    let(:collection) { create(:collection) }
+    let(:sheet) do
+      Nabu::Spreadsheet::Version3.new(nil).tap do |s|
+        s.instance_variable_set(:@collection, collection)
+      end
+    end
+
+    # Regression for NABU-Q9: roo returns Date objects for date-formatted cells, so a date landing
+    # in a language/country column reached String#split and raised NoMethodError.
+    it 'does not crash when a subject-language cell is date-typed' do
+      row = ['42', 'A title', 'A description', nil, Date.new(2019, 11, 28)]
+
+      expect { sheet.send(:parse_row, row, collector, 16) }.not_to raise_error
+      expect(sheet.notices).to include(a_string_matching(/Subject language '2019-11-28' not found/))
+    end
+  end
 end
