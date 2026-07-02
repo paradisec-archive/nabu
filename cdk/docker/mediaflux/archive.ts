@@ -4,7 +4,7 @@ import { basename, dirname } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, type GetObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import * as Sentry from '@sentry/node';
 
 Sentry.init({
@@ -64,7 +64,24 @@ const main = async () => {
 
   // Download from S3
   const s3 = new S3Client();
-  const response = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  let response: GetObjectCommandOutput;
+  try {
+    response = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  } catch (error) {
+    const err = error as Error & { $metadata?: { httpStatusCode?: number } };
+    // This task is triggered by an S3 "Object Created" event, but Fargate cold-start means the
+    // object can be deleted or replaced before we fetch it. For a backup job a vanished source key
+    // is an expected race, not a crash: log it and report at warning level (so a spike stays
+    // visible) rather than letting it surface as a generic "Unexpected error" (NABU-NF).
+    if (err.name === 'NoSuchKey' || err.$metadata?.httpStatusCode === 404) {
+      const message = `Object no longer exists, skipping: s3://${bucket}/${key}`;
+      console.warn(message);
+      Sentry.captureMessage(message, 'warning');
+      await Sentry.flush(5000);
+      process.exit(0);
+    }
+    throw error;
+  }
 
   if (!response.Body) {
     const err = new Error(`Empty response body for s3://${bucket}/${key}`);
