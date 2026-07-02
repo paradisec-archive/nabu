@@ -66,4 +66,13 @@ describe Essence, type: :model do
       expect(essence).to be_valid
     end
   end
+
+  describe 'auto-linking annotations on create' do
+    it 'links a new transcript to existing media sharing its basename' do
+      media = create(:essence, item: item, filename: 'interview.mp3', mimetype: 'audio/mp3', size: 100)
+      transcript = create(:essence, item: item, filename: 'interview.eaf', mimetype: 'text/xml', size: 100)
+
+      expect(transcript.reload.annotates).to contain_exactly(media)
+    end
+  end
 end

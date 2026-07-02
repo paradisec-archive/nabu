@@ -25,8 +25,10 @@ describe AnnotationReminderDigestJob, type: :job do
   end
 
   it 'does not email when the transcript already has a mapping' do
+    # Non-matching basenames so the mapping comes solely from the explicit link below,
+    # not the auto-linking callback (EssenceAnnotationMatcher).
     eaf = make_essence(filename: 'a.eaf', mimetype: 'text/xml')
-    mp3 = make_essence(filename: 'a.mp3', mimetype: 'audio/mp3')
+    mp3 = make_essence(filename: 'b.mp3', mimetype: 'audio/mp3')
     EssenceAnnotation.create!(annotation_essence: eaf, target_essence: mp3)
     expect { described_class.new.perform }.not_to have_enqueued_mail(AnnotationReminderMailer)
   end

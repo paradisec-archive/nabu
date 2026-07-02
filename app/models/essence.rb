@@ -114,6 +114,7 @@ class Essence < ApplicationRecord
   before_destroy :update_catalog_metadata
 
   after_commit :sync_parent_entities
+  after_create_commit :auto_link_annotations
 
   def allowed_zero_file_size?
     filename =~ /\.(annis)$/
@@ -173,6 +174,10 @@ class Essence < ApplicationRecord
 
   def extension
     File.extname(filename).delete('.').downcase
+  end
+
+  def basename
+    File.basename(filename, File.extname(filename)).downcase
   end
 
   def annotation_extension?
@@ -266,6 +271,10 @@ class Essence < ApplicationRecord
 
   def update_catalog_metadata
     item.update_catalog_metadata
+  end
+
+  def auto_link_annotations
+    EssenceAnnotationMatcher.link_for(self)
   end
 
   def round_duration

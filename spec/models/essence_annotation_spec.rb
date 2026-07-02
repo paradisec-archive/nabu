@@ -35,8 +35,10 @@ require 'rails_helper'
 describe EssenceAnnotation, type: :model do
   let(:item) { create(:item) }
   let(:other_item) { create(:item) }
-  let(:mp3) { create(:essence, item: item, filename: 'sample.mp3', mimetype: 'audio/mp3', size: 100) }
-  let(:eaf) { create(:essence, item: item, filename: 'sample.eaf', mimetype: 'text/xml', size: 100) }
+  # Deliberately non-matching basenames so the auto-linking callback (EssenceAnnotationMatcher)
+  # does not pre-create mappings; these tests exercise the association machinery directly.
+  let(:mp3) { create(:essence, item: item, filename: 'recording.mp3', mimetype: 'audio/mp3', size: 100) }
+  let(:eaf) { create(:essence, item: item, filename: 'transcript.eaf', mimetype: 'text/xml', size: 100) }
   let(:foreign_eaf) { create(:essence, item: other_item, filename: 'foreign.eaf', mimetype: 'text/xml', size: 100) }
   let(:pdf) { create(:essence, item: item, filename: 'notes.pdf', mimetype: 'application/pdf', size: 100) }
 
@@ -98,8 +100,8 @@ describe EssenceAnnotation, type: :model do
   describe Essence, type: :model do
     describe '#unmapped_transcript?' do
       let(:item) { create(:item) }
-      let(:eaf) { create(:essence, item: item, filename: 'sample.eaf', mimetype: 'text/xml', size: 100) }
-      let(:mp3) { create(:essence, item: item, filename: 'sample.mp3', mimetype: 'audio/mp3', size: 100) }
+      let(:eaf) { create(:essence, item: item, filename: 'notes.eaf', mimetype: 'text/xml', size: 100) }
+      let(:mp3) { create(:essence, item: item, filename: 'audio.mp3', mimetype: 'audio/mp3', size: 100) }
 
       it 'is true for a transcript with no outgoing mappings' do
         expect(eaf.unmapped_transcript?).to be true

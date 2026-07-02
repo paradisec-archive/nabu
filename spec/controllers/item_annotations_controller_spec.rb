@@ -4,8 +4,10 @@ describe ItemAnnotationsController, type: :controller do
   let(:user) { create(:user) }
   let(:collection) { create(:collection) }
   let(:item) { create(:item, collection: collection) }
+  # Deliberately distinct basenames so the auto-linking callback (EssenceAnnotationMatcher) does
+  # not pre-create mappings; these tests exercise the grid update mechanism with explicit links.
   let(:eaf) { create(:essence, item: item, filename: 'sample.eaf', mimetype: 'text/xml', size: 100) }
-  let(:mp3) { create(:essence, item: item, filename: 'sample.mp3', mimetype: 'audio/mp3', size: 100) }
+  let(:mp3) { create(:essence, item: item, filename: 'recording.mp3', mimetype: 'audio/mp3', size: 100) }
   let(:wav) { create(:essence, item: item, filename: 'other.wav', mimetype: 'audio/wav', size: 100) }
 
   let(:base_params) { { collection_id: collection.identifier, item_id: item.identifier } }
