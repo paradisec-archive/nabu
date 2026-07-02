@@ -149,6 +149,31 @@ RSpec.describe Ability do
     end
   end
 
+  # Regression for NABU-QK: the instance-level be_able_to checks above never build SQL, but the
+  # Oni API authorises lists with Entity.accessible_by. That query joins the polymorphic permissions
+  # table once per access path; when the collection-grant join appeared three times (Collection,
+  # Item and Essence paths) CanCanCan mis-aliased the deepest join and .count raised
+  # ActiveRecord::StatementInvalid ("Unknown column 'collection_permissions_collections_2_3...'").
+  describe 'Entity.accessible_by builds valid SQL for a non-admin' do
+    let(:user) { create(:user) }
+    let(:collection) { private_collection }
+    let(:item) { closed_item(collection:) }
+    let!(:essence) { create(:sound_essence, item:) }
+
+    before { collection.users << user }
+
+    it 'lists the accessible essence entities without raising, scoped to the grant' do
+      stranger_essence = create(:sound_essence, item: closed_item(collection: private_collection))
+
+      accessible = nil
+      aggregate_failures do
+        expect { accessible = Entity.accessible_by(ability).where(entity_type: 'Essence').to_a }.not_to raise_error
+        expect(accessible).to include(entity_for(essence))
+        expect(accessible).not_to include(entity_for(stranger_essence))
+      end
+    end
+  end
+
   describe 'item editor (item_admins) retains edit and download' do
     let(:user) { create(:user) }
     let(:item) { closed_item(collection: private_collection) }

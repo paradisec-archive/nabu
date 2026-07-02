@@ -151,15 +151,17 @@ class Ability
     can %i[read data], Item, item_permissions: { user_id: user.id, level: 'edit' }
     can :read, Entity, entity_type: 'Item', item: { item_permissions: { user_id: user.id, level: 'edit' } }
 
-    # The collection cascade: the Item rule reaches the collection's grant directly via
-    # collection_grant_permissions (top-level, so accessible_by aligns its aliases — see Item),
-    # while the Entity rule nests through item/collection because Entity is polymorphic and its
-    # accessible_by already tolerates the nested form. Both express the same access.
+    # The collection cascade: both the Item rule and the Entity/Item rule reach the collection's
+    # grant via the item's top-level collection_grant_permissions association rather than nesting
+    # through collection. This keeps the `collection_permissions` association joined at most twice
+    # across the whole Entity ruleset (Collection + Essence paths); a third occurrence — which the
+    # nested Item form added — made CanCanCan mis-alias the deepest join and produce invalid SQL
+    # (NABU-QK: "Unknown column 'collection_permissions_collections_2_3.user_id'").
     can %i[read data], Item, collection_grant_permissions: { user_id: user.id, level: 'read' }
-    can :read, Entity, entity_type: 'Item', item: { collection: { collection_permissions: { user_id: user.id, level: 'read' } } }
+    can :read, Entity, entity_type: 'Item', item: { collection_grant_permissions: { user_id: user.id, level: 'read' } }
 
     can :manage, Item, collection_grant_permissions: { user_id: user.id, level: 'edit' }
-    can :read, Entity, entity_type: 'Item', item: { collection: { collection_permissions: { user_id: user.id, level: 'edit' } } }
+    can :read, Entity, entity_type: 'Item', item: { collection_grant_permissions: { user_id: user.id, level: 'edit' } }
     can :manage, Item, item_permissions: { user_id: user.id, level: 'edit' }
     can :read, Entity, entity_type: 'Item', item: { item_permissions: { user_id: user.id, level: 'edit' } }
 
