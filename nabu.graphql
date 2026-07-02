@@ -35,7 +35,7 @@ type Collection {
   countries: [Country]
   description: String
   doi: String
-  doi_xml: String
+  doi_json: String
   field_of_research: FieldOfResearch
   grants: [Grant]
   id: ID!
@@ -85,7 +85,7 @@ type EmailUser {
 }
 
 type Essence {
-  bitrate: Int
+  bitrate: BigInt
   channels: Int
   citation: String
   collection: Collection
@@ -93,7 +93,7 @@ type Essence {
   createdAt: ISO8601DateTime
   derivedFilesGenerated: Boolean
   doi: String
-  doi_xml: String
+  doi_json: String
   duration: Float
   filename: String
   fps: Int
@@ -111,9 +111,10 @@ type Essence {
 Attributes for creating or updating an essence
 """
 input EssenceAttributes {
-  bitrate: Int
+  bitrate: BigInt
   channels: Int
   duration: Float
+  extractedText: String
   fps: Int
   mimetype: String!
   samplerate: Int
@@ -133,6 +134,11 @@ input EssenceCreateInput {
   collectionIdentifier: String!
   filename: String!
   itemIdentifier: String!
+
+  """
+  When called by an admin OAuth client (e.g. paragest), records the real uploader by their unikey.
+  """
+  uploaderUnikey: String
 }
 
 """
@@ -217,7 +223,7 @@ type Item {
   digitised_on: String
   discourse_type: DiscourseType
   doi: String
-  doi_xml: String
+  doi_json: String
   essences: [Essence]
   essences_count: Int
   full_identifier: String!

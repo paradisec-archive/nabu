@@ -28,6 +28,16 @@ describe 'GraphQL OAuth Authorization', type: :request do
     GRAPHQL
   end
 
+  let(:item_doi_json_query) do
+    <<-GRAPHQL
+      query GetItemDoi($fullIdentifier: ID!) {
+        item(fullIdentifier: $fullIdentifier) {
+          doi_json
+        }
+      }
+    GRAPHQL
+  end
+
   let(:item_id3_query) do
     <<-GRAPHQL
       query GetItemId3($fullIdentifier: ID!) {
@@ -117,6 +127,16 @@ describe 'GraphQL OAuth Authorization', type: :request do
 
         expect(result['data']['item']).to be_present
         expect(result['data']['item']['identifier']).to eq(item.identifier)
+      end
+
+      # Regression for NABU-Q6: the doi field mapped to a method (to_doi_xml) that was renamed to
+      # to_doi_json, so any query selecting it raised "Failed to implement Item.doi_xml".
+      it 'resolves the doi_json field without error' do
+        result = execute_graphql_with_token(item_doi_json_query, token, variables: { fullIdentifier: item.full_identifier })
+
+        expect(result['errors']).to be_nil
+        parsed = JSON.parse(result['data']['item']['doi_json'])
+        expect(parsed['data']['type']).to eq('dois')
       end
 
       it 'cannot access private collections' do

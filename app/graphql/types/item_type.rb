@@ -18,7 +18,7 @@ class Types::ItemType < Types::BaseObject
   field :digitised_on, String, null: true, camelize: false
   field :discourse_type, Types::DiscourseTypeType, null: true, camelize: false
   field :doi, String, null: true
-  field :doi_xml, String, method: :to_doi_xml, null: true, camelize: false
+  field :doi_json, String, method: :to_doi_json, null: true, camelize: false
   field :essences, [Types::EssenceType, null: true], null: true
   field :essences_count, Integer, null: true, camelize: false
   field :full_identifier, String, null: false, camelize: false

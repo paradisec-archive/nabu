@@ -40,7 +40,7 @@ class Types::CollectionType < Types::BaseObject
   field :doi, String, null: true
 
 
-  field :doi_xml, String, method: :to_doi_xml, null: true, camelize: false
+  field :doi_json, String, method: :to_doi_json, null: true, camelize: false
 
 
   field :citation, String, null: true

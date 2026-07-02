@@ -21,7 +21,7 @@ module IdentifiableByDoi
       end
     end
 
-    def to_doi_json(prefix)
+    def to_doi_json(prefix = ENV.fetch('DOI_PREFIX', nil))
       # NOTE: Items are the only type which contain the true publication date, so prefer that, but fall back to the date it was added to Nabu
       publication_date =
         if is_a?(Item)

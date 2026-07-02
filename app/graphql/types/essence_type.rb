@@ -10,7 +10,7 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime
     field :derived_files_generated, Boolean
     field :doi, String
-    field :doi_xml, String, method: :to_doi_xml, camelize: false
+    field :doi_json, String, method: :to_doi_json, camelize: false
     field :duration, Float
     field :filename, String
     field :fps, Integer
