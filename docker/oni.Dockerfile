@@ -1,4 +1,4 @@
-FROM ghcr.io/crate-works/oni:latest
+FROM ghcr.io/crate-works/oni:1.3.0
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID
