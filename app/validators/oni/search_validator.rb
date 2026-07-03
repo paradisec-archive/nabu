@@ -74,10 +74,16 @@ module Oni
       end.compact
     end
 
+    # filters arrives as ActionController::Parameters on real requests and as a plain Hash in unit
+    # tests, so both must count as a valid filters object.
+    def filters_object?
+      filters.is_a?(Hash) || filters.is_a?(ActionController::Parameters)
+    end
+
     def validate_filters
       return if filters.nil?
 
-      unless filters.is_a?(Hash)
+      unless filters_object?
         errors.add(:filters, 'must be an object')
         return
       end
@@ -134,7 +140,7 @@ module Oni
     end
 
     def validate_entity_type_filter
-      return unless filters.is_a?(Hash) && filters.key?('entity_type')
+      return unless filters_object? && filters.key?('entity_type')
 
       entity_types = filters['entity_type']
       return unless entity_types.is_a?(Array)
@@ -150,7 +156,7 @@ module Oni
     end
 
     def validate_originated_on
-      return unless filters.is_a?(Hash) && filters.key?('originatedOn')
+      return unless filters_object? && filters.key?('originatedOn')
 
       originated_on = filters['originatedOn']
 

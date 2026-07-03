@@ -38,4 +38,12 @@ describe 'Oni search sorting', :no_catalog_upload, :search, type: :request do
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.parsed_body['errors']).to include('Filters must be an object')
   end
+
+  # A valid filters object arrives as ActionController::Parameters (not a plain Hash), so the
+  # validator must accept it rather than rejecting it as "must be an object" (NABU-N9).
+  it 'returns 200 when passing a valid filter object' do
+    post search_path, params: { searchType: 'basic', query: '', limit: 50, offset: 0, filters: { collection_title: ['Moo'] } }
+
+    expect(response).to have_http_status(:ok)
+  end
 end
