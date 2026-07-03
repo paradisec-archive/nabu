@@ -1,7 +1,7 @@
 # TODO: We build this ourselves instead of using upstream image because we can't work out how to subpath at runtime yet
 FROM scratch AS code
 
-ARG BUMP=1
+ARG BUMP=2
 
 ADD https://github.com/paradisec-archive/arocapi-downloader.git /code
 
