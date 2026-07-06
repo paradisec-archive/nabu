@@ -120,6 +120,23 @@ if  defined? score || defined? highlights
 
   searchExtra[:score] = score if defined? score
   searchExtra[:highlight] = highlights.transform_values { |v| Array(v) } if defined? highlights
+
+  # Matches inside structured extracted content (PDF pages, ELAN annotations) arrive as nested
+  # inner hits. Each becomes a location-addressed entry - the contract Oni deep linking consumes.
+  segment_hits = defined?(hit) ? hit&.dig('inner_hits', 'segments', 'hits', 'hits') : nil
+  if segment_hits.present?
+    searchExtra[:segments] = segment_hits.map do |segment_hit|
+      source = segment_hit['_source'] || {}
+      {
+        type: source['type'],
+        page: source['page'],
+        tier: source['tier'],
+        startMs: source['start_ms'],
+        endMs: source['end_ms'],
+        highlight: segment_hit['highlight']&.values&.flatten || []
+      }.compact
+    end
+  end
 end
 
 json

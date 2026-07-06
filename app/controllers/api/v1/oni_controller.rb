@@ -10,6 +10,11 @@ module Api
       # title, so their title_sort falls back to the filename) and id sorts on full_identifier_sort
       # (both number-aware downcased keys); originated_on/created_at/updated_at sort on their date
       # fields. Anything else (relevance) falls back to _score.
+      # One source of truth for search highlight markup: the top-level highlight and the nested
+      # segment inner-hit highlights must render identically for the frontend <mark> styling.
+      HIGHLIGHT_TAG = '<mark class="font-bold">'
+      HIGHLIGHT_END_TAG = '</mark>'
+
       SEARCH_SORT_FIELDS = {
         'title' => 'title_sort',
         'name' => 'title_sort',
@@ -301,20 +306,64 @@ module Api
           where:,
           aggs:,
           body_options:,
-          highlight: { tag: '<mark class="font-bold">' }
+          highlight: { tag: HIGHLIGHT_TAG }
         }
 
         if query.search_type == 'advanced'
           @search = Searchkick.search('*', **params) do |payload|
             processed_query = query.query.gsub(/ *:/, '.analyzed:').gsub('name.analyzed:', 'title.analyzed:')
-            payload[:query][:bool][:must] =  { query_string: { query: processed_query  } }
+            payload[:query][:bool][:must] = with_segments_clause(
+              { query_string: { query: processed_query } },
+              query_string: { query: processed_query, default_field: 'segments.text.analyzed' }
+            )
           end
         else
-          @search = Searchkick.search(query.query, **params).indices_boost(Collection => 10, Item => 5, Essence => 1)
+          @search = Searchkick.search(query.query, **params) do |payload|
+            next if query.query == '*'
+
+            payload[:query][:bool][:must] = with_segments_clause(
+              payload[:query][:bool][:must],
+              match: { 'segments.text' => { query: query.query, operator: 'and' } }
+            )
+          end
+          @search = @search.indices_boost(Collection => 10, Item => 5, Essence => 1)
         end
       end
 
       private
+
+      # Extracted content for structured essences (PDF pages, ELAN annotations) lives in the
+      # nested segments field, out of reach of the top-level text query, so segment matches need
+      # their own nested clause OR-ed alongside it. ignore_unmapped keeps the Collection/Item legs
+      # of the cross-index search working (only Essence maps segments), and inner_hits surfaces
+      # the top matching segments - locations plus highlights - for searchExtra.segments.
+      def with_segments_clause(text_clause, segment_query)
+        {
+          bool: {
+            should: [
+              text_clause,
+              {
+                nested: {
+                  path: 'segments',
+                  ignore_unmapped: true,
+                  score_mode: 'max',
+                  query: segment_query,
+                  inner_hits: {
+                    size: 5,
+                    _source: %w[segments.type segments.page segments.tier segments.start_ms segments.end_ms],
+                    highlight: {
+                      pre_tags: [HIGHLIGHT_TAG],
+                      post_tags: [HIGHLIGHT_END_TAG],
+                      fields: { 'segments.text' => {}, 'segments.text.analyzed' => {} }
+                    }
+                  }
+                }
+              }
+            ],
+            minimum_should_match: 1
+          }
+        }
+      end
 
       def essence_terms_required?
         return false unless current_user

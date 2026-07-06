@@ -61,6 +61,30 @@ class Essence < ApplicationRecord
                        analyzer: 'searchkick_search2'
                      }
                    }
+                 },
+                 # One nested segment per location-addressed slice of extracted content (PDF page,
+                 # ELAN annotation). Segment text carries the same analyzers as extracted_text so
+                 # basic and advanced search behave identically inside segments. The location
+                 # fields are the contract consumed by Oni deep linking via searchExtra.segments.
+                 segments: {
+                   type: 'nested',
+                   properties: {
+                     type: { type: 'keyword' },
+                     text: {
+                       type: 'text',
+                       analyzer: 'searchkick_index',
+                       fields: {
+                         analyzed: {
+                           type: 'text',
+                           analyzer: 'searchkick_search2'
+                         }
+                       }
+                     },
+                     page: { type: 'integer' },
+                     tier: { type: 'keyword' },
+                     start_ms: { type: 'long' },
+                     end_ms: { type: 'long' }
+                   }
                  }
                }
              }
@@ -81,7 +105,15 @@ class Essence < ApplicationRecord
   # reprocessing); code interprets the column through the content *shape* it maps to, so a new
   # structured format only needs a mapping entry here, not new plumbing.
   EXTRACTED_CONTENT_SHAPES = {
-    'text' => :flat
+    'text' => :flat,
+    'pdf' => :segments
+  }.freeze
+
+  # Location fields each segment type must carry - the single source of truth consulted by both
+  # the GraphQL boundary (ExtractedSegmentInput) and the model validation, so a new segment type
+  # is one entry here plus an enum value.
+  SEGMENT_REQUIRED_FIELDS = {
+    'page' => %w[page]
   }.freeze
 
   belongs_to :item, counter_cache: true
@@ -116,6 +148,7 @@ class Essence < ApplicationRecord
   validates :fps, numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
   validates :extracted_content_type, inclusion: { in: EXTRACTED_CONTENT_SHAPES.keys }, allow_nil: true
   validate :extracted_content_and_type_set_together
+  validate :extracted_content_matches_shape
 
   # ensure that the item catalog gets updated when essences are added/removed
 
@@ -212,6 +245,14 @@ class Essence < ApplicationRecord
     extracted_content if extracted_content_shape == :flat
   end
 
+  # Parsed segments view of the extracted content, consumed by the search document.
+  # Returns segments only for segments-shaped rows.
+  def extracted_segments
+    return unless extracted_content_shape == :segments
+
+    JSON.parse(extracted_content)
+  end
+
   def search_data
     {
       entity_type: 'Essence',
@@ -228,7 +269,10 @@ class Essence < ApplicationRecord
       collection_identifier: item.collection.identifier,
       item_identifier: item.identifier,
 
+      # Structured rows index segments *instead of* the flat field (no double indexing); a
+      # phrase spanning a segment boundary not matching is an accepted trade-off (see #1155).
       extracted_text:,
+      segments: extracted_segments,
 
       languages: item.content_languages.map(&:name).uniq,
       languages_with_code: item.content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
@@ -293,6 +337,29 @@ class Essence < ApplicationRecord
     return if extracted_content.nil? == extracted_content_type.nil?
 
     errors.add(:extracted_content_type, 'must be set if and only if extracted_content is set')
+  end
+
+  # nabu serialises the segments JSON itself, so this is an internal safety net for non-GraphQL
+  # writes. The dirty guard keeps saves that don't touch the (potentially multi-megabyte) content
+  # from re-parsing it.
+  def extracted_content_matches_shape
+    return unless extracted_content_changed? && extracted_content_shape == :segments
+
+    segments = extracted_segments
+    return if segments.is_a?(Array) && segments.present? && segments.all? { |segment| valid_segment?(segment) }
+
+    errors.add(:extracted_content, 'must be a JSON array of valid segments')
+  rescue JSON::ParserError
+    errors.add(:extracted_content, 'must be valid JSON for segments-shaped content types')
+  end
+
+  def valid_segment?(segment)
+    return false unless segment.is_a?(Hash)
+
+    required_fields = SEGMENT_REQUIRED_FIELDS[segment['type']]
+    return false unless required_fields
+
+    segment['text'].is_a?(String) && segment['text'].present? && required_fields.all? { |field| segment[field].present? }
   end
 
   def update_catalog_metadata

@@ -6,20 +6,20 @@ module Types
     argument :bitrate, GraphQL::Types::BigInt, required: false
     argument :channels, Integer, required: false
     argument :duration, Float, required: false
-    argument :extracted_text, String, required: false
+    argument :extracted_content, Types::ExtractedContentInput, required: false
     argument :fps, Integer, required: false
     argument :mimetype, String
     argument :samplerate, Integer, required: false
     argument :size, GraphQL::Types::BigInt
 
-    # The legacy flat extractedText argument is translated to the canonical storage pair at this
-    # boundary so the model keeps a single write API for extracted content.
+    # ExtractedContentInput prepares itself into the extracted_content / extracted_content_type
+    # storage pair; flatten it here so the model keeps a single write API for extracted content.
     def prepare
       attributes = to_h
-      return attributes unless attributes.key?(:extracted_text)
+      storage = attributes.delete(:extracted_content)
+      return attributes if storage.nil?
 
-      text = attributes.delete(:extracted_text)
-      attributes.merge(extracted_content: text, extracted_content_type: text.nil? ? nil : 'text')
+      attributes.merge(storage)
     end
   end
 end
