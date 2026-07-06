@@ -228,6 +228,11 @@
     },
     "aggregations": [
       {
+        "display": "Entity Type",
+        "name": "entity_type",
+        "help": "The entity type."
+      },
+      {
         "display": "Collector",
         "name": "collector_name"
       },
@@ -270,11 +275,6 @@
         "display": "File Format",
         "name": "encodingFormat",
         "help": "The media type."
-      },
-      {
-        "display": "Entity Type",
-        "name": "entity_type",
-        "help": "The entity type."
       }
     ],
     "searchFields": {
