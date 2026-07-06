@@ -249,7 +249,7 @@ export class AppStack extends cdk.Stack {
       containerName: 'downloader',
       memoryLimitMiB: 2048,
       image: ecs.ContainerImage.fromRegistry('ghcr.io/crate-works/downloader'),
-      portMappings: [{ name: 'downloader', containerPort: 3000 }],
+      portMappings: [{ name: 'downloader', containerPort: 7000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'DownloaderService' }),
       environment: {
         AWS_REGION: region,
