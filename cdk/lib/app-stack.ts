@@ -248,10 +248,7 @@ export class AppStack extends cdk.Stack {
     downloaderTaskDefinition.addContainer('DownloaderContainer', {
       containerName: 'downloader',
       memoryLimitMiB: 2048,
-      image: ecs.ContainerImage.fromAsset('../docker', {
-        file: 'downloader.Dockerfile',
-        extraHash: execSync('git ls-remote --tags https://github.com/paradisec-archive/arocapi-downloader.git | sort -t / -k 3 -V | tail -1').toString().trim(),
-      }),
+      image: ecs.ContainerImage.fromRegistry('ghcr.io/crate-works/downloader'),
       portMappings: [{ name: 'downloader', containerPort: 3000 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'DownloaderService' }),
       environment: {
@@ -260,6 +257,7 @@ export class AppStack extends cdk.Stack {
         ROCRATE_API_BASE_URL:
           env === 'prod' ? 'https://admin-catalog.paradisec.org.au/api/v1/oni' : 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
         EMAIL_FROM: 'admin@paradisec.org.au',
+        BASE_PATH: '/downloader',
       },
       secrets: {
         SESSION_SECRET: ecs.Secret.fromSecretsManager(downloaderSecrets, 'SESSION_SECRET'),
