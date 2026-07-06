@@ -1,3 +1,35 @@
+# ## Schema Information
+#
+# Table name: `permissions`
+# Database name: `primary`
+#
+# ### Columns
+#
+# Name                  | Type               | Attributes
+# --------------------- | ------------------ | ---------------------------
+# **`id`**              | `integer`          | `not null, primary key`
+# **`grantable_type`**  | `string(255)`      | `not null`
+# **`level`**           | `string(255)`      | `not null`
+# **`created_at`**      | `datetime`         | `not null`
+# **`updated_at`**      | `datetime`         | `not null`
+# **`grantable_id`**    | `integer`          | `not null`
+# **`user_id`**         | `bigint`           | `not null`
+#
+# ### Indexes
+#
+# * `index_permissions_on_grantable_and_user_and_level` (_unique_):
+#     * **`grantable_type`**
+#     * **`grantable_id`**
+#     * **`user_id`**
+#     * **`level`**
+# * `index_permissions_on_user_id`:
+#     * **`user_id`**
+#
+# ### Foreign Keys
+#
+# * `fk_rails_...` (_ON DELETE => cascade_):
+#     * **`user_id => users.id`**
+#
 require 'rails_helper'
 
 describe Permission, type: :model do

@@ -13,7 +13,8 @@
 # **`derived_files_generated`**  | `boolean`          | `default(FALSE)`
 # **`doi`**                      | `string(255)`      |
 # **`duration`**                 | `float(24)`        |
-# **`extracted_text`**           | `text(4294967295)`  |
+# **`extracted_content`**        | `text(4294967295)`  |
+# **`extracted_content_type`**   | `string(255)`      |
 # **`filename`**                 | `string(255)`      |
 # **`fps`**                      | `integer`          |
 # **`mimetype`**                 | `string(255)`      |

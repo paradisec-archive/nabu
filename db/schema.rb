@@ -205,7 +205,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_000001) do
     t.boolean "derived_files_generated", default: false
     t.string "doi"
     t.float "duration"
-    t.text "extracted_text", size: :long
+    t.text "extracted_content", size: :long
+    t.string "extracted_content_type"
     t.string "filename"
     t.integer "fps"
     t.integer "item_id"

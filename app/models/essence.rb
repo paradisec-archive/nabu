@@ -13,7 +13,8 @@
 # **`derived_files_generated`**  | `boolean`          | `default(FALSE)`
 # **`doi`**                      | `string(255)`      |
 # **`duration`**                 | `float(24)`        |
-# **`extracted_text`**           | `text(4294967295)`  |
+# **`extracted_content`**        | `text(4294967295)`  |
+# **`extracted_content_type`**   | `string(255)`      |
 # **`filename`**                 | `string(255)`      |
 # **`fps`**                      | `integer`          |
 # **`mimetype`**                 | `string(255)`      |
@@ -45,7 +46,7 @@ class Essence < ApplicationRecord
   include Entityable
   include SearchSortable
 
-  has_paper_trail ignore: [:extracted_text]
+  has_paper_trail ignore: %i[extracted_content extracted_content_type]
 
   searchkick deep_paging: true,
              merge_mappings: true,
@@ -75,6 +76,13 @@ class Essence < ApplicationRecord
 
   ANNOTATION_EXTENSIONS = %w[eaf trs ixt textgrid cha srt vtt].freeze
   ANNOTATABLE_EXTENSIONS = %w[mp3 ogg oga wav mp4 webm ogv mov mxf mkv].freeze
+
+  # extracted_content_type records which extractor semantics produced the row (for targeted
+  # reprocessing); code interprets the column through the content *shape* it maps to, so a new
+  # structured format only needs a mapping entry here, not new plumbing.
+  EXTRACTED_CONTENT_SHAPES = {
+    'text' => :flat
+  }.freeze
 
   belongs_to :item, counter_cache: true
   belongs_to :created_by, class_name: 'User', optional: true
@@ -106,6 +114,8 @@ class Essence < ApplicationRecord
   validates :duration, numericality: { greater_than: 0, allow_nil: true }
   validates :channels, numericality: { greater_than: 0, allow_nil: true }
   validates :fps, numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
+  validates :extracted_content_type, inclusion: { in: EXTRACTED_CONTENT_SHAPES.keys }, allow_nil: true
+  validate :extracted_content_and_type_set_together
 
   # ensure that the item catalog gets updated when essences are added/removed
 
@@ -192,6 +202,16 @@ class Essence < ApplicationRecord
     annotation_extension? && outgoing_annotation_links.empty?
   end
 
+  def extracted_content_shape
+    EXTRACTED_CONTENT_SHAPES[extracted_content_type]
+  end
+
+  # Flat-text view of the extracted content, consumed by the admin essence page and the search
+  # document. Returns content only for flat-shaped rows.
+  def extracted_text
+    extracted_content if extracted_content_shape == :flat
+  end
+
   def search_data
     {
       entity_type: 'Essence',
@@ -268,6 +288,12 @@ class Essence < ApplicationRecord
   end
 
   private
+
+  def extracted_content_and_type_set_together
+    return if extracted_content.nil? == extracted_content_type.nil?
+
+    errors.add(:extracted_content_type, 'must be set if and only if extracted_content is set')
+  end
 
   def update_catalog_metadata
     item.update_catalog_metadata

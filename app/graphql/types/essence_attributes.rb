@@ -11,5 +11,15 @@ module Types
     argument :mimetype, String
     argument :samplerate, Integer, required: false
     argument :size, GraphQL::Types::BigInt
+
+    # The legacy flat extractedText argument is translated to the canonical storage pair at this
+    # boundary so the model keeps a single write API for extracted content.
+    def prepare
+      attributes = to_h
+      return attributes unless attributes.key?(:extracted_text)
+
+      text = attributes.delete(:extracted_text)
+      attributes.merge(extracted_content: text, extracted_content_type: text.nil? ? nil : 'text')
+    end
   end
 end

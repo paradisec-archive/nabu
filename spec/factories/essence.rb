@@ -5,6 +5,12 @@ FactoryBot.define do
     mimetype { 'application/unknown' }
     created_at { Date.parse('2015/01/01') }
 
+    trait :reindex do
+      after(:create) do |essence|
+        essence.reindex(refresh: true)
+      end
+    end
+
     factory :sound_essence do
       filename { 'moo.wav' }
       mimetype { 'audio/mp3' }
