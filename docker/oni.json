@@ -43,20 +43,7 @@
     "management": {
       "editUrl": "{id}?edit=1"
     },
-    "topNavItems": [
-      {
-        "route": "search",
-        "display": "Search"
-      },
-      {
-        "route": "list?entityType=http%3A%2F%2Fpcdm.org%2Fmodels%23Collection",
-        "display": "Collections"
-      },
-      {
-        "route": "list?entityType=http%3A%2F%2Fpcdm.org%2Fmodels%23Object",
-        "display": "Items"
-      }
-    ],
+    "topNavItems": [],
     "search": {
       "sorting": [
         {
