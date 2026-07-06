@@ -71,6 +71,55 @@ describe 'Oni search over extracted content', :no_catalog_upload, :search, type:
     expect(find_entity('secret.pdf')).to be_nil
   end
 
+  it 'matches inside ELAN annotation segments and returns tier and timecodes with highlights' do
+    create(:essence, :reindex, item:, filename: 'transcript.eaf', mimetype: 'text/xml', size: 16,
+                               extracted_content: [
+                                 { type: 'annotation', text: 'ngayu kurrama', tier: 'tx@EDD', start_ms: 192_000, end_ms: 195_400 },
+                                 { type: 'annotation', text: 'something else', tier: 'ft@EDD', start_ms: 192_000, end_ms: 195_400 }
+                               ].to_json,
+                               extracted_content_type: 'elan')
+
+    post search_path, params: { query: 'kurrama' }
+
+    expect(response).to have_http_status(:ok)
+
+    segments = find_entity('transcript.eaf').dig('searchExtra', 'segments')
+    expect(segments.length).to eq(1)
+    expect(segments.first).to include(
+      'type' => 'annotation',
+      'tier' => 'tx@EDD',
+      'startMs' => 192_000,
+      'endMs' => 195_400
+    )
+    expect(segments.first['highlight'].join).to include('<mark class="font-bold">kurrama</mark>')
+  end
+
+  it 'returns correct per-type searchExtra shapes across a mixed corpus in one result set' do
+    create(:essence, :reindex, item:, filename: 'fieldnotes.pdf', mimetype: 'application/pdf', size: 16,
+                               extracted_content: [{ type: 'page', text: 'The kurrama word list', page: 4 }].to_json,
+                               extracted_content_type: 'pdf')
+    create(:essence, :reindex, item:, filename: 'transcript.eaf', mimetype: 'text/xml', size: 16,
+                               extracted_content: [{ type: 'annotation', text: 'ngayu kurrama', tier: 'tx@EDD', start_ms: 0, end_ms: 1500 }].to_json,
+                               extracted_content_type: 'elan')
+    create(:essence, :reindex, item:, filename: 'notes.txt', mimetype: 'text/plain', size: 16,
+                               extracted_content: 'The kurrama word list from the field trip', extracted_content_type: 'text')
+
+    post search_path, params: { query: 'kurrama' }
+
+    expect(response).to have_http_status(:ok)
+
+    pdf_segments = find_entity('fieldnotes.pdf').dig('searchExtra', 'segments')
+    expect(pdf_segments).to eq([{ 'type' => 'page', 'page' => 4, 'highlight' => ['The <mark class="font-bold">kurrama</mark> word list'] }])
+
+    elan_segments = find_entity('transcript.eaf').dig('searchExtra', 'segments')
+    expect(elan_segments).to eq([{ 'type' => 'annotation', 'tier' => 'tx@EDD', 'startMs' => 0, 'endMs' => 1500,
+                                   'highlight' => ['ngayu <mark class="font-bold">kurrama</mark>'] }])
+
+    flat = find_entity('notes.txt')
+    expect(flat.dig('searchExtra', 'segments')).to be_nil
+    expect(flat.dig('searchExtra', 'highlight', 'extracted_text').join).to include('<mark class="font-bold">kurrama</mark>')
+  end
+
   it 'matches flat extracted text and highlights it' do
     create(:essence, :reindex, item:, filename: 'notes.txt', mimetype: 'text/plain', size: 16,
                                extracted_content: 'The kurrama word list from the field trip', extracted_content_type: 'text')

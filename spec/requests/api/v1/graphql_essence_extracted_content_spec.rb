@@ -68,6 +68,25 @@ describe 'GraphQL essence extracted content', type: :request do
     ])
   end
 
+  it 'persists ELAN content as annotation segments JSON with type elan' do
+    result = create_essence(extractedContent: {
+      contentType: 'ELAN',
+      segments: [
+        { type: 'ANNOTATION', text: 'ngayu kurrama', tier: 'tx@EDD', startMs: 192_000, endMs: 195_400 },
+        { type: 'ANNOTATION', text: 'I am Kurrama', tier: 'ft@EDD', startMs: 192_000, endMs: 195_400 }
+      ]
+    })
+
+    expect(result['errors']).to be_nil
+
+    essence = item.essences.find_by(filename: 'notes.txt')
+    expect(essence.extracted_content_type).to eq('elan')
+    expect(JSON.parse(essence.extracted_content)).to eq([
+      { 'type' => 'annotation', 'text' => 'ngayu kurrama', 'tier' => 'tx@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 },
+      { 'type' => 'annotation', 'text' => 'I am Kurrama', 'tier' => 'ft@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 }
+    ])
+  end
+
   it 'leaves both content columns null when no extracted text is supplied' do
     result = create_essence({})
 
@@ -122,7 +141,13 @@ describe 'GraphQL essence extracted content', type: :request do
     'PDF without segments' => { contentType: 'PDF' },
     'PDF with text' => { contentType: 'PDF', text: 'x', segments: [{ type: 'PAGE', text: 'x', page: 1 }] },
     'a PAGE segment missing page' => { contentType: 'PDF', segments: [{ type: 'PAGE', text: 'x' }] },
-    'a segment with blank text' => { contentType: 'PDF', segments: [{ type: 'PAGE', text: '   ', page: 1 }] }
+    'a segment with blank text' => { contentType: 'PDF', segments: [{ type: 'PAGE', text: '   ', page: 1 }] },
+    'ELAN without segments' => { contentType: 'ELAN' },
+    'ELAN with PAGE segments' => { contentType: 'ELAN', segments: [{ type: 'PAGE', text: 'x', page: 1 }] },
+    'an ANNOTATION segment missing tier' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', startMs: 0, endMs: 5 }] },
+    'an ANNOTATION segment missing startMs' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', tier: 'tx', endMs: 5 }] },
+    'an ANNOTATION segment missing endMs' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', tier: 'tx', startMs: 0 }] },
+    'an ANNOTATION segment with whitespace text' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: ' ', tier: 'tx', startMs: 0, endMs: 5 }] }
   }.each do |label, extracted_content|
     it "rejects #{label} with a schema-boundary error" do
       result = create_essence(extractedContent: extracted_content)

@@ -183,7 +183,7 @@ input ExtractedContentInput {
   contentType: ExtractedContentType!
 
   """
-  Required for PDF content
+  Required for PDF and ELAN content
   """
   segments: [ExtractedSegmentInput!]
 
@@ -197,6 +197,11 @@ input ExtractedContentInput {
 Which extractor semantics produced the extracted content
 """
 enum ExtractedContentType {
+  """
+  One segment per ELAN annotation
+  """
+  ELAN
+
   """
   One segment per PDF page
   """
@@ -213,10 +218,25 @@ One location-addressed segment of extracted content
 """
 input ExtractedSegmentInput {
   """
+  ANNOTATION segments only
+  """
+  endMs: Int
+
+  """
   PAGE segments only
   """
   page: Int
+
+  """
+  ANNOTATION segments only
+  """
+  startMs: Int
   text: String!
+
+  """
+  ANNOTATION segments only - the depositor's TIER_ID verbatim
+  """
+  tier: String
   type: SegmentType!
 }
 
@@ -407,6 +427,11 @@ type Query {
 The kind of location a segment of extracted content is addressed by
 """
 enum SegmentType {
+  """
+  An ELAN annotation
+  """
+  ANNOTATION
+
   """
   A PDF page
   """

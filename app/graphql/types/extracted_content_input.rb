@@ -5,13 +5,14 @@ module Types
     description 'Structured extracted content for an essence, typed by extractor semantics'
 
     argument :content_type, Types::ExtractedContentTypeEnum
-    argument :segments, [Types::ExtractedSegmentInput], required: false, description: 'Required for PDF content'
+    argument :segments, [Types::ExtractedSegmentInput], required: false, description: 'Required for PDF and ELAN content'
     argument :text, String, required: false, description: 'Required for TEXT content'
 
     # The segment type each segments-shaped content type must be made of, so a new structured
     # format is one entry here plus its enum values.
     SEGMENT_TYPES = {
-      'pdf' => 'page'
+      'pdf' => 'page',
+      'elan' => 'annotation'
     }.freeze
 
     # GraphQL cannot express conditional requiredness (TEXT needs text, PDF needs PAGE

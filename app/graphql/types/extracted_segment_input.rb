@@ -4,8 +4,11 @@ module Types
   class ExtractedSegmentInput < Types::BaseInputObject
     description 'One location-addressed segment of extracted content'
 
+    argument :end_ms, Integer, required: false, description: 'ANNOTATION segments only'
     argument :page, Integer, required: false, description: 'PAGE segments only'
+    argument :start_ms, Integer, required: false, description: 'ANNOTATION segments only'
     argument :text, String
+    argument :tier, String, required: false, description: "ANNOTATION segments only - the depositor's TIER_ID verbatim"
     argument :type, Types::SegmentTypeEnum
 
     # GraphQL cannot express per-variant requiredness, so each segment type's location fields

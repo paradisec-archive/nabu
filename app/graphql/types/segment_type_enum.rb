@@ -6,5 +6,6 @@ module Types
     description 'The kind of location a segment of extracted content is addressed by'
 
     value 'PAGE', 'A PDF page', value: 'page'
+    value 'ANNOTATION', 'An ELAN annotation', value: 'annotation'
   end
 end

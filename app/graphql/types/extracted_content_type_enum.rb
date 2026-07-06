@@ -7,5 +7,6 @@ module Types
 
     value 'TEXT', 'Flat plain text', value: 'text'
     value 'PDF', 'One segment per PDF page', value: 'pdf'
+    value 'ELAN', 'One segment per ELAN annotation', value: 'elan'
   end
 end

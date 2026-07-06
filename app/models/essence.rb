@@ -106,14 +106,16 @@ class Essence < ApplicationRecord
   # structured format only needs a mapping entry here, not new plumbing.
   EXTRACTED_CONTENT_SHAPES = {
     'text' => :flat,
-    'pdf' => :segments
+    'pdf' => :segments,
+    'elan' => :segments
   }.freeze
 
   # Location fields each segment type must carry - the single source of truth consulted by both
   # the GraphQL boundary (ExtractedSegmentInput) and the model validation, so a new segment type
   # is one entry here plus an enum value.
   SEGMENT_REQUIRED_FIELDS = {
-    'page' => %w[page]
+    'page' => %w[page],
+    'annotation' => %w[tier start_ms end_ms]
   }.freeze
 
   belongs_to :item, counter_cache: true
