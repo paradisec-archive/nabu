@@ -36,6 +36,19 @@ module ApplicationHelper
     '%02d:%02d:%02d.%d' % [hh, mm, ss, ms * 1000]
   end
 
+  def extracted_segment_label(segment)
+    case segment['type']
+    when 'page'
+      "Page #{segment['page']}"
+    when 'annotation'
+      start_time = number_to_human_duration(segment['start_ms'] / 1000.0)
+      end_time = number_to_human_duration(segment['end_ms'] / 1000.0)
+      "#{segment['tier']} [#{start_time} - #{end_time}]"
+    else
+      segment['type']
+    end
+  end
+
   def current_link_to(label, path, cname)
     if controller.controller_name == 'page'
       link_to label, path, ({ class: 'active' } if cname == controller.controller_name + '#' + controller.action_name)

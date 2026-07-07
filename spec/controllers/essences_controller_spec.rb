@@ -49,6 +49,49 @@ describe EssencesController, type: :controller do
           expect(response).to render_template(:show)
           expect(flash[:error]).to be_nil
         end
+
+        context 'when the essence has flat extracted text' do
+          render_views
+
+          let(:essence) { create(:sound_essence, item: item, extracted_content: 'Some extracted words', extracted_content_type: 'text') }
+
+          it 'shows the extracted text' do
+            get :show, params: params
+            expect(response.body).to include('Extracted Text')
+            expect(response.body).to include('Some extracted words')
+          end
+        end
+
+        context 'when the essence has PDF page segments' do
+          render_views
+
+          let(:segments) do
+            [
+              { type: 'page', page: 1, text: 'First page words' },
+              { type: 'page', page: 2, text: 'Second page words' }
+            ]
+          end
+          let(:essence) { create(:sound_essence, item: item, extracted_content: segments.to_json, extracted_content_type: 'pdf') }
+
+          it 'shows a segment preview with page labels' do
+            get :show, params: params
+            expect(response.body).to include('2 segments indexed for search')
+            expect(response.body).to include('Page 1: First page words')
+          end
+        end
+
+        context 'when the essence has ELAN annotation segments' do
+          render_views
+
+          let(:segments) { [{ type: 'annotation', tier: 'transcript', start_ms: 1500, end_ms: 3000, text: 'Spoken words' }] }
+          let(:essence) { create(:sound_essence, item: item, extracted_content: segments.to_json, extracted_content_type: 'elan') }
+
+          it 'shows a segment preview with tier and timecode labels' do
+            get :show, params: params
+            expect(response.body).to include('1 segment indexed for search')
+            expect(response.body).to include('transcript [00:00:01.500 - 00:00:03.0]: Spoken words')
+          end
+        end
       end
 
       context 'when access_condition_id nil' do
