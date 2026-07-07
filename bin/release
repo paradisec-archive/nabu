@@ -4,21 +4,32 @@ set -e
 
 ENV=$1
 if [ -z "$ENV" ]; then
-  echo "Usage: bin/release <stage|prod>"
+  echo "Usage: bin/release <stage|prod> [--branch]"
   exit 1
+fi
+
+BRANCH_DEPLOY=false
+if [ "$2" == "--branch" ]; then
+  if [ "$ENV" != "stage" ]; then
+    echo "--branch deploys are only allowed to stage"
+    exit 1
+  fi
+  BRANCH_DEPLOY=true
 fi
 
 # Make sure we have creds before merging so the close issue logic works
 AWS_PROFILE=nabu-${ENV} aws sts get-caller-identity >/dev/null
 
-LAST_DEPLOY_COMMIT=$(git rev-parse origin/prod)
+if [ "$BRANCH_DEPLOY" != "true" ]; then
+  LAST_DEPLOY_COMMIT=$(git rev-parse origin/prod)
 
-git push
-git switch "$ENV"
-git pull
-git merge --ff-only main
-git push
-git switch main
+  git push
+  git switch "$ENV"
+  git pull
+  git merge --ff-only main
+  git push
+  git switch main
+fi
 
 # Pull docker images for the new release
 docker pull node:lts-alpine
