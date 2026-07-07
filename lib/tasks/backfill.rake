@@ -10,11 +10,23 @@ namespace :catalog do
     lambda_client = Aws::Lambda::Client.new(region: 'ap-southeast-2')
     function_name = ENV.fetch('BACKFILL_LAMBDA', "paragest-backfill-extract-text-#{Rails.env.production? ? 'prod' : 'stage'}")
 
+    # An essence needs backfilling until its extracted_content_type matches what the current
+    # extractor produces for its extension - so pdf/eaf rows still on flat 'text' (or files that
+    # fell back to TEXT on a parse failure) stay in the population until a re-run converts them.
+    target_content_types = { 'pdf' => 'pdf', 'eaf' => 'elan' }
+
     essences = if ENV['ESSENCE_ID']
                  Essence.where(id: ENV['ESSENCE_ID']).includes(item: :collection)
     else
-                 extension_conditions = extensions.map { |ext| Essence.arel_table[:filename].matches("%.#{ext}") }.reduce(:or)
-                 Essence.where(extracted_content: nil).where(extension_conditions).includes(item: :collection)
+                 conditions = extensions.map do |ext|
+                   target_type = target_content_types.fetch(ext, 'text')
+                   Essence.arel_table[:filename].matches("%.#{ext}").and(
+                     Essence.arel_table[:extracted_content_type].eq(nil).or(
+                       Essence.arel_table[:extracted_content_type].not_eq(target_type)
+                     )
+                   )
+                 end.reduce(:or)
+                 Essence.where(conditions).includes(item: :collection)
     end
 
     total = essences.count
