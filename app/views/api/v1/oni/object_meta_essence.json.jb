@@ -39,29 +39,11 @@ data[:duration] = @data.duration
 data[:channels] = @data.channels
 data[:sampleRate] = @data.samplerate
 
-# Add audio/video↔ELAN relationships
-media_extensions = %w[mp3 ogg oga wav mp4 webm ogv mov].freeze
-elan_extension = 'eaf'
-current_ext = File.extname(@data.filename).delete('.').downcase
-current_basename = File.basename(@data.filename, File.extname(@data.filename))
+annotates = @data.annotates.includes(item: :collection).map { |target| { '@id': repository_essence_url(target.collection, target.item, target.filename) } }
+annotated_by = @data.annotated_by.includes(item: :collection).map { |source| { '@id': repository_essence_url(source.collection, source.item, source.filename) } }
 
-if media_extensions.include?(current_ext)
-  related = @data.item.essences.select do |e|
-    File.extname(e.filename).delete('.').downcase == elan_extension &&
-      File.basename(e.filename, File.extname(e.filename)) == current_basename
-  end
-  if related.any?
-    data[:hasAnnotation] = related.map { |e| { '@id': repository_essence_url(e.collection, e.item, e.filename) } }
-  end
-elsif current_ext == elan_extension
-  related = @data.item.essences.select do |e|
-    media_extensions.include?(File.extname(e.filename).delete('.').downcase) &&
-      File.basename(e.filename, File.extname(e.filename)) == current_basename
-  end
-  if related.any?
-    data[:annotationOf] = related.map { |e| { '@id': repository_essence_url(e.collection, e.item, e.filename) } }
-  end
-end
+data[:annotationOf] = annotates if annotates.any?
+data[:hasAnnotation] = annotated_by if annotated_by.any?
 
 data.compact!
 
