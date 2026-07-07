@@ -10,8 +10,10 @@
       "launcher": "Acknowledgement of Country"
     },
     "features": {
-      "errorPageImage": false,
       "hasAnnouncements": true
+    },
+    "presentation": {
+      "errorPageImage": false
     },
     "logoFilename": "/logo.jpg",
     "navHeight": "90px",
@@ -304,10 +306,12 @@
   },
   "api": {
     "rocrate": {
-      "endpoint": "ROCRATE_API_ENDPOINT",
-      "path": "/api/v1/oni",
-      "clientId": "ROCRATE_API_CLIENTID",
+      "endpoint": "ROCRATE_API_ENDPOINT/api/v1/oni",
       "usesRedirects": true
+    },
+    "oidc": {
+      "endpoint": "ROCRATE_API_ENDPOINT",
+      "clientId": "ROCRATE_API_CLIENTID"
     }
   }
 }
