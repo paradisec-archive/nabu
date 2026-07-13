@@ -6,6 +6,7 @@ class CatalogDbSyncValidatorService
 
   def initialize(env)
     @bucket = "nabu-meta-#{env}"
+    @catalog_bucket = "nabu-catalog-#{env}"
     @prefix = "inventories/catalog/nabu-catalog-#{env}/CatalogBucketInventory0/"
 
     # Strange bug in dev docker
@@ -26,13 +27,24 @@ class CatalogDbSyncValidatorService
       .includes(item: [:collection])
       .map(&:full_identifier)
 
-    db_only = essence_files - s3_files
-    s3_only = s3_files - essence_files
+    # The inventory is only generated daily, so recent uploads show up as db_only
+    # and recent deletions as s3_only. Confirm each mismatch against S3 itself
+    # before reporting it.
+    db_only = (essence_files - s3_files).reject { |key| in_s3?(key) }
+    s3_only = (s3_files - essence_files).select { |key| in_s3?(key) }
 
     AdminMailer.with(db_only:, s3_only:).catalog_s3_sync_report.deliver_now
   end
 
   private
+
+  def in_s3?(key)
+    @s3.head_object(bucket: @catalog_bucket, key:)
+
+    true
+  rescue Aws::S3::Errors::NotFound
+    false
+  end
 
   def extract_s3_files(inventory_csv)
     s3_files = []

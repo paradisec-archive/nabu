@@ -1,4 +1,6 @@
 This report runs weekly and compares the files in the S3 bucket with the files in the database.
+Mismatches against the daily S3 inventory are double-checked directly against S3, so inventory lag
+(recent uploads and deletions) is excluded.
 
 ## Files in database but missing from S3
 
