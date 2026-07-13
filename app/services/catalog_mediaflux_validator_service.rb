@@ -15,20 +15,30 @@ class CatalogMediafluxValidatorService
     inventory_csv = fetch_inventory_csv
     s3_files = extract_s3_files(inventory_csv)
 
-    mediaflux_files = fetch_mediaflux_files
+    csv_key, csv_date = find_recent_mediaflux_csv
+    mediaflux_files = fetch_mediaflux_files(csv_key)
+
+    # Files uploaded on or after the mediaflux snapshot date can't be expected in it yet,
+    # so ignore them until the next run. LastModifiedDate is ISO 8601, so string comparison works.
+    cutoff = csv_date.iso8601
 
     missing = []
     size_mismatch = []
+    ignored_too_new = 0
 
-    s3_files.each do |path, s3_size|
-      if mediaflux_files.key?(path)
-        if mediaflux_files[path] != s3_size
-          size_mismatch << { path:, s3_size:, mediaflux_size: mediaflux_files[path] }
+    s3_files.each do |path, s3|
+      if s3[:last_modified] >= cutoff
+        ignored_too_new += 1
+      elsif mediaflux_files.key?(path)
+        if mediaflux_files[path] != s3[:size]
+          size_mismatch << { path:, s3_size: s3[:size], mediaflux_size: mediaflux_files[path] }
         end
       else
         missing << path
       end
     end
+
+    Rails.logger.info "CatalogMediafluxValidator: ignored #{ignored_too_new} files uploaded on or after the mediaflux snapshot date of #{csv_date}"
 
     AdminMailer.with(missing:, size_mismatch:).catalog_mediaflux_report.deliver_now
   end
@@ -39,22 +49,22 @@ class CatalogMediafluxValidatorService
     s3_files = {}
 
     CSV.parse(inventory_csv, headers: false) do |row|
-      _bucket_name, filename, _version_id, is_latest, delete_marker, size, = row
+      _bucket_name, filename, _version_id, is_latest, delete_marker, size, last_modified, = row
 
       next if is_latest == 'false' || delete_marker == 'true'
 
       file = CGI.unescape(filename)
 
       raise "Duplicate file in S3 inventory: #{file}" if s3_files.key?(file)
+      raise "Missing LastModifiedDate in S3 inventory for: #{file}" if last_modified.nil?
 
-      s3_files[file] = size.to_i
+      s3_files[file] = { size: size.to_i, last_modified: }
     end
 
     s3_files
   end
 
-  def fetch_mediaflux_files
-    csv_key = find_recent_mediaflux_csv
+  def fetch_mediaflux_files(csv_key)
     csv_content = @s3.get_object(bucket: 'nabu-meta-prod', key: csv_key).body.read
 
     mediaflux_prefix = 'asset:/projects/proj-1190_paradisec_backup-1128.4.248/paradisec/'
@@ -102,7 +112,7 @@ class CatalogMediafluxValidatorService
     csv_date = Date.parse(match[1])
     raise "Mediaflux CSV is stale (#{csv_date}), must be within 2 days" if csv_date < Date.today - 2
 
-    latest_key
+    [latest_key, csv_date]
   end
 
   def fetch_inventory_csv
