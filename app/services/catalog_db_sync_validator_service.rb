@@ -58,8 +58,8 @@ class CatalogDbSyncValidatorService
       s3_files << CGI.unescape(filename)
     end
 
-    s3_files = s3_files.reject { |filename| filename.ends_with?('pdsc_admin/ro-crate-metadata.json') }
-      .reject { |filename| filename.include?('/pdsc_admin/') && filename.ends_with?('-deposit.pdf') }
+    s3_files = s3_files.reject { |filename| filename.ends_with?('/ro-crate-metadata.json') }
+      .reject { |filename| filename.match?(%r{\A([^/]+)/\1-deposit\.pdf\z}) }
 
     if s3_files.size != s3_files.uniq.size
       raise 'Duplicate files in S3 inventory'

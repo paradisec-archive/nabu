@@ -136,11 +136,11 @@ module Nabu
     private
 
     def collection_admin_key(collection, filename)
-      [collection.identifier, 'pdsc_admin', filename].join('/')
+      [collection.identifier, filename].join('/')
     end
 
     def item_admin_key(item, filename)
-      [item.collection.identifier, item.identifier, 'pdsc_admin', filename].join('/')
+      [item.collection.identifier, item.identifier, filename].join('/')
     end
 
     def bucket_name
