@@ -6,6 +6,11 @@ module Nabu
   class Catalog
     include Singleton
 
+    ADMIN_ROCRATE_FILENAME = 'ro-crate-metadata.json'.freeze
+
+    # S3's DeleteObjects API accepts at most 1000 keys per request.
+    MAX_DELETE_KEYS = 1000
+
     def initialize
       params = {
         region: 'ap-southeast-2'
@@ -26,69 +31,117 @@ module Nabu
       @presigner = Aws::S3::Presigner.new(client: @s3)
     end
 
-    def delete_collection(collection)
-      Rails.logger.debug { "Nabu::Catalog: Deleting collection #{collection.identifier}" }
-      delete_by_prefix(collection.identifier)
+    def essence_key(essence)
+      [essence.item.collection.identifier, essence.item.identifier, essence.filename].join('/')
     end
 
-    def delete_item(item)
-      Rails.logger.debug { "Nabu::Catalog: Deleting item #{item.full_identifier}" }
-      parts = [item.collection.identifier, item.identifier]
-
-      delete_by_prefix(parts.join('/'))
+    def item_rocrate_key(item)
+      item_admin_key(item, ADMIN_ROCRATE_FILENAME)
     end
 
-    def delete_essence(essence)
-      Rails.logger.debug { "Nabu::Catalog: Deleting essence #{essence.item.full_identifier}:#{essence.filename}" }
-      parts = [essence.item.collection.identifier, essence.item.identifier, essence.filename]
+    def collection_rocrate_key(collection)
+      collection_admin_key(collection, ADMIN_ROCRATE_FILENAME)
+    end
 
-      delete_by_prefix(parts.join('/'))
+    def deposit_form_key(collection)
+      collection_admin_key(collection, "#{collection.identifier}-deposit.pdf")
+    end
+
+    # Every key that makes up an item in the bucket: its essence files plus its admin metadata.
+    def item_keys(item)
+      keys = item.essences.map { |essence| essence_key(essence) }
+      keys << item_rocrate_key(item)
+      keys
+    end
+
+    # Every key that makes up a collection in the bucket: its items' keys plus its admin files.
+    def collection_keys(collection)
+      keys = collection.items.includes(:essences).flat_map { |item| item_keys(item) }
+      keys << collection_rocrate_key(collection)
+      keys << deposit_form_key(collection)
+      keys
+    end
+
+    def item_prefix(item)
+      "#{item.collection.identifier}/#{item.identifier}/"
+    end
+
+    def collection_prefix(collection)
+      "#{collection.identifier}/"
+    end
+
+    # Deletes exactly the given keys — never a prefix. Missing keys are treated as
+    # deleted by S3, so calling this twice with the same keys is safe.
+    def delete_keys(keys)
+      return 0 if keys.empty?
+      raise ArgumentError, "delete_objects accepts at most #{MAX_DELETE_KEYS} keys, got #{keys.size}" if keys.size > MAX_DELETE_KEYS
+
+      Rails.logger.debug { "Nabu::Catalog: Deleting keys #{keys.join(',')}" }
+
+      response = @s3.delete_objects(
+        bucket: bucket_name,
+        delete: {
+          objects: keys.map { |key| { key: } },
+          quiet: true
+        }
+      )
+
+      raise "Error deleting files: #{response.errors.map { |error| "#{error.key}: #{error.code}" }.join(', ')}" if response.errors.any?
+
+      keys.size
+    end
+
+    def list_keys(prefix)
+      prefix += '/' unless prefix.end_with?('/')
+
+      @s3.list_objects_v2(bucket: bucket_name, prefix:).flat_map { |page| page.contents.map(&:key) }
     end
 
     def upload_collection_admin(collection, filename, data, content_type)
       Rails.logger.debug { "Nabu::Catalog: Uploading collection admin file #{collection.identifier}:#{filename}" }
-      parts = [collection.identifier, 'pdsc_admin', filename]
 
-      upload(parts.join('/'), data, content_type)
+      upload(collection_admin_key(collection, filename), data, content_type)
     end
 
     def upload_item_admin(item, filename, data, content_type)
       Rails.logger.debug { "Nabu::Catalog: Uploading item admin file #{item.full_identifier}:#{filename}" }
-      parts = [item.collection.identifier, item.identifier, 'pdsc_admin', filename]
 
-      upload(parts.join('/'), data, content_type)
+      upload(item_admin_key(item, filename), data, content_type)
     end
 
     def collection_admin_url(collection, filename)
       Rails.logger.debug { "Nabu::Catalog: Downloading collection admin file #{collection.identifier}:#{filename}" }
-      parts = [collection.identifier, 'pdsc_admin', filename]
 
-      download(parts.join('/'))
+      download(collection_admin_key(collection, filename))
     end
 
     def item_admin_url(item, filename)
       Rails.logger.debug { "Nabu::Catalog: Downloading item admin file #{item.full_identifier}:#{filename}" }
-      parts = [item.collection.identifier, item.identifier, 'pdsc_admin', filename]
 
-      download(parts.join('/'))
+      download(item_admin_key(item, filename))
     end
 
     def essence_url(essence, as_attachment: false, filename: nil)
       Rails.logger.debug { "Nabu::Catalog: Get essence URL #{essence.item.full_identifier}:#{essence.filename}" }
-      parts = [essence.item.collection.identifier, essence.item.identifier, essence.filename]
 
-      download(parts.join('/'), as_attachment:, filename:)
+      download(essence_key(essence), as_attachment:, filename:)
     end
 
     def deposit_form_url(collection, as_attachment: false)
-      filename = "#{collection.identifier}-deposit.pdf"
-      Rails.logger.debug { "Nabu::Catalog: Get despoit form URL #{collection.identifier}:#{filename}" }
-      parts = [collection.identifier, 'pdsc_admin', filename]
+      Rails.logger.debug { "Nabu::Catalog: Get deposit form URL #{collection.identifier}" }
 
-      download(parts.join('/'), as_attachment:)
+      download(deposit_form_key(collection), as_attachment:)
     end
 
     private
+
+    def collection_admin_key(collection, filename)
+      [collection.identifier, 'pdsc_admin', filename].join('/')
+    end
+
+    def item_admin_key(item, filename)
+      [item.collection.identifier, item.identifier, 'pdsc_admin', filename].join('/')
+    end
 
     def bucket_name
       @bucket_name ||= Rails.configuration.catalog_bucket
@@ -117,37 +170,6 @@ module Nabu
         key:,
         response_content_disposition: disposition
       )
-    end
-
-    def delete_by_prefix(prefix)
-      prefix += '/' unless prefix.end_with?('/')
-
-      response = @s3.list_objects_v2(
-        bucket: bucket_name,
-        prefix:
-      )
-
-      keys = response.contents.map(&:key)
-      if keys.empty?
-        Rails.logger.debug { 'No files to delete' }
-        return 0
-      end
-
-      Rails.logger.debug { "Deleting #{keys.join(',')} files" }
-
-      throw "Too many files to delete: #{keys.size}" if keys.size > 50
-
-      del_response = @s3.delete_objects(
-        bucket: bucket_name,
-        delete: {
-          objects: keys.map { |key| { key: } },
-          quiet: true
-        }
-      )
-
-      return keys.size unless del_response.errors.any?
-
-      throw "Error deleting files: #{del_response.errors}"
     end
   end
 end

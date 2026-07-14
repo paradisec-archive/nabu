@@ -5,7 +5,7 @@ class CatalogMetadataJob < ApplicationJob
     local_data = { data:, admin_rocrate: true }
 
 
-    filename = 'ro-crate-metadata.json'
+    filename = Nabu::Catalog::ADMIN_ROCRATE_FILENAME
 
     if is_item
       rocrate = Api::V1::OniController.render :object_meta_item, assigns: local_data

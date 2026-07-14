@@ -1,7 +1,11 @@
 class CollectionDestructionService
   def self.destroy(collection)
-    essences = collection.items.map(&:essences).flatten
-    essence_ids = essences.map(&:id)
+    catalog = Nabu::Catalog.instance
+
+    # Snapshot the exact keys before the records are deleted — the job deletes only these.
+    keys = catalog.collection_keys(collection)
+
+    essence_ids = Essence.joins(:item).where(items: { collection_id: collection.id }).ids
     item_ids = collection.items.map(&:id)
 
     # delete_all is efficient but skips ActiveRecord callbacks, so the `dependent: :destroy`
@@ -19,17 +23,10 @@ class CollectionDestructionService
     collection.items = [] # force no items
 
     begin
-      collection.destroy
-
-      # Remove The items just in case
-      collection.items.each do |item|
-        count = Nabu::Catalog.instance.delete_item(item)
-        Rails.logger.info "[DELETE] Removed entire item directory at [#{item.identifier}] #{count} files"
-      end
-
-      count = Nabu::Catalog.instance.delete_collection(collection)
-      Rails.logger.info "[DELETE] Removed entire collection directory at [#{collection.identifier}] #{count} files"
+      collection.destroy!
     rescue StandardError => e
+      Rails.logger.error "[DELETE] Failed to destroy collection [#{collection.identifier}]: #{e.message}"
+
       return {
         success: false,
         messages: {
@@ -38,10 +35,14 @@ class CollectionDestructionService
       }
     end
 
+    DeleteCatalogFilesJob.perform_later(keys, verify_prefix: catalog.collection_prefix(collection))
+
+    Rails.logger.info "[DELETE] Scheduled deletion of #{keys.size} files for collection [#{collection.identifier}]"
+
     {
       success: true,
       messages: {
-        notice: "Collection removed successfully#{deleted_items_count.zero? ? '' : ' and files deleted from archive (undo not possible)'}."
+        notice: deleted_items_count.zero? ? 'Collection removed; deletion of its archive admin files has been scheduled.' : 'Collection removed; file deletion from the archive has been scheduled (undo not possible).'
       },
       can_undo: deleted_items_count.zero?
     }

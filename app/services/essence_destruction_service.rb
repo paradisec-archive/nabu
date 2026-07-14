@@ -1,16 +1,19 @@
 class EssenceDestructionService
-  # remove file and db record(s)
+  # remove the db record and schedule deletion of the file from the archive
   def self.destroy(essence)
-    begin
-      Nabu::Catalog.instance.delete_essence(essence)
-    rescue StandardError => e
-      return { error: "Essence removed, but deleting file failed: #{e.message}" }
+    key = Nabu::Catalog.instance.essence_key(essence)
+
+    unless essence.destroy
+      reasons = essence.errors.full_messages.join(', ')
+      Rails.logger.error "[DELETE] Failed to destroy essence [#{essence.item.full_identifier}:#{essence.filename}]: #{reasons}"
+
+      return { error: "Essence could not be removed: #{reasons}" }
     end
 
-    Rails.logger.info "[DELETE] Removed essence file at [#{essence.item.full_identifier}:#{essence.filename}"
+    DeleteCatalogFilesJob.perform_later([key])
 
-    essence.destroy
+    Rails.logger.info "[DELETE] Scheduled file deletion for essence [#{essence.item.full_identifier}:#{essence.filename}]"
 
-    { notice: 'Essence removed successfully, and file deleted from archive (undo not possible).' }
+    { notice: 'Essence removed; file deletion from the archive has been scheduled (undo not possible).' }
   end
 end
