@@ -173,6 +173,19 @@ module ApplicationHelper
     "#{Rails.application.config.oni_url}/file?id=#{URI.encode_www_form_component(repository_essence_url(collection_identifier, item_identifier, essence_filename))}"
   end
 
+  # A genuine antimeridian crossing has a non-positive east edge and unwraps into
+  # 0..360 space; east < west with a positive east edge can only be a swapped
+  # extent, so render the box the curator meant rather than longitudes beyond 360.
+  def normalised_extent(shape)
+    west = shape.west_limit
+    east = shape.east_limit
+    return [west, east] unless east < west
+    return [west, east + 360] if east <= 0
+
+    Rails.logger.warn("Swapped map extent on #{shape.class.name} #{shape.try(:id)}: west=#{west} east=#{east}")
+    [east, west]
+  end
+
   private
 
   def preloaded_select_tag(attribute, collection, label_method, default_placeholder, options = {}, multiple: false)

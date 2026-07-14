@@ -23,6 +23,8 @@
 #
 
 class Language < ApplicationRecord
+  include HasBoundaries
+
   has_paper_trail
 
   validates :name, presence: true
