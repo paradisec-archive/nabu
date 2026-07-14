@@ -7,6 +7,8 @@ module Nabu
     include Singleton
 
     ADMIN_ROCRATE_FILENAME = 'ro-crate-metadata.json'.freeze
+    DEPOSIT_FORM_SUFFIX = '-deposit.pdf'.freeze
+    DEPOSIT_FORM_KEY_PATTERN = %r{\A([^/]+)/\1#{Regexp.escape(DEPOSIT_FORM_SUFFIX)}\z}
 
     # S3's DeleteObjects API accepts at most 1000 keys per request.
     MAX_DELETE_KEYS = 1000
@@ -44,7 +46,15 @@ module Nabu
     end
 
     def deposit_form_key(collection)
-      collection_admin_key(collection, "#{collection.identifier}-deposit.pdf")
+      collection_admin_key(collection, "#{collection.identifier}#{DEPOSIT_FORM_SUFFIX}")
+    end
+
+    # True for the admin files nabu writes alongside essences: RO-Crate metadata
+    # at the collection/item root and the collection's deposit PDF.
+    def admin_key?(key)
+      return true if key.end_with?("/#{ADMIN_ROCRATE_FILENAME}")
+
+      key.end_with?(DEPOSIT_FORM_SUFFIX) && key.match?(DEPOSIT_FORM_KEY_PATTERN)
     end
 
     # Every key that makes up an item in the bucket: its essence files plus its admin metadata.

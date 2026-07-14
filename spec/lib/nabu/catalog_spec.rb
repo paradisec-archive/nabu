@@ -22,4 +22,20 @@ describe Nabu::Catalog do
       expect(catalog.deposit_form_key(collection)).to eq('AA1/AA1-deposit.pdf')
     end
   end
+
+  describe '#admin_key?' do
+    it 'recognises every admin key the builders produce' do
+      expect(catalog.admin_key?(catalog.collection_rocrate_key(collection))).to be true
+      expect(catalog.admin_key?(catalog.item_rocrate_key(item))).to be true
+      expect(catalog.admin_key?(catalog.deposit_form_key(collection))).to be true
+    end
+
+    it 'does not match essence keys' do
+      expect(catalog.admin_key?('AA1/001/recording.wav')).to be false
+    end
+
+    it 'does not match a deposit PDF named after a different collection' do
+      expect(catalog.admin_key?('AA1/BB2-deposit.pdf')).to be false
+    end
+  end
 end
