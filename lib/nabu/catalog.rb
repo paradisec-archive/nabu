@@ -107,6 +107,24 @@ module Nabu
       @s3.list_objects_v2(bucket: bucket_name, prefix:).flat_map { |page| page.contents.map(&:key) }
     end
 
+    def key_exists?(key)
+      @s3.head_object(bucket: bucket_name, key:)
+
+      true
+    rescue Aws::S3::Errors::NotFound
+      false
+    end
+
+    def copy_key(source_key, target_key)
+      Rails.logger.debug { "Nabu::Catalog: Copying #{source_key} to #{target_key}" }
+
+      @s3.copy_object(
+        bucket: bucket_name,
+        copy_source: "/#{bucket_name}/#{source_key}",
+        key: target_key
+      )
+    end
+
     def upload_collection_admin(collection, filename, data, content_type)
       Rails.logger.debug { "Nabu::Catalog: Uploading collection admin file #{collection.identifier}:#{filename}" }
 

@@ -38,6 +38,36 @@ namespace :catalog do
     validator.run
   end
 
+  desc 'Copy deposit PDFs from legacy pdsc_admin keys to collection-root keys'
+  task migrate_deposit_forms: :environment do
+    catalog = Nabu::Catalog.instance
+
+    copied = 0
+    already_migrated = 0
+    missing = []
+
+    Collection.where(has_deposit_form: true).find_each do |collection|
+      target_key = catalog.deposit_form_key(collection)
+      legacy_key = "#{collection.identifier}/pdsc_admin/#{collection.identifier}-deposit.pdf"
+
+      if catalog.key_exists?(target_key)
+        already_migrated += 1
+        next
+      end
+
+      unless catalog.key_exists?(legacy_key)
+        missing << collection.identifier
+        next
+      end
+
+      catalog.copy_key(legacy_key, target_key)
+      copied += 1
+    end
+
+    puts "Copied #{copied} deposit PDFs, #{already_migrated} already migrated"
+    puts "Collections flagged has_deposit_form with no PDF at either key: #{missing.join(', ')}" if missing.any?
+  end
+
   desc 'Remove old deleted versions'
   task remove_deleted_versions: :environment do
     env = ENV.fetch('AWS_PROFILE').sub('nabu-', '')
