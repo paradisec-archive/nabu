@@ -31,7 +31,7 @@ describe DeleteCatalogFilesJob, :no_catalog_upload do
       allow(catalog).to receive(:list_keys).with('X1/').and_return(['X1/stray.bin'])
 
       expect(Sentry).to receive(:capture_message)
-        .with(/X1\//, hash_including(level: :warning, extra: { keys: ['X1/stray.bin'] }))
+        .with(/X1\//, hash_including(level: :warning, extra: { stray_count: 1, stray_keys: ['X1/stray.bin'] }))
       expect(catalog).to receive(:delete_keys).once
 
       described_class.perform_now(['X1/001/file.wav'], verify_prefix: 'X1/')

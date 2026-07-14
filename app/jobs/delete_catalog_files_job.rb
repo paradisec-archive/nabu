@@ -21,7 +21,7 @@ class DeleteCatalogFilesJob < ApplicationJob
     Sentry.capture_message(
       "Stray objects remain under deleted catalog prefix #{verify_prefix}",
       level: :warning,
-      extra: { keys: strays }
+      extra: { stray_count: strays.size, stray_keys: strays }
     )
   end
 end
