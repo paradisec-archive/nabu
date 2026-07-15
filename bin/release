@@ -24,6 +24,7 @@ git switch main
 docker pull node:lts-alpine
 docker pull ubuntu:24.04
 docker pull ghcr.io/crate-works/oni:latest
+docker pull ghcr.io/crate-works/downloader:latest
 
 cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
