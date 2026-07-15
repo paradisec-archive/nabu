@@ -66,22 +66,22 @@ const main = async () => {
     await fail(`Inventory binary failed (exit code ${exitCode})`);
   }
 
-  // The check summary reports e.g. "799,525 assets [checked]" / "801,045 assets [total]".
-  // A shortfall means assets were silently skipped (e.g. InvalidPathException aborting a
-  // batch), so the CSV is incomplete and must not become the day's inventory.
+  // On a clean run stderr is empty and the summary reports e.g. "801,175 assets [missing]".
+  // When assets are skipped (e.g. InvalidPathException aborting a batch), the check warns
+  // on stderr ("WARNING: checked N assets out of total of M") and prints an extra
+  // "assets [total]" summary line, and the CSV is incomplete and must not be uploaded.
   const stdout = readFileSync('/tmp/inventory/stdout.log', 'utf-8');
-  const summaryCount = (label: string) => {
-    const match = stdout.match(new RegExp(`([\\d,]+) assets \\[${label}\\]`));
-    return match ? Number(match[1].replace(/,/g, '')) : undefined;
-  };
+  const stderr = readFileSync('/tmp/inventory/stderr.log', 'utf-8');
+  const missingCount = stdout.match(/([\d,]+) assets \[missing\]/);
 
-  const checked = summaryCount('checked');
-  const total = summaryCount('total');
-
-  if (checked === undefined || total === undefined) {
-    await fail('Inventory summary is missing checked/total asset counts; refusing to upload');
-  } else if (checked !== total) {
-    await fail(`Inventory incomplete: checked ${checked} of ${total} assets; refusing to upload`);
+  if (stderr.trim() !== '') {
+    await fail('Inventory check reported errors on stderr; refusing to upload');
+  } else if (!missingCount) {
+    await fail('Inventory summary has no "assets [missing]" count; refusing to upload');
+  } else if (stdout.includes(' assets [total]')) {
+    await fail('Inventory incomplete: not all assets were checked; refusing to upload');
+  } else {
+    console.log(`Inventory contains ${missingCount[1]} assets`);
   }
 
   const today = new Date().toISOString().slice(0, 10);
