@@ -286,6 +286,9 @@ export class AppStack extends cdk.Stack {
       targets: [downloaderService],
       vpc,
       protocol: elbv2.ApplicationProtocol.HTTP,
+      healthCheck: {
+        path: '/downloader/',
+      },
     });
 
     sslListener.addTargetGroups('DownloaderTargetGroups', {
