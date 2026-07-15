@@ -15,6 +15,7 @@ LAST_DEPLOY_COMMIT=$(git rev-parse origin/prod)
 
 git push
 git switch "$ENV"
+git pull
 git merge --ff-only main
 git push
 git switch main
