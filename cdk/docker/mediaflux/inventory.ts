@@ -51,15 +51,37 @@ const main = async () => {
   console.log('--- stderr ---');
   execFileSync('cat', ['/tmp/inventory/stderr.log'], { stdio: ['pipe', 'inherit', 'inherit'] });
 
-  if (exitCode !== undefined) {
-    const message = `Inventory binary failed (exit code ${exitCode})`;
-    const tail = (path: string) => readFileSync(path, 'utf-8').split('\n').slice(-100).join('\n');
+  const tail = (path: string) => readFileSync(path, 'utf-8').split('\n').slice(-100).join('\n');
+
+  const fail = async (message: string) => {
     console.error(message);
     Sentry.captureException(new Error(message), {
       extra: { stdout: tail('/tmp/inventory/stdout.log'), stderr: tail('/tmp/inventory/stderr.log') },
     });
     await Sentry.flush(5000);
     process.exit(1);
+  };
+
+  if (exitCode !== undefined) {
+    await fail(`Inventory binary failed (exit code ${exitCode})`);
+  }
+
+  // The check summary reports e.g. "799,525 assets [checked]" / "801,045 assets [total]".
+  // A shortfall means assets were silently skipped (e.g. InvalidPathException aborting a
+  // batch), so the CSV is incomplete and must not become the day's inventory.
+  const stdout = readFileSync('/tmp/inventory/stdout.log', 'utf-8');
+  const summaryCount = (label: string) => {
+    const match = stdout.match(new RegExp(`([\\d,]+) assets \\[${label}\\]`));
+    return match ? Number(match[1].replace(/,/g, '')) : undefined;
+  };
+
+  const checked = summaryCount('checked');
+  const total = summaryCount('total');
+
+  if (checked === undefined || total === undefined) {
+    await fail('Inventory summary is missing checked/total asset counts; refusing to upload');
+  } else if (checked !== total) {
+    await fail(`Inventory incomplete: checked ${checked} of ${total} assets; refusing to upload`);
   }
 
   const today = new Date().toISOString().slice(0, 10);

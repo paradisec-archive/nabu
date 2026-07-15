@@ -1,6 +1,6 @@
 FROM node:24-slim
 
-ARG MF_CLIENT_VERSION=0.8.5
+ARG MF_CLIENT_VERSION=0.8.6
 ARG MF_CLIENT_URL=https://gitlab.unimelb.edu.au/resplat-mediaflux/releases/raw/master/mediaflux/unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -14,6 +14,11 @@ RUN wget -q "$MF_CLIENT_URL" \
   && tar -xzf "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
   && rm "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
   && mv ./* mf
+
+# The bundled JRE derives its filesystem path encoding (sun.jnu.encoding) from the
+# locale; without this, non-ASCII filenames throw InvalidPathException and whole
+# check batches are silently skipped.
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # NOTE: https://gitlab.unimelb.edu.au/resplat-mediaflux/unimelb-mf-clients/-/blob/master/README.md#system-environment-variables
 ENV MFLUX_HOST=mediaflux.researchsoftware.unimelb.edu.au
