@@ -29,6 +29,10 @@ docker pull ghcr.io/crate-works/downloader:latest
 cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
 
+# Services using mutable registry tags don't redeploy via CDK, so force new deployments
+AWS_PROFILE=nabu-${ENV} aws ecs update-service --cluster nabu --service downloader --force-new-deployment --no-cli-pager >/dev/null
+echo "Forced new deployment of downloader service"
+
 # Cleanup cdk
 # Echo cleaning up!!
 pnpm exec cdk-agc
