@@ -127,16 +127,24 @@ dump_prod_to_s3() {
 target_dev() {
   dump_prod_to_s3
 
-  echo "Pulling dump from prod S3 and restoring into ${DEV_DB_NAME}..."
-  aws s3 cp "s3://${PROD_BUCKET}/${KEY}" - --profile "$PROD_PROFILE" \
-    | bunzip2 \
-    | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
+  echo "Ensuring ${DEV_DB_NAME} exists..."
+  echo "CREATE DATABASE IF NOT EXISTS ${DEV_DB_NAME};" | mysql -h "$DEV_DB_HOST" -u root
+
+  # Download to a file first — the S3 pull is the expensive step, so keep the
+  # dump around for manual recovery if the mysql restore breaks.
+  local dump_file="${TMPDIR:-/tmp}/nabu-dump-${TS}.sql.bz2"
+  echo "Downloading dump to ${dump_file}..."
+  aws s3 cp "s3://${PROD_BUCKET}/${KEY}" "$dump_file" --profile "$PROD_PROFILE"
+
+  echo "Restoring into ${DEV_DB_NAME}..."
+  bunzip2 -c "$dump_file" | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
 
   echo 'Resetting all passwords to "password"...'
   echo "update users set encrypted_password = '${DEV_PASSWORD_HASH}';" \
     | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
 
   echo "Done. Local ${DEV_DB_NAME} now holds prod data; every user logs in with \"password\"."
+  echo "Dump kept at ${dump_file} — delete it once you're happy with the restore."
   echo 'You may want to run: nabu_run bin/rake searchkick:reindex:all'
 }
 
