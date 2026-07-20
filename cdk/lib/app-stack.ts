@@ -114,7 +114,7 @@ export class AppStack extends cdk.Stack {
         throughput: 125, // These are the minimums
         iops: 3000, // These are the minimums
       },
-      version: opensearch.EngineVersion.OPENSEARCH_2_11,
+      version: opensearch.EngineVersion.OPENSEARCH_2_19,
       tlsSecurityPolicy: opensearch.TLSSecurityPolicy.TLS_1_2_PFS,
       enableVersionUpgrade: true,
       enableAutoSoftwareUpdate: true,
