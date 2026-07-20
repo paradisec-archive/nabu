@@ -259,19 +259,9 @@
         "help": "The access conditions associated with a resource."
       },
       {
-        "display": "Record Type",
-        "name": "type",
-        "help": "The type of object a record describes, i.e. a collection, object or file. For individual files, this field also gives information about the nature of the material, i.e. primary material, transcription, annotation etc."
-      },
-      {
         "display": "Language",
         "name": "languages_with_code",
         "help": "The language(s) of the content in this resource."
-      },
-      {
-        "display": "Communication Mode",
-        "name": "communicationMode",
-        "help": "The mode(s) (spoken, written, signed, etc.) used in the interaction represented by this resource."
       },
       {
         "display": "File Format",
