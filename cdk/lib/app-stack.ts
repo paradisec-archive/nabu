@@ -464,6 +464,12 @@ export class AppStack extends cdk.Stack {
         resources: ['*'],
       }),
     );
+    appTaskDefinition.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [`arn:aws:lambda:${this.region}:${this.account}:function:paragest-backfill-extract-text-${env}`],
+      }),
+    );
 
     const appService = new ecs.Ec2Service(this, 'AppService', {
       serviceName: 'app',
