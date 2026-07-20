@@ -1,7 +1,20 @@
 module Api
   module V1
     class OniController < ApiController
-      skip_before_action :enforce_terms_acceptance, only: %i[entities entity rocrate search]
+      skip_before_action :enforce_terms_acceptance, only: %i[capabilities entities entity rocrate search]
+
+      rescue_from ActiveRecord::RecordNotFound do |exception|
+        message = exception.message == 'ActiveRecord::RecordNotFound' ? 'The requested entity was not found' : exception.message
+        render_api_error('NOT_FOUND', message, :not_found)
+      end
+
+      rescue_from CanCan::AccessDenied do
+        if current_user
+          render_api_error('FORBIDDEN', 'You do not have permission to access this resource', :forbidden)
+        else
+          render_api_error('UNAUTHORIZED', 'Authentication is required to access this resource', :unauthorized)
+        end
+      end
 
       # Cross-index search spans the Collection, Item and Essence indices. A field can only be
       # sorted on if it is mapped in ALL three indices; sorting on a field missing from any index
@@ -24,11 +37,14 @@ module Api
         'updated_at' => 'updated_at'
       }.freeze
 
+      def capabilities
+      end
+
       def entities # rubocop:disable Metrics/MethodLength
         query = Oni::ObjectsValidator.new(params)
 
         unless query.valid?
-          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+          render_validation_error(query)
 
           return
         end
@@ -50,7 +66,7 @@ module Api
           end
 
           unless md
-            render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
+            render_api_error('VALIDATION_ERROR', 'Invalid memberOf parameter', :bad_request)
             return
           end
 
@@ -103,7 +119,7 @@ module Api
 
       def entity
         unless params[:id]
-          render json: { error: 'id is required' }, status: :bad_request
+          render_api_error('VALIDATION_ERROR', 'id is required', :bad_request)
 
           return
         end
@@ -124,7 +140,7 @@ module Api
 
       def rocrate
         unless params[:id]
-          render json: { error: 'id is required' }, status: :bad_request
+          render_api_error('VALIDATION_ERROR', 'id is required', :bad_request)
 
           return
         end
@@ -160,7 +176,7 @@ module Api
         query = Oni::FilesValidator.new(params)
 
         unless query.valid?
-          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+          render_validation_error(query)
 
           return
         end
@@ -177,7 +193,7 @@ module Api
           md = query.member_of.match(repository_collection_url(collection_identifier: '(.*)'))
 
           unless md
-            render json: { error: 'Invalid memberOf parameter' }, status: :bad_request
+            render_api_error('VALIDATION_ERROR', 'Invalid memberOf parameter', :bad_request)
             return
           end
 
@@ -212,13 +228,13 @@ module Api
         raise ActiveRecord::RecordNotFound unless check_for_essence
 
         if !current_user&.admin? && @data.is_archived?
-          render json: { error: 'This file is archived and can only be accessed by admins' }, status: :forbidden
+          render_api_error('FORBIDDEN', 'This file is archived and can only be accessed by admins', :forbidden)
 
           return
         end
 
         location = Nabu::Catalog.instance.essence_url(@data, as_attachment:, filename:)
-        raise ActionController::RoutingError, 'Essence file not found' unless location
+        raise ActiveRecord::RecordNotFound, 'Essence file not found' unless location
 
         Download.create!(user: current_user, essence: @data) if as_attachment
 
@@ -237,7 +253,7 @@ module Api
         query = Oni::SearchValidator.new(params)
 
         unless query.valid?
-          render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
+          render_validation_error(query)
 
           return
         end
@@ -365,6 +381,14 @@ module Api
         }
       end
 
+      # Overrides ApiController's version so the 403 uses the spec's error envelope.
+      def enforce_terms_acceptance
+        return unless current_user
+        return if current_user.admin? || current_user.contact_only? || current_user.terms_accepted?
+
+        render_api_error('FORBIDDEN', 'You must accept the terms and conditions', :forbidden)
+      end
+
       def essence_terms_required?
         return false unless current_user
         return false if current_user.admin? || current_user.terms_accepted?
@@ -373,33 +397,41 @@ module Api
       end
 
       def transform_filters(filters)
-        f = filters.to_h.to_h
+        f = filters.dup
 
         if f['entity_type'].is_a?(Array)
           f['entity_type'] = f['entity_type'].map { |v| Oni::EntityType.normalise(v) }
         end
 
-        return f unless f['originatedOn']
+        originated_on = f.delete('originatedOn')
+        # The spec's FilterRange object maps to a single inclusive range; the legacy
+        # 'A TO B' string array (still sent by Oni's date facet) can carry several
+        # disjoint year ranges, so those become an _or of ranges.
+        case originated_on
+        when Hash
+          range = {}
+          range[:gte] = originated_on['gte'] if originated_on.key?('gte')
+          range[:lte] = originated_on['lte'] if originated_on.key?('lte')
+          f[:originated_on] = range
+        when Array
+          ranges = originated_on.filter_map do |range_string|
+            parts = range_string.split(' TO ')
+            next nil if parts.length != 2
 
-        ranges = parse_originated_on_ranges(f['originatedOn'])
-        f.delete('originatedOn')
-        f[:_or] = ranges.map { |range| { originated_on: range } }
+            { gte: parts[0].strip, lte: parts[1].strip }
+          end
+          f[:_or] = ranges.map { |range| { originated_on: range } }
+        end
 
         f
       end
 
-      def parse_originated_on_ranges(originated_on_array)
-        originated_on_array.map do |range_string|
-          unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
-            errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
-          end
+      def render_validation_error(query)
+        render_api_error('VALIDATION_ERROR', query.errors.full_messages.join('; '), :bad_request)
+      end
 
-          # Parse format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
-          parts = range_string.split(' TO ')
-          next nil if parts.length != 2
-
-          { gte: parts[0].strip, lte: parts[1].strip }
-        end.compact
+      def render_api_error(code, message, status)
+        render json: { error: { code:, message:, requestId: request.request_id } }, status:
       end
 
       def check_for_essence

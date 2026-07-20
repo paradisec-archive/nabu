@@ -127,6 +127,7 @@ Rails.application.routes.draw do
           skip_controllers :authorized_applications, :applications
         end
 
+        get 'capabilities' => 'oni#capabilities'
         get 'entities' => 'oni#entities'
         get 'entity/:id' => 'oni#entity', constraints: { id: %r{[^/]+} }
         get 'entity/:id/rocrate' => 'oni#rocrate', constraints: { id: %r{[^/]+} }

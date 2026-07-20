@@ -1,0 +1,10 @@
+{
+  apiVersion: Oni::SearchCapabilities::API_VERSION,
+  extensions: {
+    segments: {}
+  },
+  search: {
+    filters: Oni::SearchCapabilities::FILTERS,
+    facets: Oni::SearchCapabilities::FACETS
+  }
+}

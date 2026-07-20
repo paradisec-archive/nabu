@@ -11,7 +11,6 @@ module Oni
 
     validate :validate_filters
     validate :validate_bounding_box
-    validate :validate_originated_on
     validate :validate_entity_type_filter
     validates :geohash_precision, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }, allow_nil: true
 
@@ -23,9 +22,15 @@ module Oni
 
     def initialize(params)
       permitted = ATTRIBUTES.map { | attr| attr.to_s.camelize(:lower).to_sym }
-      filters = { languages_with_code: [], countries: [], collector_name: [], collection_title: [], access_condition_name: [], encodingFormat: [], rootCollection: [], originatedOn: [], entity_type: [], full_identifier: [] }
       bounding_box = { topRight: {}, bottomLeft: {} }
-      object_params = params.permit(permitted, filters:, boundingBox: bounding_box)
+      object_params = params.permit(permitted, boundingBox: bounding_box)
+
+      # Filter keys are validated against the /capabilities declaration rather than permitted:
+      # the spec requires undeclared keys to be rejected with a 400, not silently dropped.
+      # The plain-Hash conversion matters: HashWithIndifferentAccess would coerce the symbol
+      # operator keys (:gte, :_or) the controller builds back into strings Searchkick ignores.
+      raw_filters = params[:filters]
+      @filters = raw_filters.respond_to?(:to_unsafe_h) ? raw_filters.to_unsafe_h.to_h : raw_filters
 
       object_params.each do |key, value|
         snake_key = key.to_s.underscore
@@ -56,54 +61,77 @@ module Oni
 
     private
 
-    def transform_originated_on_filter
-      originated_on = @filters['originatedOn']
-      return unless originated_on.is_a?(Array)
-
-      ranges = parse_originated_on_ranges(originated_on)
-      @filters['originatedOn'] = { 'ranges' => ranges }
-    end
-
-    def parse_originated_on_ranges(originated_on_array)
-      originated_on_array.map do |range_string|
-        # Parse format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
-        parts = range_string.split(' TO ')
-        next nil if parts.length != 2
-
-        { 'from' => parts[0].strip, 'to' => parts[1].strip }
-      end.compact
-    end
-
-    # filters arrives as ActionController::Parameters on real requests and as a plain Hash in unit
-    # tests, so both must count as a valid filters object.
-    def filters_object?
-      filters.is_a?(Hash) || filters.is_a?(ActionController::Parameters)
-    end
-
     def validate_filters
       return if filters.nil?
 
-      unless filters_object?
+      unless filters.is_a?(Hash)
         errors.add(:filters, 'must be an object')
         return
       end
 
       filters.each do |key, value|
-        unless key.is_a?(String)
-          errors.add(:filters, "key '#{key}' must be a string")
-        end
-
-        unless value.is_a?(Array)
-          errors.add(:filters, "value for '#{key}' must be an array")
+        declaration = Oni::SearchCapabilities::FILTERS[key]
+        unless declaration
+          errors.add(:filters, "'#{key}' is not a filter declared in /capabilities")
           next
         end
 
-        value.each do |item|
-          unless item.is_a?(String)
-            errors.add(:filters, "all values in '#{key}' must be strings")
-          end
+        case value
+        when Array
+          validate_filter_values(key, value)
+        when Hash
+          validate_filter_range(key, value, declaration)
+        else
+          errors.add(:filters, "value for '#{key}' must be an array or a range object")
         end
       end
+    end
+
+    def validate_filter_values(key, values)
+      values.each do |item|
+        unless item.is_a?(String)
+          errors.add(:filters, "all values in '#{key}' must be strings")
+        end
+      end
+
+      validate_originated_on_strings(values) if key == 'originatedOn'
+    end
+
+    # Legacy Oni date facet syntax, accepted alongside the spec's range object: each value is a
+    # 'timestamp TO timestamp' string and the ranges are ORed.
+    def validate_originated_on_strings(values)
+      values.each do |range_string|
+        next unless range_string.is_a?(String)
+
+        unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+          errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
+        end
+      end
+    end
+
+    def validate_filter_range(key, range, declaration)
+      unless %w[date number].include?(declaration[:type])
+        errors.add(:filters, "'#{key}' is a #{declaration[:type]} filter and does not accept a range object")
+        return
+      end
+
+      bounds = range.slice('gte', 'lte')
+      if bounds.empty? || bounds.size != range.size
+        errors.add(:filters, "range for '#{key}' must contain at least one of gte and lte, and nothing else")
+        return
+      end
+
+      bounds.each_value do |bound|
+        valid = declaration[:type] == 'date' ? bound.is_a?(String) && parseable_date?(bound) : bound.is_a?(Numeric)
+        errors.add(:filters, "range bounds for '#{key}' must be #{declaration[:type] == 'date' ? 'ISO 8601 date strings' : 'numbers'}") unless valid
+      end
+    end
+
+    def parseable_date?(value)
+      Date.iso8601(value)
+      true
+    rescue ArgumentError, TypeError
+      false
     end
 
     def validate_bounding_box
@@ -140,7 +168,7 @@ module Oni
     end
 
     def validate_entity_type_filter
-      return unless filters_object? && filters.key?('entity_type')
+      return unless filters.is_a?(Hash) && filters.key?('entity_type')
 
       entity_types = filters['entity_type']
       return unless entity_types.is_a?(Array)
@@ -151,30 +179,6 @@ module Oni
 
         unless allowed.include?(value)
           errors.add(:filters, "'#{value}' is not a valid entity_type")
-        end
-      end
-    end
-
-    def validate_originated_on
-      return unless filters_object? && filters.key?('originatedOn')
-
-      originated_on = filters['originatedOn']
-
-      unless originated_on.is_a?(Array)
-        errors.add(:filters, 'originatedOn must be an array')
-        return
-      end
-
-      # Validate each range string format
-      originated_on.each do |range_string|
-        unless range_string.is_a?(String)
-          errors.add(:filters, 'all originatedOn values must be strings')
-          next
-        end
-
-        # Validate format: 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'
-        unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
-          errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
         end
       end
     end
