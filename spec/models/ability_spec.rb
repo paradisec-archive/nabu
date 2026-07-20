@@ -85,7 +85,7 @@ RSpec.describe Ability do
     end
   end
 
-  describe 'collection editor (collection_admins) retains edit' do
+  describe 'collection editor retains edit' do
     let(:user) { create(:user) }
     let(:collection) { private_collection }
     let(:item) { closed_item(collection:) }
@@ -105,7 +105,7 @@ RSpec.describe Ability do
     end
   end
 
-  describe 'collection read-only grantee (collection_users) gets cascading read' do
+  describe 'collection read-only grantee gets cascading read' do
     let(:user) { create(:user) }
     let(:collection) { private_collection }
     let(:item) { closed_item(collection:) }
@@ -174,7 +174,7 @@ RSpec.describe Ability do
     end
   end
 
-  describe 'item editor (item_admins) retains edit and download' do
+  describe 'item editor retains edit and download' do
     let(:user) { create(:user) }
     let(:item) { closed_item(collection: private_collection) }
     let(:essence) { create(:sound_essence, item:) }
@@ -193,7 +193,7 @@ RSpec.describe Ability do
     end
   end
 
-  describe 'item read-only grantee (item_users) retains read and download' do
+  describe 'item read-only grantee retains read and download' do
     let(:user) { create(:user) }
     let(:item) { closed_item(collection: private_collection) }
     let(:essence) { create(:sound_essence, item:) }

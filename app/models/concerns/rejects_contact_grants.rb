@@ -1,4 +1,4 @@
-# Shared guard for the four permission grant models (collection/item read-only and edit grants).
+# Guard for access-grant models (Permission).
 # Contact-only users exist purely so that work can be attributed to them (collector/operator);
 # they never log in, so they must never hold an access grant.
 module RejectsContactGrants

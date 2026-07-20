@@ -209,8 +209,7 @@ class User < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[collection_admins collections item_admins item_agents item_users items owned_collections
-       owned_items rights_transferred_to]
+    %w[item_agents owned_collections owned_items rights_transferred_to]
   end
 
   private

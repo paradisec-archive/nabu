@@ -35,7 +35,7 @@ require 'rails_helper'
 describe Permission, type: :model do
   let(:user) { create(:user) }
 
-  describe 'contact-grant guard (replaces the four-model version)' do
+  describe 'contact-grant guard' do
     # Every (grantable, level) combination the four old membership tables covered.
     %i[collection item].each do |grantable|
       %w[read edit].each do |level|

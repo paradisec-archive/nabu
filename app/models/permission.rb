@@ -35,8 +35,7 @@ class Permission < ApplicationRecord
 
   has_paper_trail
 
-  # grantable is polymorphic over Collection and Item; level maps the four old membership
-  # tables onto one shape: collection_admins/item_admins -> edit, collection_users/item_users -> read.
+  # grantable is polymorphic over Collection and Item; level is read or edit.
   belongs_to :user
   belongs_to :grantable, polymorphic: true
 
@@ -50,9 +49,9 @@ class Permission < ApplicationRecord
   private
 
   # A grant is denormalised into the search index of its subject, the records that cascade
-  # from it, and their essences, so all three must be reindexed when access changes. Mirrors
-  # the scope of the four old membership models: a collection grant reindexes the collection,
-  # its items and its essences; an item grant reindexes the item, its collection and its essences.
+  # from it, and their essences, so all three must be reindexed when access changes: a collection
+  # grant reindexes the collection, its items and its essences; an item grant reindexes the item,
+  # its collection and its essences.
   def reindex_search_documents
     case grantable
     when Collection

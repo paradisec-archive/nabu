@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe UserMergerService do
   let(:user) { create(:user) }
@@ -9,9 +9,6 @@ describe UserMergerService do
     context 'with itself' do
       it 'does not perform any actions' do
         expect(Item).not_to receive(:update_all)
-        expect(Item).not_to receive(:update_all)
-        expect(ItemUser).not_to receive(:update_all)
-        expect(ItemAdmin).not_to receive(:update_all)
         expect(ItemAgent).not_to receive(:update_all)
 
         expect(user).not_to receive(:destroy)
@@ -24,9 +21,6 @@ describe UserMergerService do
     context 'with empty array' do
       it 'does not perform any actions' do
         expect(Item).not_to receive(:update_all)
-        expect(Item).not_to receive(:update_all)
-        expect(ItemUser).not_to receive(:update_all)
-        expect(ItemAdmin).not_to receive(:update_all)
         expect(ItemAgent).not_to receive(:update_all)
 
         expect(user).not_to receive(:destroy)
@@ -39,9 +33,6 @@ describe UserMergerService do
     context 'with nil' do
       it 'does not perform any actions' do
         expect(Item).not_to receive(:update_all)
-        expect(Item).not_to receive(:update_all)
-        expect(ItemUser).not_to receive(:update_all)
-        expect(ItemAdmin).not_to receive(:update_all)
         expect(ItemAgent).not_to receive(:update_all)
 
         expect(user).not_to receive(:destroy)
@@ -51,39 +42,21 @@ describe UserMergerService do
       end
     end
 
-    context 'with other users', skip: "fix this later" do
-      context 'including the primary user' do
-        it 'onlies merge other users, not the primary' do
-          expect(Item).to receive(:update_all).with({ collector_id: user.id }, { collector_id: duplicate_ids })
-          expect(Item).to receive(:update_all).with({ operator_id: user.id }, { operator_id: duplicate_ids })
-          expect(ItemUser).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
-          expect(ItemAdmin).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
-          expect(ItemAgent).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
+    context 'with duplicate users holding permissions' do
+      let(:collection) { create(:collection) }
+      let(:item) { create(:item) }
 
-          expect(user).not_to receive(:destroy)
-          expect(user).to receive(:save)
+      it 'moves grants to the primary user, dropping ones the primary already holds' do
+        Permission.create!(user:, grantable: collection, level: :read)
+        Permission.create!(user: duplicates[0], grantable: collection, level: :read)
+        Permission.create!(user: duplicates[0], grantable: collection, level: :edit)
+        Permission.create!(user: duplicates[1], grantable: item, level: :edit)
 
-          expect(duplicates).to all(receive(:destroy))
+        described_class.new(user, duplicates).call
 
-          described_class.new(user, [user] + duplicates).call
-        end
-      end
-
-      context 'not including the primary user', skip: "fix this later" do
-        it 'merges other users' do
-          expect(Item).to receive(:update_all).with({ collector_id: user.id }, { collector_id: duplicate_ids })
-          expect(Item).to receive(:update_all).with({ operator_id: user.id }, { operator_id: duplicate_ids })
-          expect(ItemUser).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
-          expect(ItemAdmin).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
-          expect(ItemAgent).to receive(:update_all).with({ user_id: user.id }, { user_id: duplicate_ids })
-
-          expect(user).not_to receive(:destroy)
-          expect(user).to receive(:save)
-
-          expect(duplicates).to all(receive(:destroy))
-
-          described_class.new(user, duplicates).call
-        end
+        expect(User.where(id: duplicate_ids)).to be_empty
+        grants = user.permissions.reload.map { |permission| [permission.grantable, permission.level] }
+        expect(grants).to contain_exactly([collection, 'read'], [collection, 'edit'], [item, 'edit'])
       end
     end
   end
