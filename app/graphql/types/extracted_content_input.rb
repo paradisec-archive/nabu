@@ -12,7 +12,7 @@ module Types
     # format is one entry here plus its enum values.
     SEGMENT_TYPES = {
       'pdf' => 'page',
-      'elan' => 'annotation'
+      'elan' => 'time-aligned-annotation'
     }.freeze
 
     # GraphQL cannot express conditional requiredness (TEXT needs text, PDF needs PAGE
@@ -46,7 +46,7 @@ module Types
 
       return if segments.all? { |segment| segment.type == segment_type }
 
-      raise GraphQL::ExecutionError, "extractedContent: #{label} content requires #{segment_type.upcase} segments"
+      raise GraphQL::ExecutionError, "extractedContent: #{label} content requires #{segment_type.upcase.tr('-', '_')} segments"
     end
   end
 end

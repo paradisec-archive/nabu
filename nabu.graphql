@@ -218,7 +218,7 @@ One location-addressed segment of extracted content
 """
 input ExtractedSegmentInput {
   """
-  ANNOTATION segments only
+  TIME_ALIGNED_ANNOTATION segments only
   """
   endMs: Int
 
@@ -228,13 +228,13 @@ input ExtractedSegmentInput {
   page: Int
 
   """
-  ANNOTATION segments only
+  TIME_ALIGNED_ANNOTATION segments only
   """
   startMs: Int
   text: String!
 
   """
-  ANNOTATION segments only - the depositor's TIER_ID verbatim
+  TIME_ALIGNED_ANNOTATION segments only - the depositor's TIER_ID verbatim
   """
   tier: String
   type: SegmentType!
@@ -428,14 +428,14 @@ The kind of location a segment of extracted content is addressed by
 """
 enum SegmentType {
   """
-  An ELAN annotation
-  """
-  ANNOTATION
-
-  """
   A PDF page
   """
   PAGE
+
+  """
+  A time-aligned annotation, such as an ELAN annotation
+  """
+  TIME_ALIGNED_ANNOTATION
 }
 
 """

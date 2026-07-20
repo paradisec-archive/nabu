@@ -83,7 +83,7 @@ describe EssencesController, type: :controller do
         context 'when the essence has ELAN annotation segments' do
           render_views
 
-          let(:segments) { [{ type: 'annotation', tier: 'transcript', start_ms: 1500, end_ms: 3000, text: 'Spoken words' }] }
+          let(:segments) { [{ type: 'time-aligned-annotation', tier: 'transcript', start_ms: 1500, end_ms: 3000, text: 'Spoken words' }] }
           let(:essence) { create(:sound_essence, item: item, extracted_content: segments.to_json, extracted_content_type: 'elan') }
 
           it 'shows a segment preview with tier and timecode labels' do

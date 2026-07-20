@@ -40,7 +40,7 @@ module ApplicationHelper
     case segment['type']
     when 'page'
       "Page #{segment['page']}"
-    when 'annotation'
+    when 'time-aligned-annotation'
       start_time = number_to_human_duration(segment['start_ms'] / 1000.0)
       end_time = number_to_human_duration(segment['end_ms'] / 1000.0)
       "#{segment['tier']} [#{start_time} - #{end_time}]"

@@ -115,7 +115,7 @@ class Essence < ApplicationRecord
   # is one entry here plus an enum value.
   SEGMENT_REQUIRED_FIELDS = {
     'page' => %w[page],
-    'annotation' => %w[tier start_ms end_ms]
+    'time-aligned-annotation' => %w[tier start_ms end_ms]
   }.freeze
 
   belongs_to :item, counter_cache: true

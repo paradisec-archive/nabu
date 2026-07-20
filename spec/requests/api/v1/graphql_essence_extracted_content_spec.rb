@@ -72,8 +72,8 @@ describe 'GraphQL essence extracted content', type: :request do
     result = create_essence(extractedContent: {
       contentType: 'ELAN',
       segments: [
-        { type: 'ANNOTATION', text: 'ngayu kurrama', tier: 'tx@EDD', startMs: 192_000, endMs: 195_400 },
-        { type: 'ANNOTATION', text: 'I am Kurrama', tier: 'ft@EDD', startMs: 192_000, endMs: 195_400 }
+        { type: 'TIME_ALIGNED_ANNOTATION', text: 'ngayu kurrama', tier: 'tx@EDD', startMs: 192_000, endMs: 195_400 },
+        { type: 'TIME_ALIGNED_ANNOTATION', text: 'I am Kurrama', tier: 'ft@EDD', startMs: 192_000, endMs: 195_400 }
       ]
     })
 
@@ -82,8 +82,8 @@ describe 'GraphQL essence extracted content', type: :request do
     essence = item.essences.find_by(filename: 'notes.txt')
     expect(essence.extracted_content_type).to eq('elan')
     expect(JSON.parse(essence.extracted_content)).to eq([
-      { 'type' => 'annotation', 'text' => 'ngayu kurrama', 'tier' => 'tx@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 },
-      { 'type' => 'annotation', 'text' => 'I am Kurrama', 'tier' => 'ft@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 }
+      { 'type' => 'time-aligned-annotation', 'text' => 'ngayu kurrama', 'tier' => 'tx@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 },
+      { 'type' => 'time-aligned-annotation', 'text' => 'I am Kurrama', 'tier' => 'ft@EDD', 'start_ms' => 192_000, 'end_ms' => 195_400 }
     ])
   end
 
@@ -144,10 +144,10 @@ describe 'GraphQL essence extracted content', type: :request do
     'a segment with blank text' => { contentType: 'PDF', segments: [{ type: 'PAGE', text: '   ', page: 1 }] },
     'ELAN without segments' => { contentType: 'ELAN' },
     'ELAN with PAGE segments' => { contentType: 'ELAN', segments: [{ type: 'PAGE', text: 'x', page: 1 }] },
-    'an ANNOTATION segment missing tier' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', startMs: 0, endMs: 5 }] },
-    'an ANNOTATION segment missing startMs' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', tier: 'tx', endMs: 5 }] },
-    'an ANNOTATION segment missing endMs' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: 'x', tier: 'tx', startMs: 0 }] },
-    'an ANNOTATION segment with whitespace text' => { contentType: 'ELAN', segments: [{ type: 'ANNOTATION', text: ' ', tier: 'tx', startMs: 0, endMs: 5 }] }
+    'a TIME_ALIGNED_ANNOTATION segment missing tier' => { contentType: 'ELAN', segments: [{ type: 'TIME_ALIGNED_ANNOTATION', text: 'x', startMs: 0, endMs: 5 }] },
+    'a TIME_ALIGNED_ANNOTATION segment missing startMs' => { contentType: 'ELAN', segments: [{ type: 'TIME_ALIGNED_ANNOTATION', text: 'x', tier: 'tx', endMs: 5 }] },
+    'a TIME_ALIGNED_ANNOTATION segment missing endMs' => { contentType: 'ELAN', segments: [{ type: 'TIME_ALIGNED_ANNOTATION', text: 'x', tier: 'tx', startMs: 0 }] },
+    'a TIME_ALIGNED_ANNOTATION segment with whitespace text' => { contentType: 'ELAN', segments: [{ type: 'TIME_ALIGNED_ANNOTATION', text: ' ', tier: 'tx', startMs: 0, endMs: 5 }] }
   }.each do |label, extracted_content|
     it "rejects #{label} with a schema-boundary error" do
       result = create_essence(extractedContent: extracted_content)
