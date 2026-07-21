@@ -17,7 +17,7 @@
 # **`east_limit`**             | `float(24)`        |
 # **`has_deposit_form`**       | `boolean`          |
 # **`identifier`**             | `string(255)`      | `not null`
-# **`media`**                  | `string(255)`      |
+# **`media`**                  | `text(65535)`      |
 # **`metadata_source`**        | `string(255)`      |
 # **`north_limit`**            | `float(24)`        |
 # **`orthographic_notes`**     | `string(255)`      |

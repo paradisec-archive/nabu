@@ -142,7 +142,7 @@
 
         %tr
           %th Media
-          %td= @collection.media
+          %td= h(@collection.media).gsub(/\n/, '<br/>').html_safe
 
         - if @collection.has_deposit_form?
           %tr

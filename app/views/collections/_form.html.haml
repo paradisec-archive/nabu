@@ -170,7 +170,7 @@
 
       %tr
         %th= f.label :media
-        %td= f.text_field :media
+        %td= f.text_area :media, :rows => 5
         - if params[:action] == 'bulk_edit'
           %td.append
             %small Append

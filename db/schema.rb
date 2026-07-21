@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_120141) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -69,7 +69,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_000002) do
     t.integer "field_of_research_id"
     t.boolean "has_deposit_form"
     t.string "identifier", null: false, collation: "utf8mb4_bin"
-    t.string "media"
+    t.text "media"
     t.string "metadata_source"
     t.float "north_limit"
     t.integer "operator_id"
