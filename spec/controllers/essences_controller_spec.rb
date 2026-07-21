@@ -8,6 +8,7 @@ describe EssencesController, type: :controller do
   let(:access_condition) { AccessCondition.new({ name: 'Open (subject to agreeing to PDSC access conditions)' }) }
   let(:item) { create(:item, collection: collection, access_condition: access_condition) }
   let(:essence) { create(:sound_essence, item: item) }
+  let(:ingest_notes) { "processS3Event: moo.wav added\nSet volume to -3dB" }
 
   let(:params) { { collection_id: collection.identifier, item_id: item.identifier, id: essence.id } }
 
@@ -91,6 +92,31 @@ describe EssencesController, type: :controller do
             expect(response.body).to include('1 segment indexed for search')
             expect(response.body).to include('transcript [00:00:01.500 - 00:00:03.0]: Spoken words')
           end
+        end
+
+        context 'when the essence has ingest notes' do
+          render_views
+
+          let(:essence) { create(:sound_essence, item: item, ingest_notes: ingest_notes) }
+
+          it 'shows the ingest notes' do
+            get :show, params: params
+            expect(response.body).to include('Ingest Notes')
+            expect(response.body).to include('Set volume to -3dB')
+          end
+        end
+      end
+
+      context 'as a non-admin when the essence has ingest notes' do
+        render_views
+
+        let(:essence) { create(:sound_essence, item: item, ingest_notes: "processS3Event: moo.wav added\nSet volume to -3dB") }
+
+        it 'does not show the ingest notes' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+          expect(response.body).not_to include('Ingest Notes')
+          expect(response.body).not_to include('Set volume to -3dB')
         end
       end
 

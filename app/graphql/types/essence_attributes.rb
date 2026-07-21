@@ -8,6 +8,7 @@ module Types
     argument :duration, Float, required: false
     argument :extracted_content, Types::ExtractedContentInput, required: false
     argument :fps, Integer, required: false
+    argument :ingest_notes, String, required: false
     argument :mimetype, String
     argument :samplerate, Integer, required: false
     argument :size, GraphQL::Types::BigInt
