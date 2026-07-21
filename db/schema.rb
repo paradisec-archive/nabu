@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_21_120141) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_143000) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -193,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_120141) do
     t.string "extracted_content_type"
     t.string "filename"
     t.integer "fps"
+    t.text "ingest_notes", size: :long
     t.integer "item_id"
     t.string "mimetype"
     t.integer "samplerate"

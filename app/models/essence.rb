@@ -17,6 +17,7 @@
 # **`extracted_content_type`**   | `string(255)`      |
 # **`filename`**                 | `string(255)`      |
 # **`fps`**                      | `integer`          |
+# **`ingest_notes`**             | `text(4294967295)`  |
 # **`mimetype`**                 | `string(255)`      |
 # **`samplerate`**               | `integer`          |
 # **`size`**                     | `bigint`           |
