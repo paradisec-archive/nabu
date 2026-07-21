@@ -116,6 +116,7 @@ input EssenceAttributes {
   duration: Float
   extractedContent: ExtractedContentInput
   fps: Int
+  ingestNotes: String
   mimetype: String!
   samplerate: Int
   size: BigInt!
