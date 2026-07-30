@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct } from 'constructs';
+import { acknowledgeNag } from './nag';
 import type { Environment } from './types';
 
 export class DrStack extends cdk.Stack {
@@ -39,9 +40,7 @@ export class DrStack extends cdk.Stack {
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
-    cdk.Validations.of(this.metaDrBucket).acknowledge(
-      { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" },
-    );
+    acknowledgeNag(this.metaDrBucket, { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" });
 
     // ////////////////////////
     // Dr bucket

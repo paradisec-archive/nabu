@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { AwsSolutionsChecks } from 'cdk-nag';
 import { AppStack } from '../lib/app-stack';
 import { DrStack } from '../lib/dr-stack';
 import { MainStack } from '../lib/main-stack';
+import { acknowledgeNag, NabuSolutionsChecks } from '../lib/nag';
 import type { AppProps, Environment } from '../lib/types';
 
 const globals = {
@@ -88,7 +88,8 @@ environments.forEach((environment) => {
     env: { account: environment.account, region: environment.region },
     crossRegionReferences: true,
   });
-  cdk.Validations.of(stack).acknowledge(
+  acknowledgeNag(
+    stack,
     { id: 'AwsSolutions-IAM4', reason: 'Managed Policies are fine for us, we can live with the resource wildcard' },
     { id: 'AwsSolutions-IAM5', reason: 'Too many false positives' },
     { id: 'AwsSolutions-EC26', reason: 'Too many false positives' },
@@ -96,4 +97,4 @@ environments.forEach((environment) => {
   );
 });
 
-cdk.Validations.of(app).addPlugins(new AwsSolutionsChecks(app, { verbose: true }));
+cdk.Validations.of(app).addPlugins(new NabuSolutionsChecks(app, { verbose: true }));

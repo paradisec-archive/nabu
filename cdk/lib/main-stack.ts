@@ -9,6 +9,7 @@ import type * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
 
+import { acknowledgeNag } from './nag';
 import type { Environment } from './types';
 
 export class MainStack extends cdk.Stack {
@@ -115,7 +116,7 @@ export class MainStack extends cdk.Stack {
         },
       ],
     });
-    cdk.Validations.of(this.metaBucket).acknowledge({ id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" });
+    acknowledgeNag(this.metaBucket, { id: 'AwsSolutions-S1', reason: "This bucket holds logs for other buckets and we don't want a loop" });
 
     // Allow ALBs to log
     const albLogBucketPolicy = new iam.PolicyStatement({
@@ -205,10 +206,7 @@ export class MainStack extends cdk.Stack {
       eventBridgeEnabled: true,
     });
 
-    cdk.Validations.of(this).acknowledge(
-      { id: 'AwsSolutions-IAM4', reason: 'OK with * resources' },
-      { id: 'AwsSolutions-IAM5', reason: 'OK with * resources' },
-    );
+    acknowledgeNag(this, { id: 'AwsSolutions-IAM4', reason: 'OK with * resources' }, { id: 'AwsSolutions-IAM5', reason: 'OK with * resources' });
 
     cdk.Tags.of(this).add('uni:billing:application', 'para');
   }
