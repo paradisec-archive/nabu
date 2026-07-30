@@ -5,10 +5,10 @@
     "@activeadmin/activeadmin": "4.0.0-beta22",
     "@googlemaps/js-api-loader": "^2.1.1",
     "@googlemaps/markerclusterer": "^2.6.2",
-    "@sentry/browser": "^10.65.0",
+    "@sentry/browser": "^10.68.0",
     "choices.js": "^11.2.3",
-    "sass": "^1.101.0",
-    "tailwindcss": "^4.3.2",
+    "sass": "^1.102.0",
+    "tailwindcss": "^4.3.3",
     "uuid": "^14.0.1"
   },
   "scripts": {
@@ -18,7 +18,7 @@
     "build:css_active_admin": "npx @tailwindcss/cli -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.3",
+    "@biomejs/biome": "^2.5.6",
     "esbuild": "^0.28.1"
   },
   "packageManager": "pnpm@11.15.1"
