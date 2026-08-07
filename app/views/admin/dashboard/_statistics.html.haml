@@ -3,61 +3,53 @@
 - div_classes = 'sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'
 - dt_classes = 'text-sm/6 font-medium text-gray-900 dark:text-white'
 - dd_classes= 'mt-1 text-sm/6 text-gray-700 dark:text-gray-100 sm:col-span-2 sm:mt-0'
+- as_of = date.end_of_month
+- essences = local_assigns.fetch(:essence_stats) { Essence.archive_stats(as_of) }
+- comments = Comment.where(created_at: ..as_of).group(:status).count
 
 %h3{class: h3_classes} Repository Objects
 %dl{class: dl_classes}
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Collection.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter Collection.where(created_at: ..as_of).count
     %dd{class: dd_classes} collections
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Item.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter Item.where(created_at: ..as_of).count
     %dd{class: dd_classes} items
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Essence.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter essences[:count]
     %dd{class: dd_classes} essence objects
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter User.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter User.where(created_at: ..as_of).count
     %dd{class: dd_classes} users
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter University.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter University.where(created_at: ..as_of).count
     %dd{class: dd_classes} universities
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter comments.values.sum
     %dd{class: dd_classes} comments
 
 
 %h3{class: h3_classes} Essence
 %dl{class: dl_classes}
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_duration Essence.where('created_at <= ?', date.end_of_month).sum(:duration)
+    %dt{class: dt_classes}= number_to_human_duration essences[:duration]
     %dd{class: dd_classes} hours
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('created_at <= ?', date.end_of_month).sum(:size)
+    %dt{class: dt_classes}= number_to_human_size essences[:size]
     %dd{class: dd_classes} of essence objects
-  %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%video%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %dd{class: dd_classes} of video files in archive
-  %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%audio%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %dd{class: dd_classes} of audio files in archive
-  %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%image%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %dd{class: dd_classes} of image files in archive
-  %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%application%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %dd{class: dd_classes} of application files in archive
-  %div{class: div_classes}
-    %dt{class: dt_classes}= number_to_human_size Essence.where('mimetype LIKE ?', '%text%').where('created_at <= ?', date.end_of_month).sum(:size)
-    %dd{class: dd_classes} of text files in archive
+  - Essence::MEDIA_FAMILIES.each do |family|
+    %div{class: div_classes}
+      %dt{class: dt_classes}= number_to_human_size essences[:"#{family}_size"]
+      %dd{class: dd_classes}= "of #{family} files in archive"
 
 %h3{class: h3_classes} Comments
 %dl{class: dl_classes}
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Comment.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter comments.values.sum
     %dd{class: dd_classes} posted comments
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Comment.approved.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter comments.fetch('approved', 0)
     %dd{class: dd_classes} approved comments
   %div{class: div_classes}
-    %dt{class: dt_classes}= number_with_delimiter Comment.unapproved.where('created_at <= ?', date.end_of_month).count
+    %dt{class: dt_classes}= number_with_delimiter comments.fetch('unapproved', 0)
     %dd{class: dd_classes} pending comments

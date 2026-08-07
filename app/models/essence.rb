@@ -99,6 +99,9 @@ class Essence < ApplicationRecord
     ])
   }
 
+  # The mimetype substrings the admin reports break the archive down by
+  MEDIA_FAMILIES = %w[video audio image application text].freeze
+
   ANNOTATION_EXTENSIONS = %w[eaf trs ixt textgrid cha srt vtt].freeze
   ANNOTATABLE_EXTENSIONS = %w[mp3 ogg oga wav mp4 webm ogv mov mxf mkv].freeze
 
@@ -299,6 +302,28 @@ class Essence < ApplicationRecord
       created_at: created_at&.to_date,
       updated_at: updated_at&.to_date
     }
+  end
+
+  # Per-mimetype totals for everything in the archive as at `as_of`. One table scan, and rich enough
+  # that the whole-of-archive figures the admin reports show can be folded out of it in Ruby.
+  def self.mimetype_stats(as_of)
+    where(created_at: ..as_of)
+      .group(:mimetype)
+      .order(files: :desc)
+      .pluck(Arel.sql('mimetype, COUNT(*) AS files, SUM(size) AS bytes, SUM(duration) AS duration'))
+      .map { |mimetype, files, bytes, duration| { mimetype:, files:, bytes:, duration: } }
+  end
+
+  def self.archive_stats(as_of, mimetype_stats = mimetype_stats(as_of))
+    stats = {
+      count: mimetype_stats.sum { |row| row[:files] },
+      duration: mimetype_stats.sum { |row| row[:duration] || 0 },
+      size: mimetype_stats.sum { |row| row[:bytes] || 0 }
+    }
+
+    MEDIA_FAMILIES.each_with_object(stats) do |family, acc|
+      acc[:"#{family}_size"] = mimetype_stats.sum { |row| row[:mimetype].to_s.include?(family) ? row[:bytes] || 0 : 0 }
+    end
   end
 
   def self.search_user_fields

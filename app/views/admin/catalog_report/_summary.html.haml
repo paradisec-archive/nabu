@@ -1,15 +1,9 @@
-%h3 Added
-%ul{class: 'list-disc'}
-  %li{class: 'list-inside'}== #{data[:new_collections].size} Collections
-  %li{class: 'list-inside'}== #{data[:new_items].size} Items
-  %li{class: 'list-inside'}== #{data[:new_essences].size} Files
-  %li{class: 'list-inside'}== #{number_to_human_size data[:new_essences].sum(:size)}
-  %li{class: 'list-inside'}== #{number_to_human_duration data[:new_essences].sum(:duration)} Hours
-
-%h3 Updated
-%ul{class: 'list-disc'}
-  %li{class: 'list-inside'}== #{data[:updated_collections].size} Collections
-  %li{class: 'list-inside'}== #{data[:updated_items].size} Items
-  %li{class: 'list-inside'}== #{data[:updated_essences].size} Files
-  %li{class: 'list-inside'}== #{number_to_human_size data[:updated_essences].sum(:size)}
-  %li{class: 'list-inside'}== #{number_to_human_duration data[:updated_essences].sum(:duration)} Hours
+- { 'new' => 'Added', 'updated' => 'Updated' }.each do |which, heading|
+  %h3= heading
+  - essences = data[:"#{which}_essences"]
+  %ul{class: 'list-disc'}
+    %li{class: 'list-inside'}== #{data[:"#{which}_collections"].size} Collections
+    %li{class: 'list-inside'}== #{data[:"#{which}_items"].size} Items
+    %li{class: 'list-inside'}== #{essences.size} Files
+    %li{class: 'list-inside'}== #{number_to_human_size essences.sum { |essence| essence.size || 0 }}
+    %li{class: 'list-inside'}== #{number_to_human_duration essences.sum { |essence| essence.duration || 0 }} Hours

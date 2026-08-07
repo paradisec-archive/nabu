@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_21_143000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -84,11 +84,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_143000) do
     t.float "west_limit"
     t.index ["access_condition_id"], name: "index_collections_on_access_condition_id"
     t.index ["collector_id"], name: "index_collections_on_collector_id"
+    t.index ["created_at"], name: "index_collections_on_created_at"
     t.index ["field_of_research_id"], name: "index_collections_on_field_of_research_id"
     t.index ["identifier"], name: "index_collections_on_identifier", unique: true
     t.index ["operator_id"], name: "index_collections_on_operator_id"
     t.index ["private"], name: "index_collections_on_private"
     t.index ["university_id"], name: "index_collections_on_university_id"
+    t.index ["updated_at"], name: "index_collections_on_updated_at"
   end
 
   create_table "collections_funding_bodies", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -199,9 +201,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_143000) do
     t.integer "samplerate"
     t.bigint "size"
     t.datetime "updated_at", precision: nil
+    t.index ["created_at"], name: "index_essences_on_created_at"
     t.index ["created_by_id"], name: "index_essences_on_created_by_id"
     t.index ["item_id", "filename"], name: "index_essences_on_item_id_and_filename", unique: true
     t.index ["item_id"], name: "index_essences_on_item_id"
+    t.index ["updated_at"], name: "index_essences_on_updated_at"
   end
 
   create_table "fields_of_research", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -313,10 +317,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_143000) do
     t.index ["collection_id", "private", "updated_at"], name: "index_items_on_collection_id_and_private_and_updated_at"
     t.index ["collection_id"], name: "index_items_on_collection_id"
     t.index ["collector_id"], name: "index_items_on_collector_id"
+    t.index ["created_at"], name: "index_items_on_created_at"
     t.index ["discourse_type_id"], name: "index_items_on_discourse_type_id"
     t.index ["identifier", "collection_id"], name: "index_items_on_identifier_and_collection_id", unique: true
     t.index ["operator_id"], name: "index_items_on_operator_id"
     t.index ["university_id"], name: "index_items_on_university_id"
+    t.index ["updated_at"], name: "index_items_on_updated_at"
   end
 
   create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
