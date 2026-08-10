@@ -48,6 +48,59 @@ describe CollectionsController, type: :controller do
     end
   end
 
+  describe 'the privacy flag on the collection form', :no_catalog_upload do
+    let(:private_collection) { create(:collection, private: true, admins: [editor]) }
+
+    def update_private(target, value)
+      patch :update, params: {
+        id: target.identifier,
+        collection: { title: 'Updated title', private: value }
+      }
+      target.reload
+    end
+
+    context 'when a non-admin editor submits the form' do
+      before { sign_in(editor, scope: :user) }
+
+      it 'saves metadata changes but cannot un-privatise' do
+        update_private(private_collection, 'false')
+        expect(private_collection.title).to eq('Updated title')
+        expect(private_collection).to be_private
+      end
+
+      it 'cannot privatise' do
+        update_private(collection, 'true')
+        expect(collection).not_to be_private
+      end
+    end
+
+    context 'when an admin submits the form' do
+      before { sign_in(manager, scope: :user) }
+
+      it 'applies the privacy change' do
+        update_private(private_collection, 'false')
+        expect(private_collection).not_to be_private
+      end
+    end
+
+    context 'when rendering the checkbox' do
+      render_views
+
+      it 'renders it disabled and checked for a non-admin editor' do
+        sign_in(editor, scope: :user)
+        get :edit, params: { id: private_collection.identifier }
+        expect(response.body).to have_css('input#collection_private[type=checkbox][disabled][checked]')
+        expect(response.body).to have_no_field('collection[private]')
+      end
+
+      it 'renders it editable for an admin' do
+        sign_in(manager, scope: :user)
+        get :edit, params: { id: private_collection.identifier }
+        expect(response.body).to have_field('collection[private]', type: 'checkbox')
+      end
+    end
+  end
+
   # Regression for NABU-KW/QG: can?(:read, item) in the show view re-queried the polymorphic
   # `permissions` table once per item because collection_grant_permissions was not preloaded, so
   # the permission query count scaled with the number of items on the page. It must now be constant.

@@ -41,6 +41,10 @@
 #     RejectsContactGrants concern on the Permission model, not here.
 #   * Grant assignment is admin-only — the grant fields are admin-gated in the collection
 #     and item controllers/forms, so a non-admin's save never adds or removes a grant.
+#   * The `private` flag is admin-only — `:private` is admin-gated in the collection and item
+#     controllers/forms, so a non-admin's save never changes visibility in either direction.
+#     Non-admins still see the current state as a disabled checkbox. Note VersionsController#revert
+#     reifies whole records and so can still restore a previous `private` value.
 #
 # SEARCH VISIBILITY: the :read rules here are the canonical policy; the search indexes
 #   mirror them via a single denormalised access_user_ids union per document (see the Item note

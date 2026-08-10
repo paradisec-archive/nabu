@@ -12,7 +12,7 @@
           - if params[:action] == 'bulk_edit'
             = f.select :private, options_for_select([['True', 'true'], ['False', 'false']]), {:include_blank => true}, {:class => 'bool'}
           - else
-            = f.check_box :private
+            = f.check_box :private, :disabled => !current_user&.admin?
           = f.label :private, 'Private: Hide metadata from all users'
 
       - unless params[:action] == 'bulk_edit'

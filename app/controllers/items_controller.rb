@@ -425,7 +425,7 @@ class ItemsController < ApplicationController
       :content_language_ids, :subject_language_ids,
       :agent_ids,
       :access_condition_id,
-      :access_narrative, :private,
+      :access_narrative,
       :admin_comment,
       :originated_on, :originated_on_narrative, :language,
       :dialect, :discourse_type_id,
@@ -444,9 +444,10 @@ class ItemsController < ApplicationController
       { item_agents_attributes: {},
         country_ids: [], subject_language_ids: [], content_language_ids: [], data_category_ids: [], data_type_ids: [] }
     ]
-    # Only admins may assign or remove grants (edit + read/download access).
+    # Only admins may assign or remove grants (edit + read/download access), or change the privacy flag.
     if current_user.admin?
       permitted += [
+        :private,
         :admin_ids, :user_ids,
         :bulk_edit_append_admin_ids, :bulk_edit_append_user_ids,
         { admin_ids: [], user_ids: [] }

@@ -226,6 +226,79 @@ describe ItemsController, type: :controller do
     end
   end
 
+  describe 'the privacy flag on the item form', :no_catalog_upload do
+    let(:editor) { create(:user) }
+    let(:granted_item) { create(:item, collection: collection, private: true, admins: [editor]) }
+    let(:public_granted_item) { create(:item, collection: collection, private: false, admins: [editor]) }
+
+    def patch_private(item, value)
+      patch :update, params: {
+        collection_id: collection.identifier,
+        id: item.identifier,
+        item: { title: 'Updated title', private: value }
+      }
+      item.reload
+    end
+
+    context 'as a non-admin editor' do
+      before { sign_in(editor, scope: :user) }
+
+      it 'saves metadata changes but cannot un-privatise' do
+        patch_private(granted_item, 'false')
+        expect(granted_item.title).to eq('Updated title')
+        expect(granted_item).to be_private
+      end
+
+      it 'cannot privatise' do
+        patch_private(public_granted_item, 'true')
+        expect(public_granted_item).not_to be_private
+      end
+
+      it 'cannot set private on a newly created item' do
+        collection.admins << editor
+        post :create, params: {
+          collection_id: collection.identifier,
+          item: { identifier: 'newitem', title: 'New item title', description: 'New item description', private: 'true' }
+        }
+        expect(collection.items.find_by(identifier: 'newitem')).not_to be_private
+      end
+    end
+
+    context 'as an admin' do
+      before { sign_in(manager, scope: :user) }
+
+      it 'applies the privacy change' do
+        patch_private(granted_item, 'false')
+        expect(granted_item).not_to be_private
+      end
+    end
+
+    context 'when rendering the checkbox' do
+      render_views
+
+      let(:private_collection) { create(:collection, private: true, admins: [editor]) }
+
+      it 'renders it disabled and checked on edit for a non-admin editor' do
+        sign_in(editor, scope: :user)
+        get :edit, params: { collection_id: collection.identifier, id: granted_item.identifier }
+        expect(response.body).to have_css('input#item_private[type=checkbox][disabled][checked]')
+        expect(response.body).to have_no_field('item[private]')
+      end
+
+      it 'renders it checked on new when the collection is private, matching what prefill will save' do
+        sign_in(editor, scope: :user)
+        get :new, params: { collection_id: private_collection.identifier }
+        expect(response.body).to have_css('input#item_private[type=checkbox][disabled][checked]')
+      end
+
+      it 'renders it editable for an admin' do
+        sign_in(manager, scope: :user)
+        get :edit, params: { collection_id: collection.identifier, id: granted_item.identifier }
+        expect(response.body).to have_field('item[private]', type: 'checkbox')
+      end
+    end
+  end
+
   context 'when viewing an item with essences' do
     before { sign_in(manager, scope: :user) }
 
