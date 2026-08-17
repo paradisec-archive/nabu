@@ -91,7 +91,6 @@ module Nabu
         @errors << "Please create user #{[first_name, last_name].join(' ')} first<br/>"
         return nil
       end
-      user.save if user.valid?
       user
     end
 
@@ -291,15 +290,8 @@ module Nabu
       user = User.where(first_name:, last_name:).first
 
       unless user
-        random_string = SecureRandom.base64(16)
-        user = User.create({
-                             first_name:,
-                             last_name:,
-                             password: random_string,
-                             password_confirmation: random_string,
-                             contact_only: true
-                           })
-        unless user.valid?
+        user = User.create(first_name:, last_name:, contact_only: true)
+        unless user.persisted?
           @errors << "Couldn't create user first_name: #{first_name} last_name: #{last_name} on row #{row_number}<br/>"
           return nil
         end

@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-# This test suite generates some random strings as output, as a result of the `before_validation` block of `User`.
-# It may be possible to eliminate it, but there's the risk of something going wrong as a result.
 describe Nabu::Spreadsheet do
   let(:spreadsheet) { described_class.new_of_correct_type(data) }
   let(:data) { File.binread('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xls') }

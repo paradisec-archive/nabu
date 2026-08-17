@@ -137,16 +137,7 @@ class ApplicationController < ActionController::Base
     end
 
     contact = User.where(first_name:, last_name:).first
-    if contact.nil?
-      random_string = SecureRandom.base64(16)
-      contact = User.create!({
-                               first_name:,
-                               last_name:,
-                               password: random_string,
-                               password_confirmation: random_string,
-                               contact_only: true
-                             })
-    end
+    contact = User.create!(first_name:, last_name:, contact_only: true) if contact.nil?
 
     contact.id
   end

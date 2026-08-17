@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -475,6 +475,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_000001) do
     t.datetime "updated_at", precision: nil, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_users_on_first_name_and_last_name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["rights_transferred_to_id"], name: "index_users_on_rights_transferred_to_id"
     t.index ["unikey"], name: "index_users_on_unikey", unique: true

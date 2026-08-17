@@ -48,6 +48,9 @@
 #     * **`confirmation_token`**
 # * `index_users_on_email` (_unique_):
 #     * **`email`**
+# * `index_users_on_first_name_and_last_name`:
+#     * **`first_name`**
+#     * **`last_name`**
 # * `index_users_on_reset_password_token` (_unique_):
 #     * **`reset_password_token`**
 # * `index_users_on_rights_transferred_to_id`:
@@ -124,15 +127,6 @@ class User < ApplicationRecord
   scope :admins, -> { where(admin: true) }
   scope :unconfirmed, -> { where(contact_only: false, confirmed_at: nil).where('created_at < ?', 1.week.ago) }
   scope :never_signed_in, -> { where(contact_only: false, last_sign_in_at: nil).where('created_at < ?', 1.week.ago).where.not(confirmed_at: nil) }
-
-  # Set random password for contacts
-  before_validation do
-    if contact_only?
-      password = Devise.friendly_token.first(12)
-      self.password = password
-      self.password_confirmation = password
-    end
-  end
 
   def self.sortable_columns
     %w[last_name first_name id address address2 country email phone admin contact_only]
@@ -225,5 +219,14 @@ class User < ApplicationRecord
   # Don't send email for contacts
   def confirmation_required?
     !confirmed? && !contact_only?
+  end
+
+  # Contacts have no email, so active_for_authentication? already refuses them a login, and a blank
+  # encrypted_password never matches in Devise::Encryptor.compare. Generating a throwaway password
+  # cost a bcrypt hash (~130ms) on every validation, dominating bulk contact import.
+  def password_required?
+    return false if contact_only?
+
+    super
   end
 end

@@ -41,6 +41,8 @@
 #     * **`access_condition_id`**
 # * `index_collections_on_collector_id`:
 #     * **`collector_id`**
+# * `index_collections_on_created_at`:
+#     * **`created_at`**
 # * `index_collections_on_field_of_research_id`:
 #     * **`field_of_research_id`**
 # * `index_collections_on_identifier` (_unique_):
@@ -51,6 +53,8 @@
 #     * **`private`**
 # * `index_collections_on_university_id`:
 #     * **`university_id`**
+# * `index_collections_on_updated_at`:
+#     * **`updated_at`**
 #
 
 # rubocop:disable Metrics/ClassLength

@@ -58,6 +58,8 @@
 #     * **`updated_at`**
 # * `index_items_on_collector_id`:
 #     * **`collector_id`**
+# * `index_items_on_created_at`:
+#     * **`created_at`**
 # * `index_items_on_discourse_type_id`:
 #     * **`discourse_type_id`**
 # * `index_items_on_identifier_and_collection_id` (_unique_):
@@ -67,6 +69,8 @@
 #     * **`operator_id`**
 # * `index_items_on_university_id`:
 #     * **`university_id`**
+# * `index_items_on_updated_at`:
+#     * **`updated_at`**
 #
 class Item < ApplicationRecord
   include IdentifiableByDoi

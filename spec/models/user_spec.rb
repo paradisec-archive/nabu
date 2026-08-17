@@ -48,6 +48,9 @@
 #     * **`confirmation_token`**
 # * `index_users_on_email` (_unique_):
 #     * **`email`**
+# * `index_users_on_first_name_and_last_name`:
+#     * **`first_name`**
+#     * **`last_name`**
 # * `index_users_on_reset_password_token` (_unique_):
 #     * **`reset_password_token`**
 # * `index_users_on_rights_transferred_to_id`:

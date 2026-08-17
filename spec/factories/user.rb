@@ -16,6 +16,10 @@ FactoryBot.define do
       contact_only { true }
       email { nil }
       confirmed_at { nil }
+      # Contacts aren't accounts, so they persist with a blank encrypted_password — see
+      # User#password_required?. Keep the fixture the same shape as production.
+      password { nil }
+      password_confirmation { nil }
     end
   end
 end

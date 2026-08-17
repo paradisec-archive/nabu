@@ -17,6 +17,7 @@
 # **`extracted_content_type`**   | `string(255)`      |
 # **`filename`**                 | `string(255)`      |
 # **`fps`**                      | `integer`          |
+# **`ingest_notes`**             | `text(4294967295)`  |
 # **`mimetype`**                 | `string(255)`      |
 # **`samplerate`**               | `integer`          |
 # **`size`**                     | `bigint`           |
@@ -27,6 +28,8 @@
 #
 # ### Indexes
 #
+# * `index_essences_on_created_at`:
+#     * **`created_at`**
 # * `index_essences_on_created_by_id`:
 #     * **`created_by_id`**
 # * `index_essences_on_item_id`:
@@ -34,6 +37,8 @@
 # * `index_essences_on_item_id_and_filename` (_unique_):
 #     * **`item_id`**
 #     * **`filename`**
+# * `index_essences_on_updated_at`:
+#     * **`updated_at`**
 #
 # ### Foreign Keys
 #
