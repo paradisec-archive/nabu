@@ -28,7 +28,7 @@ module Oni
       # Filter keys are validated against the /capabilities declaration rather than permitted:
       # the spec requires undeclared keys to be rejected with a 400, not silently dropped.
       # The plain-Hash conversion matters: HashWithIndifferentAccess would coerce the symbol
-      # operator keys (:gte, :_or) the controller builds back into strings Searchkick ignores.
+      # operator keys (:gte, :_and) the controller builds back into strings Searchkick ignores.
       raw_filters = params[:filters]
       @filters = raw_filters.respond_to?(:to_unsafe_h) ? raw_filters.to_unsafe_h.to_h : raw_filters
 
@@ -78,7 +78,7 @@ module Oni
 
         case value
         when Array
-          validate_filter_values(key, value)
+          validate_filter_array(key, value, declaration)
         when Hash
           validate_filter_range(key, value, declaration)
         else
@@ -87,30 +87,42 @@ module Oni
       end
     end
 
-    def validate_filter_values(key, values)
+    # An array is either exact terms (valid for any filter type) or - for date and number
+    # filters - range objects ORed together. The spec forbids mixing the two in one array.
+    def validate_filter_array(key, values, declaration)
+      ranges, terms = values.partition { |item| item.is_a?(Hash) }
+
+      if ranges.any? && terms.any?
+        errors.add(:filters, "values in '#{key}' must not mix exact terms and range objects")
+        return
+      end
+
+      if ranges.any?
+        ranges.each { |range| validate_filter_range(key, range, declaration) }
+        return
+      end
+
+      validate_filter_values(key, values, declaration)
+    end
+
+    def validate_filter_values(key, values, declaration)
       values.each do |item|
         unless item.is_a?(String)
           errors.add(:filters, "all values in '#{key}' must be strings")
+          next
         end
-      end
 
-      validate_originated_on_strings(values) if key == 'originatedOn'
-    end
-
-    # Legacy Oni date facet syntax, accepted alongside the spec's range object: each value is a
-    # 'timestamp TO timestamp' string and the ranges are ORed.
-    def validate_originated_on_strings(values)
-      values.each do |range_string|
-        next unless range_string.is_a?(String)
-
-        unless range_string.match?(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z TO \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
-          errors.add(:filters, "originatedOn range '#{range_string}' must be in format 'YYYY-MM-DDTHH:MM:SS.sssZ TO YYYY-MM-DDTHH:MM:SS.sssZ'")
+        # Exact terms on a date filter go to OpenSearch as dates; rejecting an unparseable one
+        # here turns a query_shard_exception into a 400. Catches the retired legacy Oni
+        # 'YYYY-MM-DDTHH:MM:SS.sssZ TO ...' range strings, which are no longer accepted.
+        if declaration[:type] == 'date' && !parseable_date?(item)
+          errors.add(:filters, "value '#{item}' in '#{key}' must be an ISO 8601 date")
         end
       end
     end
 
     def validate_filter_range(key, range, declaration)
-      unless %w[date number].include?(declaration[:type])
+      unless Oni::SearchCapabilities::RANGE_TYPES.include?(declaration[:type])
         errors.add(:filters, "'#{key}' is a #{declaration[:type]} filter and does not accept a range object")
         return
       end

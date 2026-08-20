@@ -396,6 +396,10 @@ module Api
         true
       end
 
+      # Renames the public filter keys to their index fields and turns the spec's range syntax
+      # into Searchkick clauses. A date or number filter value is a single FilterRange, a
+      # non-empty array of them matched as an OR, or an array of exact terms; the validator has
+      # already rejected everything else, including arrays mixing terms and ranges.
       def transform_filters(filters)
         f = filters.dup
 
@@ -403,27 +407,34 @@ module Api
           f['entity_type'] = f['entity_type'].map { |v| Oni::EntityType.normalise(v) }
         end
 
-        originated_on = f.delete('originatedOn')
-        # The spec's FilterRange object maps to a single inclusive range; the legacy
-        # 'A TO B' string array (still sent by Oni's date facet) can carry several
-        # disjoint year ranges, so those become an _or of ranges.
-        case originated_on
-        when Hash
-          range = {}
-          range[:gte] = originated_on['gte'] if originated_on.key?('gte')
-          range[:lte] = originated_on['lte'] if originated_on.key?('lte')
-          f[:originated_on] = range
-        when Array
-          ranges = originated_on.filter_map do |range_string|
-            parts = range_string.split(' TO ')
-            next nil if parts.length != 2
+        and_clauses = []
 
-            { gte: parts[0].strip, lte: parts[1].strip }
+        Oni::SearchCapabilities::RANGE_FILTERS.each do |key, field|
+          next unless f.key?(key)
+
+          value = f.delete(key)
+          ranges = Array.wrap(value).filter_map { |item| range_bounds(item) if item.is_a?(Hash) }
+
+          case ranges.size
+          when 0 then f[field] = value
+          when 1 then f[field] = ranges.first
+          else and_clauses << { _or: ranges.map { |range| { field => range } } }
           end
-          f[:_or] = ranges.map { |range| { originated_on: range } }
         end
 
+        f[:_and] = and_clauses if and_clauses.any?
+
         f
+      end
+
+      # Bounds pass through exactly as the client sent them. OpenSearch rounds a date-only bound
+      # to cover the whole day, so lte '1965-12-31' includes an entity stamped 1965-12-31T14:30;
+      # expanding it to an explicit timestamp here would silently drop that last day.
+      def range_bounds(range)
+        bounds = {}
+        bounds[:gte] = range['gte'] if range.key?('gte')
+        bounds[:lte] = range['lte'] if range.key?('lte')
+        bounds.presence
       end
 
       def render_validation_error(query)

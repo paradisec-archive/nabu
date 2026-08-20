@@ -1,10 +1,12 @@
 {
   apiVersion: Oni::SearchCapabilities::API_VERSION,
+  deposit: Oni::SearchCapabilities::DEPOSIT,
+  tombstonePolicy: Oni::SearchCapabilities::TOMBSTONE_POLICY,
   extensions: {
     segments: {}
   },
   search: {
-    filters: Oni::SearchCapabilities::FILTERS,
+    filters: Oni::SearchCapabilities::DECLARED_FILTERS,
     facets: Oni::SearchCapabilities::FACETS
   }
 }
