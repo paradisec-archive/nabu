@@ -21,9 +21,14 @@ services:
       RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
       RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
       RECAPTCHA_DISABLED: true
+      # Keep the pnpm store at the same absolute path as the host, otherwise pnpm
+      # records a different storeDir in node_modules/.modules.yaml and wants to
+      # purge and reinstall node_modules every time you swap between the two.
+      pnpm_config_store_dir: ${HOME}/.local/share/pnpm/store
     volumes:
       - .:/rails
       - ./vendor/bundle:/usr/local/bundle
+      - ${HOME}/.local/share/pnpm/store:${HOME}/.local/share/pnpm/store
 
   proxy:
     image: nginx
