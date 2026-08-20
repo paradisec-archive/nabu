@@ -1,4 +1,4 @@
-FROM ghcr.io/crate-works/oni:test-capabilities-segments
+FROM ghcr.io/crate-works/oni:2
 
 ARG ROCRATE_API_ENDPOINT
 ARG ROCRATE_API_CLIENTID

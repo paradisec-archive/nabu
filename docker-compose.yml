@@ -86,7 +86,7 @@ services:
     volumes:
       - s3-data:/s3mockroot
 
-  oni-ui:
+  oni:
     ports:
       - "7000:80"
     build:
