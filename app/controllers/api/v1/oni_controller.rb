@@ -1,7 +1,7 @@
 module Api
   module V1
     class OniController < ApiController
-      skip_before_action :enforce_terms_acceptance, only: %i[capabilities entities entity rocrate search]
+      skip_before_action :enforce_terms_acceptance, only: %i[capabilities entities entity metadata search]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
         message = exception.message == 'ActiveRecord::RecordNotFound' ? 'The requested entity was not found' : exception.message
@@ -138,7 +138,7 @@ module Api
         end
       end
 
-      def rocrate
+      def metadata
         unless params[:id]
           render_api_error('VALIDATION_ERROR', 'id is required', :bad_request)
 

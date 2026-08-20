@@ -9,7 +9,7 @@ describe 'Oni capabilities', type: :request do
     expect(response).to have_http_status(:ok)
 
     body = response.parsed_body
-    expect(body['apiVersion']).to eq('0.3.0')
+    expect(body['apiVersion']).to eq('0.4.0')
     expect(body['extensions']).to eq('segments' => {})
     expect(body.dig('search', 'filters', 'originatedOn')).to eq('type' => 'date', 'label' => 'Date originated')
     expect(body.dig('search', 'filters', 'languages_with_code')).to eq('type' => 'string', 'label' => 'Language')
@@ -23,7 +23,7 @@ describe 'Oni capabilities', type: :request do
     expect(search['filters'].keys).to include(*search['facets'].keys)
   end
 
-  # Spec 0.3.0 requires both members of every implementation, read-only ones included.
+  # Spec 0.4.0 requires both members of every implementation, read-only ones included.
   it 'declares itself read-only, with no deposit fields beyond the supported flag' do
     get capabilities_path
 

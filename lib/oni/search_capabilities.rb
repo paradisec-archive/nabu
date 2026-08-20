@@ -3,9 +3,9 @@ module Oni
   # its accepted filter keys and type rules from FILTERS, and the controller's aggs must stay
   # within FACETS (the spec requires every facet to also be a filter).
   module SearchCapabilities
-    API_VERSION = '0.3.0'.freeze
+    API_VERSION = '0.4.0'.freeze
 
-    # Nabu is read-only: no deposit or RO-Crate write surface. Spec 0.3.0 requires the block of
+    # Nabu is read-only: no deposit or RO-Crate write surface. Spec 0.4.0 requires the block of
     # every implementation so clients never infer read-only-ness from a missing key, and requires
     # the remaining deposit fields to be omitted when supported is false.
     DEPOSIT = { supported: false }.freeze

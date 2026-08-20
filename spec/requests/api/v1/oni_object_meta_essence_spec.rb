@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-# The per-essence RO-Crate (oni#rocrate → object_meta_essence) must derive its
+# The per-essence RO-Crate (oni#metadata → object_meta_essence) must derive its
 # annotationOf / hasAnnotation links from stored essence_annotations mappings,
 # not by inferring relationships from filename basenames at render time.
 describe 'Oni essence RO-Crate annotations', :no_catalog_upload, type: :request do
@@ -10,9 +10,9 @@ describe 'Oni essence RO-Crate annotations', :no_catalog_upload, type: :request 
   # Guests can never read essences; any signed-in user can read essences on open items.
   before { sign_in create(:user) }
 
-  def rocrate_for(essence)
+  def metadata_for(essence)
     id = repository_essence_url(essence.collection, essence.item, essence.filename)
-    get "/api/v1/oni/entity/#{CGI.escape(id)}/rocrate"
+    get "/api/v1/oni/entity/#{CGI.escape(id)}/metadata"
 
     expect(response).to have_http_status(:ok)
     response.parsed_body['@graph'].find { |node| node['@id'] == id }
@@ -31,14 +31,14 @@ describe 'Oni essence RO-Crate annotations', :no_catalog_upload, type: :request 
     end
 
     it 'links the transcript to its media via annotationOf' do
-      file = rocrate_for(transcript)
+      file = metadata_for(transcript)
 
       expect(file['annotationOf']).to eq([{ '@id' => essence_id(media) }])
       expect(file).not_to have_key('hasAnnotation')
     end
 
     it 'links the media back to its transcript via hasAnnotation' do
-      file = rocrate_for(media)
+      file = metadata_for(media)
 
       expect(file['hasAnnotation']).to eq([{ '@id' => essence_id(transcript) }])
       expect(file).not_to have_key('annotationOf')
@@ -56,14 +56,14 @@ describe 'Oni essence RO-Crate annotations', :no_catalog_upload, type: :request 
     end
 
     it 'emits no annotation links for the transcript' do
-      file = rocrate_for(transcript)
+      file = metadata_for(transcript)
 
       expect(file).not_to have_key('annotationOf')
       expect(file).not_to have_key('hasAnnotation')
     end
 
     it 'emits no annotation links for the media' do
-      file = rocrate_for(media)
+      file = metadata_for(media)
 
       expect(file).not_to have_key('annotationOf')
       expect(file).not_to have_key('hasAnnotation')

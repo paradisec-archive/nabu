@@ -130,7 +130,7 @@ Rails.application.routes.draw do
         get 'capabilities' => 'oni#capabilities'
         get 'entities' => 'oni#entities'
         get 'entity/:id' => 'oni#entity', constraints: { id: %r{[^/]+} }
-        get 'entity/:id/rocrate' => 'oni#rocrate', constraints: { id: %r{[^/]+} }
+        get 'entity/:id/metadata' => 'oni#metadata', constraints: { id: %r{[^/]+} }
         get 'files' => 'oni#files'
         get 'file/:id' => 'oni#file', constraints: { id: %r{[^/]+} }
         get 'announcements' => 'oni#announcements'

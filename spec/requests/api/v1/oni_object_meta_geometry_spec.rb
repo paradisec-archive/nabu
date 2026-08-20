@@ -9,7 +9,7 @@ describe 'Oni RO-Crate geometry', :no_catalog_upload, type: :request do
   before { sign_in create(:user) }
 
   def wkt_for(record, url)
-    get "/api/v1/oni/entity/#{CGI.escape(url)}/rocrate"
+    get "/api/v1/oni/entity/#{CGI.escape(url)}/metadata"
 
     expect(response).to have_http_status(:ok)
     prefix = "#geo-#{record.west_limit},#{record.south_limit}-"
