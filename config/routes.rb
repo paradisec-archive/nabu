@@ -55,15 +55,15 @@ Rails.application.routes.draw do
       post 'spreadsheet' => 'collections#create_from_spreadsheet'
     end
     member do
-      get :private_rocrate
-      get :public_rocrate
+      get :private_ro_crate
+      get :public_ro_crate
       get :deposit_form
       get :essences_csv
     end
     resources :items, except: %i[index] do
       member do
-        get :private_rocrate
-        get :public_rocrate
+        get :private_ro_crate
+        get :public_ro_crate
         get :data
         patch :inherit_details
         get :essences_csv

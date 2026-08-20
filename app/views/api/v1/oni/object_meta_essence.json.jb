@@ -8,7 +8,7 @@ def essence_parent_id
   repository_item_url(@data.collection, @data.item)
 end
 
-def essence_rocrate_json
+def essence_ro_crate_json
   {
     '@id': 'ro-crate-metadata.json',
     '@type': 'CreativeWork',
@@ -51,7 +51,7 @@ data.compact!
 graph = []
 
 graph << data
-graph << essence_rocrate_json
+graph << essence_ro_crate_json
 
 {
   '@context': [

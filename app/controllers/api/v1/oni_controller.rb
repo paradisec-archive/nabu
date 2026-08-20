@@ -145,7 +145,7 @@ module Api
           return
         end
 
-        @admin_rocrate = false
+        @admin_ro_crate = false
 
         @essence_terms_required = essence_terms_required?
 

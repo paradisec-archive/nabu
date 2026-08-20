@@ -5,15 +5,15 @@ describe Nabu::Catalog do
   let(:collection) { build(:collection, identifier: 'AA1') }
   let(:item) { build(:item, identifier: '001', collection:) }
 
-  describe '#collection_rocrate_key' do
+  describe '#collection_ro_crate_key' do
     it 'lives at the collection root' do
-      expect(catalog.collection_rocrate_key(collection)).to eq('AA1/ro-crate-metadata.json')
+      expect(catalog.collection_ro_crate_key(collection)).to eq('AA1/ro-crate-metadata.json')
     end
   end
 
-  describe '#item_rocrate_key' do
+  describe '#item_ro_crate_key' do
     it 'lives at the item root' do
-      expect(catalog.item_rocrate_key(item)).to eq('AA1/001/ro-crate-metadata.json')
+      expect(catalog.item_ro_crate_key(item)).to eq('AA1/001/ro-crate-metadata.json')
     end
   end
 
@@ -25,8 +25,8 @@ describe Nabu::Catalog do
 
   describe '#admin_key?' do
     it 'recognises every admin key the builders produce' do
-      expect(catalog.admin_key?(catalog.collection_rocrate_key(collection))).to be true
-      expect(catalog.admin_key?(catalog.item_rocrate_key(item))).to be true
+      expect(catalog.admin_key?(catalog.collection_ro_crate_key(collection))).to be true
+      expect(catalog.admin_key?(catalog.item_ro_crate_key(item))).to be true
       expect(catalog.admin_key?(catalog.deposit_form_key(collection))).to be true
     end
 

@@ -296,9 +296,9 @@
         %th RO-Crate Metadata
         %td
           %ul
-            %li= link_to 'Download', public_rocrate_collection_item_path(@collection, @item)
+            %li= link_to 'Download', public_ro_crate_collection_item_path(@collection, @item)
             - if admin_user_signed_in?
-              %li= link_to 'Download (with private metadata)', private_rocrate_collection_item_path(@collection, @item)
+              %li= link_to 'Download (with private metadata)', private_ro_crate_collection_item_path(@collection, @item)
 
   %fieldset
     %legend Comments

@@ -261,17 +261,17 @@ class CollectionsController < ApplicationController
     redirect_to location, allow_other_host: true
   end
 
-  def private_rocrate
+  def private_ro_crate
     @data = @collection
-    @admin_rocrate = true
+    @admin_ro_crate = true
 
     json_data = render_to_string(template: 'api/v1/oni/object_meta_collection', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@collection.identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
-  def public_rocrate
+  def public_ro_crate
     @data = @collection
-    @admin_rocrate = false
+    @admin_ro_crate = false
 
     json_data = render_to_string(template: 'api/v1/oni/object_meta_collection', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@collection.identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'

@@ -6,7 +6,7 @@ module Nabu
   class Catalog
     include Singleton
 
-    ADMIN_ROCRATE_FILENAME = 'ro-crate-metadata.json'.freeze
+    ADMIN_RO_CRATE_FILENAME = 'ro-crate-metadata.json'.freeze
     DEPOSIT_FORM_SUFFIX = '-deposit.pdf'.freeze
     DEPOSIT_FORM_KEY_PATTERN = %r{\A([^/]+)/\1#{Regexp.escape(DEPOSIT_FORM_SUFFIX)}\z}
 
@@ -37,12 +37,12 @@ module Nabu
       [essence.item.collection.identifier, essence.item.identifier, essence.filename].join('/')
     end
 
-    def item_rocrate_key(item)
-      item_admin_key(item, ADMIN_ROCRATE_FILENAME)
+    def item_ro_crate_key(item)
+      item_admin_key(item, ADMIN_RO_CRATE_FILENAME)
     end
 
-    def collection_rocrate_key(collection)
-      collection_admin_key(collection, ADMIN_ROCRATE_FILENAME)
+    def collection_ro_crate_key(collection)
+      collection_admin_key(collection, ADMIN_RO_CRATE_FILENAME)
     end
 
     def deposit_form_key(collection)
@@ -52,7 +52,7 @@ module Nabu
     # True for the admin files nabu writes alongside essences: RO-Crate metadata
     # at the collection/item root and the collection's deposit PDF.
     def admin_key?(key)
-      return true if key.end_with?("/#{ADMIN_ROCRATE_FILENAME}")
+      return true if key.end_with?("/#{ADMIN_RO_CRATE_FILENAME}")
 
       key.end_with?(DEPOSIT_FORM_SUFFIX) && key.match?(DEPOSIT_FORM_KEY_PATTERN)
     end
@@ -60,14 +60,14 @@ module Nabu
     # Every key that makes up an item in the bucket: its essence files plus its admin metadata.
     def item_keys(item)
       keys = item.essences.map { |essence| essence_key(essence) }
-      keys << item_rocrate_key(item)
+      keys << item_ro_crate_key(item)
       keys
     end
 
     # Every key that makes up a collection in the bucket: its items' keys plus its admin files.
     def collection_keys(collection)
       keys = collection.items.includes(:essences).flat_map { |item| item_keys(item) }
-      keys << collection_rocrate_key(collection)
+      keys << collection_ro_crate_key(collection)
       keys << deposit_form_key(collection)
       keys
     end

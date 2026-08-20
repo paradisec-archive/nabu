@@ -168,17 +168,17 @@ class ItemsController < ApplicationController
     redirect_to bulk_update_items_path + "?#{params[:original_search_params]}"
   end
 
-  def private_rocrate
+  def private_ro_crate
     @data = @item
-    @admin_rocrate = true
+    @admin_ro_crate = true
 
     json_data = render_to_string(template: 'api/v1/oni/object_meta_item', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@item.full_identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'
   end
 
-  def public_rocrate
+  def public_ro_crate
     @data = @item
-    @admin_rocrate = false
+    @admin_ro_crate = false
 
     json_data = render_to_string(template: 'api/v1/oni/object_meta_item', formats: [:json], handlers: [:jb])
     send_data json_data, filename: "#{@item.full_identifier}-ro-crate-metadata.json", type: 'application/json', disposition: 'attachment'

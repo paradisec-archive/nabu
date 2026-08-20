@@ -1,5 +1,5 @@
 # rubocop:disable Metrics/BlockLength
-namespace :rocrate do
+namespace :ro_crate do
   desc 'Generate ro-crate for a collection and save to S3'
   task :collection, [:identifier] => :environment do |task, args|
     raise 'Please pass a collection identifier' if args[:identifier].nil?

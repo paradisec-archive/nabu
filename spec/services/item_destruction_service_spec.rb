@@ -15,7 +15,7 @@ describe ItemDestructionService, :no_catalog_upload do
     end
 
     it 'still schedules deletion of the admin metadata, verifying the item prefix' do
-      expected_keys = [catalog.item_rocrate_key(item_with_no_files)]
+      expected_keys = [catalog.item_ro_crate_key(item_with_no_files)]
 
       described_class.destroy(item_with_no_files)
 
@@ -28,7 +28,7 @@ describe ItemDestructionService, :no_catalog_upload do
     let(:item_with_files) { essence.item }
 
     it 'schedules deletion of the essence files and admin metadata, verifying the item prefix' do
-      expected_keys = [catalog.essence_key(essence), catalog.item_rocrate_key(item_with_files)]
+      expected_keys = [catalog.essence_key(essence), catalog.item_ro_crate_key(item_with_files)]
 
       response = described_class.destroy(item_with_files)
 

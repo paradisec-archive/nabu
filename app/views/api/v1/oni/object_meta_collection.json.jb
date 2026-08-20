@@ -4,7 +4,7 @@ def collection_id
   repository_collection_url(@data)
 end
 
-def collection_rocrate_json
+def collection_ro_crate_json
   {
     '@id': 'ro-crate-metadata.json',
     '@type': 'CreativeWork',
@@ -212,7 +212,7 @@ data = {
   countries: @data.countries.map { |country| { '@id': collection_country_json(country) } }
 }
 
-if @admin_rocrate
+if @admin_ro_crate
   data[:comment] = @data.comments
   data[:usageinfo] = @data.access_narrative if @data.access_narrative
   data[:private] = @data.private
@@ -239,7 +239,7 @@ data.compact!
 graph = []
 
 graph << data
-graph << collection_rocrate_json
+graph << collection_ro_crate_json
 
 # Add all the references
 graph.concat(@property_values.to_a)

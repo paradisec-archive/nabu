@@ -14,8 +14,8 @@ describe CollectionDestructionService, :no_catalog_upload do
       catalog = Nabu::Catalog.instance
       expected_keys = [
         catalog.essence_key(essence),
-        catalog.item_rocrate_key(item),
-        catalog.collection_rocrate_key(collection),
+        catalog.item_ro_crate_key(item),
+        catalog.collection_ro_crate_key(collection),
         catalog.deposit_form_key(collection)
       ]
 
