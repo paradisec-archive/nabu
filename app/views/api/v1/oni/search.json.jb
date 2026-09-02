@@ -8,12 +8,18 @@ result = {
     hit = @search.hits[index]
     render(partial: 'entity', locals: { entity: entity.entity, highlights:, hit:, score: hit.dig('_score'), essence_terms_required: @essence_terms_required })
   end,
-  facets: aggs.transform_values do |agg|
-    agg['buckets'].map { |bucket| ({ name: bucket['key'], count: bucket['doc_count'] }) }
+  facets: aggs.to_h do |name, agg|
+    buckets = agg['buckets'].map do |bucket|
+      key = name == 'entity_type' ? Oni::EntityType.to_public(bucket['key']) : bucket['key']
+
+      { name: key, count: bucket['doc_count'] }
+    end
+
+    [name, buckets]
   end
 }
 
-location_agg = @search.aggs.find { |agg| p agg; agg[0] == 'location' }
+location_agg = @search.aggs.find { |agg| agg[0] == 'location' }
 if location_agg
   result[:geohashGrid] = location_agg[1]['buckets'].to_h { |item| [item['key'], item['doc_count']] }
 end

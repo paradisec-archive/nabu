@@ -185,7 +185,7 @@ module Oni
       entity_types = filters['entity_type']
       return unless entity_types.is_a?(Array)
 
-      allowed = Oni::EntityType::INTERNAL_TYPES + Oni::EntityType::PCDM_TYPES
+      allowed = Oni::EntityType::INTERNAL_TYPES + Oni::EntityType::PUBLIC_TYPES + Oni::EntityType::PCDM_TYPES
       entity_types.each do |value|
         next unless value.is_a?(String)
 
