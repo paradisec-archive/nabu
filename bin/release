@@ -41,8 +41,33 @@ cd cdk
 AWS_PROFILE=nabu-${ENV} pnpm cdk deploy "nabu-appstack-${ENV}"
 
 # Services using mutable registry tags don't redeploy via CDK, so force new deployments
-AWS_PROFILE=nabu-${ENV} aws ecs update-service --cluster nabu --service downloader --force-new-deployment --no-cli-pager >/dev/null
-echo "Forced new deployment of downloader service"
+DEPLOYMENT_ID=$(AWS_PROFILE=nabu-${ENV} aws ecs update-service --cluster nabu --service downloader --force-new-deployment --no-cli-pager \
+  --query 'service.deployments[?status==`PRIMARY`].id' --output text)
+echo "Forced new deployment of downloader service ($DEPLOYMENT_ID), waiting for it to become stable..."
+
+# Each wait is capped at 10 minutes by the CLI, so retry a few times for slower rollouts
+DOWNLOADER_STABLE=false
+for _ in 1 2 3; do
+  if AWS_PROFILE=nabu-${ENV} aws ecs wait services-stable --cluster nabu --services downloader; then
+    DOWNLOADER_STABLE=true
+    break
+  fi
+  echo "Downloader service still deploying..."
+done
+
+if [ "$DOWNLOADER_STABLE" != "true" ]; then
+  echo "Downloader service did not become stable after 30 minutes"
+  exit 1
+fi
+
+ROLLOUT_STATE=$(AWS_PROFILE=nabu-${ENV} aws ecs describe-services --cluster nabu --services downloader --no-cli-pager \
+  --query "services[0].deployments[?id=='$DEPLOYMENT_ID'].rolloutState" --output text)
+if [ "$ROLLOUT_STATE" != "COMPLETED" ]; then
+  echo "Downloader deployment $DEPLOYMENT_ID finished in state '${ROLLOUT_STATE:-UNKNOWN}', not COMPLETED"
+  exit 1
+fi
+
+echo "Downloader service deployed"
 
 # Cleanup cdk
 # Echo cleaning up!!
