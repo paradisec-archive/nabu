@@ -106,7 +106,7 @@ namespace :import do
     puts '# Importing retired languages'
     puts
 
-    zip = URI.open('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3_Code_Tables_20230123.zip').read
+    zip = URI.open('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3_Code_Tables_20260715.zip').read
 
     data = ''
     Zip::File.open_buffer(zip) do |zip_file|
