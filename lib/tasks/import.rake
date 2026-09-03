@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'open-uri'
-require 'zip'
-
 # rubocop:disable Metrics/BlockLength Rails/Output
 namespace :import do
   desc 'Import ethnologue'
@@ -13,16 +10,10 @@ namespace :import do
     puts '# Importing countries from Ethnologue'
     puts
 
-    data = URI.open('https://www.ethnologue.com/codes/CountryCodes.tab', 'r:utf-8').read
-
-    data.each_line do |line|
-      next if line =~ /CountryID/
-
-      code, name, _area = line.split("\t")
-
+    Nabu::LanguageSources.new.countries.each do |code, name, _area|
       country = Country.find_by(code:)
       unless country
-        country = Country.create(name:, code:)
+        Country.create!(name:, code:)
         puts "Added #{code} - #{name}"
 
         next
@@ -41,19 +32,14 @@ namespace :import do
     puts '# Importing languages from Ethnologue'
     puts
 
-    data = URI.open('https://www.ethnologue.com/codes/LanguageCodes.tab', 'r:utf-8').read
-
-    data.each_line do |line|
-      next if line =~ /LangID/
-
-      code, _country_code, status, name = line.strip.split("\t")
+    Nabu::LanguageSources.new.languages.each do |code, _country_code, status, name|
       next unless status == 'L'
 
       name = name.gsub(/ \(.*\)/, '')
 
       language = Language.find_by(code:)
       unless language
-        language = Language.create(code:, name:)
+        Language.create!(code:, name:)
         puts "Added #{code} - #{name}"
 
         next
@@ -73,17 +59,19 @@ namespace :import do
     puts '# Importing country languages from Ethnologue'
     puts
 
-    data = URI.open('https://www.ethnologue.com/codes/LanguageIndex.tab', 'r:utf-8').read
+    sources = Nabu::LanguageSources.new
+    extinct = Set.new
 
-    data.each_line do |line|
-      next if line =~ /LangID/
-
-      language_code, country_code, status, _name = line.strip.split("\t")
+    sources.language_index.each do |language_code, country_code, status, _name|
       next unless status == 'L'
 
       language = Language.find_by(code: language_code)
       unless language
-        puts "ERROR: Language not in DB #{language_code} - skipping"
+        if sources.language_status[language_code] == 'X'
+          extinct << language_code
+        else
+          puts "ERROR: Language not in DB #{language_code} - skipping"
+        end
         next
       end
 
@@ -93,12 +81,13 @@ namespace :import do
         next
       end
 
-      lang_country = CountriesLanguage.find_by(country_id: country.id, language_id: language.id)
-      next if lang_country
+      next if CountriesLanguage.exists?(country_id: country.id, language_id: language.id)
 
-      CountriesLanguage.create(country:, language:)
+      CountriesLanguage.create!(country:, language:)
       puts "Added mapping #{language.code} -> #{country.code}"
     end
+
+    puts "Skipped #{extinct.size} extinct languages not in DB: #{extinct.sort.join(' ')}" if extinct.any?
   end
 
   desc 'Update retired language codes from SIL'
@@ -106,76 +95,54 @@ namespace :import do
     puts '# Importing retired languages'
     puts
 
-    zip = URI.open('https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3_Code_Tables_20260715.zip').read
+    sources = Nabu::LanguageSources.new
+    puts "Using #{sources.iso639_zip_url}"
+    puts
 
-    data = ''
-    Zip::File.open_buffer(zip) do |zip_file|
-      zip_file.each do |entry|
-        data = entry.get_input_stream.read if entry.name =~ /iso-639-3_Retirements_20230123.tab/
-      end
-    end
+    models = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage]
+    retired = 0
 
-    data.each_line do |line|
-      next if line =~ /Ref_Name/
-
-      code, name, reason, change_to, instructions, effective = line.strip.split("\t")
-
-      # find language and set to retired if it's not already retired
+    sources.retirements.each do |code, name, reason, change_to, instructions, effective|
       language = Language.find_by(code:)
       next unless language
-
       next if language.retired
 
       language.retired = true
       language.name = "#{language.name} (retired)"
       language.save!
+      retired += 1
       puts "Retired #{code} - #{name} effective #{effective}"
 
-      # if change reason is C=change, D=duplicate, M=merge, fix existing entries
-      if %w[C D M].include?(reason) && change_to
-        new_lang = Language.find_by(code: change_to)
-        unless new_lang
-          puts "New Language #{change_to} not found - not updating DB entries"
-          puts '---'
-          next
+      counts = models.to_h { |model| [model, model.where(language_id: language.id).count] }
+      in_use = counts.values.sum.positive?
+
+      # C=change, D=duplicate, M=merge have a single replacement code so existing entries can be moved automatically
+      if %w[C D M].include?(reason) && change_to.present?
+        new_language = Language.find_by(code: change_to)
+
+        if new_language.nil? && in_use
+          new_name = sources.iso639_names[change_to]
+          if new_name
+            new_language = Language.create!(code: change_to, name: new_name)
+            puts "Added #{change_to} - #{new_name}"
+          else
+            puts "New Language #{change_to} not found - not updating DB entries"
+          end
         end
 
-        # rubocop:disable Rails/SkipsModelValidations
-        begin
-          num = CollectionLanguage.where(language_id: language.id).update_all(language_id: new_lang.id)
-        rescue Mysql2::Error
-          # Ignore
+        models.each { |model| Nabu::LanguageReassigner.new(model).reassign(language, new_language) } if new_language
+      elsif in_use
+        puts "INSTRUCTIONS: #{instructions.presence || 'No replacement code, reassign manually'}"
+        counts.each do |model, count|
+          puts "Edit #{count} records in #{model.table_name}" if count.positive?
         end
-        puts "Updated #{num} collection_languages" if num.positive?
-
-        begin
-          num = ItemContentLanguage.where(language_id: language.id).update_all(language_id: new_lang.id)
-        rescue Mysql2::Error
-          # Ignore
-        end
-        puts "Updated #{num} item_content_languages" if num.positive?
-
-        begin
-          num = ItemSubjectLanguage.where(language_id: language.id).update_all(language_id: new_lang.id)
-        rescue Mysql2::Error
-          # Ignore
-        end
-        puts "Updated #{num} item_subject_languages" if num.positive?
-        # rubocop:enable Rails/SkipsModelValidations
-      else
-        num_a = CollectionLanguage.where(language_id: language.id).count
-        num_b = ItemContentLanguage.where(language_id: language.id).count
-        num_c = ItemSubjectLanguage.where(language_id: language.id).count
-
-        puts "INSTRUCTIONS: #{instructions}" if num_a.positive? || num_b.positive? || num_c.positive?
-
-        puts "Edit #{num} records in collection_languages" if num_a.positive?
-        puts "Edit #{num} records in item_content_languages" if num_b.positive?
-        puts "Edit #{num} records in item_subject_languages" if num_c.positive?
+        Nabu::LanguageReviewLinks.new(language).each { |line| puts line }
       end
 
       puts '---'
     end
+
+    puts 'None' if retired.zero?
   end
 end
 # rubocop:enable Metrics/BlockLength Rails/Output
