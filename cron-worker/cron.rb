@@ -22,48 +22,9 @@ ensure
   super
 end
 
-scheduler.cron '27 4 * * tue'  do
-  name = 'Check DB S3 Sync'
-  task = 'catalog:check_db_s3_sync'
-
-  puts "#{Time.current}: Starting task #{name}"
-
-  begin
-    Rake::Task[task].invoke
-  ensure
-    Rake::Task[task].reenable
-  end
-end
-
-scheduler.cron '27 5 * * tue'  do
-  name = 'Check Replication'
-  task = 'catalog:check_replication'
-
-  puts "#{Time.current}: Starting task #{name}"
-
-  begin
-    Rake::Task[task].invoke
-  ensure
-    Rake::Task[task].reenable
-  end
-end
-
 scheduler.cron '27 5 * * wed'  do
   name = 'Delete unconfirmed users'
   task = 'users:delete_unconfirmed'
-
-  puts "#{Time.current}: Starting task #{name}"
-
-  begin
-    Rake::Task[task].invoke
-  ensure
-    Rake::Task[task].reenable
-  end
-end
-
-scheduler.cron '27 6 * * wed'  do
-  name = 'Check Mediaflux'
-  task = 'catalog:check_mediaflux'
 
   puts "#{Time.current}: Starting task #{name}"
 
