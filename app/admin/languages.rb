@@ -8,7 +8,6 @@
 # Name               | Type               | Attributes
 # ------------------ | ------------------ | ---------------------------
 # **`id`**           | `integer`          | `not null, primary key`
-# **`box_origin`**   | `string(255)`      |
 # **`code`**         | `string(255)`      |
 # **`dialect`**      | `boolean`          | `default(FALSE), not null`
 # **`east_limit`**   | `float(24)`        |
