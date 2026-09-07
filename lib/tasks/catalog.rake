@@ -1,6 +1,6 @@
 namespace :catalog do
   desc 'Validate S3 vs DB'
-  task check_db_s3_sync: :environment do
+  task validate_db_sync: :environment do
     exit unless Rails.env.production?
 
     validator = CatalogDbSyncValidatorService.new('prod')
@@ -8,7 +8,7 @@ namespace :catalog do
   end
 
   desc 'Validate DR Replication'
-  task check_replication: :environment do
+  task validate_replication: :environment do
     validator = CatalogReplicationValidatorService.new
     validator.run
   end
@@ -33,7 +33,7 @@ namespace :catalog do
   end
 
   desc 'Validate Catalog vs Mediaflux'
-  task check_mediaflux: :environment do
+  task validate_mediaflux: :environment do
     validator = CatalogMediafluxValidatorService.new
     validator.run
   end
