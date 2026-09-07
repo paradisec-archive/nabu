@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -53,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.integer "collection_id"
     t.integer "language_id"
     t.index ["collection_id", "language_id"], name: "index_collection_languages_on_collection_id_and_language_id", unique: true
+    t.index ["language_id"], name: "index_collection_languages_on_language_id"
   end
 
   create_table "collections", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -122,6 +123,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.integer "country_id", null: false
     t.integer "language_id", null: false
     t.index ["country_id", "language_id"], name: "index_countries_languages_on_country_id_and_language_id", unique: true
+    t.index ["language_id"], name: "index_countries_languages_on_language_id"
   end
 
   create_table "data_categories", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -248,6 +250,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.integer "item_id", null: false
     t.integer "language_id", null: false
     t.index ["item_id", "language_id"], name: "index_item_content_languages_on_item_id_and_language_id", unique: true
+    t.index ["language_id"], name: "index_item_content_languages_on_language_id"
   end
 
   create_table "item_countries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -273,6 +276,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.integer "item_id", null: false
     t.integer "language_id", null: false
     t.index ["item_id", "language_id"], name: "index_item_subject_languages_on_item_id_and_language_id", unique: true
+    t.index ["language_id"], name: "index_item_subject_languages_on_language_id"
   end
 
   create_table "items", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -325,15 +329,42 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.index ["updated_at"], name: "index_items_on_updated_at"
   end
 
+  create_table "language_equivalents", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.json "evidence", null: false
+    t.integer "language_id", null: false
+    t.integer "related_language_id", null: false
+    t.index ["language_id", "related_language_id"], name: "index_language_equivalents_on_pair", unique: true
+    t.index ["related_language_id"], name: "index_language_equivalents_on_related_language_id"
+    t.check_constraint "`language_id` < `related_language_id`", name: "language_equivalents_ordered"
+  end
+
+  create_table "language_refresh_runs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.text "report", size: :medium
+    t.json "sources"
+    t.datetime "started_at"
+    t.string "status", default: "running", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "box_origin"
     t.string "code"
+    t.boolean "dialect", default: false, null: false
     t.float "east_limit"
+    t.float "latitude"
+    t.float "longitude"
     t.string "name"
     t.float "north_limit"
-    t.boolean "retired"
+    t.float "previous_latitude"
+    t.float "previous_longitude"
+    t.boolean "retired", default: false, null: false
+    t.string "source", null: false
     t.float "south_limit"
+    t.text "synonyms"
     t.float "west_limit"
-    t.index ["code"], name: "index_languages_on_code", unique: true
+    t.index ["code", "source"], name: "index_languages_on_code_and_source", unique: true
   end
 
   create_table "latlon_boundaries", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -493,9 +524,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000001) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "collection_languages", "languages"
+  add_foreign_key "countries_languages", "languages"
   add_foreign_key "essence_annotations", "essences", column: "annotation_essence_id", on_delete: :cascade
   add_foreign_key "essence_annotations", "essences", column: "target_essence_id", on_delete: :cascade
   add_foreign_key "essences", "users", column: "created_by_id"
+  add_foreign_key "item_content_languages", "languages"
+  add_foreign_key "item_subject_languages", "languages"
+  add_foreign_key "language_equivalents", "languages"
+  add_foreign_key "language_equivalents", "languages", column: "related_language_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
