@@ -23,21 +23,6 @@ class UnconfirmedUsersService
     @report_data
   end
 
-  def self.deletion_report(options = {})
-    puts 'Generating deletion candidate report for unconfirmed users...'
-
-    service = new(age_days: 7)
-    report_data = service.prepare
-
-    puts "Total unconfirmed users (older than 14 days): #{report_data[:total]}"
-    puts "Referenced unconfirmed users: #{report_data[:referenced_count]}"
-    puts "Unreferenced unconfirmed users (to be deleted): #{report_data[:unreferenced_count]}"
-
-    AdminMailer.with(report_data:).unconfirmed_users_deletion_report.deliver_now
-
-    puts "Deletion candidate report email sent with #{report_data[:unreferenced_count]} users scheduled for deletion."
-  end
-
   # Class method for actually deleting old users
   def self.delete_old_users(options = {})
     puts 'Deleting unused unconfirmed users older than 14 days...'
