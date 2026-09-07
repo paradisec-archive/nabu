@@ -43,6 +43,9 @@ A Bounding box the Refresh wrote from the Source's point because the Language ha
 **Retired**:
 A Language whose Source has withdrawn its Code, or no longer publishes it. Recorded on the Language; existing tags stay.
 
+**Reinstated**:
+A Retired Language whose Source publishes its Code again. The Refresh clears Retired and reports it; nothing else about the Language or its tags changes.
+
 **Refresh**:
 The scheduled pass that brings every Language into line with its Source, regenerates Equivalents, fills Derived boxes and emails a report. Applies what needs no judgement and reports what does.
 _Avoid_: import (the one-off hand-run task it replaces), sync
