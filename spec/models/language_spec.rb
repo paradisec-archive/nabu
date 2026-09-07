@@ -98,8 +98,10 @@ describe Language, type: :model do
 
     it 'rejects a code that differs only in case within one source' do
       create(:language, source: :austlang, code: 'C15')
+      language = build(:language, source: :austlang, code: 'c15')
+      language.validate
 
-      expect(build(:language, source: :austlang, code: 'c15')).not_to be_valid
+      expect(language.errors.details[:code]).to include(a_hash_including(error: :taken))
     end
 
     # No code is well formed for two sources at once, so the only way to see that uniqueness
@@ -138,6 +140,10 @@ describe Language, type: :model do
       expect(build(:language, code: 'warl1254', source: :glottolog).source_uri).to eq('https://glottolog.org/resource/languoid/id/warl1254')
       expect(build(:language, code: 'C15', source: :austlang).source_uri).to eq('https://collection.aiatsis.gov.au/austlang/language/C15')
     end
+
+    it 'has nothing to point at before a source is set' do
+      expect(described_class.new(code: 'wbp').source_uri).to be_nil
+    end
   end
 
   describe 'the bounding box marker' do
@@ -157,7 +163,35 @@ describe Language, type: :model do
     it 'leaves a box derived when the refresh writes one' do
       language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
 
-      expect(language).to be_derived
+      expect(language.reload).to be_derived
+    end
+
+    # A derived box is zero extent, so one on the equator or the prime meridian has limits of
+    # exactly 0.0 — which must still count as a box the person who edited it now owns.
+    it 'marks a box hand-set when its limits are zero' do
+      language = create(:language, box_origin: :derived, north_limit: 0.0, south_limit: 0.0, west_limit: 0.0, east_limit: 0.0)
+      language.update!(north_limit: 1.0)
+
+      expect(language.reload).to be_hand_set
+    end
+
+    it 'keeps the marker when a box is edited down to a partial one' do
+      language = create(:language, north_limit: -1.5, south_limit: -12.25, west_limit: 130.0, east_limit: 140.0)
+      language.update!(north_limit: nil)
+
+      expect(language.reload).to be_hand_set
+    end
+
+    it 'still hands the box over after a save that failed' do
+      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
+      language.box_origin = :derived
+      language.name = nil
+      expect(language.save).to be(false)
+
+      language.name = 'Named again'
+      language.update!(north_limit: -19.0)
+
+      expect(language.reload).to be_hand_set
     end
 
     it 'lets the refresh move a derived box without making it hand-set' do
@@ -201,8 +235,8 @@ describe Language, type: :model do
       glottolog = create(:language, :glottolog, code: 'warl1254')
       LanguageEquivalent.create!(language: iso, related_language: glottolog, evidence: ['glottolog:iso'])
 
-      expect(LanguageEquivalent.involving(iso).count).to eq(1)
-      expect(LanguageEquivalent.involving(glottolog).count).to eq(1)
+      expect(iso.equivalents.count).to eq(1)
+      expect(glottolog.equivalents.count).to eq(1)
     end
 
     it 'refuses a tag pointing at a language that is not there' do
