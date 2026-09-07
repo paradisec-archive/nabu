@@ -22,14 +22,6 @@ class AdminMailer < ApplicationMailer
     mail(subject: "[NABU Admin] Catalog Mediaflux Report: #{Date.today.strftime('%F')}", to: ['johnf@inodes.org'])
   end
 
-  def unconfirmed_users_deletion_report
-    @report_data = params[:report_data]
-
-    to_delete = @report_data[:unreferenced_count]
-
-    mail(subject: "[NABU Admin] Unconfirmed Users Deletion Preview: #{to_delete} users to be deleted")
-  end
-
   def unconfirmed_users_deleted_report
     @report_data = params[:report_data]
     @deleted_count = @report_data[:total_deleted].to_i
