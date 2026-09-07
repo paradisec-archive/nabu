@@ -39,7 +39,7 @@ namespace :import do
 
       language = Language.find_by(code:)
       unless language
-        Language.create!(code:, name:)
+        Language.create!(code:, name:, source: :iso639_3)
         puts "Added #{code} - #{name}"
 
         next
@@ -123,7 +123,7 @@ namespace :import do
         if new_language.nil? && in_use
           new_name = sources.iso639_names[change_to]
           if new_name
-            new_language = Language.create!(code: change_to, name: new_name)
+            new_language = Language.create!(code: change_to, name: new_name, source: :iso639_3)
             puts "Added #{change_to} - #{new_name}"
           else
             puts "New Language #{change_to} not found - not updating DB entries"
