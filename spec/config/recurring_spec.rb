@@ -15,9 +15,12 @@ describe 'config/recurring.yml' do
   end
 
   it 'resolves every class-based task to an Active Job' do
-    classes = tasks.values.filter_map { |options| options[:class] }
+    tasks.values.filter_map { |options| options[:class] }.each do |name|
+      job_class = name.safe_constantize
 
-    expect(classes.map(&:safe_constantize)).to all(be < ActiveJob::Base)
+      expect(job_class).to be_present, "#{name} does not resolve to a class"
+      expect(job_class).to be < ActiveJob::Base
+    end
   end
 
   it 'parses every schedule as a cron' do

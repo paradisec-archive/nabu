@@ -17,10 +17,13 @@ describe 'config/queue.yml' do
     expect(workers.map { |worker| worker[:queues] }).not_to include('*')
   end
 
-  # Without the '*' worker, a queue nobody listens on silently strands its jobs.
+  # Without the '*' worker, a queue nobody listens on silently strands its jobs. A recurring task
+  # with no queue of its own falls back to its job class, and a command task to SolidQueue's own.
   it 'serves every queue the app can enqueue to' do
     Rails.application.eager_load!
-    recurring = Rails.application.config_for(:recurring, env: 'production').values.filter_map { |task| task[:queue] }
+    recurring = Rails.application.config_for(:recurring, env: 'production').each_value.map do |task|
+      task[:queue] || (task[:class] ? task[:class].constantize : SolidQueue::RecurringJob).new.queue_name
+    end
     enqueueable = ApplicationJob.descendants.map { |job| job.new.queue_name } + [ActiveJob::Base.new.queue_name] + recurring
 
     expect(enqueueable.uniq).to all(be_in(workers.map { |worker| worker[:queues] }))
