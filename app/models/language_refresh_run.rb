@@ -4,6 +4,4 @@ class LanguageRefreshRun < ApplicationRecord
   enum :status, STATUSES, validate: true
 
   validates :status, presence: true
-
-  scope :latest_first, -> { order(started_at: :desc) }
 end
