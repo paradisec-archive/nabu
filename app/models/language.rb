@@ -38,8 +38,9 @@ class Language < ApplicationRecord
 
   SOURCE_NAMES = { 'iso639_3' => 'ISO 639-3', 'glottolog' => 'Glottolog', 'austlang' => 'AUSTLANG' }.freeze
 
-  # Shapes measured against each source's own published table, so a real code is never refused:
-  # AUSTLANG carries suffixed codes (A38.1, N116.A) and one glottocode starts with a numeral.
+  # Shapes checked against every code each source publishes, so a real code is never refused: all
+  # 1,204 AUSTLANG codes, 53 of which carry a suffix (A38.1, N116.A), and all 27,177 Glottolog
+  # rows, one of which starts with a numeral.
   CODE_FORMATS = {
     'iso639_3' => /\A[a-z]{3}\z/,
     'glottolog' => /\A[a-z0-9]{4}[0-9]{4}\z/,
@@ -67,7 +68,10 @@ class Language < ApplicationRecord
   validate :code_matches_its_source
 
   before_save :record_who_set_the_box
-  after_save :forget_stated_box_origin
+  # A save that never reached #record_who_set_the_box must not leave the statement behind to be
+  # read by the next one, which may be a person moving a limit.
+  after_validation :forget_stated_box_origin, if: -> { errors.any? }
+  after_rollback :forget_stated_box_origin
 
   scope :alpha, -> { order(:name) }
 
@@ -90,7 +94,10 @@ class Language < ApplicationRecord
   end
 
   def source_uri
-    format(SOURCE_URIS.fetch(source), code)
+    template = SOURCE_URIS[source]
+    return if template.nil?
+
+    format(template, code)
   end
 
   def name_with_code
@@ -115,9 +122,16 @@ class Language < ApplicationRecord
   has_many :collection_languages
   has_many :collections, through: :collection_languages, dependent: :restrict_with_exception
 
-  has_many :equivalents, class_name: 'LanguageEquivalent', dependent: :restrict_with_exception
-  has_many :inverse_equivalents, class_name: 'LanguageEquivalent', foreign_key: :related_language_id,
-                                 inverse_of: :related_language, dependent: :restrict_with_exception
+  # A pair is stored with the lower id first, so each of these holds only the half of a Language's
+  # equivalents that falls on its side. They are here to restrict deletion; read #equivalents.
+  has_many :equivalents_as_lower_id, class_name: 'LanguageEquivalent', foreign_key: :language_id,
+                                     inverse_of: :language, dependent: :restrict_with_exception
+  has_many :equivalents_as_higher_id, class_name: 'LanguageEquivalent', foreign_key: :related_language_id,
+                                      inverse_of: :related_language, dependent: :restrict_with_exception
+
+  def equivalents
+    LanguageEquivalent.involving(self)
+  end
 
   def self.ransackable_attributes(_ = nil)
     %w[box_origin code dialect east_limit id latitude longitude name north_limit retired source south_limit synonyms west_limit]
@@ -141,10 +155,19 @@ versions]
 
   # A box a person touched is theirs from then on and the Refresh leaves it alone.
   def record_who_set_the_box
-    return if @box_origin_stated
+    stated = @box_origin_stated
+    @box_origin_stated = false
+    return if stated
     return unless BOX_LIMITS.any? { |limit| public_send(:"#{limit}_changed?") }
 
-    write_attribute(:box_origin, has_all_boundaries? ? BOX_ORIGINS[:hand_set] : nil)
+    write_attribute(:box_origin, box_empty? ? nil : BOX_ORIGINS[:hand_set])
+  end
+
+  # Deliberately not HasBoundaries#has_all_boundaries?, whose `?` predicates read a limit of
+  # exactly 0.0 as absent: that would drop the marker from a Derived box on the equator and let
+  # the next Refresh overwrite a box a person had taken over.
+  def box_empty?
+    BOX_LIMITS.all? { |limit| public_send(limit).nil? }
   end
 
   def forget_stated_box_origin
