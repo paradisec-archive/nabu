@@ -57,8 +57,7 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
     end
     return if orphans.empty?
 
-    raise ActiveRecord::IrreversibleMigration,
-          "join rows point at languages that no longer exist (#{orphans.join(', ')}); delete them before migrating"
+    raise "join rows point at languages that no longer exist (#{orphans.join(', ')}); delete them before migrating"
   end
 
   def add_columns
