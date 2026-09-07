@@ -5,24 +5,19 @@
 #
 # ### Columns
 #
-# Name                      | Type               | Attributes
-# ------------------------- | ------------------ | ---------------------------
-# **`id`**                  | `integer`          | `not null, primary key`
-# **`box_origin`**          | `string(255)`      |
-# **`code`**                | `string(255)`      |
-# **`dialect`**             | `boolean`          | `default(FALSE), not null`
-# **`east_limit`**          | `float(24)`        |
-# **`latitude`**            | `float(24)`        |
-# **`longitude`**           | `float(24)`        |
-# **`name`**                | `string(255)`      |
-# **`north_limit`**         | `float(24)`        |
-# **`previous_latitude`**   | `float(24)`        |
-# **`previous_longitude`**  | `float(24)`        |
-# **`retired`**             | `boolean`          | `default(FALSE), not null`
-# **`source`**              | `string(255)`      | `not null`
-# **`south_limit`**         | `float(24)`        |
-# **`synonyms`**            | `text(65535)`      |
-# **`west_limit`**          | `float(24)`        |
+# Name               | Type               | Attributes
+# ------------------ | ------------------ | ---------------------------
+# **`id`**           | `integer`          | `not null, primary key`
+# **`box_origin`**   | `string(255)`      |
+# **`code`**         | `string(255)`      |
+# **`dialect`**      | `boolean`          | `default(FALSE), not null`
+# **`east_limit`**   | `float(24)`        |
+# **`name`**         | `string(255)`      |
+# **`north_limit`**  | `float(24)`        |
+# **`retired`**      | `boolean`          | `default(FALSE), not null`
+# **`source`**       | `string(255)`      | `not null`
+# **`south_limit`**  | `float(24)`        |
+# **`west_limit`**   | `float(24)`        |
 #
 # ### Indexes
 #

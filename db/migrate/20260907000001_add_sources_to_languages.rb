@@ -34,11 +34,6 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
     change_column :languages, :retired, :boolean, default: nil, null: true
     remove_column :languages, :source
     remove_column :languages, :dialect
-    remove_column :languages, :synonyms
-    remove_column :languages, :latitude
-    remove_column :languages, :longitude
-    remove_column :languages, :previous_latitude
-    remove_column :languages, :previous_longitude
     remove_column :languages, :box_origin
   end
 
@@ -63,11 +58,6 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
   def add_columns
     add_column :languages, :source, :string
     add_column :languages, :dialect, :boolean
-    add_column :languages, :synonyms, :text
-    add_column :languages, :latitude, :float
-    add_column :languages, :longitude, :float
-    add_column :languages, :previous_latitude, :float
-    add_column :languages, :previous_longitude, :float
     add_column :languages, :box_origin, :string
   end
 
