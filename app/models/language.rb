@@ -8,7 +8,6 @@
 # Name               | Type               | Attributes
 # ------------------ | ------------------ | ---------------------------
 # **`id`**           | `integer`          | `not null, primary key`
-# **`box_origin`**   | `string(255)`      |
 # **`code`**         | `string(255)`      |
 # **`dialect`**      | `boolean`          | `default(FALSE), not null`
 # **`east_limit`**   | `float(24)`        |
@@ -48,34 +47,16 @@ class Language < ApplicationRecord
     'austlang' => 'https://collection.aiatsis.gov.au/austlang/language/%s'
   }.freeze
 
-  BOX_ORIGINS = { derived: 'derived', hand_set: 'hand_set' }.freeze
-
-  BOX_LIMITS = %i[north_limit south_limit east_limit west_limit].freeze
-
   has_paper_trail
 
   enum :source, SOURCES, validate: true
-  enum :box_origin, BOX_ORIGINS, validate: { allow_nil: true }
 
   validates :name, presence: true
   validates :source, presence: true
   validates :code, presence: true, uniqueness: { scope: :source, case_sensitive: false }
   validate :code_matches_its_source
 
-  before_save :record_who_set_the_box
-  # A save that never reached #record_who_set_the_box must not leave the statement behind to be
-  # read by the next one, which may be a person moving a limit.
-  after_validation :forget_stated_box_origin, if: -> { errors.any? }
-  after_rollback :forget_stated_box_origin
-
   scope :alpha, -> { order(:name) }
-
-  # The Refresh states the origin as it writes a box from the source's point. Anyone who moves a
-  # limit without stating one — a person in ActiveAdmin — takes the box over instead.
-  def box_origin=(value)
-    @box_origin_stated = true
-    super
-  end
 
   # The one rendering of a Language wherever a person reads, picks or filters by one.
   def label
@@ -129,7 +110,7 @@ class Language < ApplicationRecord
   end
 
   def self.ransackable_attributes(_ = nil)
-    %w[box_origin code dialect east_limit id name north_limit retired source south_limit west_limit]
+    %w[code dialect east_limit id name north_limit retired source south_limit west_limit]
   end
 
   def self.ransackable_associations(_ = nil)
@@ -146,26 +127,5 @@ versions]
     return if shape.nil? || code.match?(shape)
 
     errors.add(:code, "is not shaped like a #{SOURCE_NAMES[source]} code")
-  end
-
-  # A box a person touched is theirs from then on and the Refresh leaves it alone.
-  def record_who_set_the_box
-    stated = @box_origin_stated
-    @box_origin_stated = false
-    return if stated
-    return unless BOX_LIMITS.any? { |limit| public_send(:"#{limit}_changed?") }
-
-    write_attribute(:box_origin, box_empty? ? nil : BOX_ORIGINS[:hand_set])
-  end
-
-  # Deliberately not HasBoundaries#has_all_boundaries?, whose `?` predicates read a limit of
-  # exactly 0.0 as absent: that would drop the marker from a Derived box on the equator and let
-  # the next Refresh overwrite a box a person had taken over.
-  def box_empty?
-    BOX_LIMITS.all? { |limit| public_send(limit).nil? }
-  end
-
-  def forget_stated_box_origin
-    @box_origin_stated = false
   end
 end

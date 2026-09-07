@@ -34,7 +34,6 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
     change_column :languages, :retired, :boolean, default: nil, null: true
     remove_column :languages, :source
     remove_column :languages, :dialect
-    remove_column :languages, :box_origin
   end
 
   private
@@ -58,7 +57,6 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
   def add_columns
     add_column :languages, :source, :string
     add_column :languages, :dialect, :boolean
-    add_column :languages, :box_origin, :string
   end
 
   # Bulk statements, so no PaperTrail versions are written for the 7,788 existing rows.
@@ -66,11 +64,6 @@ class AddSourcesToLanguages < ActiveRecord::Migration[8.1]
     execute("UPDATE languages SET source = 'iso639_3'")
     execute('UPDATE languages SET dialect = FALSE')
     execute('UPDATE languages SET retired = FALSE WHERE retired IS NULL')
-    execute(<<~SQL.squish)
-      UPDATE languages SET box_origin = 'hand_set'
-      WHERE north_limit IS NOT NULL AND south_limit IS NOT NULL
-        AND west_limit IS NOT NULL AND east_limit IS NOT NULL
-    SQL
   end
 
   def tighten_columns
