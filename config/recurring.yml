@@ -18,3 +18,16 @@ production:
     class: AnnotationReminderDigestJob
     queue: default
     schedule: every day at 8am
+  validate_catalog_db_sync:
+    class: ValidateCatalogDbSyncJob
+    queue: maintenance
+    schedule: "0 16 * * mon"
+  validate_catalog_replication:
+    class: ValidateCatalogReplicationJob
+    queue: maintenance
+    schedule: "0 16 * * tue"
+  # Two hours after the 18:00 UTC Mediaflux inventory export, so it reads the same night's snapshot.
+  validate_catalog_mediaflux:
+    class: ValidateCatalogMediafluxJob
+    queue: maintenance
+    schedule: "0 20 * * wed"
