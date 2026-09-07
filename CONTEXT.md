@@ -28,3 +28,7 @@ _Avoid_: point, coordinates (a Source's published location is a point, not a box
 
 **Retired**:
 A Language whose Source has withdrawn its Code. Recorded on the Language; existing tags stay.
+
+**Source URI**:
+The Source's own web address for a Code. Nabu publishes it wherever a Language is identified outside Nabu, and asserts no other address for the Language.
+_Avoid_: archive link, Ethnologue link
