@@ -10,7 +10,6 @@ require 'rails_helper'
 # Name               | Type               | Attributes
 # ------------------ | ------------------ | ---------------------------
 # **`id`**           | `integer`          | `not null, primary key`
-# **`box_origin`**   | `string(255)`      |
 # **`code`**         | `string(255)`      |
 # **`dialect`**      | `boolean`          | `default(FALSE), not null`
 # **`east_limit`**   | `float(24)`        |
@@ -138,80 +137,6 @@ describe Language, type: :model do
 
     it 'has nothing to point at before a source is set' do
       expect(described_class.new(code: 'wbp').source_uri).to be_nil
-    end
-  end
-
-  describe 'the bounding box marker' do
-    it 'marks a box hand-set when a person fills it in' do
-      language = create(:language, north_limit: -1.5, south_limit: -12.25, west_limit: 130.0, east_limit: 140.0)
-
-      expect(language).to be_hand_set
-    end
-
-    it 'marks a box hand-set when a limit on a derived box is edited' do
-      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
-      language.update!(north_limit: -19.0)
-
-      expect(language.reload).to be_hand_set
-    end
-
-    it 'leaves a box derived when the refresh writes one' do
-      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
-
-      expect(language.reload).to be_derived
-    end
-
-    # A derived box is zero extent, so one on the equator or the prime meridian has limits of
-    # exactly 0.0 — which must still count as a box the person who edited it now owns.
-    it 'marks a box hand-set when its limits are zero' do
-      language = create(:language, box_origin: :derived, north_limit: 0.0, south_limit: 0.0, west_limit: 0.0, east_limit: 0.0)
-      language.update!(north_limit: 1.0)
-
-      expect(language.reload).to be_hand_set
-    end
-
-    it 'keeps the marker when a box is edited down to a partial one' do
-      language = create(:language, north_limit: -1.5, south_limit: -12.25, west_limit: 130.0, east_limit: 140.0)
-      language.update!(north_limit: nil)
-
-      expect(language.reload).to be_hand_set
-    end
-
-    it 'still hands the box over after a save that failed' do
-      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
-      language.box_origin = :derived
-      language.name = nil
-      expect(language.save).to be(false)
-
-      language.name = 'Named again'
-      language.update!(north_limit: -19.0)
-
-      expect(language.reload).to be_hand_set
-    end
-
-    it 'lets the refresh move a derived box without making it hand-set' do
-      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
-      language.update!(north_limit: -21.0, south_limit: -21.0, box_origin: :derived)
-
-      expect(language.reload).to be_derived
-    end
-
-    it 'has no marker while the box is empty' do
-      expect(create(:language).box_origin).to be_nil
-    end
-
-    it 'drops the marker when the box is cleared' do
-      language = create(:language, north_limit: -1.5, south_limit: -12.25, west_limit: 130.0, east_limit: 140.0)
-      language.update!(north_limit: nil, south_limit: nil, west_limit: nil, east_limit: nil)
-
-      expect(language.reload.box_origin).to be_nil
-    end
-
-    it 'leaves the marker alone when something other than the box changes' do
-      language = create(:language, box_origin: :derived, north_limit: -20.0, south_limit: -20.0, west_limit: 130.0, east_limit: 130.0)
-      language.update!(name: 'Renamed')
-
-      expect(language.reload).to be_derived
     end
   end
 
