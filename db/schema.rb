@@ -349,7 +349,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_000001) do
   end
 
   create_table "languages", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "box_origin"
     t.string "code"
     t.boolean "dialect", default: false, null: false
     t.float "east_limit"

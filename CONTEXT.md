@@ -31,14 +31,8 @@ The one string Nabu shows for a Language wherever a person reads, picks or filte
 _Avoid_: display name, name with code, facet value
 
 **Bounding box**:
-Nabu's extent for a Language, either Hand-set or Derived. No Source publishes one, so it is the only editable part of a Language. Items and collections seed their own boxes from it but keep their own.
+Nabu's extent for a Language, and the only geography it keeps. No Source publishes one, so it is the only editable part of a Language. The Refresh fills a box that is empty from the Source's point and never changes one that already exists. Items and collections seed their own boxes from it but keep their own.
 _Avoid_: point, coordinates (a Source's published location is a point, not a box)
-
-**Hand-set box**:
-A Bounding box a person chose. Never changed by a Refresh. Editing any box makes it Hand-set.
-
-**Derived box**:
-A Bounding box the Refresh wrote from the Source's point because the Language had none. Zero extent. Follows the point if the Source moves it; becomes Hand-set the moment a person edits it.
 
 **Retired**:
 A Language whose Source has withdrawn its Code, or no longer publishes it. Recorded on the Language; existing tags stay.
@@ -47,7 +41,7 @@ A Language whose Source has withdrawn its Code, or no longer publishes it. Recor
 A Retired Language whose Source publishes its Code again. The Refresh clears Retired and reports it; nothing else about the Language or its tags changes.
 
 **Refresh**:
-The scheduled pass that brings every Language into line with its Source, regenerates Equivalents, fills Derived boxes and emails a report. Applies what needs no judgement and reports what does.
+The scheduled pass that brings every Language into line with its Source, regenerates Equivalents, fills empty Bounding boxes and emails a report. Applies what needs no judgement and reports what does.
 _Avoid_: import (the one-off hand-run task it replaces), sync
 
 **Run**:
@@ -58,7 +52,7 @@ A Retired Language still tagged on collections or items whose Source gave no sin
 _Avoid_: pending change, review queue
 
 **Location warning**:
-A report entry noting that a Source's point is far outside a Hand-set box. Raised only when the point is new or has moved. Nothing is changed.
+A report entry noting that a Source's point is far outside a Language's Bounding box. Nothing is changed; a person decides. No point is kept between Runs, so it repeats every Run until someone resolves it.
 
 **Source URI**:
 The Source's own web address for a Code. Nabu publishes it wherever a Language is identified outside Nabu, and asserts no other address for the Language.
