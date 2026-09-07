@@ -2,6 +2,11 @@
 
 touch .irb_history
 
+# An empty AWS_PROFILE is not the same as an unset one: the SDK reads it as a
+# profile named "" instead of falling back to default or an SSO session.
+aws_profile=()
+[ -n "$AWS_PROFILE" ] && aws_profile=(-e AWS_PROFILE="$AWS_PROFILE")
+
 docker compose run \
   --rm \
   -v "$PWD":/rails \
@@ -12,7 +17,7 @@ docker compose run \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -e OPENID_SIGNING_KEY="$OPENID_SIGNING_KEY" \
   -e ELASTICSEARCH_URL="$(grep ^ELASTICSEARCH_URL .env | sed 's/^.*=//')" \
-  -e AWS_PROFILE="$AWS_PROFILE" \
+  "${aws_profile[@]}" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
   -v "$PWD"/.irb_history:/home/rails/.irb_history \
   app \
