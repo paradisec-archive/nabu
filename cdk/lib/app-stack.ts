@@ -567,6 +567,10 @@ export class AppStack extends cdk.Stack {
     );
     searchDomain.grantReadWrite(jobsTaskDefinition.taskRole);
     catalogBucket.grantReadWrite(jobsTaskDefinition.taskRole);
+    metaBucket.grantRead(jobsTaskDefinition.taskRole);
+    if (env === 'prod') {
+      metaDrBucket.grantRead(jobsTaskDefinition.taskRole);
+    }
 
     const jobsService = new ecs.Ec2Service(this, 'JobsService', {
       serviceName: 'jobs',
