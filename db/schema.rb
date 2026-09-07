@@ -353,16 +353,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_000001) do
     t.string "code"
     t.boolean "dialect", default: false, null: false
     t.float "east_limit"
-    t.float "latitude"
-    t.float "longitude"
     t.string "name"
     t.float "north_limit"
-    t.float "previous_latitude"
-    t.float "previous_longitude"
     t.boolean "retired", default: false, null: false
     t.string "source", null: false
     t.float "south_limit"
-    t.text "synonyms"
     t.float "west_limit"
     t.index ["code", "source"], name: "index_languages_on_code_and_source", unique: true
   end
