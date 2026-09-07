@@ -52,6 +52,8 @@ Rails.application.configure do
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
+  # Long enough that a weekly maintenance run is still visible in Mission Control a full cycle later.
+  config.solid_queue.clear_finished_jobs_after = 8.days
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
