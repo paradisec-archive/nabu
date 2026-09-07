@@ -1,5 +1,34 @@
+# ## Schema Information
+#
+# Table name: `language_equivalents`
+# Database name: `primary`
+#
+# ### Columns
+#
+# Name                       | Type               | Attributes
+# -------------------------- | ------------------ | ---------------------------
+# **`id`**                   | `bigint`           | `not null, primary key`
+# **`evidence`**             | `json`             | `not null`
+# **`language_id`**          | `integer`          | `not null`
+# **`related_language_id`**  | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_language_equivalents_on_pair` (_unique_):
+#     * **`language_id`**
+#     * **`related_language_id`**
+# * `index_language_equivalents_on_related_language_id`:
+#     * **`related_language_id`**
+#
+# ### Foreign Keys
+#
+# * `fk_rails_...`:
+#     * **`language_id => languages.id`**
+# * `fk_rails_...`:
+#     * **`related_language_id => languages.id`**
+#
 class LanguageEquivalent < ApplicationRecord
-  EVIDENCE = %w[glottolog:iso glottolog:closest_iso chirila:iso chirila:glottocode name synonym].freeze
+  EVIDENCE = %w[glottolog:iso glottolog:closest_iso chirila:iso chirila:glottocode name].freeze
 
   belongs_to :language
   belongs_to :related_language, class_name: 'Language'

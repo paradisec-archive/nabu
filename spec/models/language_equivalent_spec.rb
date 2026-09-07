@@ -1,5 +1,34 @@
 require 'rails_helper'
 
+# ## Schema Information
+#
+# Table name: `language_equivalents`
+# Database name: `primary`
+#
+# ### Columns
+#
+# Name                       | Type               | Attributes
+# -------------------------- | ------------------ | ---------------------------
+# **`id`**                   | `bigint`           | `not null, primary key`
+# **`evidence`**             | `json`             | `not null`
+# **`language_id`**          | `integer`          | `not null`
+# **`related_language_id`**  | `integer`          | `not null`
+#
+# ### Indexes
+#
+# * `index_language_equivalents_on_pair` (_unique_):
+#     * **`language_id`**
+#     * **`related_language_id`**
+# * `index_language_equivalents_on_related_language_id`:
+#     * **`related_language_id`**
+#
+# ### Foreign Keys
+#
+# * `fk_rails_...`:
+#     * **`language_id => languages.id`**
+# * `fk_rails_...`:
+#     * **`related_language_id => languages.id`**
+#
 describe LanguageEquivalent, type: :model do
   let(:iso) { create(:language, code: 'wbp', name: 'Warlpiri') }
   let(:glottolog) { create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri') }
