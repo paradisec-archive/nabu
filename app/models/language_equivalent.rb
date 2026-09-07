@@ -12,14 +12,19 @@ class LanguageEquivalent < ApplicationRecord
 
   scope :involving, ->(language) { where(language_id: language).or(where(related_language_id: language)) }
 
+  # A pair is undirected, so the lower id always goes first; that is what lets one unique index
+  # reject the same pair written the other way round. A bulk writer skips the callback below, so
+  # it has to order its own rows through here — the check constraint says so if it forgets.
+  def self.ordered_pair(one_id, other_id)
+    [one_id, other_id].minmax
+  end
+
   private
 
-  # A pair is undirected, so the lower id always goes first; that is what lets one unique index
-  # reject the same pair written the other way round.
   def order_the_pair
     return if language_id.blank? || related_language_id.blank?
 
-    self.language_id, self.related_language_id = [language_id, related_language_id].minmax
+    self.language_id, self.related_language_id = self.class.ordered_pair(language_id, related_language_id)
   end
 
   def two_different_languages
