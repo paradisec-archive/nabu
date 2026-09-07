@@ -12,9 +12,11 @@ services:
       context: .
       dockerfile: docker/app.dev.Dockerfile
     environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      # Null values, so an unset variable is absent in the container rather than
+      # forwarded as an empty string the SDK would prefer over the mounted profile.
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      AWS_SESSION_TOKEN:
       NABU_CATALOG_BUCKET: nabu-catalog-prod
       OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}

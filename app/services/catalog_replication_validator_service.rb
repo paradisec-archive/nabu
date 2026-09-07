@@ -5,11 +5,6 @@ class CatalogReplicationValidatorService
   attr_reader :catalog_dir, :verbose
 
   def initialize
-    # Strange bug in dev docker
-    ENV.delete('AWS_SECRET_ACCESS_KEY')
-    ENV.delete('AWS_ACCESS_KEY_ID')
-    ENV.delete('AWS_SESSION_TOKEN')
-
     @s3 = Aws::S3::Client.new(region: 'ap-southeast-2')
   end
 
