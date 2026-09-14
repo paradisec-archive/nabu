@@ -35,12 +35,15 @@ class BatchDoiMintingService
 
   def run
     Rails.logger.info "Start Minting: #{Time.current}"
+    failed = []
     @unminted_objects.each do |unminted_object|
       next unless public_object?(unminted_object)
 
-      @doi_minting_service.mint_doi(unminted_object)
+      failed << unminted_object unless @doi_minting_service.mint_doi(unminted_object)
     end
     Rails.logger.info "Finished Minting: #{Time.current}"
+
+    failed
   end
 
   # This is the canonical source of information on whether an object is public, as far as BatchDoiMintingService

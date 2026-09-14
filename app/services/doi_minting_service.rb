@@ -13,21 +13,20 @@ class DoiMintingService
   def mint_doi(doiable)
     if @dry_run
       Rails.logger.info "DRY_RUN: DOI minting for #{doiable.id}"
-      return
+      return true
     end
 
     response = post '/dois', doiable.to_doi_json(@prefix)
     unless response
       Rails.logger.error "DOI minting failed for #{doiable.full_path}"
-      return
+      return false
     end
 
     doi = response['data']['id']
 
     Rails.logger.info "DOI #{doi} minted for #{doiable.full_path}"
 
-    doiable.doi = doi
-    doiable.save
+    doiable.update(doi:)
   end
 
   private
