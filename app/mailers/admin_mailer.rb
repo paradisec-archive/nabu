@@ -23,16 +23,9 @@ class AdminMailer < ApplicationMailer
   end
 
   def unconfirmed_users_deleted_report
-    @report_data = params[:report_data]
-    @deleted_count = @report_data[:total_deleted].to_i
-    @deleted_users = @report_data[:deleted_users] || []
-    @failed_users = @report_data[:failed_deletions] || []
+    @deleted_users = params[:deleted_users]
 
-    subject_line = "[NABU Admin] Unconfirmed Users Deleted: #{@deleted_count} accounts removed"
-
-    subject_line += " (#{@report_data[:total_failed]} failed)" if @report_data[:total_failed].to_i > 0
-
-    mail(subject: subject_line)
+    mail(subject: "[NABU Admin] Unconfirmed Users Deleted: #{@deleted_users.size} accounts removed")
   end
 
   def doi_audit_error
