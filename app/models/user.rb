@@ -125,7 +125,7 @@ class User < ApplicationRecord
   scope :collectors, -> { where(collector: true) }
   scope :contacts, -> { where(contact_only: true) }
   scope :admins, -> { where(admin: true) }
-  scope :unconfirmed, -> { where(contact_only: false, confirmed_at: nil).where('created_at < ?', 1.week.ago) }
+  scope :unconfirmed, ->(older_than: 1.week) { where(contact_only: false, confirmed_at: nil).where(created_at: ...older_than.ago) }
   scope :never_signed_in, -> { where(contact_only: false, last_sign_in_at: nil).where('created_at < ?', 1.week.ago).where.not(confirmed_at: nil) }
 
   def self.sortable_columns
