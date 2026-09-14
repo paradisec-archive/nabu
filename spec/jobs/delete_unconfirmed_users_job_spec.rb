@@ -37,7 +37,7 @@ describe DeleteUnconfirmedUsersJob do
 
   it 'rolls back the batch and fails when a user cannot be deleted' do
     undeletable = create(:user, confirmed_at: nil, created_at: 30.days.ago)
-    ActionMailer::Base.deliveries.clear
+    ActionMailer::Base.deliveries.clear # the Devise confirmation mail from the create above
     allow(User).to receive(:unconfirmed).with(older_than: 14.days).and_return([old_unreferenced, undeletable])
     allow(undeletable).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed)
 

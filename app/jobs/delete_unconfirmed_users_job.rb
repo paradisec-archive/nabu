@@ -18,15 +18,15 @@ class DeleteUnconfirmedUsersJob < ApplicationJob
 
   def perform
     users = unreferenced_unconfirmed_users
-    logger.info("Found #{users.size} unconfirmed users older than #{AGE.inspect} that are not referenced anywhere")
+    Rails.logger.info("Found #{users.size} unconfirmed users older than #{AGE.inspect} that are not referenced anywhere")
 
     return if users.empty?
 
-    User.transaction { users.each(&:destroy!) }
-    logger.info("Deleted #{users.size} unconfirmed users")
+    User.transaction { users.each { |user| delete(user) } }
+    Rails.logger.info("Deleted #{users.size} unconfirmed users")
 
-    deleted = users.map { |user| user_details(user) }
-    AdminMailer.with(report_data: { total_deleted: deleted.size, deleted_users: deleted }).unconfirmed_users_deleted_report.deliver_now
+    deleted_users = users.map { |user| { id: user.id, name: user.name, email: user.email, created_at: user.created_at } }
+    AdminMailer.with(deleted_users:).unconfirmed_users_deleted_report.deliver_now
   end
 
   private
@@ -39,13 +39,10 @@ class DeleteUnconfirmedUsersJob < ApplicationJob
     candidates.reject { |user| referenced.include?(user.id) }
   end
 
-  def user_details(user)
-    {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      created_at: user.created_at,
-      created_days_ago: ((Time.current - user.created_at) / 1.day).to_i
-    }
+  def delete(user)
+    user.destroy!
+  rescue StandardError => e
+    Rails.logger.error("Failed to delete user #{user.id}: #{e.message}")
+    raise
   end
 end
