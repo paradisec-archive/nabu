@@ -7,9 +7,9 @@ class MintDoisJob < ApplicationJob
     failed = BatchDoiMintingService.run(false)
     return if failed.empty?
 
-    named = failed.first(10).map(&:full_path)
-    named << "and #{failed.size - named.size} more" if failed.size > named.size
+    listed = failed.first(10).map(&:full_path)
+    listed << "and #{failed.size - listed.size} more" if failed.size > listed.size
 
-    raise MintingFailed, "Failed to mint DOIs for #{failed.size} objects: #{named.join(', ')}"
+    raise MintingFailed, "Failed to mint DOIs for #{failed.size} objects: #{listed.join(', ')}"
   end
 end

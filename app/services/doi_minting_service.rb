@@ -26,7 +26,10 @@ class DoiMintingService
 
     Rails.logger.info "DOI #{doi} minted for #{doiable.full_path}"
 
-    doiable.update(doi:)
+    return true if doiable.update(doi:)
+
+    Rails.logger.error "DOI #{doi} minted but could not be saved for #{doiable.full_path}: #{doiable.errors.full_messages.join(', ')}"
+    false
   end
 
   private
