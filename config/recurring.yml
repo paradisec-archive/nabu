@@ -18,6 +18,10 @@ production:
     class: AnnotationReminderDigestJob
     queue: default
     schedule: every day at 8am
+  mint_dois:
+    class: MintDoisJob
+    queue: maintenance
+    schedule: "0 15 * * *"
   validate_catalog_db_sync:
     class: ValidateCatalogDbSyncJob
     queue: maintenance
