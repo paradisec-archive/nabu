@@ -35,3 +35,7 @@ production:
     class: ValidateCatalogMediafluxJob
     queue: maintenance
     schedule: "0 20 * * wed"
+  delete_unconfirmed_users:
+    class: DeleteUnconfirmedUsersJob
+    queue: maintenance
+    schedule: "0 16 * * thu"

@@ -18,17 +18,4 @@ ensure
   super
 end
 
-scheduler.cron '27 5 * * wed'  do
-  name = 'Delete unconfirmed users'
-  task = 'users:delete_unconfirmed'
-
-  puts "#{Time.current}: Starting task #{name}"
-
-  begin
-    Rake::Task[task].invoke
-  ensure
-    Rake::Task[task].reenable
-  end
-end
-
 scheduler.join
