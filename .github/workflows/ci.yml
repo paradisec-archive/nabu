@@ -79,90 +79,6 @@ jobs:
 
       s3:
         image: adobe/s3mock
-        env:
-          initialBuckets: nabu-catalog-test
-        ports:
-          - 9090:9090
-
-      # redis:
-      #   image: valkey/valkey:8
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
-    env:
-      RAILS_ENV: test
-      DB_HOST: 127.0.0.1
-      OPENID_SIGNING_KEY: '1'
-      S3_ENDPOINT: http://127.0.0.1:9090
-
-    steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y default-mysql-client libjemalloc2 libvips
-
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.15.0
-          cache: pnpm
-
-      - name: Install JavaScript dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Prepare test database
-        run: bin/rails db:test:prepare
-
-      - name: Precompile assets
-        env:
-          ASSET_PRECOMPILE: '1'
-          SECRET_KEY_BASE_DUMMY: '1'
-        run: bin/rails assets:precompile
-
-      - name: Run tests
-        run: bundle exec rspec --exclude-pattern 'spec/system/**/*_spec.rb'
-
-  system-test:
-    runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
-      opensearch:
-        image: opensearchproject/opensearch:2.19.6
-        env:
-          discovery.type: single-node
-          DISABLE_SECURITY_PLUGIN: 'true'
-          OPENSEARCH_INITIAL_ADMIN_PASSWORD: TestPass123!
-          OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx512m'
-        ports:
-          - 9200:9200
-        options: >-
-          --health-cmd "curl -sf http://localhost:9200/_cluster/health"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 20
-
-      s3:
-        image: adobe/s3mock
-        env:
-          initialBuckets: nabu-catalog-test
         ports:
           - 9090:9090
 
@@ -202,14 +118,5 @@ jobs:
       - name: Install JavaScript dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Prepare test database
-        run: bin/rails db:test:prepare
-
-      - name: Precompile assets
-        env:
-          ASSET_PRECOMPILE: '1'
-          SECRET_KEY_BASE_DUMMY: '1'
-        run: bin/rails assets:precompile
-
-      - name: Run System Tests
-        run: bundle exec rspec spec/system
+      - name: Run tests
+        run: bin/test
