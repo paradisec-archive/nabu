@@ -13,6 +13,8 @@ module Nabu
     # S3's DeleteObjects API accepts at most 1000 keys per request.
     MAX_DELETE_KEYS = 1000
 
+    attr_reader :s3
+
     def initialize
       params = {
         region: 'ap-southeast-2'

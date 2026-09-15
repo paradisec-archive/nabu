@@ -5,7 +5,7 @@ namespace :test_namespaces do
 
     database = ActiveRecord::Base.connection
     search = Searchkick.client
-    s3 = Aws::S3::Resource.new(client: Nabu::Catalog.instance.instance_variable_get(:@s3))
+    s3 = Aws::S3::Resource.new(client: Nabu::Catalog.instance.s3)
 
     orphans = Nabu::TestNamespace.orphans(
       worktrees: ENV.fetch('WORKTREES').split("\n"),
@@ -14,19 +14,19 @@ namespace :test_namespaces do
       buckets: s3.buckets.map(&:name)
     )
 
-    deleters = {
-      databases: ->(name) { database.drop_database(name) },
-      indices: ->(name) { search.indices.delete(index: name) },
-      buckets: ->(name) { s3.bucket(name).delete! }
-    }
-
     delete = ENV['DELETE'].present?
     orphans.each do |kind, names|
       puts "Orphaned #{kind}:"
       puts '  (none)' if names.empty?
       names.sort.each do |name|
         puts "  #{name}"
-        deleters.fetch(kind).call(name) if delete
+        next unless delete
+
+        case kind
+        when :databases then database.drop_database(name)
+        when :indices then search.indices.delete(index: name)
+        when :buckets then s3.bucket(name).delete!
+        end
       end
     end
 
