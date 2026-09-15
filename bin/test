@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-# test:prepare installs JavaScript dependencies and builds assets, which takes seconds, so skip it when the builds are current
+# Skip test:prepare's slow JavaScript install and asset builds when the builds are current
 build=app/assets/builds/application.css
 if [ -f "$build" ] && [ -z "$(find app/javascript app/assets/stylesheets package.json pnpm-lock.yaml -newer "$build" -print -quit)" ]; then
   export SKIP_JS_BUILD=1 SKIP_CSS_BUILD=1

@@ -2,19 +2,18 @@ require 'rails_helper'
 
 # rubocop:disable RSpec/DescribeClass
 describe 'test namespace wiring' do
-  let(:namespace) { Nabu::TestNamespace.current }
+  let(:probe_env) { { 'RAILS_ENV' => 'test', 'NABU_TEST_NAMESPACE' => 'Wiring Probe', 'TEST_ENV_NUMBER' => '7' } }
 
-  it 'names the catalogue bucket from the namespace' do
-    expect(Rails.configuration.catalog_bucket).to eq(namespace.bucket)
-  end
+  # Both names are fixed at boot, so check them in a freshly booted app
+  it 'names the catalogue bucket and search indices from the namespace' do
+    script = 'puts Rails.configuration.catalog_bucket, Item.search_index.name'
+    output = IO.popen(probe_env, ['bin/rails', 'runner', script], chdir: Rails.root, err: File::NULL, &:read)
 
-  # Searchkick fixes each model's index name when the model loads, so the suffix must be set first.
-  it 'suffixes the search indices from the namespace' do
-    expect(Item.search_index.name).to eq(['items_test', namespace.index_suffix].compact.join('_'))
+    expect(output.split).to eq(%w[nabu-catalog-test-wiring-probe-7 items_test_wiring_probe_7])
   end
 
   describe 'config/database.yml' do
-    before { stub_const('ENV', ENV.to_h.merge('NABU_TEST_NAMESPACE' => 'Wiring Probe', 'TEST_ENV_NUMBER' => '7')) }
+    before { stub_const('ENV', ENV.to_h.merge(probe_env)) }
 
     def databases(env)
       Rails.application.config.database_configuration.fetch(env).transform_values { |role| role['database'] }

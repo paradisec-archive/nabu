@@ -10,7 +10,9 @@ aws_profile=()
 [ -n "$AWS_PROFILE" ] && aws_profile=(-e AWS_PROFILE="$AWS_PROFILE")
 
 # Linked git worktrees get their own test databases, indices and bucket. An explicit value, even empty, wins.
-if [ -z "${NABU_TEST_NAMESPACE+set}" ] && [ "$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)" != "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" ]; then
+git_dir=$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)
+git_common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+if [ -z "${NABU_TEST_NAMESPACE+set}" ] && [ "$git_dir" != "$git_common_dir" ]; then
   NABU_TEST_NAMESPACE=$(basename "$(git rev-parse --show-toplevel)")
 fi
 
