@@ -27,7 +27,8 @@ nabu_run bundle exec rubocop
 
 ## Running tests
 
-- Run tests with `nabu_run bin/test [paths]`. It prepares the test databases first.
+- Run tests with `nabu_run bin/test [paths]`. It prepares the test databases first. With no paths it runs the full suite in parallel;
+  pass paths while iterating.
 - Each worktree automatically gets its own test databases, search indices and catalogue bucket. Never call `docker compose` directly,
   and never invent database or index names.
 - `bin/test_prune` (on the host, not via `nabu_run`) lists test databases, indices and buckets left by removed worktrees; `--delete` drops them.

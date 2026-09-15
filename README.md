@@ -52,11 +52,16 @@ Test indices are recreated by the next `bin/test` run.
 ## Running tests
 
 ``` bash
-nabu_run bin/test                          # the whole suite
+nabu_run bin/test                          # the whole suite, in parallel
 nabu_run bin/test spec/models/item_spec.rb # specific files or examples
+nabu_run bin/test --only-failures          # what failed last time
 ```
 
 `bin/test` prepares the test databases before running RSpec, so a fresh checkout or a branch switch needs no manual step.
+
+With no arguments `bin/test` runs the suite across parallel workers with `parallel_tests`, each with its own databases, search indices and bucket
+(e.g. `nabu_test_2`). It uses 4 workers, or every core in CI; set `PARALLEL_TEST_PROCESSORS` to change that.
+Any argument runs plain RSpec in a single process.
 
 Each linked git worktree gets its own test namespace: its own test databases, search indices and catalogue bucket
 on the shared containers, named after the worktree (e.g. `nabu_test_<worktree>`). The main checkout keeps the plain `nabu_test` names.
