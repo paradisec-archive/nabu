@@ -1,0 +1,78 @@
+LangID	CountryID	NameType	Name
+aaa	NG	L	Ghotuo
+aaa	NG	LA	Ghotuọ
+aaa	NG	LA	Otuo
+aaa	NG	LA	Otwa
+bis	NC	L	Bislama
+bis	NC	LA	Bichelamar
+bis	VU	L	Bislama
+bis	VU	LA	Bichelamar
+gup	AU	D	Gumadir
+gup	AU	D	Gundjeipme
+gup	AU	D	Gunei
+gup	AU	D	Mayali
+gup	AU	D	Muralidban
+gup	AU	DA	Gundjeihmi
+gup	AU	DA	Kundjeyhmi
+gup	AU	DA	Kune
+gup	AU	DA	Kune Dulerayek
+gup	AU	DA	Kune Narayek
+gup	AU	DA	Manyallaluk Mayali
+gup	AU	L	Gunwinggu
+gup	AU	LA	Bininj Gun-Wok
+gup	AU	LA	Bininj Gunwok
+gup	AU	LA	Bininj Kunwok
+gup	AU	LA	Gunawitji
+gup	AU	LA	Gunwinjgu
+gup	AU	LA	Gunwinygu
+gup	AU	LA	Kuninjku
+gup	AU	LA	Kunwinjku
+gup	AU	LA	Kunwinjkuan
+gup	AU	LA	Kunwok
+pjt	AU	D	Pitjantjatjara
+pjt	AU	D	Yankunytjatjara
+pjt	AU	DA	Pithantjatjarra
+pjt	AU	L	Pitjantjatjara
+pjt	AU	LA	Pitjantjara
+pjt	AU	LA	Pitjantjatjarra
+tpi	PG	L	Tok Pisin
+tpi	PG	LA	Melanesian English
+tpi	PG	LA	Neomelanesian
+tpi	PG	LA	New Guinea Pidgin English
+tpi	PG	LA	Pidgin
+tpi	PG	LA	Pisin
+wbp	AU	L	Warlpiri
+wbp	AU	LA	Albura
+wbp	AU	LA	Alpira
+wbp	AU	LA	Alpiri
+wbp	AU	LA	Elpira
+wbp	AU	LA	Ilpara
+wbp	AU	LA	Ilpira
+wbp	AU	LA	Ilpirra
+wbp	AU	LA	Nambuda
+wbp	AU	LA	Ngalia
+wbp	AU	LA	Ngaliya
+wbp	AU	LA	Ngallia
+wbp	AU	LA	Ngardilpa
+wbp	AU	LA	Njambalatji
+wbp	AU	LA	Ulperra
+wbp	AU	LA	Waibry
+wbp	AU	LA	Wailbri
+wbp	AU	LA	Walbiri
+wbp	AU	LA	Walbrai
+wbp	AU	LA	Walbri
+wbp	AU	LA	Waljbiri
+wbp	AU	LA	Waljpiri
+wbp	AU	LA	Walmala
+wbp	AU	LA	Walmama
+wbp	AU	LA	Walmanba
+wbp	AU	LA	Walpari
+wbp	AU	LA	Walpiri
+wbp	AU	LA	Wanaeka
+wbp	AU	LA	Wanajaga
+wbp	AU	LA	Wanajaka
+wbp	AU	LA	Wanajeka
+wbp	AU	LA	Waneiga
+wbp	AU	LA	Waringari
+wbp	AU	LA	Wolperi
+wbp	AU	LA	Wolpirra
