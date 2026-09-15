@@ -12,8 +12,8 @@ describe Nabu::TestNamespace do
       expect(databases).to eq(%w[nabu_test nabu_test_cache nabu_test_queue])
     end
 
-    it 'has no index suffix' do
-      expect(namespace.index_suffix).to be_nil
+    it 'has no suffix' do
+      expect(namespace.suffix).to be_nil
     end
 
     it 'uses the plain bucket name' do
@@ -39,8 +39,8 @@ describe Nabu::TestNamespace do
       expect(databases).to eq(%w[nabu_test_1229_test_namespaces nabu_test_1229_test_namespaces_cache nabu_test_1229_test_namespaces_queue])
     end
 
-    it 'uses it as the index suffix' do
-      expect(namespace.index_suffix).to eq('1229_test_namespaces')
+    it 'uses it as the suffix' do
+      expect(namespace.suffix).to eq('1229_test_namespaces')
     end
 
     it 'appends it to the bucket with hyphens' do
@@ -52,7 +52,7 @@ describe Nabu::TestNamespace do
     let(:worker) { '3' }
 
     it 'uses the worker number as the suffix' do
-      expect([databases, namespace.index_suffix, namespace.bucket]).to eq([%w[nabu_test_3 nabu_test_3_cache nabu_test_3_queue], '3', 'nabu-catalog-test-3'])
+      expect([databases, namespace.suffix, namespace.bucket]).to eq([%w[nabu_test_3 nabu_test_3_cache nabu_test_3_queue], '3', 'nabu-catalog-test-3'])
     end
   end
 
@@ -61,17 +61,17 @@ describe Nabu::TestNamespace do
     let(:worker) { '2' }
 
     it 'joins them' do
-      expect([namespace.database(:cache), namespace.index_suffix, namespace.bucket]).to eq(%w[nabu_test_search_2_cache search_2 nabu-catalog-test-search-2])
+      expect([namespace.database(:cache), namespace.suffix, namespace.bucket]).to eq(%w[nabu_test_search_2_cache search_2 nabu-catalog-test-search-2])
     end
   end
 
   describe 'cleaning the worktree name' do
     it 'lowercases and replaces punctuation' do
-      expect(described_class.new(name: 'Issue 1204.Search-Labels').index_suffix).to eq('issue_1204_search_labels')
+      expect(described_class.new(name: 'Issue 1204.Search-Labels').suffix).to eq('issue_1204_search_labels')
     end
 
     it 'collapses repeated underscores and strips them from the ends' do
-      expect(described_class.new(name: '--Feature__!!x--').index_suffix).to eq('feature_x')
+      expect(described_class.new(name: '--Feature__!!x--').suffix).to eq('feature_x')
     end
   end
 
@@ -79,21 +79,21 @@ describe Nabu::TestNamespace do
     let(:thirty) { 'a' * 30 }
 
     it 'leaves names of up to 30 characters alone' do
-      expect(described_class.new(name: thirty).index_suffix).to eq(thirty)
+      expect(described_class.new(name: thirty).suffix).to eq(thirty)
     end
 
     it 'trims longer names to 30 characters ending in a 6-character hash' do
-      expect(described_class.new(name: "#{thirty}b").index_suffix).to match(/\Aa{23}_\h{6}\z/)
+      expect(described_class.new(name: "#{thirty}b").suffix).to match(/\Aa{23}_\h{6}\z/)
     end
 
     it 'keeps names sharing a long prefix distinct' do
-      suffixes = %w[one two].map { |tail| described_class.new(name: "agent-worktree-for-issue-1229-#{tail}").index_suffix }
+      suffixes = %w[one two].map { |tail| described_class.new(name: "agent-worktree-for-issue-1229-#{tail}").suffix }
 
       expect(suffixes.uniq.size).to eq(2)
     end
 
     it 'does not leave an underscore before the hash' do
-      expect(described_class.new(name: "#{'a' * 22}-#{'b' * 10}").index_suffix).to match(/\Aa{22}_\h{6}\z/)
+      expect(described_class.new(name: "#{'a' * 22}-#{'b' * 10}").suffix).to match(/\Aa{22}_\h{6}\z/)
     end
   end
 

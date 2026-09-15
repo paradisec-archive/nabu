@@ -65,5 +65,5 @@ Rails.application.configure do
   config.oni_url = 'http://localhost:7000'
 
   config.catalog_bucket = Nabu::TestNamespace.current.bucket
-  Searchkick.index_suffix = Nabu::TestNamespace.current.index_suffix
+  Searchkick.index_suffix = Nabu::TestNamespace.current.suffix
 end

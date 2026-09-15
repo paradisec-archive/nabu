@@ -1,8 +1,6 @@
 require 'digest'
 
-# Names the test databases, search indices and catalogue bucket so that runs from different
-# worktrees and parallel workers never share them. Loaded by config/database.yml before Rails
-# autoloading, so it must stay plain Ruby.
+# Separates test resources per worktree and parallel worker. Loaded by config/database.yml before autoloading, so plain Ruby only.
 module Nabu
   class TestNamespace
     MAX_NAME_LENGTH = 30
@@ -13,19 +11,19 @@ module Nabu
     end
 
     # nil for the main checkout and the first CI worker, which keep the plain names
-    attr_reader :index_suffix
+    attr_reader :suffix
 
     def initialize(name: nil, worker: nil)
       suffix = [clean(name.to_s), worker.to_s.delete('^0-9')].reject(&:empty?).join('_')
-      @index_suffix = suffix unless suffix.empty?
+      @suffix = suffix unless suffix.empty?
     end
 
     def database(role = nil)
-      ['nabu_test', index_suffix, role].compact.join('_')
+      ['nabu_test', suffix, role].compact.join('_')
     end
 
     def bucket
-      ['nabu-catalog-test', index_suffix&.tr('_', '-')].compact.join('-')
+      ['nabu-catalog-test', suffix&.tr('_', '-')].compact.join('-')
     end
 
     private
