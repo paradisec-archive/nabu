@@ -10,9 +10,17 @@ class LanguageRefreshService
   def run
     with_lock do
       run = LanguageRefreshRun.create!(started_at: Time.current)
-      STAGES.each { |stage_class| run_stage(run, stage_class.new(@fetcher)) }
-      run.update!(status: :completed, finished_at: Time.current, report: LanguageRefresh::Report.new(run).body)
-      LanguageRefreshMailer.with(run:).report.deliver_now
+
+      begin
+        STAGES.each { |stage_class| run_stage(run, stage_class.new(@fetcher)) }
+        run.update!(report: LanguageRefresh::Report.new(run).body)
+        LanguageRefreshMailer.with(run:).report.deliver_now
+        run.update!(status: :completed, finished_at: Time.current)
+      rescue StandardError
+        run.update!(status: :failed, finished_at: Time.current)
+        raise
+      end
+
       run
     end
   end
@@ -35,12 +43,11 @@ class LanguageRefreshService
     end
   end
 
-  # A stage that fails is recorded and reported, and never stops the stages after it.
   def run_stage(run, stage)
     entry = { 'started_at' => Time.current }
 
     stage.fetch
-    entry.merge!('version' => stage.version, 'rows' => stage.rows)
+    entry.merge!('version' => stage.version, 'rows' => stage.row_count)
 
     shrinkage = shrinkage(run, stage)
     return entry.merge!('status' => 'refused', 'error' => shrinkage) if shrinkage
@@ -60,9 +67,9 @@ class LanguageRefreshService
     previous = run.previous_rows(stage.source)
     return if previous.nil? || previous.zero?
 
-    drop = (previous - stage.rows).fdiv(previous)
+    drop = (previous - stage.row_count).fdiv(previous)
     return if drop <= SHRINK_LIMIT
 
-    "#{stage.rows} rows is #{(drop * 100).round(1)}% fewer than the #{previous} the last applied Run read"
+    "#{stage.row_count} rows is #{(drop * 100).round(1)}% fewer than the #{previous} the last applied Run read"
   end
 end
