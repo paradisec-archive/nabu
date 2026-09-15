@@ -14,8 +14,8 @@ module LanguageRefresh
     end
 
     def fetch
-      @codes = TabFile.parse(@fetcher.get(SIL_CODES_URL), %w[Id Ref_Name])
-      @index = TabFile.parse(@fetcher.get(ETHNOLOGUE_INDEX_URL), %w[LangID CountryID])
+      @codes = TabFile.new(@fetcher.get(SIL_CODES_URL), %w[Id Ref_Name])
+      @index = TabFile.new(@fetcher.get(ETHNOLOGUE_INDEX_URL), %w[LangID CountryID])
     end
 
     def version
@@ -43,12 +43,7 @@ module LanguageRefresh
         end
       end
 
-      links = add_country_links(existing)
-
-      {
-        counts: { new: created.size, renamed: renamed.size, country_links_added: links },
-        changes: { new: created, renamed: }
-      }
+      { changes: { new: created, renamed: }, counts: { country_links_added: add_country_links(existing) } }
     end
 
     private
@@ -61,7 +56,7 @@ module LanguageRefresh
         [language.id, country_id] if language && country_id
       end.uniq
 
-      held = CountriesLanguage.where(language_id: wanted.map(&:first)).pluck(:language_id, :country_id).to_set
+      held = CountriesLanguage.where(language_id: wanted.map(&:first).uniq).pluck(:language_id, :country_id).to_set
       added = wanted.reject { |pair| held.include?(pair) }
       CountriesLanguage.insert_all(added.map { |language_id, country_id| { language_id:, country_id: } }) if added.any?
       added.size
