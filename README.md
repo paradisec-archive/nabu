@@ -60,8 +60,8 @@ nabu_run bin/test --only-failures          # what failed last time
 `bin/test` prepares the test databases before running RSpec, so a fresh checkout or a branch switch needs no manual step.
 
 With no arguments `bin/test` runs the suite across parallel workers with `parallel_tests`, each with its own databases, search indices and bucket
-(e.g. `nabu_test_2`). It uses 4 workers, so that concurrent runs leave each other room; set `PARALLEL_TEST_PROCESSORS` to change that, as CI does to use every core.
-Any argument runs plain RSpec in a single process.
+(e.g. `nabu_test_2`). It uses 4 workers, so that concurrent runs leave each other room; set `PARALLEL_TEST_PROCESSORS` to change that,
+as CI does to use every core. Any argument runs plain RSpec in a single process.
 
 Each linked git worktree gets its own test namespace: its own test databases, search indices and catalogue bucket
 on the shared containers, named after the worktree (e.g. `nabu_test_<worktree>`). The main checkout keeps the plain `nabu_test` names.
