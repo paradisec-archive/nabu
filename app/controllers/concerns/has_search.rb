@@ -74,7 +74,7 @@ module HasSearch
   #
   # Both search families consume this one method so they cannot drift: the basic search
   # (Searchkick `where`, via basic_search_where) and the advanced search (raw OpenSearch
-  # `body`, via user_filter). spec/features/search_authorisation_consistency_spec.rb pins the
+  # `body`, via user_filter). spec/requests/search_authorisation_consistency_spec.rb pins the
   # result of this filtering to Ability for every read path.
   def visibility_clauses
     return :all if current_user&.admin?

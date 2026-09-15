@@ -6,7 +6,7 @@ require 'rails_helper'
 # would run in addition to the override and double-seed, breaking the expected
 # search counts.
 # rubocop:disable RSpec/LetSetup
-describe 'Item Search', :search do
+describe 'Item Search', :search, type: :system do
   describe 'Searching of items' do
     let(:search) do
       Item.search(search_term)
@@ -124,7 +124,7 @@ describe 'Item Search', :search do
 
     context 'when user is signed in' do
       before do
-        login_as user, scope: :user
+        sign_in user
         visit search_items_path
       end
 

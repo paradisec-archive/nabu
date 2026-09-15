@@ -41,6 +41,7 @@ describe 'Search visibility when access is granted and revoked', :search, type: 
       before { get search_collections_path }
 
       it 'hides the private collection' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(collection.identifier)
       end
     end
@@ -69,6 +70,7 @@ describe 'Search visibility when access is granted and revoked', :search, type: 
       end
 
       it 'hides the collection again' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(collection.identifier)
       end
     end
@@ -80,6 +82,7 @@ describe 'Search visibility when access is granted and revoked', :search, type: 
       end
 
       it 'hides its items again' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(item.full_identifier)
       end
     end
@@ -91,6 +94,7 @@ describe 'Search visibility when access is granted and revoked', :search, type: 
       before { get search_items_path }
 
       it 'hides the private item' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(item.full_identifier)
       end
     end
@@ -119,6 +123,7 @@ describe 'Search visibility when access is granted and revoked', :search, type: 
       end
 
       it 'hides the item again' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(item.full_identifier)
       end
     end

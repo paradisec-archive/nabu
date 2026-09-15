@@ -298,7 +298,7 @@ class Item < ApplicationRecord
   # Single field holding the deduped union of user ids allowed to see a private item. Consumed by
   # HasSearch#visibility_clauses to filter search results. This is the denormalised mirror of the
   # Item :read grants in app/models/ability.rb - keep the two in step (see access_user_ids in
-  # search_data). The consistency is pinned by spec/features/search_authorisation_consistency_spec.rb.
+  # search_data). The consistency is pinned by spec/requests/search_authorisation_consistency_spec.rb.
   def self.search_user_fields
     %i[access_user_ids]
   end

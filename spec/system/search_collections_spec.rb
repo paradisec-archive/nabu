@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Collection Search', :search do
+describe 'Collection Search', :search, type: :system do
   let!(:country1) { create(:country) }
   let!(:country2) { create(:country) }
   let!(:language) { create(:language) }
@@ -20,7 +20,7 @@ describe 'Collection Search', :search do
 
   context 'when user is signed in' do
     before do
-      login_as user, scope: :user
+      sign_in user
       visit search_collections_path
     end
 

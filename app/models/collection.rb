@@ -234,7 +234,7 @@ class Collection < ApplicationRecord
   # Search only ever answers "can this person read this?", so visibility collapses to a single
   # deduped union of everyone-who-can-read (see access_user_ids in search_data). This mirrors the
   # Collection :read grants in app/models/ability.rb - keep the two in step. The consistency is
-  # pinned by spec/features/search_authorisation_consistency_spec.rb.
+  # pinned by spec/requests/search_authorisation_consistency_spec.rb.
   def self.search_user_fields
     %i[access_user_ids]
   end
