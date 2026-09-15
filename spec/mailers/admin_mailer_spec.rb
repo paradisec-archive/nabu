@@ -12,7 +12,7 @@ describe AdminMailer, type: :mailer do
     let(:mail) { described_class.with(deleted_users:).unconfirmed_users_deleted_report }
 
     # Regression for NABU-Q5: `mail(subject:)` referenced a non-existent `subject` method
-    # (the local was `subject_line`), so the weekly cron always raised NoMethodError before
+    # (the local was `subject_line`), so the weekly report always raised NoMethodError before
     # the body even rendered.
     it 'sets a subject that includes the deleted count' do
       expect(mail.subject).to eq('[NABU Admin] Unconfirmed Users Deleted: 2 accounts removed')

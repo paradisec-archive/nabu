@@ -28,5 +28,13 @@ describe 'config/recurring.yml' do
 
     expect(schedules).to all(be_a(Fugit::Cron))
   end
+
+  # A recurring entry's queue overrides the job's own, so a mismatch would silently move a
+  # long-running maintenance job onto the user-facing worker.
+  it 'keeps every class-based task on the queue its job declares' do
+    tasks.values.select { |options| options[:class] }.each do |options|
+      expect(options[:queue]).to eq(options[:class].constantize.new.queue_name), "#{options[:class]} queue differs from recurring.yml"
+    end
+  end
 end
 # rubocop:enable RSpec/DescribeClass
