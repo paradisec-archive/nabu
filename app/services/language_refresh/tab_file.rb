@@ -4,17 +4,13 @@ module LanguageRefresh
   class TabFile
     attr_reader :rows, :version
 
-    def self.parse(response, required_columns)
-      new(File.basename(URI(response.url).path), response.body, response.version, required_columns)
-    end
-
-    def initialize(name, body, version, required_columns)
-      header, *lines = body.split(/\r?\n/).reject(&:blank?)
+    def initialize(response, required_columns)
+      header, *lines = response.body.split(/\r?\n/).reject(&:blank?)
       columns = header.to_s.split("\t")
       missing = required_columns - columns
-      raise Fetcher::FetchError, "#{name} is missing columns #{missing.join(', ')}" if missing.any?
+      raise Fetcher::FetchError, "#{File.basename(URI(response.url).path)} is missing columns #{missing.join(', ')}" if missing.any?
 
-      @version = version
+      @version = response.version
       @rows = lines.map { |line| columns.zip(line.split("\t", -1)).to_h }
     end
   end

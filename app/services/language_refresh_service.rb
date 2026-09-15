@@ -11,8 +11,7 @@ class LanguageRefreshService
     with_lock do
       run = LanguageRefreshRun.create!(started_at: Time.current)
       STAGES.each { |stage_class| run_stage(run, stage_class.new(@fetcher)) }
-      run.update!(status: :completed, finished_at: Time.current)
-      run.update!(report: LanguageRefresh::Report.new(run).body)
+      run.update!(status: :completed, finished_at: Time.current, report: LanguageRefresh::Report.new(run).body)
       LanguageRefreshMailer.with(run:).report.deliver_now
       run
     end
@@ -23,9 +22,7 @@ class LanguageRefreshService
   # A MySQL named lock belongs to the session, so a Run that dies releases it with its connection.
   def with_lock
     ActiveRecord::Base.with_connection do |connection|
-      lock = connection.quote(LOCK_NAME)
-
-      unless connection.select_value("SELECT GET_LOCK(#{lock}, 0)") == 1
+      unless connection.get_advisory_lock(LOCK_NAME)
         Rails.logger.warn('Language Refresh skipped: another Run holds the lock')
         return
       end
@@ -33,7 +30,7 @@ class LanguageRefreshService
       begin
         yield
       ensure
-        connection.select_value("SELECT RELEASE_LOCK(#{lock})")
+        connection.release_advisory_lock(LOCK_NAME)
       end
     end
   end

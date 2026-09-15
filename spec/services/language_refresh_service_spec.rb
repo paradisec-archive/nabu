@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'sentry/test_helper'
 
-describe LanguageRefreshService, :webmock do
+describe LanguageRefreshService do
   let(:fixtures) { Rails.root.join('spec/support/data/language_refresh') }
   let(:sil_codes_url) { 'https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab' }
   let(:ethnologue_index_url) { 'https://www.ethnologue.com/codes/LanguageIndex.tab' }
@@ -60,8 +60,10 @@ describe LanguageRefreshService, :webmock do
         'status' => 'applied',
         'version' => { 'iso-639-3.tab' => '2026-07-22', 'LanguageIndex.tab' => '2026-02-27' },
         'rows' => 34,
-        'counts' => { 'new' => 32, 'renamed' => 1, 'country_links_added' => 5 }
+        'counts' => { 'country_links_added' => 5 }
       )
+      expect(run.sources.dig('iso639_3', 'changes', 'new').size).to eq(32)
+      expect(run.sources.dig('iso639_3', 'changes', 'renamed')).to eq([['tpi', 'Pisin, Tok', 'Tok Pisin']])
     end
 
     it 'emails one report with the counts in the subject, a section per Source and a long list attached as CSV' do
@@ -84,12 +86,12 @@ describe LanguageRefreshService, :webmock do
       expect(rows.first.to_h).to eq('code' => 'aaa', 'name' => 'Ghotuo')
       expect(mail.attachments['iso639_3-renamed.csv']).to be_nil
 
-      expect(LanguageRefreshRun.sole.report.rstrip).to eq(body.rstrip)
+      expect(LanguageRefreshRun.sole.report).to eq(body.chomp)
     end
   end
 
   it 'sends a report even when nothing changed' do
-    2.times { described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0)).run }
+    2.times { refresh.run }
 
     mail = ActionMailer::Base.deliveries.last
     expect(ActionMailer::Base.deliveries.size).to eq(2)
@@ -146,7 +148,7 @@ describe LanguageRefreshService, :webmock do
 
   describe 'the in-use Language count', :no_catalog_upload do
     it 'counts the Languages the facet shows and warns once they pass 80% of its cap' do
-      stub_const('Api::V1::OniController::LANGUAGE_FACET_LIMIT', 3)
+      stub_const('Oni::SearchCapabilities::LANGUAGE_FACET_LIMIT', 3)
       content, shared, other_content, collection_only, subject_only = create_list(:language, 5)
       collection = create(:collection, languages: [shared, collection_only])
       create(:item, collection:, content_languages: [content, shared], subject_languages: [subject_only])
@@ -163,7 +165,7 @@ describe LanguageRefreshService, :webmock do
       refresh.run
 
       body = body_of(ActionMailer::Base.deliveries.sole)
-      expect(body).to include("In-use Languages\n0 of the #{Api::V1::OniController::LANGUAGE_FACET_LIMIT} the language facet holds.")
+      expect(body).to include("In-use Languages\n0 of the #{Oni::SearchCapabilities::LANGUAGE_FACET_LIMIT} the language facet holds.")
       expect(body).not_to include('WARNING')
     end
   end
@@ -208,7 +210,7 @@ describe LanguageRefreshService, :webmock do
       refresh.run
       serve_sil(twenty_seven_codes)
 
-      described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0)).run
+      refresh.run
 
       expect(Language.find_by(code: 'aaa').name).to eq('Ghotuo')
       entry = LanguageRefreshRun.last.sources['iso639_3']
@@ -222,7 +224,7 @@ describe LanguageRefreshService, :webmock do
       serve_sil(thirty_codes)
       refresh.run
       serve_sil(twenty_seven_codes)
-      2.times { described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0)).run }
+      2.times { refresh.run }
 
       expect(LanguageRefreshRun.last.sources.dig('iso639_3', 'status')).to eq('refused')
     end
