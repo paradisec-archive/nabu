@@ -6,29 +6,29 @@ module Nabu
     MAX_NAME_LENGTH = 30
     HASH_LENGTH = 6
 
-    DATABASE = 'nabu_test'.freeze
-    INDEX_ENV = 'test'.freeze
-    BUCKET = 'nabu-catalog-test'.freeze
+    DATABASE_PREFIX = 'nabu_test'.freeze
+    BUCKET_PREFIX = 'nabu-catalog-test'.freeze
+    # Searchkick's <model>_<env>, with the models named so a worktree name ending in "test" can't pass for one
+    INDEX_PREFIX = '(collections|items|essences)_test'.freeze
+    INDEX_TIMESTAMP = '_\d{17}'.freeze
+    # At most 3 digits, so hand-made databases named after issues aren't mistaken for the main checkout's workers
+    WORKER_PATTERN = '(_\d{1,3})?'.freeze
 
-    RESOURCE_PATTERNS = {
-      databases: /\A#{DATABASE}_/,
-      indices: /_#{INDEX_ENV}_.+_\d{17}\z/,
-      buckets: /\A#{BUCKET}-/
+    NAMESPACED_PATTERNS = {
+      databases: /\A#{DATABASE_PREFIX}_/,
+      indices: /\A#{INDEX_PREFIX}_.+#{INDEX_TIMESTAMP}\z/,
+      buckets: /\A#{BUCKET_PREFIX}-/
     }.freeze
 
     def self.current
       new(name: ENV['NABU_TEST_NAMESPACE'], worker: ENV['TEST_ENV_NUMBER'])
     end
 
-    # At most 3 digits, so hand-made databases named after issues aren't mistaken for the main checkout's workers
-    WORKER = '(_\d{1,3})?'.freeze
-
-    # Resources named like test namespaces that belong neither to the main checkout nor to a live worktree
     def self.orphans(worktrees:, **resources)
       live = [nil, *worktrees].map { |worktree| new(name: worktree) }
 
       resources.to_h do |kind, names|
-        [kind, names.select { |name| name.match?(RESOURCE_PATTERNS.fetch(kind)) && live.none? { |namespace| namespace.owns?(kind, name) } }]
+        [kind, names.select { |name| name.match?(NAMESPACED_PATTERNS.fetch(kind)) && live.none? { |namespace| namespace.owns?(kind, name) } }]
       end
     end
 
@@ -41,11 +41,11 @@ module Nabu
     end
 
     def database(role = nil)
-      [DATABASE, suffix, role].compact.join('_')
+      [DATABASE_PREFIX, suffix, role].compact.join('_')
     end
 
     def bucket
-      [BUCKET, suffix&.tr('_', '-')].compact.join('-')
+      [BUCKET_PREFIX, suffix&.tr('_', '-')].compact.join('-')
     end
 
     def owns?(kind, name)
@@ -56,9 +56,9 @@ module Nabu
 
     def owned_pattern(kind)
       case kind
-      when :databases then /\A#{database}#{WORKER}(_cache|_queue)?\z/
-      when :indices then /\A[a-z_]+_#{[INDEX_ENV, suffix].compact.join('_')}#{WORKER}_\d{17}\z/
-      when :buckets then /\A#{bucket}#{WORKER.tr('_', '-')}\z/
+      when :databases then /\A#{database}#{WORKER_PATTERN}(_cache|_queue)?\z/
+      when :indices then /\A#{[INDEX_PREFIX, suffix].compact.join('_')}#{WORKER_PATTERN}#{INDEX_TIMESTAMP}\z/
+      when :buckets then /\A#{bucket}#{WORKER_PATTERN.tr('_', '-')}\z/
       end
     end
 

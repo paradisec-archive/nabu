@@ -3,14 +3,14 @@ namespace :test_namespaces do
   task prune: :environment do
     abort 'Only prunes the local development containers' unless Rails.env.development?
 
-    database = ActiveRecord::Base.connection
-    search = Searchkick.client
+    connection = ActiveRecord::Base.connection
+    search_client = Searchkick.client
     s3 = Aws::S3::Resource.new(client: Nabu::Catalog.instance.s3)
 
     orphans = Nabu::TestNamespace.orphans(
       worktrees: ENV.fetch('WORKTREES').split("\n"),
-      databases: database.select_values('SHOW DATABASES'),
-      indices: search.cat.indices(h: 'index', format: 'json').pluck('index'),
+      databases: connection.select_values('SHOW DATABASES'),
+      indices: search_client.cat.indices(h: 'index', format: 'json').pluck('index'),
       buckets: s3.buckets.map(&:name)
     )
 
@@ -23,8 +23,8 @@ namespace :test_namespaces do
         next unless delete
 
         case kind
-        when :databases then database.drop_database(name)
-        when :indices then search.indices.delete(index: name)
+        when :databases then connection.drop_database(name)
+        when :indices then search_client.indices.delete(index: name)
         when :buckets then s3.bucket(name).delete!
         end
       end

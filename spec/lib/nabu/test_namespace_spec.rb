@@ -156,6 +156,12 @@ describe Nabu::TestNamespace do
         expect(orphans(indices:)[:indices]).to be_empty
       end
 
+      it "returns those of a removed worktree whose name could be mistaken for the main checkout's" do
+        indices = %w[items_test_load_test_20260915052833402]
+
+        expect(orphans(indices:)[:indices]).to eq(indices)
+      end
+
       it 'returns the hand-made agent indices' do
         indices = %w[collections_test_job1198_20260914232710974 essences_test_w1204_20260915045922556]
 
