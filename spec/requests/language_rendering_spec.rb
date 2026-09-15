@@ -1,6 +1,5 @@
 require 'rails_helper'
 
-# Wherever a person reads a Language in Nabu's own pages and feeds, it reads as the Label and links to the Source URI.
 describe 'Language rendering', type: :request do
   let(:iso) { create(:language, code: 'wbp', name: 'Warlpiri') }
   let(:glottolog) { create(:language, :glottolog_dialect, code: 'laja1237', name: 'Lajamanu Warlpiri') }

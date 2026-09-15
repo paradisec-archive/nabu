@@ -4,15 +4,14 @@ class LanguagesController < ApplicationController
   respond_to :json
 
   PICKER_LIMIT = 20
-  SPECIAL_CODES = %w[mul und zxx].freeze
 
   def index
     hits = @languages.picker_search(params[:term] || params[:q]).limit(PICKER_LIMIT)
-    hits = hits.where(id: CountriesLanguage.where(country_id: params[:country_ids]).select(:language_id)) if params[:country_ids]
+    hits = hits.in_countries(params[:country_ids]) if params[:country_ids]
 
-    languages = (hits.to_a + Language.iso639_3.in_order_of(:code, SPECIAL_CODES).to_a).uniq
+    languages = (hits.to_a + Language.special.to_a).uniq
 
-    render json: { results: languages.map { |l| { value: l.id, label: l.label, description: ('Retired' if l.retired) }.compact } }
+    render json: { results: languages.map { |language| { value: language.id, label: language.label, description: language.picker_description }.compact } }
   end
 
   def show
