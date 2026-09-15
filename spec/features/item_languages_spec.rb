@@ -23,4 +23,18 @@ describe 'Tagging an item with languages', :js do
     expect(page).to have_text('Item was successfully updated.')
     expect(item.reload.content_languages).to include(dialect, variety)
   end
+
+  it 'marks a retired language as retired on its chip, and keeps the mark when copied' do
+    retired = create(:language, code: 'wrp', name: 'Old Warlpiri', retired: true)
+    item.update!(content_languages: [retired])
+
+    visit edit_collection_item_path(item.collection, item)
+    click_on 'Copy from Content language'
+
+    %w[Content Subject].each do |field|
+      within(:xpath, "//label[contains(text(),'#{field} language')]/ancestor::tr") do
+        expect(page).to have_css(".choices__list--multiple .choices__item[data-label-description='Retired']", text: retired.label)
+      end
+    end
+  end
 end

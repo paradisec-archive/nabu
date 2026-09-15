@@ -22,8 +22,7 @@
           - collection.countries.sort_by(&:name).each do |country|
             = country.name
         %td
-          - collection.languages.sort_by(&:name).each do |language|
-            = language.label
+          = collection.languages.sort_by(&:name).map(&:label).join(', ')
         %td= collection.created_at.to_date
         %td= collection.updated_at.to_date
         %td= collection.university_name

@@ -6,6 +6,18 @@ interface SearchDetail {
   value: string;
 }
 
+interface SearchResult {
+  value: string | number;
+  label: string;
+  description?: string;
+}
+
+interface PickerChoice {
+  value: string;
+  label: string;
+  labelDescription?: string;
+}
+
 const instanceMap = new Map<HTMLSelectElement, Choices>();
 
 const debounce = (fn: (...args: unknown[]) => void, delay: number) => {
@@ -51,9 +63,9 @@ const setupAjaxSearch = (element: HTMLSelectElement, instance: Choices) => {
 
     try {
       const response = await fetch(`${url}?${params.toString()}`, { signal: abortController.signal });
-      const data = (await response.json()) as { results: { value: string | number; label: string; description?: string }[] };
+      const data = (await response.json()) as { results: SearchResult[] };
 
-      let choices: { value: string; label: string; labelDescription?: string }[] = data.results.map(({ value, label, description }) => ({
+      let choices: PickerChoice[] = data.results.map(({ value, label, description }) => ({
         value: String(value),
         label,
         labelDescription: description,
