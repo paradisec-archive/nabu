@@ -51,11 +51,12 @@ const setupAjaxSearch = (element: HTMLSelectElement, instance: Choices) => {
 
     try {
       const response = await fetch(`${url}?${params.toString()}`, { signal: abortController.signal });
-      const data = (await response.json()) as { results: { value: string | number; label: string }[] };
+      const data = (await response.json()) as { results: { value: string | number; label: string; description?: string }[] };
 
-      let choices: { value: string; label: string }[] = data.results.map(({ value, label }) => ({
+      let choices: { value: string; label: string; labelDescription?: string }[] = data.results.map(({ value, label, description }) => ({
         value: String(value),
         label,
+        labelDescription: description,
       }));
 
       if (hasTags && searchTerm.trim() !== '') {

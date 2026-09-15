@@ -76,7 +76,7 @@ class CustomFormBuilder < ActionView::Helpers::FormBuilder
     class_name = options.delete 'class'
     languages = @object.send(attribute.to_s.sub('_id', '').to_sym)
 
-    option_pairs = languages.map { |language| [language.name, language.id] }
+    option_pairs = languages.map { |language| [language.label, language.id] }
 
     select(attribute, option_pairs, { multiple: true }, { data: html_data, class: "#{class_name} choices-select language" })
   end
