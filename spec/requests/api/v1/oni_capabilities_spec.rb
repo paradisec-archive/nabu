@@ -23,6 +23,15 @@ describe 'Oni capabilities', type: :request do
     expect(search['filters'].keys).to include(*search['facets'].keys)
   end
 
+  it 'aggregates search results on exactly the facets it declares', :no_catalog_upload, :search do
+    get capabilities_path
+    declared = response.parsed_body.dig('search', 'facets').keys
+
+    post '/api/v1/oni/search', params: { query: '*' }
+
+    expect(response.parsed_body['facets'].keys).to match_array(declared)
+  end
+
   # Spec 0.4.0 requires both members of every implementation, read-only ones included.
   it 'declares itself read-only, with no deposit fields beyond the supported flag' do
     get capabilities_path

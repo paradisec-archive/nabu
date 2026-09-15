@@ -47,6 +47,8 @@ class Language < ApplicationRecord
     'austlang' => 'https://collection.aiatsis.gov.au/austlang/language/%s'
   }.freeze
 
+  LABEL_ATTRIBUTES = %w[name code source dialect].freeze
+
   PICKER_RANK = <<~SQL.squish.freeze
     CASE
       WHEN languages.code = :term THEN 0
@@ -61,6 +63,8 @@ class Language < ApplicationRecord
   SPECIAL_CODES = %w[mul und zxx].freeze
 
   has_paper_trail
+
+  after_update_commit :reindex_tagged_records, if: -> { saved_changes.keys.intersect?(LABEL_ATTRIBUTES) }
 
   enum :source, SOURCES, validate: true
 
@@ -136,6 +140,10 @@ versions]
   end
 
   private
+
+  def reindex_tagged_records
+    LanguageReindexJob.perform_later(self)
+  end
 
   def code_matches_its_source
     return if code.blank?

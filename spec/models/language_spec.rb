@@ -140,6 +140,29 @@ describe Language, type: :model do
     end
   end
 
+  describe 'keeping the search index in step', :no_catalog_upload do
+    let!(:language) { create(:language, name: 'Warlpiri', code: 'wbp') }
+
+    {
+      name: { name: 'Walpiri' },
+      code: { code: 'wbq' },
+      source: { source: :glottolog, code: 'warl1254' },
+      dialect: { dialect: true }
+    }.each do |attribute, changes|
+      it "enqueues a reindex when #{attribute} changes" do
+        expect { language.update!(changes) }.to have_enqueued_job(LanguageReindexJob).with(language).exactly(:once)
+      end
+    end
+
+    it 'enqueues nothing when only the box changes' do
+      expect { language.update!(north_limit: -18.0, south_limit: -24.0, west_limit: 128.0, east_limit: 134.0) }.not_to have_enqueued_job(LanguageReindexJob)
+    end
+
+    it 'enqueues nothing for a new Language, which nothing is tagged with yet' do
+      expect { create(:language) }.not_to have_enqueued_job(LanguageReindexJob)
+    end
+  end
+
   describe 'equivalents' do
     it 'reaches its equivalents from either side of the pair' do
       iso = create(:language, code: 'wbp')

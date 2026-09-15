@@ -284,8 +284,7 @@ class Essence < ApplicationRecord
       extracted_text:,
       segments: extracted_segments,
 
-      languages: item.content_languages.map(&:name).uniq,
-      languages_with_code: item.content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
+      languages_with_code: item.content_languages.map(&:label).uniq,
       countries: item.countries.map(&:name).uniq,
       collector_name: item.collector_name,
 

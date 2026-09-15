@@ -351,6 +351,7 @@ class Item < ApplicationRecord
     user_ids = users.map(&:id)
     collection_admin_ids = collection.admins.map(&:id)
     collection_user_ids = collection.users.map(&:id)
+    content_language_labels = content_languages.map(&:label).uniq
 
     data = {
       # Full text plus advanced search
@@ -379,11 +380,9 @@ class Item < ApplicationRecord
       collector_sortname:,
       university_name:,
       operator_name:,
-      languages: content_languages.map(&:name).uniq,
-      languages_with_code: content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
-      content_languages: content_languages.map(&:name).uniq,
-      content_languages_code: content_languages.map(&:code).uniq,
-      subject_languages: subject_languages.map(&:name).uniq,
+      languages_with_code: content_language_labels,
+      content_languages: content_language_labels,
+      subject_languages: subject_languages.map(&:label).uniq,
       countries: countries.map(&:name).uniq,
       country_codes: countries.map(&:code).uniq,
       data_categories: data_categories.map(&:name).uniq,
