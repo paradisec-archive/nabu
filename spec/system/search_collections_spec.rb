@@ -126,4 +126,36 @@ describe 'Collection Search', :search, type: :system do
       end
     end
   end
+
+  describe 'the language facet' do
+    let(:iso) { create(:language, name: 'Warlpiri', code: 'wbp') }
+    let(:glottolog) { create(:language, :glottolog, name: 'Warlpiri', code: 'warl1254') }
+    let!(:iso_collection) { create(:collection, :reindex, languages: [iso]) }
+    let!(:glottolog_collection) { create(:collection, :reindex, languages: [glottolog]) }
+
+    before do
+      login_as user, scope: :user
+      visit search_collections_path
+    end
+
+    it 'lists each Language by its Label, keeping same-named Sources apart' do
+      within '#facets' do
+        expect(page).to have_link('Warlpiri (wbp) · ISO 639-3')
+        expect(page).to have_link('Warlpiri (warl1254) · Glottolog')
+
+        click_link 'Warlpiri (warl1254) · Glottolog'
+      end
+
+      expect(page).to have_text('1 search result')
+      expect(page).to have_text(glottolog_collection.identifier)
+      expect(page).to have_no_text(iso_collection.identifier)
+    end
+
+    it 'still finds collections by a free-text search for the language name' do
+      fill_in 'search', with: 'Warlpiri'
+      click_button 'Search'
+
+      expect(page).to have_text('2 search results')
+    end
+  end
 end
