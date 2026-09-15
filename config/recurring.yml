@@ -39,3 +39,7 @@ production:
     class: DeleteUnconfirmedUsersJob
     queue: maintenance
     schedule: "0 16 * * thu"
+  language_refresh:
+    class: LanguageRefreshJob
+    queue: maintenance
+    schedule: "0 3 * * tue#1 Australia/Sydney"

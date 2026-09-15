@@ -139,4 +139,5 @@ end
 group :test do
   gem 'factory_bot_rails'
   gem 'json_schemer' # Validate DOI against schema
+  gem 'webmock'
 end

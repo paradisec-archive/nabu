@@ -22,4 +22,21 @@ class LanguageRefreshRun < ApplicationRecord
   enum :status, STATUSES, validate: true
 
   validates :status, presence: true
+
+  after_initialize { self.sources ||= {} }
+
+  def record_source(source, entry)
+    update!(sources: sources.merge(source => entry))
+  end
+
+  # The row count a Source had the last time a Run applied it, the baseline for the shrink guard.
+  def previous_rows(source)
+    earlier = self.class.where(id: ...id).order(id: :desc).select(:id, :sources)
+    earlier.each do |run|
+      entry = run.sources[source]
+      return entry['rows'] if entry&.dig('status') == 'applied'
+    end
+
+    nil
+  end
 end

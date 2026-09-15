@@ -11,6 +11,13 @@ describe 'config/recurring.yml' do
     expect(tasks).not_to be_empty
   end
 
+  it 'runs the Language Refresh early on the first Tuesday of each month in Sydney' do
+    refresh = tasks.values.find { |options| options[:class] == 'LanguageRefreshJob' }
+    cron = Fugit.parse_cron(refresh[:schedule])
+
+    expect(cron.next_time(Time.utc(2026, 9, 15)).to_t.in_time_zone('Australia/Sydney')).to eq(Time.find_zone('Australia/Sydney').local(2026, 10, 6, 3))
+  end
+
   it 'gives every task either a class or a command' do
     expect(tasks.values).to all(include(:class).or(include(:command)))
   end

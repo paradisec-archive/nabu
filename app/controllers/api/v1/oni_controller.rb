@@ -1,6 +1,8 @@
 module Api
   module V1
     class OniController < ApiController
+      LANGUAGE_FACET_LIMIT = 2000
+
       skip_before_action :enforce_terms_acceptance, only: %i[capabilities entities entity metadata search]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
@@ -291,7 +293,7 @@ module Api
         aggs = {
           collection_title: {},
           access_condition_name: {},
-          languages_with_code: { limit: 2000 },
+          languages_with_code: { limit: LANGUAGE_FACET_LIMIT },
           countries: {},
           collector_name: {},
           encodingFormat: {},
