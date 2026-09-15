@@ -48,8 +48,8 @@ class LanguageEquivalent < ApplicationRecord
     [one_id, other_id].minmax
   end
 
-  def other_than(one)
-    language_id == one.id ? related_language : language
+  def other_than(this_language)
+    language_id == this_language.id ? related_language : language
   end
 
   private

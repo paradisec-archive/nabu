@@ -363,7 +363,7 @@ type LanguageEquivalent {
 }
 
 """
-The registry that publishes a language code
+The Source a language code comes from
 """
 enum LanguageSource {
   """
