@@ -15,12 +15,12 @@ require 'cancan/matchers'
 # every level (item edit/read, collection edit/read) so the union is verified to mirror all four
 # read paths for items, collections and essences. See the cross-reference notes in ability.rb and
 # app/controllers/concerns/has_search.rb.
-describe 'Search/Ability authorisation consistency', :search do
+describe 'Search/Ability authorisation consistency', :search, type: :request do
   let!(:user) { create(:user) }
   let!(:collection) { create(:collection, identifier: 'PRIVCOLL', private: true) }
   let!(:item) { create(:item, identifier: 'SECRETITEM', collection:, private: true) }
 
-  before { login_as user, scope: :user }
+  before { sign_in user }
 
   # Make whatever the reindex callbacks have already written visible to search, without
   # reindexing ourselves - that way we exercise the production callbacks, not the test setup.
@@ -32,7 +32,7 @@ describe 'Search/Ability authorisation consistency', :search do
   # Advanced search builds a query from text fields, so give it a term that matches the item;
   # with no term the result list is not rendered. The user filter still applies on top.
   def visit_advanced_item_search
-    visit advanced_search_items_path(full_identifier: item.identifier)
+    get advanced_search_items_path(full_identifier: item.identifier)
   end
 
   # Every relationship that ability.rb grants :read on a private Item through.
@@ -57,10 +57,10 @@ describe 'Search/Ability authorisation consistency', :search do
     end
 
     context 'when no grant exists, in basic item search' do
-      before { visit search_items_path }
+      before { get search_items_path }
 
       it 'hides the item' do
-        expect(page).to have_no_text(item.full_identifier)
+        expect(response.body).to have_no_text(item.full_identifier)
       end
     end
 
@@ -68,7 +68,7 @@ describe 'Search/Ability authorisation consistency', :search do
       before { visit_advanced_item_search }
 
       it 'hides the item' do
-        expect(page).to have_no_text(item.full_identifier)
+        expect(response.body).to have_no_text(item.full_identifier)
       end
     end
 
@@ -84,13 +84,13 @@ describe 'Search/Ability authorisation consistency', :search do
         end
 
         it 'is visible in basic item search' do
-          visit search_items_path
-          expect(page).to have_text(item.full_identifier)
+          get search_items_path
+          expect(response.body).to have_text(item.full_identifier)
         end
 
         it 'is visible in advanced item search' do
           visit_advanced_item_search
-          expect(page).to have_text(item.full_identifier)
+          expect(response.body).to have_text(item.full_identifier)
         end
       end
     end
@@ -144,10 +144,10 @@ describe 'Search/Ability authorisation consistency', :search do
     end
 
     context 'when no grant exists, in basic collection search' do
-      before { visit search_collections_path }
+      before { get search_collections_path }
 
       it 'hides the collection' do
-        expect(page).to have_no_text(collection.identifier)
+        expect(response.body).to have_no_text(collection.identifier)
       end
     end
 
@@ -163,8 +163,8 @@ describe 'Search/Ability authorisation consistency', :search do
         end
 
         it 'is visible in basic collection search' do
-          visit search_collections_path
-          expect(page).to have_text(collection.identifier)
+          get search_collections_path
+          expect(response.body).to have_text(collection.identifier)
         end
       end
     end

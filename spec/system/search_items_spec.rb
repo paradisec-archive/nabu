@@ -176,7 +176,6 @@ describe 'Item Search', :search do
               expect(page).to have_no_text(country2.name)
               fill_in 'search', with: item2.identifier
               click_button 'Search'
-              sleep 1
 
               expect(page).to have_text(country2.name)
               expect(page).to have_no_text(country1.name)
