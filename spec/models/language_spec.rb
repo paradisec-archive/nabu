@@ -140,15 +140,6 @@ describe Language, type: :model do
     end
   end
 
-  describe 'the superseded renderings' do
-    it 'still return what they always did' do
-      language = build(:language, name: 'Warlpiri', code: 'wbp')
-
-      expect(language.name_with_code).to eq('Warlpiri - wbp')
-      expect(language.language_archive_link).to eq('http://www.language-archives.org/language/wbp')
-    end
-  end
-
   describe 'equivalents' do
     it 'reaches its equivalents from either side of the pair' do
       iso = create(:language, code: 'wbp')

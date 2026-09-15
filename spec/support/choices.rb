@@ -19,7 +19,7 @@ module CapybaraExt
 
     # Find the Choices container by label or placeholder
     container = begin
-      find(:xpath, "//label[contains(text(),'#{placeholder}')]/ancestor::tr//div[contains(@class,'choices')]", wait: 5)
+      find(:xpath, "//label[contains(text(),'#{placeholder}')]/ancestor::tr//div[contains(concat(' ',normalize-space(@class),' '),' choices ')]", wait: 5)
     rescue Capybara::ElementNotFound
       find("[data-placeholder='#{placeholder}']", wait: 5).ancestor('.choices')
     end
