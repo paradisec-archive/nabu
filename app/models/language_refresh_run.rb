@@ -31,12 +31,11 @@ class LanguageRefreshRun < ApplicationRecord
 
   # The row count a Source had the last time a Run applied it, the baseline for the shrink guard.
   def previous_rows(source)
-    earlier = self.class.where(id: ...id).order(id: :desc).select(:id, :sources)
-    earlier.each do |run|
-      entry = run.sources[source]
-      return entry['rows'] if entry&.dig('status') == 'applied'
-    end
+    path = ->(key) { self.class.connection.quote("$.#{source}.#{key}") }
 
-    nil
+    self.class.where(id: ...id)
+      .where(Arel.sql("sources->>#{path.call('status')} = 'applied'"))
+      .order(id: :desc)
+      .pick(Arel.sql("CAST(sources->>#{path.call('rows')} AS UNSIGNED)"))
   end
 end

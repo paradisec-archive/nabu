@@ -2,7 +2,7 @@ class LanguageRefreshMailer < ApplicationMailer
   def report
     run = params[:run]
     report = LanguageRefresh::Report.new(run)
-    @body = run.report.presence || report.body
+    @body = run.report
 
     report.attachments.each { |name, csv| attachments[name] = { mime_type: 'text/csv', content: csv } }
 
