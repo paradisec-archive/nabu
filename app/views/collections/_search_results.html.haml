@@ -23,7 +23,7 @@
             = country.name
         %td
           - collection.languages.sort_by(&:name).each do |language|
-            = language.name
+            = language.label
         %td= collection.created_at.to_date
         %td= collection.updated_at.to_date
         %td= collection.university_name
