@@ -49,7 +49,7 @@ ActiveAdmin.register Language do
     column :name
     column :dialect
     column :retired
-    column('Box') { |language| status_tag language.has_all_boundaries? }
+    column('Bounding box') { |language| status_tag language.has_all_boundaries? }
     actions
   end
 

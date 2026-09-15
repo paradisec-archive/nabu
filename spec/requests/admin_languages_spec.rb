@@ -15,7 +15,18 @@ describe 'Admin languages', type: :request do
     it 'shows code, source, name, dialect, retired and whether a box exists' do
       headers = Nokogiri::HTML(response.body).css('table.data-table th').map { |th| th.text.strip }
 
-      expect(headers).to include('Code', 'Source', 'Name', 'Dialect', 'Retired', 'Box')
+      expect(headers).to include('Code', 'Source', 'Name', 'Dialect', 'Retired', 'Bounding box')
+    end
+
+    it 'marks only the rows with all four limits as having a box' do
+      table = Nokogiri::HTML(response.body).at_css('table.data-table')
+      headers = table.css('th').map { |th| th.text.strip }
+      boxes = table.css('tbody tr').to_h do |tr|
+        cells = tr.css('td').map { |td| td.text.strip }
+        [cells[headers.index('Code')], cells[headers.index('Bounding box')]]
+      end
+
+      expect(boxes).to eq('wbp' => 'Yes', 'lajo1234' => 'No', 'C15' => 'No')
     end
 
     it 'renders each Source by name' do
@@ -49,6 +60,10 @@ describe 'Admin languages', type: :request do
       expect do
         post '/admin/languages', params: { language: { code: 'zzz', source: 'iso639_3', name: 'Invented' } }
       end.not_to change(Language, :count)
+    end
+
+    it 'refuses a destroy' do
+      expect { delete "/admin/languages/#{iso.id}" }.not_to change(Language, :count)
     end
   end
 
