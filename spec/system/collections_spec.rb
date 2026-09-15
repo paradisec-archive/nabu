@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Collections' do
+describe 'Collections', type: :system do
   let(:user) { create(:user) }
   let(:admin_user) { create(:admin_user) }
 

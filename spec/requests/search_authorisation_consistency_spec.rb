@@ -31,7 +31,7 @@ describe 'Search/Ability authorisation consistency', :search, type: :request do
 
   # Advanced search builds a query from text fields, so give it a term that matches the item;
   # with no term the result list is not rendered. The user filter still applies on top.
-  def visit_advanced_item_search
+  def request_advanced_item_search
     get advanced_search_items_path(full_identifier: item.identifier)
   end
 
@@ -60,14 +60,16 @@ describe 'Search/Ability authorisation consistency', :search, type: :request do
       before { get search_items_path }
 
       it 'hides the item' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(item.full_identifier)
       end
     end
 
     context 'when no grant exists, in advanced item search' do
-      before { visit_advanced_item_search }
+      before { request_advanced_item_search }
 
       it 'hides the item' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(item.full_identifier)
       end
     end
@@ -89,7 +91,7 @@ describe 'Search/Ability authorisation consistency', :search, type: :request do
         end
 
         it 'is visible in advanced item search' do
-          visit_advanced_item_search
+          request_advanced_item_search
           expect(response.body).to have_text(item.full_identifier)
         end
       end
@@ -147,6 +149,7 @@ describe 'Search/Ability authorisation consistency', :search, type: :request do
       before { get search_collections_path }
 
       it 'hides the collection' do
+        expect(response).to have_http_status(:ok)
         expect(response.body).to have_no_text(collection.identifier)
       end
     end
