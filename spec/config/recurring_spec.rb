@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'fugit'
 
 # rubocop:disable RSpec/DescribeClass
 # Solid Queue only validates recurring tasks when the supervisor boots, so a renamed job or a bad
