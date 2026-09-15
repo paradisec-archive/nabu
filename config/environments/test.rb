@@ -57,7 +57,13 @@ Rails.application.configure do
 
   config.active_job.queue_adapter = :inline
 
+  # bin/test runs db:prepare, which would otherwise rewrite db/*schema.rb from the test databases
+  config.active_record.dump_schema_after_migration = false
+
   config.hosts << 'www.example.com'
 
   config.oni_url = 'http://localhost:7000'
+
+  config.catalog_bucket = Nabu::TestNamespace.current.bucket
+  Searchkick.index_suffix = Nabu::TestNamespace.current.index_suffix
 end

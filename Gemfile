@@ -124,10 +124,6 @@ group :development, :test do
 end
 
 group :development do
-  gem 'guard'
-  gem 'guard-rails', require: false
-  gem 'guard-rspec', require: false
-
   gem 'annotaterb' # Annotate models with schema
   gem 'letter_opener' # Open emails in browser during development
   gem 'traceroute' # Helps find unused routes and controller actions

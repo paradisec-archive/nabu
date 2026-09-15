@@ -25,6 +25,12 @@ nabu_run bin/rails runner "puts User.count"
 nabu_run bundle exec rubocop
 ```
 
+## Running tests
+
+- Run tests with `nabu_run bin/test [paths]`. It prepares the test databases first.
+- Each worktree automatically gets its own test databases, search indices and catalogue bucket. Never call `docker compose` directly,
+  and never invent database or index names.
+
 ## Agent skills
 
 ### Issue tracker
