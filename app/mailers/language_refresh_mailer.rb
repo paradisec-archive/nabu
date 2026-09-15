@@ -1,11 +1,11 @@
 class LanguageRefreshMailer < ApplicationMailer
   def report
     run = params[:run]
-    report = LanguageRefresh::Report.new(run)
+    rendering = LanguageRefresh::Report.new(run)
     @body = run.report
 
-    report.attachments.each { |name, csv| attachments[name] = { mime_type: 'text/csv', content: csv } }
+    rendering.attachments.each { |name, csv| attachments[name] = { mime_type: 'text/csv', content: csv } }
 
-    mail(to: Rails.application.config_for(:language_refresh)[:recipients], subject: report.subject)
+    mail(to: Rails.application.config_for(:language_refresh)[:recipients], subject: rendering.subject)
   end
 end

@@ -1,8 +1,7 @@
 require 'csv'
 
 module LanguageRefresh
-  # Renders a Run as the report emailed to the language custodians. Built from the Run alone, so a
-  # report can be sent again later.
+  # Renders a Run's report. The in-use Language count is read live; everything else comes from the Run.
   class Report
     INLINE_LIMIT = 20
     FACET_WARNING = 0.8
@@ -77,7 +76,7 @@ module LanguageRefresh
 
       LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) }
       entry.fetch('counts', {}).each { |key, count| lines << '' << "#{key.humanize}: #{count}" }
-      lines << '' << 'Retired, Reinstated, boxes filled and Location warnings are not checked by the Refresh yet.'
+      lines << '' << 'Retired, Reinstated, Bounding boxes filled and Location warnings are not checked by the Refresh yet.'
       lines.join("\n")
     end
 

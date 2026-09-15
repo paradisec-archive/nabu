@@ -22,7 +22,7 @@ module LanguageRefresh
       { 'iso-639-3.tab' => @codes.version, 'LanguageIndex.tab' => @index.version }
     end
 
-    def rows
+    def row_count
       @codes.rows.size
     end
 

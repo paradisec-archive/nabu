@@ -1,7 +1,6 @@
 require 'net/http'
 
 module LanguageRefresh
-  # GETs a Source's file, retrying transient failures with exponential backoff.
   class Fetcher
     class FetchError < StandardError; end
 

@@ -3,8 +3,8 @@ require 'sentry/test_helper'
 
 describe LanguageRefreshService do
   let(:fixtures) { Rails.root.join('spec/support/data/language_refresh') }
-  let(:sil_codes_url) { 'https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab' }
-  let(:ethnologue_index_url) { 'https://www.ethnologue.com/codes/LanguageIndex.tab' }
+  let(:sil_codes_url) { LanguageRefresh::IsoStage::SIL_CODES_URL }
+  let(:ethnologue_index_url) { LanguageRefresh::IsoStage::ETHNOLOGUE_INDEX_URL }
   let(:sil_codes) { fixtures.join('iso-639-3.tab').read }
   let(:refresh) { described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0)) }
 
@@ -98,6 +98,26 @@ describe LanguageRefreshService do
     expect(mail.subject).to eq('[NABU Admin] Language Refresh: 0 need a person, 0 failures, 0 new, 0 renamed')
     expect(body_of(mail)).to include("New: 0\n\nRenamed: 0\n\nCountry links added: 0")
     expect(mail.attachments).to be_empty
+  end
+
+  describe 'a report that cannot be sent' do
+    around do |example|
+      method, settings = ActionMailer::Base.delivery_method, ActionMailer::Base.smtp_settings
+      ActionMailer::Base.delivery_method = :smtp
+      ActionMailer::Base.smtp_settings = { address: '127.0.0.1', port: 1 }
+      example.run
+    ensure
+      ActionMailer::Base.delivery_method = method
+      ActionMailer::Base.smtp_settings = settings
+    end
+
+    it 'marks the Run failed and lets the next Run start' do
+      expect { refresh.run }.to raise_error(SystemCallError)
+
+      expect(LanguageRefreshRun.sole).to have_attributes(status: 'failed', finished_at: be_present)
+      ActionMailer::Base.delivery_method = :test
+      expect(refresh.run).to be_completed
+    end
   end
 
   describe 'fetching a Source' do
