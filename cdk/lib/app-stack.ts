@@ -580,37 +580,6 @@ export class AppStack extends cdk.Stack {
     });
     jobsService.enableServiceConnect();
 
-    if (env === 'prod') {
-      const cronTaskDefinition = new ecs.Ec2TaskDefinition(this, 'CronTaskDefinition');
-      acknowledgeNag(cronTaskDefinition, { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
-      cronTaskDefinition.addContainer('CronContainer', {
-        containerName: 'cron',
-        ...commonAppImageOptions,
-        memoryReservationMiB: 128,
-        logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'CronService' }),
-        command: ['bundle', 'exec', 'cron-worker/cron.rb'],
-      });
-      cronTaskDefinition.addToTaskRolePolicy(
-        new iam.PolicyStatement({
-          actions: ['ses:SendEmail', 'ses:SendRawEmail'],
-          resources: ['*'],
-        }),
-      );
-
-      catalogBucket.grantReadWrite(cronTaskDefinition.taskRole);
-      metaBucket.grantRead(cronTaskDefinition.taskRole);
-      metaDrBucket.grantRead(cronTaskDefinition.taskRole);
-      searchDomain.grantReadWrite(cronTaskDefinition.taskRole);
-
-      const cronService = new ecs.Ec2Service(this, 'CronService', {
-        serviceName: 'cron',
-        cluster,
-        taskDefinition: cronTaskDefinition,
-        enableExecuteCommand: true,
-      });
-      cronService.enableServiceConnect();
-    }
-
     const listener = elbv2.ApplicationListener.fromLookup(this, 'AlbListener', {
       loadBalancerArn: ssm.StringParameter.valueFromLookup(this, '/usyd/resources/application-load-balancer/application/arn'),
       listenerProtocol: elbv2.ApplicationProtocol.HTTP,
