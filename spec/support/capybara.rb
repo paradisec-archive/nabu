@@ -1,5 +1,7 @@
-require 'capybara/rspec'
-
 RSpec.configure do |config|
-  config.include Capybara::DSL
+  config.before(type: :system) do
+    driven_by :rack_test
+  end
+
+  config.include Capybara::RSpecMatchers, type: :request
 end

@@ -130,7 +130,7 @@ jobs:
         run: bin/rails assets:precompile
 
       - name: Run tests
-        run: bundle exec rspec --exclude-pattern 'spec/features/**/*_spec.rb'
+        run: bundle exec rspec --exclude-pattern 'spec/system/**/*_spec.rb'
 
   system-test:
     runs-on: ubuntu-latest
@@ -180,7 +180,7 @@ jobs:
 
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable default-mysql-client default-libmysqlclient-dev libjemalloc2 libvips
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y default-mysql-client default-libmysqlclient-dev libjemalloc2 libvips
 
       - name: Checkout code
         uses: actions/checkout@v7
@@ -212,12 +212,4 @@ jobs:
         run: bin/rails assets:precompile
 
       - name: Run System Tests
-        run: bundle exec rspec spec/features
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
+        run: bundle exec rspec spec/system

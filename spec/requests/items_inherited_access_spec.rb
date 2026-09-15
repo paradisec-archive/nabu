@@ -4,7 +4,7 @@ require 'rails_helper'
 # collection" block. With the item-edit prefill removed, a collection's editors are no longer
 # copied down as item-level rows, so the block makes it obvious which access cascades from the
 # collection. It never creates or alters an item-level Permission.
-describe 'Item inherited-from-collection access' do
+describe 'Item inherited-from-collection access', type: :request do
   let(:admin_user) { create(:admin_user) }
   let(:collection_editor) { create(:user, first_name: 'Edith', last_name: 'Editor') }
   let(:collection_reader) { create(:user, first_name: 'Reba', last_name: 'Reader') }
@@ -18,8 +18,8 @@ describe 'Item inherited-from-collection access' do
 
   def inherited_block(user, path)
     sign_in user
-    visit path
-    find('fieldset.inherited-access')
+    get path
+    Capybara.string(response.body).find('fieldset.inherited-access')
   end
 
   describe 'item show' do
