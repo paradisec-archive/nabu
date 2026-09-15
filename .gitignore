@@ -46,6 +46,7 @@
 
 /vendor/bundle
 .irb_history
+/spec/examples.txt
 
 #sorbet
 # They recommend you commit these but I'm not convinced
