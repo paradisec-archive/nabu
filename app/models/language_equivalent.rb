@@ -48,6 +48,10 @@ class LanguageEquivalent < ApplicationRecord
     [one_id, other_id].minmax
   end
 
+  def other_than(one)
+    language_id == one.id ? related_language : language
+  end
+
   private
 
   def order_the_pair
