@@ -33,8 +33,20 @@ You can then easily run all the standard commands by prefixing with ***nabu***
 ``` bash
 nabu_run bundle install
 nabu_run bundle exec rake db:prepare
-nabu_run bundle exec guard # Test runner
 ```
+
+## Running tests
+
+``` bash
+nabu_run bin/test                          # the whole suite
+nabu_run bin/test spec/models/item_spec.rb # specific files or examples
+```
+
+`bin/test` prepares the test databases before running RSpec, so a fresh checkout or a branch switch needs no manual step.
+
+Each linked git worktree gets its own test namespace: its own test databases, search indices and catalogue bucket
+on the shared containers, named after the worktree (e.g. `nabu_test_<worktree>`). The main checkout keeps the plain `nabu_test` names.
+Set `NABU_TEST_NAMESPACE` to choose a namespace explicitly, or to an empty string for the plain names.
 
 ## Production
 

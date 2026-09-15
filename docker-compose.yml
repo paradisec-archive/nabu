@@ -6,6 +6,9 @@
 #   locally are reflected in the container
 # ==============================================================
 
+# Every checkout, including agent worktrees, shares one set of containers
+name: nabu
+
 services:
   app:
     build:

@@ -36,14 +36,14 @@ development:
 test:
   primary: &primary_test
     <<: *default
-    database: nabu_test
+    database: <%= Nabu::TestNamespace.current.database %>
   cache:
     <<: *primary_test
-    database: nabu_test_cache
+    database: <%= Nabu::TestNamespace.current.database(:cache) %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_test
-    database: nabu_test_queue
+    database: <%= Nabu::TestNamespace.current.database(:queue) %>
     migrations_paths: db/queue_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,

@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 
 touch .irb_history
+# Otherwise Docker creates it as root in a fresh checkout and bundle can't install into it
+mkdir -p vendor/bundle
 
 # An empty AWS_PROFILE is not the same as an unset one: the SDK reads it as a
 # profile named "" instead of falling back to default or an SSO session.
 aws_profile=()
 [ -n "$AWS_PROFILE" ] && aws_profile=(-e AWS_PROFILE="$AWS_PROFILE")
+
+# Linked git worktrees get their own test databases, indices and bucket. An explicit value, even empty, wins.
+if [ -z "${NABU_TEST_NAMESPACE+set}" ] && [ "$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)" != "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" ]; then
+  NABU_TEST_NAMESPACE=$(basename "$(git rev-parse --show-toplevel)")
+fi
 
 docker compose run \
   --rm \
@@ -16,7 +23,7 @@ docker compose run \
   -e SSH_AUTH_SOCK=/tmp/ssh.sock \
   -e SENTRY_API_TOKEN="$SENTRY_API_TOKEN" \
   -e OPENID_SIGNING_KEY="$OPENID_SIGNING_KEY" \
-  -e ELASTICSEARCH_URL="$(grep ^ELASTICSEARCH_URL .env | sed 's/^.*=//')" \
+  -e NABU_TEST_NAMESPACE="$NABU_TEST_NAMESPACE" \
   "${aws_profile[@]}" \
   -v "$SSH_AUTH_SOCK:/tmp/ssh.sock" \
   -v "$PWD"/.irb_history:/home/rails/.irb_history \
