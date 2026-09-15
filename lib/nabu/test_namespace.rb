@@ -6,15 +6,19 @@ module Nabu
     MAX_NAME_LENGTH = 30
     HASH_LENGTH = 6
 
+    DATABASE = 'nabu_test'.freeze
+    INDEX_ENV = 'test'.freeze
+    BUCKET = 'nabu-catalog-test'.freeze
+
+    RESOURCE_PATTERNS = {
+      databases: /\A#{DATABASE}_/,
+      indices: /_#{INDEX_ENV}_.+_\d{17}\z/,
+      buckets: /\A#{BUCKET}-/
+    }.freeze
+
     def self.current
       new(name: ENV['NABU_TEST_NAMESPACE'], worker: ENV['TEST_ENV_NUMBER'])
     end
-
-    RESOURCE_PATTERNS = {
-      databases: /\Anabu_test_/,
-      indices: /_test_.+_\d{17}\z/,
-      buckets: /\Anabu-catalog-test-/
-    }.freeze
 
     # At most 3 digits, so hand-made databases named after issues aren't mistaken for the main checkout's workers
     WORKER = '(_\d{1,3})?'.freeze
@@ -37,11 +41,11 @@ module Nabu
     end
 
     def database(role = nil)
-      ['nabu_test', suffix, role].compact.join('_')
+      [DATABASE, suffix, role].compact.join('_')
     end
 
     def bucket
-      ['nabu-catalog-test', suffix&.tr('_', '-')].compact.join('-')
+      [BUCKET, suffix&.tr('_', '-')].compact.join('-')
     end
 
     def owns?(kind, name)
@@ -53,7 +57,7 @@ module Nabu
     def owned_pattern(kind)
       case kind
       when :databases then /\A#{database}#{WORKER}(_cache|_queue)?\z/
-      when :indices then /\A[a-z_]+_test#{"_#{suffix}" if suffix}#{WORKER}_\d{17}\z/
+      when :indices then /\A[a-z_]+_#{[INDEX_ENV, suffix].compact.join('_')}#{WORKER}_\d{17}\z/
       when :buckets then /\A#{bucket}#{WORKER.tr('_', '-')}\z/
       end
     end
