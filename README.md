@@ -48,6 +48,10 @@ Each linked git worktree gets its own test namespace: its own test databases, se
 on the shared containers, named after the worktree (e.g. `nabu_test_<worktree>`). The main checkout keeps the plain `nabu_test` names.
 Set `NABU_TEST_NAMESPACE` to choose a namespace explicitly, or to an empty string for the plain names.
 
+Namespaces outlive their worktrees. Run `bin/test_prune` on the host to list the test databases, search indices and catalogue buckets
+that belong to no current worktree, then `bin/test_prune --delete` to drop them. The main checkout's names are never touched.
+A namespace set by hand with `NABU_TEST_NAMESPACE` counts as orphaned unless it matches a current worktree's name.
+
 ## Production
 
 The application is designed to be deployed with containers into an AWS account using CDK

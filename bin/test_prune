@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: bin/test_prune [--delete]" >&2
+  echo "Lists test databases, search indices and catalogue buckets whose worktree no longer exists. --delete drops them." >&2
+  exit 1
+}
+
+delete=
+case "${1:-}" in
+  '') ;;
+  --delete) delete=1 ;;
+  *) usage ;;
+esac
+
+cd "$(dirname "$0")/.."
+
+# The first entry is the main checkout, which always keeps its names. Worktrees whose directory is gone are prunable, so not live.
+worktrees=$(git worktree list --porcelain | awk '
+  /^worktree / { path = substr($0, 10); prunable = 0 }
+  /^prunable/ { prunable = 1 }
+  /^$/ { if (seen++ && !prunable) print path }
+' | xargs -r -d '\n' -n 1 basename)
+
+bin/nabu_run bin/rails test_namespaces:prune WORKTREES="$worktrees" DELETE="$delete"
