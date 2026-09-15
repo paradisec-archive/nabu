@@ -59,7 +59,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
   search:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:2.19.6
     ports:
       - "9200:9200"
       - "9600:9600"
