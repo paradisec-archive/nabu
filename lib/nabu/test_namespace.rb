@@ -10,6 +10,24 @@ module Nabu
       new(name: ENV['NABU_TEST_NAMESPACE'], worker: ENV['TEST_ENV_NUMBER'])
     end
 
+    RESOURCE_PATTERNS = {
+      databases: /\Anabu_test_/,
+      indices: /_test_.+_\d{17}\z/,
+      buckets: /\Anabu-catalog-test-/
+    }.freeze
+
+    # At most 3 digits, so hand-made databases named after issues aren't mistaken for the main checkout's workers
+    WORKER = '(_\d{1,3})?'.freeze
+
+    # Resources named like test namespaces that belong neither to the main checkout nor to a live worktree
+    def self.orphans(worktrees:, **resources)
+      live = [nil, *worktrees].map { |worktree| new(name: worktree) }
+
+      resources.to_h do |kind, names|
+        [kind, names.select { |name| name.match?(RESOURCE_PATTERNS.fetch(kind)) && live.none? { |namespace| namespace.owns?(kind, name) } }]
+      end
+    end
+
     # nil for the main checkout and the first CI worker, which keep the plain names
     attr_reader :suffix
 
@@ -26,7 +44,19 @@ module Nabu
       ['nabu-catalog-test', suffix&.tr('_', '-')].compact.join('-')
     end
 
+    def owns?(kind, name)
+      name.match?(owned_pattern(kind))
+    end
+
     private
+
+    def owned_pattern(kind)
+      case kind
+      when :databases then /\A#{database}#{WORKER}(_cache|_queue)?\z/
+      when :indices then /\A[a-z_]+_test#{"_#{suffix}" if suffix}#{WORKER}_\d{17}\z/
+      when :buckets then /\A#{bucket}#{WORKER.tr('_', '-')}\z/
+      end
+    end
 
     def clean(raw)
       cleaned = raw.downcase.gsub(/[^a-z0-9]+/, '_').gsub(/\A_|_\z/, '')

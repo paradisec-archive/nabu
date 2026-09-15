@@ -109,4 +109,72 @@ describe Nabu::TestNamespace do
       expect(namespace.bucket).to match(/\A[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\z/)
     end
   end
+
+  describe '.orphans' do
+    let(:worktrees) { ['1229-test-namespaces'] }
+
+    def orphans(**resources)
+      described_class.orphans(worktrees:, **resources)
+    end
+
+    context 'with databases' do
+      it 'returns those of removed worktrees and keeps those of live ones' do
+        databases = %w[nabu_test_1229_test_namespaces nabu_test_1229_test_namespaces_cache nabu_test_gone nabu_test_gone_queue]
+
+        expect(orphans(databases:)[:databases]).to eq(%w[nabu_test_gone nabu_test_gone_queue])
+      end
+
+      it "keeps a live worktree's per-worker databases" do
+        expect(orphans(databases: %w[nabu_test_1229_test_namespaces_2 nabu_test_1229_test_namespaces_12_cache])[:databases]).to be_empty
+      end
+
+      it "never returns the main checkout's, development, production or unrelated databases" do
+        databases = %w[nabu_test nabu_test_cache nabu_test_queue nabu_test_2 nabu_test_16_queue nabu_devel nabu_devel_cache nabu nabu_queue oai mysql sys]
+
+        expect(orphans(databases:)[:databases]).to be_empty
+      end
+
+      it 'returns the hand-made agent databases' do
+        databases = %w[nabu_test_1198 nabu_test_1198_cache nabu_test_1204 nabu_test_1206 nabu_test_w1203]
+
+        expect(orphans(databases:)[:databases]).to eq(databases)
+      end
+    end
+
+    context 'with search indices' do
+      it 'returns those of removed worktrees and keeps those of live ones, including per-worker ones' do
+        indices = %w[items_test_1229_test_namespaces_20260915062804472 collections_test_1229_test_namespaces_3_20260915062803907
+                     items_test_gone_20260915052833402 essences_test_gone_2_20260915052833959]
+
+        expect(orphans(indices:)[:indices]).to eq(%w[items_test_gone_20260915052833402 essences_test_gone_2_20260915052833959])
+      end
+
+      it "never returns the main checkout's, development or system indices" do
+        indices = %w[items_test_20260915044524759 items_test_4_20260915044524759 items_development_20260820013605483 items_test
+                     .kibana_1 .opendistro_security security-auditlog-2026.09.15 top_queries-2026.09.15-04093]
+
+        expect(orphans(indices:)[:indices]).to be_empty
+      end
+
+      it 'returns the hand-made agent indices' do
+        indices = %w[collections_test_job1198_20260914232710974 essences_test_w1204_20260915045922556]
+
+        expect(orphans(indices:)[:indices]).to eq(indices)
+      end
+    end
+
+    context 'with catalogue buckets' do
+      it 'returns those of removed worktrees and keeps those of live ones, including per-worker ones' do
+        buckets = %w[nabu-catalog-test-1229-test-namespaces nabu-catalog-test-1229-test-namespaces-2 nabu-catalog-test-gone nabu-catalog-test-gone-3]
+
+        expect(orphans(buckets:)[:buckets]).to eq(%w[nabu-catalog-test-gone nabu-catalog-test-gone-3])
+      end
+
+      it "never returns the main checkout's, production-named or unrelated buckets" do
+        buckets = %w[nabu-catalog-test nabu-catalog-test-2 nabu-catalog-prod nabu-catalog nabu-meta-test]
+
+        expect(orphans(buckets:)[:buckets]).to be_empty
+      end
+    end
+  end
 end
