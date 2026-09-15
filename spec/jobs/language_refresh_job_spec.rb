@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe LanguageRefreshJob, :webmock do
+describe LanguageRefreshJob do
   let(:fixtures) { Rails.root.join('spec/support/data/language_refresh') }
 
   before do
