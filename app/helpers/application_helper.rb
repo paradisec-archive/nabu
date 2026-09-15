@@ -96,7 +96,7 @@ module ApplicationHelper
     }
     class_name = options.delete 'class'
     languages = Language.where(id: params[attribute.to_s.sub('[]', '')])
-    option_tags = options_for_select(languages.map { |language| [language.name, language.id] })
+    option_tags = options_for_select(languages.map { |language| [language.label, language.id] })
 
     select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select language", multiple: true
   end

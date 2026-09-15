@@ -645,7 +645,7 @@ class Collection < ApplicationRecord
     }
 
     json[:properties][:description] = description if description
-    json[:properties][:languages] = languages.map(&:name_with_code).join(', ') unless languages.empty?
+    json[:properties][:languages] = languages.map(&:label).join(', ') unless languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
     json[:properties][:license] = access_condition.name if access_condition
     json[:properties][:rights] = access_condition.name if access_condition

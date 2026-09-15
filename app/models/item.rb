@@ -728,7 +728,7 @@ class Item < ApplicationRecord
     }
 
     json[:properties][:description] = description if description
-    json[:properties][:languages] = subject_languages.map(&:name_with_code).join(', ') unless subject_languages.empty?
+    json[:properties][:languages] = subject_languages.map(&:label).join(', ') unless subject_languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
     json[:properties][:license] = access_condition.name if access_condition
     json[:properties][:rights] = access_condition.name if access_condition
