@@ -24,7 +24,7 @@ docker compose up
 This brings up the following containers
 
 * app - the rails app
-* search - elasticsearch instance for search (dev + test)
+* search - OpenSearch instance for search (dev + test), pinned to production's version
 * db - mysql data base (dev + test)
 * s3 - s3 mock
 
@@ -34,6 +34,20 @@ You can then easily run all the standard commands by prefixing with ***nabu***
 nabu_run bundle install
 nabu_run bundle exec rake db:prepare
 ```
+
+### Resetting the search data volume after the OpenSearch 2.19 pin
+
+OpenSearch was previously `latest` (3.x) locally. A data volume written by 3.x can't be opened by 2.19, so reset it once
+and reindex development data. This briefly breaks search specs in every other checkout, so stop other test runs first.
+
+```bash
+docker compose rm --stop --force search
+docker volume rm nabu_search-data
+docker compose up --detach search
+nabu_run bin/rake searchkick:reindex:all
+```
+
+Test indices are recreated by the next `bin/test` run.
 
 ## Running tests
 
