@@ -56,7 +56,24 @@ class Language < ApplicationRecord
   validates :code, presence: true, uniqueness: { scope: :source, case_sensitive: false }
   validate :code_matches_its_source
 
+  PICKER_RANK = <<~SQL.squish.freeze
+    CASE
+      WHEN languages.code = :term THEN 0
+      WHEN languages.retired THEN 5
+      WHEN languages.dialect THEN 4
+      WHEN languages.source = '#{SOURCES[:iso639_3]}' THEN 1
+      WHEN languages.source = '#{SOURCES[:glottolog]}' THEN 2
+      ELSE 3
+    END
+  SQL
+
   scope :alpha, -> { order(:name) }
+
+  scope :picker_search, lambda { |term|
+    term = term.to_s
+    where('languages.name LIKE :pattern OR languages.code LIKE :pattern', pattern: "%#{sanitize_sql_like(term)}%")
+      .order(Arel.sql(sanitize_sql_array([PICKER_RANK, { term: }])), :name)
+  }
 
   # The one rendering of a Language wherever a person reads, picks or filters by one.
   def label
@@ -74,14 +91,6 @@ class Language < ApplicationRecord
     return if template.nil?
 
     format(template, code)
-  end
-
-  def name_with_code
-    "#{name} - #{code}"
-  end
-
-  def language_archive_link
-    "http://www.language-archives.org/language/#{code}"
   end
 
   has_many :countries_languages
