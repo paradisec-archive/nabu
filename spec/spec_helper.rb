@@ -44,6 +44,13 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
+  # Enables --only-failures and --next-failure
+  config.example_status_persistence_file_path = 'spec/examples.txt'
+
+  # Reproduce an order-dependent failure with --seed <n>, never by pinning a seed
+  config.order = :random
+  Kernel.srand config.seed
+
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin
@@ -53,11 +60,6 @@ RSpec.configure do |config|
   # aliases for `it`, `describe`, and `context` that include `:focus`
   # metadata: `fit`, `fdescribe` and `fcontext`, respectively.
   config.filter_run_when_matching :focus
-
-  # Allows RSpec to persist some state between runs in order to support
-  # the `--only-failures` and `--next-failure` CLI options. We recommend
-  # you configure your source control system to ignore this file.
-  config.example_status_persistence_file_path = "spec/examples.txt"
 
   # Limits the available syntax to the non-monkey patched syntax that is
   # recommended. For more details, see:
@@ -78,17 +80,5 @@ RSpec.configure do |config|
   # end of the spec run, to help surface which specs are running
   # particularly slow.
   config.profile_examples = 10
-
-  # Run specs in random order to surface order dependencies. If you find an
-  # order dependency and want to debug it, you can fix the order by providing
-  # the seed, which is printed after each run.
-  #     --seed 1234
-  config.order = :random
-
-  # Seed global randomization in this process using the `--seed` CLI option.
-  # Setting this allows you to use `--seed` to deterministically reproduce
-  # test failures related to randomization by passing the same `--seed` value
-  # as the one that triggered the failure.
-  Kernel.srand config.seed
 =end
 end

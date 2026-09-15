@@ -138,7 +138,6 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'json_schemer' # Validate DOI against schema
 end
