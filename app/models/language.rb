@@ -47,15 +47,6 @@ class Language < ApplicationRecord
     'austlang' => 'https://collection.aiatsis.gov.au/austlang/language/%s'
   }.freeze
 
-  has_paper_trail
-
-  enum :source, SOURCES, validate: true
-
-  validates :name, presence: true
-  validates :source, presence: true
-  validates :code, presence: true, uniqueness: { scope: :source, case_sensitive: false }
-  validate :code_matches_its_source
-
   PICKER_RANK = <<~SQL.squish.freeze
     CASE
       WHEN languages.code = :term THEN 0
@@ -67,6 +58,17 @@ class Language < ApplicationRecord
     END
   SQL
 
+  SPECIAL_CODES = %w[mul und zxx].freeze
+
+  has_paper_trail
+
+  enum :source, SOURCES, validate: true
+
+  validates :name, presence: true
+  validates :source, presence: true
+  validates :code, presence: true, uniqueness: { scope: :source, case_sensitive: false }
+  validate :code_matches_its_source
+
   scope :alpha, -> { order(:name) }
 
   scope :picker_search, lambda { |term|
@@ -74,6 +76,9 @@ class Language < ApplicationRecord
     where('languages.name LIKE :pattern OR languages.code LIKE :pattern', pattern: "%#{sanitize_sql_like(term)}%")
       .order(Arel.sql(sanitize_sql_array([PICKER_RANK, { term: }])), :name)
   }
+
+  scope :special, -> { iso639_3.in_order_of(:code, SPECIAL_CODES) }
+  scope :in_countries, ->(country_ids) { where(id: CountriesLanguage.where(country_id: country_ids).select(:language_id)) }
 
   # The one rendering of a Language wherever a person reads, picks or filters by one.
   def label
@@ -84,6 +89,10 @@ class Language < ApplicationRecord
     return 'Glottolog dialect' if glottolog? && dialect?
 
     SOURCE_NAMES[source]
+  end
+
+  def picker_description
+    'Retired' if retired?
   end
 
   def source_uri

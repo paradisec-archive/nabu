@@ -564,6 +564,10 @@ body.bp {
   .choices__inner {
     min-height: inherit;
   }
+  .choices__list--multiple .choices__item[data-label-description]::before {
+    content: attr(data-label-description) ' · ';
+    font-style: italic;
+  }
 
   .invisible {
     visibility: hidden;
