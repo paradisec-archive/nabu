@@ -96,9 +96,13 @@ module ApplicationHelper
     }
     class_name = options.delete 'class'
     languages = Language.where(id: params[attribute.to_s.sub('[]', '')])
-    option_tags = options_for_select(languages.map { |language| [language.label, language.id] })
+    option_tags = options_for_select(language_choices(languages))
 
     select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select language", multiple: true
+  end
+
+  def language_choices(languages)
+    languages.map { |language| [language.label, language.id, { data: { label_description: language.picker_description } }] }
   end
 
   def mimetype_select_tag(attribute, options = {})
