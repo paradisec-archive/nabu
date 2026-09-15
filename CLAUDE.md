@@ -33,6 +33,7 @@ nabu_run bundle exec rubocop
   and never invent database or index names.
 - `bin/test_prune` (on the host, not via `nabu_run`) lists test databases, indices and buckets left by removed worktrees; `--delete` drops them.
   Only run it by hand.
+- Run `nabu_run bin/ci` before calling work done. It runs rubocop, brakeman, bundle-audit and the full suite, and fails on the first problem.
 
 ## Agent skills
 

@@ -60,12 +60,23 @@ nabu_run bin/test --only-failures          # what failed last time
 `bin/test` prepares the test databases before running RSpec, so a fresh checkout or a branch switch needs no manual step.
 
 With no arguments `bin/test` runs the suite across parallel workers with `parallel_tests`, each with its own databases, search indices and bucket
-(e.g. `nabu_test_2`). It uses 4 workers, or every core in CI; set `PARALLEL_TEST_PROCESSORS` to change that.
+(e.g. `nabu_test_2`). It uses 4 workers, or every core on a GitHub Actions runner; set `PARALLEL_TEST_PROCESSORS` to change that.
 Any argument runs plain RSpec in a single process.
 
 Each linked git worktree gets its own test namespace: its own test databases, search indices and catalogue bucket
 on the shared containers, named after the worktree (e.g. `nabu_test_<worktree>`). The main checkout keeps the plain `nabu_test` names.
 Set `NABU_TEST_NAMESPACE` to choose a namespace explicitly, or to an empty string for the plain names.
+
+## Checking your work
+
+``` bash
+nabu_run bin/ci
+```
+
+`bin/ci` runs rubocop, brakeman, bundle-audit and `bin/test`, reports each step's runtime and exits non-zero if any fails.
+The steps live in `config/ci.rb`. GitHub Actions runs the same checks, with linting, security scanning and the tests as separate jobs.
+
+## Pruning test namespaces
 
 Namespaces outlive their worktrees. Run `bin/test_prune` on the host to list the test databases, search indices and catalogue buckets
 that belong to no current worktree, then `bin/test_prune --delete` to drop them. The main checkout's names are never touched.
