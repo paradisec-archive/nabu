@@ -35,10 +35,7 @@ If we give tokens to more than paragest we need to rethink this
 * Add everything needed to search_params
 * language.retired to language.retired?
 * Fix comments so they are ajax again
-
-## CRON
-
-paper-trail can we move to JSON serialzer
+* paper-trail can we move to JSON serialzer
 
 ## OAI
 
