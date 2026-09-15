@@ -104,7 +104,6 @@ class Language < ApplicationRecord
 
   has_many :countries_languages
   has_many :countries, through: :countries_languages, dependent: :destroy
-  accepts_nested_attributes_for :countries_languages, allow_destroy: true
   # validates :countries, length: { :minimum => 1 }
 
   has_many :item_content_languages

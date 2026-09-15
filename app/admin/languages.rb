@@ -27,25 +27,40 @@
 ActiveAdmin.register Language do
   menu parent: 'Other Entities'
   config.sort_order = 'name_asc'
-  actions :all, except: [:destroy]
+  # Sources own every field but the Bounding box, so rows are never created or deleted by hand.
+  actions :index, :show, :edit, :update
 
-  permit_params :name, :code, :source, :retired, :north_limit, :south_limit, :west_limit, :east_limit, countries_languages_attributes: %i[_destroy country_id]
+  permit_params :north_limit, :south_limit, :west_limit, :east_limit
 
   filter :countries
   filter :code
+  filter :source, as: :select, collection: -> { Language::SOURCE_NAMES.invert }
   filter :name
+  filter :dialect
   filter :retired
   # Don't filter by items_for_content, items_for_subject, or collections.
   # Doesn't make sense.
   # Don't filter by north_limit, east_limit, south_limit or west_limit .
   # No strong business case for doing so.
 
+  index do
+    column :code
+    column(:source) { |language| Language::SOURCE_NAMES[language.source] }
+    column :name
+    column :dialect
+    column :retired
+    column('Box') { |language| status_tag language.has_all_boundaries? }
+    actions
+  end
+
   # show page
   show do |language|
     attributes_table_for(resource)  do
       row :id
       row :code
+      row(:source) { Language::SOURCE_NAMES[language.source] }
       row :name
+      row :dialect
       row :retired
       row :north_limit
       row :east_limit
@@ -67,22 +82,11 @@ ActiveAdmin.register Language do
   end
 
   form do |f|
-    f.inputs 'Language Details' do # physician's fields
-      f.input :code
-      f.input :source
-      f.input :name
-      f.input :retired
+    f.inputs "Bounding box for #{f.object.label}" do
       f.input :north_limit
       f.input :east_limit
       f.input :south_limit
       f.input :west_limit
-    end
-
-    f.has_many :countries_languages do |country|
-      if !country.object.nil?
-        country.input :_destroy, as: :boolean, label: 'Destroy?'
-      end
-      country.input :country
     end
     f.actions
   end
