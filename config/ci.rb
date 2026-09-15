@@ -3,7 +3,7 @@
 CI.run do
   step 'Style: Ruby', 'bin/rubocop'
 
-  step 'Security: Brakeman code analysis', 'bin/brakeman --quiet --no-pager'
+  step 'Security: Brakeman code analysis', 'bin/brakeman --no-pager'
   step 'Security: Gem audit', 'bin/bundle-audit'
 
   # Every step runs unless guarded, and the suite takes minutes
