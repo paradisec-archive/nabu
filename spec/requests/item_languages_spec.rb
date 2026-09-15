@@ -19,4 +19,16 @@ describe 'Tagging an item with languages', type: :request do
 
     expect(options).to contain_exactly('Lajamanu Warlpiri (laja1237) · Glottolog dialect', 'Warlpiri (C15) · AUSTLANG')
   end
+
+  it 'marks a retired language as retired on the option the form renders' do
+    retired = create(:language, code: 'wrp', name: 'Old Warlpiri', retired: true)
+    item.update!(content_languages: [retired])
+
+    get edit_collection_item_path(item.collection, item)
+
+    option = response.parsed_body.at_css('select.language#item_content_language_ids option')
+
+    expect(option.text).to eq(retired.label)
+    expect(option['data-label-description']).to eq('Retired')
+  end
 end

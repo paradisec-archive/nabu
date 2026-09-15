@@ -22,9 +22,9 @@ const copyLanguage = (src: string, dst: string) => {
     const dstInstance = getChoicesInstance(dstSelect);
 
     // Collect selected options from source
-    const selectedOptions: { value: string; label: string }[] = [];
+    const selectedOptions: { value: string; label: string; labelDescription?: string }[] = [];
     for (const srcOption of srcSelect.selectedOptions) {
-      selectedOptions.push({ value: srcOption.value, label: srcOption.text });
+      selectedOptions.push({ value: srcOption.value, label: srcOption.text, labelDescription: srcOption.dataset.labelDescription });
     }
 
     if (!dstInstance) {
