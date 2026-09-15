@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ItemsController, type: :controller do
+describe 'Items', type: :request do
   let(:user) { create(:user) }
   let(:manager) { create(:user, admin: true) }
 
@@ -18,13 +18,13 @@ describe ItemsController, type: :controller do
   let(:essence) { create(:sound_essence) }
   let(:item_with_essences) { create(:item, collection: collection, essences: [essence]) }
 
-  let(:params) { { collection_id: collection.identifier, id: item.identifier } }
+  let(:item_path) { collection_item_path(collection, item) }
 
   context 'when not logged in' do
     context 'when viewing' do
       context 'a private item' do
         it 'redirects to the sign in page with error' do
-          get :show, params: params.merge(id: private_item.identifier)
+          get collection_item_path(collection, private_item)
           expect(response).to redirect_to(new_user_session_path)
           expect(flash[:alert]).not_to be_nil
         end
@@ -32,7 +32,7 @@ describe ItemsController, type: :controller do
 
       context 'a public item' do
         it 'redirects to the sign in page with error' do
-          get :show, params: params
+          get item_path
           expect(response).to redirect_to(new_user_session_path)
           expect(flash[:alert]).not_to be_nil
         end
@@ -42,29 +42,25 @@ describe ItemsController, type: :controller do
 
   context 'when logged in' do
     before do
-      sign_in(user, scope: :user)
+      sign_in(user)
     end
 
     context 'when viewing' do
-      # The two contexts share a body because the 'private item' context
-      # actually exercises the public item. Making it distinct means pointing it
-      # at private_item and asserting the authorisation outcome (CanCanCan denies
-      # read to a non-owner), which is a behavioural rewrite rather than a dedup.
-      # rubocop:disable RSpec/RepeatedExampleGroupBody
-      context 'a private item' do
-        it 'proceeds' do
-          get :show, params: params
-          expect(response).to render_template(:show)
+      context 'a private item the user has no grant on' do
+        it 'denies access' do
+          get collection_item_path(collection, private_item)
+          expect(response).to redirect_to(root_path)
+          expect(flash[:alert]).not_to be_nil
         end
       end
 
       context 'a public item' do
         it 'proceeds' do
-          get :show, params: params
-          expect(response).to render_template(:show)
+          get item_path
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to have_text(item.full_identifier)
         end
       end
-      # rubocop:enable RSpec/RepeatedExampleGroupBody
     end
 
     context 'when creating an item' do
@@ -72,19 +68,20 @@ describe ItemsController, type: :controller do
         before { collection.admins << user }
 
         it 'fails and show create page' do
-          post :create, params: { collection_id: collection.identifier, item: { title: 'title goes here' } }
-          expect(response).to render_template(:new)
+          post collection_items_path(collection), params: { item: { title: 'title goes here' } }
+          expect(response.body).to have_css('#error_explanation')
+          expect(response.body).to have_button('Add Item')
         end
       end
 
       context 'in a collection that has an editor' do
         before do
           collection.admins << create(:user)
-          sign_in(manager, scope: :user)
+          sign_in(manager)
         end
 
         it 'does not copy the collection editor down as an item-edit grant' do
-          post :create, params: { collection_id: collection.identifier, item: { identifier: 'newitem', title: 'New item title', description: 'New item description' } }
+          post collection_items_path(collection), params: { item: { identifier: 'newitem', title: 'New item title', description: 'New item description' } }
           created = collection.items.find_by(identifier: 'newitem')
           expect(created).to be_present
           expect(created.admins).to be_empty
@@ -95,7 +92,7 @@ describe ItemsController, type: :controller do
     context 'when destroying an item' do
       context 'with a non-admin user' do
         it 'fails and redirect with error' do
-          delete :destroy, params: params
+          delete item_path
           expect(response).to redirect_to(root_path)
           expect(flash[:alert]).not_to be_nil
         end
@@ -105,14 +102,12 @@ describe ItemsController, type: :controller do
         before do
           allow(ItemDestructionService).to receive(:destroy).and_return({ success: true, messages: { notice: 'yay' } })
 
-          request.env['devise.mapping'] = Devise.mappings[:user]
-          # log in as test user
-          sign_in(manager, scope: :user)
+          sign_in(manager)
         end
 
         context 'with no essences' do
           it 'proceeds' do
-            delete :destroy, params: params
+            delete item_path
             expect(response).to redirect_to(collection)
             expect(flash[:notice]).to eq('yay')
           end
@@ -121,7 +116,7 @@ describe ItemsController, type: :controller do
         context 'with essences' do
           context 'and flag set to true' do
             it 'proceeds' do
-              delete :destroy, params: params
+              delete item_path
               expect(response).to redirect_to(collection)
               expect(flash[:notice]).to eq('yay')
             end
@@ -133,7 +128,7 @@ describe ItemsController, type: :controller do
             end
 
             it 'fails and redirect with error' do
-              delete :destroy, params: params
+              delete item_path
               expect(response).to redirect_to([collection, item])
               expect(flash[:error]).to eq('boo')
             end
@@ -144,14 +139,11 @@ describe ItemsController, type: :controller do
 
     context 'when inheriting from collection' do
       before do
-        request.env['devise.mapping'] = Devise.mappings[:user]
-        # log in as test user
-        sign_in(manager, scope: :user)
+        sign_in(manager)
       end
 
       it 'does not override existing values by default' do
-        # pending 'INVESTIGATE 2016-04-21: Sometimes but not always failing on development machines'
-        patch :inherit_details, params: params
+        patch inherit_details_collection_item_path(collection, item)
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).not_to be_nil
         result_item = Item.find(item.id)
@@ -160,23 +152,13 @@ describe ItemsController, type: :controller do
       end
 
       it 'overrides values if flag is set to true' do
-        patch :inherit_details, params: params.merge(override_existing: true)
+        patch inherit_details_collection_item_path(collection, item), params: { override_existing: true }
         expect(response).to redirect_to([collection, item])
         expect(flash[:notice]).not_to be_nil
         result_item = Item.find(item.id)
         expect(result_item.subject_languages.sort).not_to eq(item.subject_languages.sort)
         expect(result_item.subject_languages.sort).to eq(collection.languages.sort)
       end
-
-      # FIXME: JF bring this back later - issue with stubbing
-      # context 'when an error occurs', focus: true do
-      #   it 'should fail and redirect with error' do
-      #     Item.any_instance.stub(:inherit_details_from_collection).and_return(false)
-      #     patch :inherit_details, params
-      #     expect(response).to redirect_to([collection, item])
-      #     expect(flash[:alert]).to_not be_nil
-      #   end
-      # end
     end
   end
 
@@ -192,21 +174,18 @@ describe ItemsController, type: :controller do
         users: [grantee]
       )
     end
-    let(:update_params) do
-      {
-        collection_id: collection.identifier,
-        id: granted_item.identifier,
+
+    def update_item
+      patch collection_item_path(collection, granted_item), params: {
         item: { title: 'Updated title', admin_ids: [evil.id.to_s], user_ids: [''] }
       }
     end
 
-    before { request.env['devise.mapping'] = Devise.mappings[:user] }
-
     context 'as a non-admin editor' do
-      before { sign_in(editor, scope: :user) }
+      before { sign_in(editor) }
 
       it 'saves metadata changes but leaves grants untouched' do
-        patch :update, params: update_params
+        update_item
         granted_item.reload
         expect(granted_item.title).to eq('Updated title')
         expect(granted_item.admins).to contain_exactly(editor)
@@ -215,10 +194,10 @@ describe ItemsController, type: :controller do
     end
 
     context 'as an admin' do
-      before { sign_in(manager, scope: :user) }
+      before { sign_in(manager) }
 
       it 'applies the grant changes' do
-        patch :update, params: update_params
+        update_item
         granted_item.reload
         expect(granted_item.admins).to contain_exactly(evil)
         expect(granted_item.users).to be_empty
@@ -231,33 +210,30 @@ describe ItemsController, type: :controller do
     let(:granted_item) { create(:item, collection: collection, private: true, admins: [editor]) }
     let(:public_granted_item) { create(:item, collection: collection, private: false, admins: [editor]) }
 
-    def patch_private(item, value)
-      patch :update, params: {
-        collection_id: collection.identifier,
-        id: item.identifier,
+    def update_private(item, value)
+      patch collection_item_path(collection, item), params: {
         item: { title: 'Updated title', private: value }
       }
       item.reload
     end
 
     context 'as a non-admin editor' do
-      before { sign_in(editor, scope: :user) }
+      before { sign_in(editor) }
 
       it 'saves metadata changes but cannot un-privatise' do
-        patch_private(granted_item, 'false')
+        update_private(granted_item, 'false')
         expect(granted_item.title).to eq('Updated title')
         expect(granted_item).to be_private
       end
 
       it 'cannot privatise' do
-        patch_private(public_granted_item, 'true')
+        update_private(public_granted_item, 'true')
         expect(public_granted_item).not_to be_private
       end
 
       it 'cannot set private on a newly created item' do
         collection.admins << editor
-        post :create, params: {
-          collection_id: collection.identifier,
+        post collection_items_path(collection), params: {
           item: { identifier: 'newitem', title: 'New item title', description: 'New item description', private: 'true' }
         }
         expect(collection.items.find_by(identifier: 'newitem')).not_to be_private
@@ -265,48 +241,45 @@ describe ItemsController, type: :controller do
     end
 
     context 'as an admin' do
-      before { sign_in(manager, scope: :user) }
+      before { sign_in(manager) }
 
       it 'applies the privacy change' do
-        patch_private(granted_item, 'false')
+        update_private(granted_item, 'false')
         expect(granted_item).not_to be_private
       end
     end
 
     context 'when rendering the checkbox' do
-      render_views
-
       let(:private_collection) { create(:collection, private: true, admins: [editor]) }
 
       it 'renders it disabled and checked on edit for a non-admin editor' do
-        sign_in(editor, scope: :user)
-        get :edit, params: { collection_id: collection.identifier, id: granted_item.identifier }
+        sign_in(editor)
+        get edit_collection_item_path(collection, granted_item)
         expect(response.body).to have_css('input#item_private[type=checkbox][disabled][checked]')
         expect(response.body).to have_no_field('item[private]')
       end
 
       it 'renders it checked on new when the collection is private, matching what prefill will save' do
-        sign_in(editor, scope: :user)
-        get :new, params: { collection_id: private_collection.identifier }
+        sign_in(editor)
+        get new_collection_item_path(private_collection)
         expect(response.body).to have_css('input#item_private[type=checkbox][disabled][checked]')
       end
 
       it 'renders it editable for an admin' do
-        sign_in(manager, scope: :user)
-        get :edit, params: { collection_id: collection.identifier, id: granted_item.identifier }
+        sign_in(manager)
+        get edit_collection_item_path(collection, granted_item)
         expect(response.body).to have_field('item[private]', type: 'checkbox')
       end
     end
   end
 
   context 'when viewing an item with essences' do
-    before { sign_in(manager, scope: :user) }
+    before { sign_in(manager) }
 
-    it 'tracks the essence files' do
-      get :show, params: params.merge(id: item_with_essences.identifier)
-      # FIXME: JF assigns might not work see 5.0 guide 7.5
-      expect(assigns(:num_files)).to eq(1)
-      expect(assigns(:files)).to eq([essence])
+    it 'lists the essence files' do
+      get collection_item_path(collection, item_with_essences)
+      expect(response.body).to have_text('Content Files (1)')
+      expect(response.body).to have_css('td', text: essence.filename)
     end
   end
 end

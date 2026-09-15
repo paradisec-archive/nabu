@@ -8,9 +8,9 @@ require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Rails 8.1 loads routes lazily. Devise configures Warden's session serializer
-# during route finalization, so routes must be loaded before any `sign_in` runs
-# in controller specs; otherwise the raw user object is stored in the session and
-# deserialization later raises an ArgumentError.
+# during route finalization, so routes must be loaded before any `sign_in` runs;
+# otherwise the raw user object is stored in the session and deserialization
+# later raises an ArgumentError.
 Rails.application.reload_routes_unless_loaded
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -49,12 +49,12 @@ RSpec.configure do |config|
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
-  # `post` in specs under `spec/controllers`.
+  # `post` in specs under `spec/requests`.
   #
   # You can disable this behaviour by removing the line below, and instead
   # explicitly tag your specs with their type, e.g.:
   #
-  #     RSpec.describe UsersController, type: :controller do
+  #     RSpec.describe 'Users', type: :request do
   #       # ...
   #     end
   #

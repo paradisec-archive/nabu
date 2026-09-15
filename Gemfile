@@ -119,7 +119,6 @@ gem 'amazing_print' # debug printing
 
 group :development, :test do
   gem 'parallel_tests'
-  gem 'rails-controller-testing'
   gem 'rspec-rails'
 end
 

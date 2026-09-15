@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe CollectionsController, type: :controller do
+describe 'Collections', type: :request do
   let(:manager) { create(:user, admin: true) }
   let(:editor) { create(:user) }
   let(:grantee) { create(:user) }
@@ -15,17 +15,14 @@ describe CollectionsController, type: :controller do
   end
 
   def update_collection
-    patch :update, params: {
-      id: collection.identifier,
+    patch collection_path(collection), params: {
       collection: { title: 'Updated title', admin_ids: [evil.id.to_s], user_ids: [''] }
     }
   end
 
   context 'when assigning grants via the collection form' do
-    before { request.env['devise.mapping'] = Devise.mappings[:user] }
-
     context 'when a non-admin editor submits the form' do
-      before { sign_in(editor, scope: :user) }
+      before { sign_in(editor) }
 
       it 'saves metadata changes but leaves grants untouched' do
         update_collection
@@ -37,7 +34,7 @@ describe CollectionsController, type: :controller do
     end
 
     context 'when an admin submits the form' do
-      before { sign_in(manager, scope: :user) }
+      before { sign_in(manager) }
 
       it 'applies the grant changes' do
         update_collection
@@ -52,15 +49,14 @@ describe CollectionsController, type: :controller do
     let(:private_collection) { create(:collection, private: true, admins: [editor]) }
 
     def update_private(target, value)
-      patch :update, params: {
-        id: target.identifier,
+      patch collection_path(target), params: {
         collection: { title: 'Updated title', private: value }
       }
       target.reload
     end
 
     context 'when a non-admin editor submits the form' do
-      before { sign_in(editor, scope: :user) }
+      before { sign_in(editor) }
 
       it 'saves metadata changes but cannot un-privatise' do
         update_private(private_collection, 'false')
@@ -75,7 +71,7 @@ describe CollectionsController, type: :controller do
     end
 
     context 'when an admin submits the form' do
-      before { sign_in(manager, scope: :user) }
+      before { sign_in(manager) }
 
       it 'applies the privacy change' do
         update_private(private_collection, 'false')
@@ -84,18 +80,16 @@ describe CollectionsController, type: :controller do
     end
 
     context 'when rendering the checkbox' do
-      render_views
-
       it 'renders it disabled and checked for a non-admin editor' do
-        sign_in(editor, scope: :user)
-        get :edit, params: { id: private_collection.identifier }
+        sign_in(editor)
+        get edit_collection_path(private_collection)
         expect(response.body).to have_css('input#collection_private[type=checkbox][disabled][checked]')
         expect(response.body).to have_no_field('collection[private]')
       end
 
       it 'renders it editable for an admin' do
-        sign_in(manager, scope: :user)
-        get :edit, params: { id: private_collection.identifier }
+        sign_in(manager)
+        get edit_collection_path(private_collection)
         expect(response.body).to have_field('collection[private]', type: 'checkbox')
       end
     end
@@ -104,13 +98,8 @@ describe CollectionsController, type: :controller do
   # Regression for NABU-KW/QG: can?(:read, item) in the show view re-queried the polymorphic
   # `permissions` table once per item because collection_grant_permissions was not preloaded, so
   # the permission query count scaled with the number of items on the page. It must now be constant.
-  describe 'GET #show permission preloading', :no_catalog_upload do
-    render_views
-
-    before do
-      request.env['devise.mapping'] = Devise.mappings[:user]
-      sign_in(editor, scope: :user)
-    end
+  describe 'GET show permission preloading', :no_catalog_upload do
+    before { sign_in(editor) }
 
     def permission_queries_for(item_count)
       create_list(:item, item_count, collection:)
@@ -119,7 +108,7 @@ describe CollectionsController, type: :controller do
         queries += 1 if payload[:sql] =~ /\bpermissions\b/i && payload[:name] != 'SCHEMA'
       end
       ActiveSupport::Notifications.subscribed(counter, 'sql.active_record') do
-        get :show, params: { id: collection.identifier }
+        get collection_path(collection)
       end
       queries
     end
@@ -136,14 +125,13 @@ describe CollectionsController, type: :controller do
   # Regression for NABU-QA: a spreadsheet row whose title exceeds the column length used to make
   # item.save! raise ActiveRecord::ValueTooLong and 500 the whole upload. The bad row should now be
   # reported back to the uploader while the good rows still save.
-  describe 'POST #create_from_spreadsheet with an over-long item title', :no_catalog_upload do
+  describe 'POST create_from_spreadsheet with an over-long item title', :no_catalog_upload do
     let(:sheet_collection) { build(:collection) }
     let(:bad_item) { build(:item, collection: sheet_collection, title: 'a' * 256) }
     let(:upload) { Rack::Test::UploadedFile.new('spec/support/data/minimal_metadata/470 PDSC_minimal_metadataxls.xls') }
 
     before do
-      request.env['devise.mapping'] = Devise.mappings[:user]
-      sign_in(manager, scope: :user)
+      sign_in(manager)
 
       sheet = instance_double(
         Nabu::Spreadsheet,
@@ -153,7 +141,7 @@ describe CollectionsController, type: :controller do
     end
 
     it 'saves the collection, skips the bad row and reports it instead of 500ing' do
-      post :create_from_spreadsheet, params: { collection: { metadata: upload } }
+      post spreadsheet_collections_path, params: { collection: { metadata: upload } }
 
       aggregate_failures do
         expect(response).to redirect_to(sheet_collection)
