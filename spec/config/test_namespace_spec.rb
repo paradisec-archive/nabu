@@ -1,15 +1,16 @@
 require 'rails_helper'
+require 'open3'
 
 # rubocop:disable RSpec/DescribeClass
 describe 'test namespace wiring' do
   let(:probe_env) { { 'RAILS_ENV' => 'test', 'NABU_TEST_NAMESPACE' => 'Wiring Probe', 'TEST_ENV_NUMBER' => '7' } }
 
-  # Both names are fixed at boot, so check them in a freshly booted app
+  # Both names are fixed at boot, so check them in a freshly booted app. Without CI it skips eager loading, which needs the probe's missing database.
   it 'names the catalogue bucket and search indices from the namespace' do
     script = 'puts Rails.configuration.catalog_bucket, Item.search_index.name'
-    output = IO.popen(probe_env, ['bin/rails', 'runner', script], chdir: Rails.root, err: File::NULL, &:read)
+    output, errors, = Open3.capture3(probe_env.merge('CI' => nil), 'bin/rails', 'runner', script, chdir: Rails.root.to_s)
 
-    expect(output.split).to eq(%w[nabu-catalog-test-wiring-probe-7 items_test_wiring_probe_7])
+    expect(output.split).to eq(%w[nabu-catalog-test-wiring-probe-7 items_test_wiring_probe_7]), errors
   end
 
   describe 'config/database.yml' do
