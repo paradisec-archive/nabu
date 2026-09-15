@@ -339,15 +339,47 @@ type ItemResult {
 }
 
 type Language {
-  archive_link: String
+  archive_link: String @deprecated(reason: "Use source_uri")
   code: String!
   collection: [Collection]
   countries: [Country]
+  dialect: Boolean!
+  equivalents: [LanguageEquivalent!]!
   id: ID!
   items_for_content: [Item]
   items_for_language: [Item]
   name: String!
   retired: Boolean
+  source: LanguageSource!
+  source_uri: String
+}
+
+"""
+An advisory pairing with another language, and the evidence it rests on
+"""
+type LanguageEquivalent {
+  evidence: [String!]!
+  language: Language!
+}
+
+"""
+The registry that publishes a language code
+"""
+enum LanguageSource {
+  """
+  AUSTLANG
+  """
+  AUSTLANG
+
+  """
+  Glottolog
+  """
+  GLOTTOLOG
+
+  """
+  ISO 639-3
+  """
+  ISO639_3
 }
 
 type Mutation {
