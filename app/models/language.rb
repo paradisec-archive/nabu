@@ -85,6 +85,11 @@ class Language < ApplicationRecord
   }
 
   scope :special, -> { iso639_3.in_order_of(:code, SPECIAL_CODES) }
+  scope :tagged, lambda {
+    where(id: CollectionLanguage.select(:language_id))
+      .or(where(id: ItemContentLanguage.select(:language_id)))
+      .or(where(id: ItemSubjectLanguage.select(:language_id)))
+  }
   scope :in_countries, ->(country_ids) { where(id: CountriesLanguage.where(country_id: country_ids).select(:language_id)) }
 
   # The one rendering of a Language wherever a person reads, picks or filters by one.
