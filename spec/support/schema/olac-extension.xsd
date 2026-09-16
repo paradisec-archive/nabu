@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.3 (http://www.xmlspy.com) by Gary Simons (SIL International) -->
+<xs:schema targetNamespace="http://www.language-archives.org/OLAC/1.1/"
+   xmlns="http://www.language-archives.org/OLAC/1.1/" 
+   xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+   elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- Summary Documentation for an OLAC Extension
+       See: http://wwww.language-archives.org/OLAC/metadata.html -->
+	<xs:element name="olac-extension">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="shortName" type="xs:string"/>
+				<xs:element name="longName" type="xs:string"/>
+				<xs:element name="versionDate" type="xs:date"/>
+				<xs:element name="description" type="xs:string"/>
+				<xs:element name="appliesTo" type="DCElementNames" maxOccurs="unbounded"/>
+				<xs:element name="documentation" type="xs:anyURI"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="DCElementNames">
+		<xs:restriction base="xs:string">
+		   <xs:enumeration value="dc:contributor"/>
+		   <xs:enumeration value="dc:coverage"/>
+		   <xs:enumeration value="dc:creator"/>
+		   <xs:enumeration value="dc:date"/>
+		   <xs:enumeration value="dc:description"/>
+		   <xs:enumeration value="dc:format"/>
+		   <xs:enumeration value="dc:identifier"/>
+		   <xs:enumeration value="dc:language"/>
+		   <xs:enumeration value="dc:publisher"/>
+		   <xs:enumeration value="dc:relation"/>
+		   <xs:enumeration value="dc:rights"/>
+		   <xs:enumeration value="dc:source"/>
+		   <xs:enumeration value="dc:subject"/>
+		   <xs:enumeration value="dc:title"/>
+		   <xs:enumeration value="dc:type"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
+
