@@ -149,28 +149,8 @@ module Nabu
       item.description = row[2].to_s if row[2].present?
 
       # add content and subject language
-      if row[3].present?
-        content_languages = row[3].to_s.split(/[|,; ]/)
-        content_languages.each do |language|
-          content_language = Language.find_by(name: language) || Language.find_by(code: language)
-          if content_language
-            item.content_languages << content_language unless item.content_languages.include? content_language
-          else
-            @notices << "Item #{item.identifier} : Content language '#{language}' not found"
-          end
-        end
-      end
-      if row[4].present?
-        subject_languages = row[4].to_s.split(/[|,; ]/)
-        subject_languages.each do |language|
-          subject_language = Language.find_by(name: language) || Language.find_by(code: language)
-          if subject_language
-            item.subject_languages << subject_language unless item.subject_languages.include? subject_language
-          else
-            @notices << "Item #{item.identifier} : Subject language '#{language}' not found"
-          end
-        end
-      end
+      add_languages(item.content_languages, row[3], "Item #{item.identifier} : Content language")
+      add_languages(item.subject_languages, row[4], "Item #{item.identifier} : Subject language")
 
       # add countries
       if row[5].present?
@@ -277,6 +257,33 @@ module Nabu
       else
         @notices << "WARNING: item #{item.identifier} invalid - skipped (#{item.errors.full_messages.join(', ')})"
       end
+    end
+
+    # Unlike its neighbours here, an unresolved language is an error rather than a notice: an item
+    # imported without a language nobody noticed is worse than an import that refuses.
+    def add_languages(tagged, cell, cell_name)
+      cell.to_s.split(/[|,;]/).map(&:strip).compact_blank.each do |token|
+        language = find_language(token, cell_name)
+        tagged << language if language && tagged.exclude?(language)
+      end
+    end
+
+    def find_language(token, cell_name)
+      candidates = language_candidates(token)
+      return candidates.first if candidates.one?
+
+      @errors << if candidates.empty?
+        "#{cell_name} '#{token}' not found"
+      else
+        "#{cell_name} '#{token}' matches #{candidates.map(&:label).join(', ')} - give the code instead"
+      end
+      nil
+    end
+
+    # A sheet names the same few languages down every row, and no Language changes mid-import.
+    def language_candidates(token)
+      @language_candidates ||= {}
+      @language_candidates[token] ||= Language.matching_token(token).to_a
     end
 
     def parse_agent(cells, row_number)
