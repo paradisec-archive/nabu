@@ -5,6 +5,7 @@ describe LanguageRefreshJob do
 
   before do
     stub_request(:get, LanguageRefresh::IsoStage::SIL_CODES_URL).to_return(body: fixtures.join('iso-639-3.tab').read)
+    stub_request(:get, LanguageRefresh::IsoStage::SIL_RETIREMENTS_URL).to_return(body: fixtures.join('iso-639-3_Retirements.tab').read)
     stub_request(:get, LanguageRefresh::IsoStage::ETHNOLOGUE_INDEX_URL).to_return(body: fixtures.join('LanguageIndex.tab').read)
   end
 
