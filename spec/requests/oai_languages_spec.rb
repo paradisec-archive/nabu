@@ -110,6 +110,13 @@ describe 'OAI-PMH language identity', :no_catalog_upload, type: :request do
       expect(subjects(document, 'iso639-3')).to be_empty
     end
 
+    it 'treats a retired ISO row as any other ISO row' do
+      document = rif_document([retired_iso])
+
+      expect(subjects(document, 'iso639')).to eq(['wbq'])
+      expect(subjects(document, 'local')).to eq(['Waddar'])
+    end
+
     it 'relates every Source to its own website' do
       document = rif_document([iso, glottolog, austlang])
       related = document.xpath("//relatedInfo[@type='website']")
