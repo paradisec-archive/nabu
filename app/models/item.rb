@@ -586,12 +586,8 @@ class Item < ApplicationRecord
         xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => agent.agent_role.name
       end
 
-      subject_languages.each do |language|
-        xml.tag! 'dc:subject', 'xsi:type' => 'olac:language', 'olac:code' => language.code
-      end
-      content_languages.each do |language|
-        xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
-      end
+      subject_languages.each { |language| olac_language_tag(xml, 'dc:subject', language) }
+      content_languages.each { |language| olac_language_tag(xml, 'dc:language', language) }
 
       format = ''
       format += "Digitised: #{digitised_on? ? 'yes' : 'no'}"
@@ -653,6 +649,12 @@ class Item < ApplicationRecord
 
   def to_param
     identifier
+  end
+
+  def olac_language_tag(xml, element, language)
+    return xml.tag!(element, language.olac_text) unless language.iso639_3?
+
+    xml.tag! element, 'xsi:type' => 'olac:language', 'olac:code' => language.code
   end
 
   # ensure the collection mentions all countries and languages present in the item

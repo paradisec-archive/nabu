@@ -88,28 +88,30 @@ def collection_country_json(country)
 end
 
 @property_values = Set.new
-def collection_property_value_json(name, value)
-  id = "#identifier_#{name}"
-
-  property_value = {
-    '@id': id,
-    '@type': 'PropertyValue',
-    name:,
-    value:
-  }
-  @property_values.add(property_value)
+def collection_property_value_node(id, fields)
+  @property_values.add({ '@id': id, '@type': 'PropertyValue', **fields })
 
   { '@id': id }
 end
 
+def collection_property_value_json(name, value)
+  collection_property_value_node("#identifier_#{name}", name:, value:)
+end
+
+def collection_language_identifier_json(language)
+  collection_property_value_node("#language-#{language.source_identifier}-#{language.code}",
+                                 propertyID: language.source_identifier, value: language.code)
+end
+
 @languages = Set.new
 def collection_language_json(language)
-  id = "http://www.language-archives.org/language/#{language.code}"
+  id = language.source_uri
   json = {
     '@id': id,
     '@type': 'Language',
-    code: language.code,
-    name: language.name
+    name: language.name,
+    url: id,
+    identifier: collection_language_identifier_json(language)
   }
   json[:geo] = { '@id': collection_geometry_json(language) } if language.respond_to?(:west_limit) && language.west_limit && language.south_limit && language.east_limit && language.north_limit
 
