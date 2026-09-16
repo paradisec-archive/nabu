@@ -10,7 +10,7 @@
       DCMES 1.1 XML Schema
       XML Schema for http://purl.org/dc/elements/1.1/ namespace
 
-      Created 2003-04-02
+      Created 2008-02-11
 
       Created by 
 
@@ -39,7 +39,7 @@
 
 
   <xs:import namespace="http://www.w3.org/XML/1998/namespace"
-             schemaLocation="http://www.w3.org/2001/03/xml.xsd">
+             schemaLocation="xml.xsd">
   </xs:import>
 
   <xs:complexType name="SimpleLiteral">
