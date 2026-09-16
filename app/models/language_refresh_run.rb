@@ -25,6 +25,11 @@ class LanguageRefreshRun < ApplicationRecord
 
   after_initialize { self.sources ||= {} }
 
+  # Named on every join-table row the Run rewrites, so a re-tag points back at the Run that made it.
+  def whodunnit
+    "Language Refresh Run #{id}"
+  end
+
   def record_source(source, entry)
     update!(sources: sources.merge(source => entry))
   end

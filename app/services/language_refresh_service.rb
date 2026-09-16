@@ -52,7 +52,8 @@ class LanguageRefreshService
     shrinkage = shrinkage(run, stage)
     return entry.merge!('status' => 'refused', 'error' => shrinkage) if shrinkage
 
-    result = PaperTrail.request(enabled: false) { Language.transaction(requires_new: true) { stage.apply } }
+    result = PaperTrail.request(enabled: false) { Language.transaction(requires_new: true) { stage.apply(run) } }
+    reindex(result.delete(:reindex))
     entry.merge!('status' => 'applied', **result.deep_stringify_keys)
   rescue StandardError => e
     Sentry.capture_exception(e, extra: { language_refresh_run: run.id, source: stage.source })
@@ -60,6 +61,12 @@ class LanguageRefreshService
     entry.merge!('status' => 'failed', 'error' => e.message)
   ensure
     run.record_source(stage.source, entry.merge('finished_at' => Time.current))
+  end
+
+  # Rewriting a join table moves tags no Language callback sees, so the Refresh reindexes the
+  # Languages the tags landed on once the stage's transaction has committed.
+  def reindex(language_ids)
+    Language.where(id: language_ids).find_each { |language| LanguageReindexJob.perform_later(language) }
   end
 
   # A download that lost rows looks exactly like a mass retirement, so a big enough drop is refused.
