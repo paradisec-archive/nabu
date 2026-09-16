@@ -47,6 +47,10 @@ class Language < ApplicationRecord
     'austlang' => 'https://collection.aiatsis.gov.au/austlang/language/%s'
   }.freeze
 
+  # The token a Source is known by outside Nabu: the propertyID of an RO-Crate identifier, and the
+  # prefix of an OLAC text entry.
+  SOURCE_IDENTIFIERS = { 'iso639_3' => 'iso639-3', 'glottolog' => 'glottolog', 'austlang' => 'austlang' }.freeze
+
   LABEL_ATTRIBUTES = %w[name code source dialect].freeze
 
   PICKER_RANK = <<~SQL.squish.freeze
@@ -86,12 +90,12 @@ class Language < ApplicationRecord
 
   # The one rendering of a Language wherever a person reads, picks or filters by one.
   def label
-    "#{name} (#{code}) · #{source_name}"
+    "#{name} (#{code}) · #{label_source_name}"
   end
 
+  # The Source itself, which is one of the three registries. The Label marks a Glottolog dialect as
+  # such, but that is a rendering of source and dialect together, not a fourth Source.
   def source_name
-    return 'Glottolog dialect' if glottolog? && dialect?
-
     SOURCE_NAMES[source]
   end
 
@@ -104,6 +108,16 @@ class Language < ApplicationRecord
     return if template.nil?
 
     format(template, code)
+  end
+
+  def source_identifier
+    SOURCE_IDENTIFIERS[source]
+  end
+
+  # OLAC's controlled vocabulary is ISO 639 only and olac:code is typed to it, so a Language from
+  # any other Source is named in the element's text instead, carrying its own Source and Code.
+  def olac_text
+    "#{name} [#{source_identifier}:#{code}]"
   end
 
   has_many :countries_languages
@@ -140,6 +154,12 @@ versions]
   end
 
   private
+
+  def label_source_name
+    return 'Glottolog dialect' if glottolog? && dialect?
+
+    source_name
+  end
 
   def reindex_tagged_records
     LanguageReindexJob.perform_later(self)
