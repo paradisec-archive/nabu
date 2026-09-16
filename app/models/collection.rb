@@ -521,7 +521,7 @@ class Collection < ApplicationRecord
 
           languages.each do |language|
             xml.subject language.name, 'type' => 'local'
-            xml.subject language.code, 'type' => 'iso639-3'
+            xml.subject language.code, 'type' => 'iso639' if language.iso639_3?
           end
 
           xml.subject field_of_research.identifier, 'type' => 'anzsrc-for' if field_of_research
@@ -554,8 +554,8 @@ class Collection < ApplicationRecord
 
           languages.each do |language|
             xml.relatedInfo 'type' => 'website' do
-              xml.identifier "http://www.ethnologue.com/show_language.asp?code=#{language.code}", 'type' => 'uri'
-              xml.title "Ethnologue entry for #{language.name}"
+              xml.identifier language.source_uri, 'type' => 'uri'
+              xml.title "#{language.source_name} entry for #{language.name}"
             end
           end
         end
