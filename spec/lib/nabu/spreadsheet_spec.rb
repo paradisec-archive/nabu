@@ -297,13 +297,72 @@ describe Nabu::Spreadsheet do
       end
     end
 
+    def parse_row(content_languages: nil, subject_languages: nil)
+      row = ['42', 'A title', 'A description', content_languages, subject_languages]
+      sheet.send(:parse_row, row, collector, 16)
+    end
+
     # Regression for NABU-Q9: roo returns Date objects for date-formatted cells, so a date landing
     # in a language/country column reached String#split and raised NoMethodError.
     it 'does not crash when a subject-language cell is date-typed' do
-      row = ['42', 'A title', 'A description', nil, Date.new(2019, 11, 28)]
+      expect { parse_row(subject_languages: Date.new(2019, 11, 28)) }.not_to raise_error
+      expect(sheet.errors).to include(a_string_matching(/Subject language '2019-11-28' not found/))
+    end
 
-      expect { sheet.send(:parse_row, row, collector, 16) }.not_to raise_error
-      expect(sheet.notices).to include(a_string_matching(/Subject language '2019-11-28' not found/))
+    context 'when a cell holds a code' do
+      before do
+        create(:language, code: 'wbp', name: 'Warlpiri')
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri')
+        create(:language, :austlang, code: 'C15', name: 'Warlpiri')
+      end
+
+      it 'resolves each Source from the shape of the code' do
+        parse_row(content_languages: 'wbp|warl1254|C15')
+
+        expect(sheet.errors).to eq([])
+        expect(sheet.items.first.content_languages.map { |l| [l.code, l.source] })
+          .to eq([%w[wbp iso639_3], %w[warl1254 glottolog], %w[C15 austlang]])
+      end
+
+      it 'blocks the import when a name matches more than one Language' do
+        parse_row(subject_languages: 'Warlpiri')
+
+        expect(sheet).not_to be_valid
+        expect(sheet.errors.join).to include('Warlpiri').and include('wbp').and include('warl1254').and include('C15')
+        expect(sheet.items.first&.subject_languages).to be_blank
+      end
+    end
+
+    it 'blocks the import when a code is unknown' do
+      parse_row(content_languages: 'zzz')
+
+      expect(sheet).not_to be_valid
+      expect(sheet.errors).to include(a_string_matching(/Content language 'zzz' not found/))
+    end
+
+    it 'blocks the import when a name is unknown' do
+      parse_row(content_languages: 'Nolanguage')
+
+      expect(sheet).not_to be_valid
+      expect(sheet.errors).to include(a_string_matching(/Content language 'Nolanguage' not found/))
+    end
+
+    it 'reads a multi-word name as one name' do
+      create(:language, code: 'tpi', name: 'Tok Pisin')
+
+      parse_row(content_languages: 'Tok Pisin')
+
+      expect(sheet.errors).to eq([])
+      expect(sheet.items.first.content_languages.map(&:code)).to eq(%w[tpi])
+    end
+
+    it 'reads a comma-separated cell as one name each' do
+      create(:language, code: 'tpi', name: 'Tok Pisin')
+
+      parse_row(content_languages: 'Tok Pisin, German')
+
+      expect(sheet.errors).to eq([])
+      expect(sheet.items.first.content_languages.map(&:code)).to eq(%w[tpi deu])
     end
   end
 end

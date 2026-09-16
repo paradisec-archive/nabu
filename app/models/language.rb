@@ -41,6 +41,9 @@ class Language < ApplicationRecord
     'austlang' => /\A[A-Z][0-9]+(\.([0-9]+|[A-Z]))?\z/
   }.freeze
 
+  # A person types a code in whatever case they please.
+  ANY_CASE_CODE_FORMATS = CODE_FORMATS.transform_values { |shape| Regexp.new(shape.source, Regexp::IGNORECASE) }.freeze
+
   SOURCE_URIS = {
     'iso639_3' => 'https://iso639-3.sil.org/code/%s',
     'glottolog' => 'https://glottolog.org/resource/languoid/id/%s',
@@ -128,6 +131,19 @@ class Language < ApplicationRecord
 
   def equivalents
     LanguageEquivalent.involving(self)
+  end
+
+  # Every Language a typed token could mean: the one its code shape names in that Source, or every
+  # Language of that name. What more than one of them means is the caller's to decide.
+  def self.matching_token(token)
+    token = token.to_s.strip
+    return none if token.blank?
+
+    source, = ANY_CASE_CODE_FORMATS.find { |_, shape| token.match?(shape) }
+    by_name = where(name: token)
+    return by_name if source.nil?
+
+    by_name.or(where(code: token, source:))
   end
 
   def self.ransackable_attributes(_ = nil)

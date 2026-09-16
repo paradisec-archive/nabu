@@ -163,6 +163,33 @@ describe Language, type: :model do
     end
   end
 
+  describe '.matching_token' do
+    let!(:iso) { create(:language, code: 'wbp', name: 'Warlpiri') }
+    let!(:glottolog) { create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri') }
+    let!(:austlang) { create(:language, :austlang, code: 'C15', name: 'Warlpiri') }
+
+    it 'reads a code as the Source whose shape it carries' do
+      expect(described_class.matching_token('wbp')).to contain_exactly(iso)
+      expect(described_class.matching_token('warl1254')).to contain_exactly(glottolog)
+      expect(described_class.matching_token('C15')).to contain_exactly(austlang)
+    end
+
+    it 'reads a code however the depositor cased it' do
+      expect(described_class.matching_token('WBP')).to contain_exactly(iso)
+      expect(described_class.matching_token('c15')).to contain_exactly(austlang)
+    end
+
+    it 'offers every Source a name belongs to' do
+      expect(described_class.matching_token('Warlpiri')).to contain_exactly(iso, glottolog, austlang)
+    end
+
+    it 'offers nothing for a name or code no Source publishes' do
+      expect(described_class.matching_token('Nolanguage')).to be_empty
+      expect(described_class.matching_token('zzz')).to be_empty
+      expect(described_class.matching_token(nil)).to be_empty
+    end
+  end
+
   describe 'equivalents' do
     it 'reaches its equivalents from either side of the pair' do
       iso = create(:language, code: 'wbp')
