@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { createWriteStream, unlinkSync } from 'node:fs';
-import { basename, dirname } from 'node:path';
+import { createWriteStream, mkdirSync, rmSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
@@ -11,6 +11,15 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: 'production',
 });
+
+// unimelb-mf-upload only accepts local paths, so the object has to land on a filesystem first.
+// Fargate ephemeral storage stops at 200 GiB and that is the platform maximum, not a setting we can
+// raise, so anything near it goes to the EFS scratch volume instead.
+const LARGE_OBJECT_THRESHOLD_BYTES = 180 * 1024 ** 3;
+
+// Set once the scratch directory exists, so the top-level handler can still remove it. EFS scratch
+// outlives the task, so a file left behind is billed until someone notices.
+let cleanupScratch = () => {};
 
 type UploadSummary = {
   uploadedFiles: number;
@@ -60,7 +69,6 @@ const main = async () => {
 
   const dir = dirname(key);
   const filename = basename(key);
-  const tmpPath = `/tmp/${filename}`;
 
   // Download from S3
   const s3 = new S3Client();
@@ -91,9 +99,25 @@ const main = async () => {
     process.exit(1);
   }
 
+  const size = response.ContentLength ?? 0;
+  const scratchBase = size > LARGE_OBJECT_THRESHOLD_BYTES && process.env.LARGE_OBJECT_SCRATCH_DIR ? process.env.LARGE_OBJECT_SCRATCH_DIR : '/tmp';
+  // Always work in a job-scoped subdirectory: the EFS volume is shared between concurrent jobs, and
+  // it keeps the cleanup below from ever being pointed at /tmp itself.
+  const scratchDir = join(scratchBase, process.env.AWS_BATCH_JOB_ID ?? `nabu-${process.pid}`);
+  const tmpPath = join(scratchDir, filename);
+
+  mkdirSync(scratchDir, { recursive: true });
+  cleanupScratch = () => {
+    try {
+      rmSync(scratchDir, { recursive: true, force: true });
+    } catch (error) {
+      console.error(`Failed to clean up ${scratchDir}`, error);
+    }
+  };
+
   const writeStream = createWriteStream(tmpPath);
   await pipeline(Readable.fromWeb(response.Body.transformToWebStream()), writeStream);
-  console.log(`Downloaded to ${tmpPath}`);
+  console.log(`Downloaded ${size} bytes to ${tmpPath}`);
 
   // Upload to MediaFlux
   let stdout: string;
@@ -126,6 +150,7 @@ const main = async () => {
     Sentry.captureException(new Error(message), {
       extra: { bucket, key, stdout: err.stdout, stderr: err.stderr },
     });
+    cleanupScratch();
     await Sentry.flush(5000);
     process.exit(1);
   }
@@ -141,6 +166,7 @@ const main = async () => {
       Sentry.captureException(new Error(message), {
         extra: { bucket, key, summary },
       });
+      cleanupScratch();
       await Sentry.flush(5000);
       process.exit(1);
     }
@@ -155,19 +181,20 @@ const main = async () => {
     Sentry.captureException(new Error(message), {
       extra: { bucket, key, stdout },
     });
+    cleanupScratch();
     await Sentry.flush(5000);
     process.exit(1);
   }
 
-  // Cleanup on success
-  unlinkSync(tmpPath);
-  console.log(`Cleaned up ${tmpPath}`);
+  cleanupScratch();
+  console.log(`Cleaned up ${scratchDir}`);
 
   await Sentry.flush(5000);
 };
 
 main().catch(async (err) => {
   console.error('Unexpected error:', err);
+  cleanupScratch();
   Sentry.captureException(err);
   await Sentry.flush(5000);
   process.exit(1);

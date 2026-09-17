@@ -9,6 +9,7 @@ import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecrAssets from 'aws-cdk-lib/aws-ecr-assets';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
@@ -33,6 +34,7 @@ const SENTRY_DSN = 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.i
 // there are only a few dozen task addresses in the whole account.
 const MEDIAFLUX_JOB_VCPUS = 4;
 const MEDIAFLUX_MAX_CONCURRENT_JOBS = 10;
+const MEDIAFLUX_SCRATCH_PATH = '/mnt/mediaflux-scratch';
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
@@ -716,6 +718,21 @@ export class AppStack extends cdk.Stack {
         return subnet;
       });
 
+      // Scratch space for objects too large for the 200 GiB Fargate ephemeral disk. Mount targets go
+      // in the data subnets so they don't spend addresses the upload jobs need.
+      const scratchFileSystem = new efs.FileSystem(this, 'MediafluxScratchFileSystem', {
+        vpc,
+        vpcSubnets: { subnets: dataSubnets },
+        throughputMode: efs.ThroughputMode.ELASTIC,
+        encrypted: true,
+      });
+
+      const scratchAccessPoint = scratchFileSystem.addAccessPoint('MediafluxScratchAccessPoint', {
+        path: '/scratch',
+        createAcl: { ownerUid: '0', ownerGid: '0', permissions: '0755' },
+        posixUser: { uid: '0', gid: '0' },
+      });
+
       const uploadLogGroup = new logs.LogGroup(this, 'MediafluxUploadLogGroup', {
         logGroupName: '/nabu/mediaflux-upload',
         retention: logs.RetentionDays.ONE_YEAR,
@@ -737,11 +754,21 @@ export class AppStack extends cdk.Stack {
           logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'copy-to-mediaflux', logGroup: uploadLogGroup }),
           environment: {
             SENTRY_DSN,
+            LARGE_OBJECT_SCRATCH_DIR: MEDIAFLUX_SCRATCH_PATH,
           },
           secrets: {
             // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
             MFLUX_TOKEN: batch.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
           },
+          volumes: [
+            batch.EcsVolume.efs({
+              name: 'mediaflux-scratch',
+              fileSystem: scratchFileSystem,
+              accessPointId: scratchAccessPoint.accessPointId,
+              containerPath: MEDIAFLUX_SCRATCH_PATH,
+              enableTransitEncryption: true,
+            }),
+          ],
         }),
         // A failed upload now goes back on the queue instead of needing a human to spot it in the
         // weekly size report. Covers the infrastructure failures as well as the transient
@@ -755,6 +782,7 @@ export class AppStack extends cdk.Stack {
         vpcSubnets: { subnets: mediafluxSubnets },
         maxvCpus: MEDIAFLUX_JOB_VCPUS * MEDIAFLUX_MAX_CONCURRENT_JOBS,
       });
+      scratchFileSystem.connections.allowDefaultPortFrom(computeEnvironment);
 
       const jobQueue = new batch.JobQueue(this, 'MediafluxJobQueue', {
         computeEnvironments: [{ computeEnvironment, order: 1 }],
