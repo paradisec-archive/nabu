@@ -689,7 +689,7 @@ class Item < ApplicationRecord
   end
 
   def update_catalog_metadata
-    CatalogMetadataJob.perform_later(self, true)
+    CatalogMetadataJob.enqueue_debounced(self, true)
   end
 
   def center_coordinate

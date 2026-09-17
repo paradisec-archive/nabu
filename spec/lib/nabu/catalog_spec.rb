@@ -23,6 +23,33 @@ describe Nabu::Catalog do
     end
   end
 
+  describe '#upload_item_admin' do
+    # Every object creation in this bucket starts a Mediaflux backup job, so an identical rewrite
+    # costs a whole Fargate task for no change.
+    it 'does not rewrite an object whose content is unchanged' do
+      catalog.upload_item_admin(item, 'ro-crate-metadata.json', '{"name":"one"}', 'application/json')
+
+      expect(catalog.s3).not_to receive(:put_object)
+
+      catalog.upload_item_admin(item, 'ro-crate-metadata.json', '{"name":"one"}', 'application/json')
+    end
+
+    it 'writes when the content has changed' do
+      catalog.upload_item_admin(item, 'ro-crate-metadata.json', '{"name":"one"}', 'application/json')
+
+      expect(catalog.s3).to receive(:put_object).and_call_original
+
+      catalog.upload_item_admin(item, 'ro-crate-metadata.json', '{"name":"two"}', 'application/json')
+    end
+
+    it 'writes when the object is not there yet' do
+      # The bucket outlives a single run, so the key has to be one nothing has written before.
+      expect(catalog.s3).to receive(:put_object).and_call_original
+
+      catalog.upload_item_admin(item, "absent-#{SecureRandom.hex(4)}.json", '{"name":"one"}', 'application/json')
+    end
+  end
+
   describe '#admin_key?' do
     it 'recognises every admin key the builders produce' do
       expect(catalog.admin_key?(catalog.collection_ro_crate_key(collection))).to be true

@@ -17,6 +17,17 @@ describe CatalogMetadataJob, :no_catalog_upload do
     JSON.parse(uploaded)['@graph'].find { |node| node['additionalType'] }
   end
 
+  describe '.enqueue_debounced' do
+    # A bulk ingest regenerates the crate once per essence added. Waiting for the burst to pass means
+    # those all render the same crate, and the upload then skips the ones that change nothing.
+    it 'waits for the debounce window rather than enqueuing immediately' do
+      item = create(:item)
+
+      expect { described_class.enqueue_debounced(item, true) }
+        .to have_enqueued_job(described_class).with(item, true).at(a_value_within(5.seconds).of(described_class::DEBOUNCE_WINDOW.from_now))
+    end
+  end
+
   # The literal, not the constant: renaming the constant must not move the key already in S3.
   it 'writes the item crate under the admin metadata filename' do
     item = create(:item)
