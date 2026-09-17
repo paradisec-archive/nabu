@@ -10,6 +10,9 @@ module LanguageRefresh
 
     TAG_TABLES = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage].freeze
 
+    # What each stage is called in the report. Every stage but the Equivalents one is a Source.
+    STAGE_NAMES = Language::SOURCE_NAMES.merge('equivalents' => 'Equivalents').freeze
+
     # A row carries its own column names, so the same row renders as a Label in the body and as a
     # line in the CSV, and a Source can add a column without disturbing the others.
     LISTS = {
@@ -87,7 +90,7 @@ module LanguageRefresh
 
     def failures
       @failures ||= @run.sources.filter_map do |source, entry|
-        "#{Language::SOURCE_NAMES[source]} #{entry['status']}: #{entry['error']}" if %w[failed refused].include?(entry['status'])
+        "#{STAGE_NAMES.fetch(source)} #{entry['status']}: #{entry['error']}" if %w[failed refused].include?(entry['status'])
       end
     end
 
@@ -167,13 +170,14 @@ module LanguageRefresh
     end
 
     def source_section(source, entry)
-      lines = [Language::SOURCE_NAMES[source], "Status: #{entry['status']}"]
+      lines = [STAGE_NAMES.fetch(source), "Status: #{entry['status']}"]
       lines << "Versions: #{entry['version'].map { |file, version| "#{file} #{version}" }.join(', ')}" if entry['version']
       lines << "Rows read: #{entry['rows']}" if entry['rows']
       return lines.join("\n") unless entry['status'] == 'applied'
 
       LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) if entry.dig('changes', key) }
-      entry.fetch('counts', {}).each { |key, count| lines << '' << "#{key.humanize}: #{count}" }
+      counts = entry.fetch('counts', {}).map { |key, count| "#{key.humanize}: #{count}" }
+      lines << '' << counts.join("\n") if counts.any?
       lines.join("\n")
     end
 

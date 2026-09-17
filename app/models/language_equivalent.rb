@@ -80,8 +80,17 @@ class LanguageEquivalent < ApplicationRecord
     other_than(this_language).picker_option.merge(reason: EVIDENCE[top_evidence])
   end
 
+  # The fixed order evidence is read in, strongest first, wherever a pair's tags are held or shown.
+  def self.sort_evidence(tags)
+    tags.sort_by { |tag| evidence_order(tag) }
+  end
+
+  def self.evidence_order(tag)
+    EVIDENCE.keys.index(tag) || EVIDENCE.size
+  end
+
   def sorted_evidence
-    Array(evidence).sort_by { |tag| evidence_order(tag) }
+    self.class.sort_evidence(Array(evidence))
   end
 
   def top_evidence
@@ -89,14 +98,10 @@ class LanguageEquivalent < ApplicationRecord
   end
 
   def evidence_rank
-    evidence_order(top_evidence)
+    self.class.evidence_order(top_evidence)
   end
 
   private
-
-  def evidence_order(tag)
-    EVIDENCE.keys.index(tag) || EVIDENCE.size
-  end
 
   def order_the_pair
     return if language_id.blank? || related_language_id.blank?
