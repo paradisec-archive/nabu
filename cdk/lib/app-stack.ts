@@ -684,6 +684,19 @@ export class AppStack extends cdk.Stack {
         directory: 'docker/mediaflux',
       });
 
+      // appSubnets points at the public subnets, which are shared with the ingress ALB and NLB. All
+      // three are /28s and they run out of addresses first, so tasks die in PROVISIONING with
+      // InsufficientFreeAddressesInSubnet — which RunTask has already reported as a success. The
+      // backup workload gets the application subnets to itself instead; same TGW egress path.
+      const mediafluxSubnets = ['a', 'b', 'c'].map((az, index) => {
+        const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/private/apse2${az}-id`);
+        const availabilityZone = `ap-southeast-2${az}`;
+        const subnet = ec2.Subnet.fromSubnetAttributes(this, `MediafluxSubnet${index}`, { subnetId, availabilityZone });
+        cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
+
+        return subnet;
+      });
+
       const taskDefinition = new ecs.FargateTaskDefinition(this, 'CopyToMediaFluxTaskDefinition', {
         cpu: 16384,
         memoryLimitMiB: 32768,
@@ -728,7 +741,7 @@ export class AppStack extends cdk.Stack {
         cluster,
         enableExecuteCommand: true,
         subnetSelection: {
-          subnets: appSubnets,
+          subnets: mediafluxSubnets,
         },
         taskDefinition,
         containerOverrides: [
@@ -791,7 +804,7 @@ export class AppStack extends cdk.Stack {
       const inventoryTask = new targets.EcsTask({
         cluster,
         taskDefinition: inventoryTaskDefinition,
-        subnetSelection: { subnets: appSubnets },
+        subnetSelection: { subnets: mediafluxSubnets },
       });
 
       new events.Rule(this, 'MediafluxInventoryScheduleRule', {
