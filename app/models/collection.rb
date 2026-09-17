@@ -210,7 +210,7 @@ class Collection < ApplicationRecord
   end
 
   def update_catalog_metadata
-    CatalogMetadataJob.perform_later(self, false)
+    CatalogMetadataJob.enqueue_debounced(self, false)
   end
 
   searchkick geo_shape: [:bounds], locations: [:location], word_start: [:identifier], deep_paging: true

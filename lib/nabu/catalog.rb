@@ -1,3 +1,4 @@
+require 'digest'
 require 'singleton'
 
 require 'aws-sdk-s3'
@@ -178,12 +179,31 @@ module Nabu
     end
 
     def upload(key, data, content_type)
+      # Every object creation in this bucket starts a Fargate job to back the file up to Mediaflux,
+      # so rewriting identical bytes is not free. Skip the PUT when S3 already holds this content.
+      if unchanged?(key, data)
+        Rails.logger.debug { "Nabu::Catalog: #{key} is unchanged, skipping upload" }
+
+        return
+      end
+
       @s3.put_object(
         bucket: bucket_name,
         key:,
         body: data,
         content_type:
       )
+    end
+
+    # The ETag of a single-part object is the MD5 of its content. Everything uploaded through here
+    # is small enough to be single-part, so a mismatch is a real difference rather than a multipart
+    # artefact.
+    def unchanged?(key, data)
+      etag = @s3.head_object(bucket: bucket_name, key:).etag
+
+      etag.delete('"') == Digest::MD5.hexdigest(data)
+    rescue Aws::S3::Errors::NotFound
+      false
     end
 
     def download(key, as_attachment: false, filename: nil)
