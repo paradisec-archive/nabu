@@ -6,6 +6,7 @@ interface Equivalent {
   label: string;
   description?: string;
   reason?: string;
+  custom_properties?: object;
 }
 
 // Every Language a form offers carries its own Equivalents as Choices.js custom properties, whether
@@ -28,8 +29,9 @@ const buildChip = (equivalent: Equivalent, instance: Choices) => {
     const value = String(equivalent.value);
 
     // The Language may never have been a hit in this field's picker, so it is offered as a choice
-    // before it is chosen.
-    instance.setChoices([{ value, label: equivalent.label, labelDescription: equivalent.description }], 'value', 'label', false);
+    // before it is chosen, carrying its own Equivalents so that its chips render in turn.
+    const choice = { value, label: equivalent.label, labelDescription: equivalent.description, customProperties: equivalent.custom_properties };
+    instance.setChoices([choice], 'value', 'label', false);
     instance.setChoiceByValue(value);
   });
 

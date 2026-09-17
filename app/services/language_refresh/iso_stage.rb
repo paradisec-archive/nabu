@@ -90,23 +90,29 @@ module LanguageRefresh
       end
     end
 
+    # A row the old importer or a person retired by hand is still owed its one-to-one rewrite, so a
+    # Code SIL no longer publishes is read whether or not the flag is already set. Nothing is
+    # reported twice: an old retirement only reappears in the Run that finally moves a tag.
     def retire(retirements, published, languages, run)
       rewritten = []
       held = []
       reindex = []
 
       languages.each_value do |language|
-        next if published.key?(language.code) || language.retired?
+        next if published.key?(language.code)
 
+        was_retired = language.retired?
         replacement = replacement_for(retirements[language.code], published, languages)
-        language.update!(retired: true)
+        language.update!(retired: true) unless was_retired
 
         if replacement.nil?
-          held << { 'code' => language.code, 'name' => language.name }
+          held << { 'code' => language.code, 'name' => language.name } unless was_retired
           next
         end
 
         moved = rewrite(language, replacement, run)
+        next if was_retired && moved.zero?
+
         rewritten << { 'code' => language.code, 'name' => language.name, 'change_to' => replacement.code, 'moved' => moved }
         reindex << replacement.id if moved.positive?
       end
@@ -141,7 +147,8 @@ module LanguageRefresh
       moved
     end
 
-    # Derived every Run, so a Retired Language stays on the list until someone re-tags what it is on.
+    # SIL's own words for why each Retired Language still tagged was retired, and what to do about
+    # it. The report holds the list itself; this only says what this Source knows about its own.
     def held(retirements)
       Language.iso639_3.where(retired: true).tagged.order(:code).map do |language|
         retirement = retirements[language.code] || {}

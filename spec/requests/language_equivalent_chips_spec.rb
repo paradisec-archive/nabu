@@ -9,11 +9,20 @@ describe 'Equivalent chips', type: :request do
   let(:collection) { create(:collection, languages: [iso]) }
   let(:item) { create(:item, collection:, content_languages: [iso], subject_languages: [iso]) }
 
+  let(:by_code) { 'Glottolog gives this ISO 639-3 code' }
+  let(:by_name) { 'Both Sources publish the same name' }
+
+  let(:iso_option) { { 'value' => iso.id, 'label' => 'Warlpiri (wbp) · ISO 639-3' } }
+  let(:glottolog_option) { { 'value' => glottolog.id, 'label' => 'Warlpiri (warl1254) · Glottolog' } }
+  let(:austlang_option) { { 'value' => austlang.id, 'label' => 'Warlpiri (C15) · AUSTLANG' } }
+
+  # A chip adds a Language the picker was never asked for, so it carries that Language's own
+  # Equivalents and its chips render in turn. One level only: a pair of a pair is two clicks.
   let(:glottolog_chip) do
-    { 'value' => glottolog.id, 'label' => 'Warlpiri (warl1254) · Glottolog', 'reason' => 'Glottolog gives this ISO 639-3 code' }
+    glottolog_option.merge('custom_properties' => { 'equivalents' => [iso_option.merge('reason' => by_code)] }, 'reason' => by_code)
   end
   let(:austlang_chip) do
-    { 'value' => austlang.id, 'label' => 'Warlpiri (C15) · AUSTLANG', 'reason' => 'Both Sources publish the same name' }
+    austlang_option.merge('custom_properties' => { 'equivalents' => [iso_option.merge('reason' => by_name)] }, 'reason' => by_name)
   end
 
   before do
@@ -47,6 +56,14 @@ describe 'Equivalent chips', type: :request do
     it 'gives both language fields somewhere to render their chips' do
       expect(chips_enabled_on?('select#item_content_language_ids')).to be true
       expect(chips_enabled_on?('select#item_subject_language_ids')).to be true
+    end
+
+    it 'carries each chip’s own Equivalents, and stops one level down' do
+      chip = chips_on('select#item_content_language_ids', iso).first
+      offered = chip.dig('custom_properties', 'equivalents')
+
+      expect(offered).to eq([iso_option.merge('reason' => by_code)])
+      expect(offered.first).not_to have_key('custom_properties')
     end
 
     it 'leaves a Language with no Equivalent carrying nothing' do
@@ -114,9 +131,11 @@ describe 'Equivalent chips', type: :request do
       expect(hit_for(iso, 'wbp')['custom_properties']).to eq('equivalents' => [glottolog_chip, austlang_chip])
     end
 
-    it 'carries the pair from the other side too' do
+    it 'carries the pair from the other side too, with the other side’s own Equivalents on it' do
+      offered = { 'equivalents' => [glottolog_option.merge('reason' => by_code), austlang_option.merge('reason' => by_name)] }
+
       expect(hit_for(glottolog, 'warl1254')['custom_properties']).to eq(
-        'equivalents' => [{ 'value' => iso.id, 'label' => 'Warlpiri (wbp) · ISO 639-3', 'reason' => 'Glottolog gives this ISO 639-3 code' }]
+        'equivalents' => [iso_option.merge('custom_properties' => offered, 'reason' => by_code)]
       )
     end
 

@@ -18,15 +18,27 @@ describe 'Admin languages', type: :request do
       expect(headers).to include('Code', 'Source', 'Name', 'Dialect', 'Retired', 'Bounding box')
     end
 
-    it 'marks only the rows with all four limits as having a box' do
+    def boxes
       table = Nokogiri::HTML(response.body).at_css('table.data-table')
       headers = table.css('th').map { |th| th.text.strip }
-      boxes = table.css('tbody tr').to_h do |tr|
+
+      table.css('tbody tr').to_h do |tr|
         cells = tr.css('td').map { |td| td.text.strip }
         [cells[headers.index('Code')], cells[headers.index('Bounding box')]]
       end
+    end
 
+    it 'marks only the rows with all four limits as having a box' do
       expect(boxes).to eq('wbp' => 'Yes', 'lajo1234' => 'No', 'C15' => 'No')
+    end
+
+    # A limit of zero is a real edge, and Rails reads a zero float as blank.
+    it 'marks a box on the equator and the prime meridian as a box' do
+      create(:language, code: 'gaa', name: 'Ga', north_limit: 0.0, south_limit: 0.0, west_limit: 0.0, east_limit: 0.0)
+
+      get '/admin/languages'
+
+      expect(boxes).to include('gaa' => 'Yes')
     end
 
     it 'renders each Source by name' do

@@ -48,7 +48,7 @@ module LanguageRefresh
 
       languages.each_value { |language| retire(language, published, changes) }
 
-      { changes:, counts: { country_links_added: add_country_links(languages.values_at(*published.keys)) }, held: }
+      { changes:, counts: { country_links_added: add_country_links(languages.values_at(*published.keys)) } }
     end
 
     private
@@ -111,10 +111,6 @@ module LanguageRefresh
       raise "no #{AUSTRALIA} country to link AUSTLANG Languages to" if australia.nil?
 
       CountryLinks.add(languages.map { |language| [language.id, australia.id] })
-    end
-
-    def held
-      Language.austlang.where(retired: true).tagged.order(:code).map { |language| { 'language_id' => language.id } }
     end
   end
 end

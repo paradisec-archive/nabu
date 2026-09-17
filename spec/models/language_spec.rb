@@ -40,6 +40,14 @@ describe Language, type: :model do
     expect(language).to be_valid
   end
 
+  # A limit of zero is a real edge, and Rails reads a zero float as blank.
+  it 'holds a Bounding box whose edges lie on the equator and the prime meridian' do
+    language = build(:language, north_limit: 0.0, south_limit: 0.0, west_limit: 0.0, east_limit: 0.0)
+
+    expect(language).to have_all_boundaries
+    expect(language.boundaries.north_limit).to eq(0.0)
+  end
+
   describe 'codes and sources' do
     it 'saves one language per code from each source' do
       expect(build(:language, source: :iso639_3, code: 'wbp')).to be_valid
