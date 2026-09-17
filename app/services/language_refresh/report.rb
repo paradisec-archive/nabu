@@ -98,9 +98,19 @@ module LanguageRefresh
       "Failures\n#{failures.any? ? failures.join("\n") : 'None.'}"
     end
 
-    # Every Retired Language still tagged, whichever Run retired it, so nothing waits in a queue.
+    # Every Retired Language still tagged, whichever Run retired it, read from the database rather
+    # than from the stages, so a Source that failed its fetch shortens nothing. A stage that did run
+    # says why its own Languages were retired and what to do about them.
     def held
-      @held ||= @run.sources.values.flat_map { |entry| entry['held'] || [] }
+      @held ||= held_languages.map { |language| reasons.fetch(language.id, { 'language_id' => language.id }) }
+    end
+
+    def held_languages
+      @held_languages ||= Language.where(retired: true).tagged.in_order_of(:source, Language.source_names.keys).order(:code)
+    end
+
+    def reasons
+      @reasons ||= @run.sources.values.flat_map { |entry| entry['held'] || [] }.index_by { |entry| entry['language_id'] }
     end
 
     def needs_a_person_section
@@ -122,7 +132,7 @@ module LanguageRefresh
     end
 
     def languages
-      @languages ||= Language.where(id: held.map { |entry| entry['language_id'] }).index_by(&:id)
+      @languages ||= held_languages.index_by(&:id)
     end
 
     def tag_counts(language)

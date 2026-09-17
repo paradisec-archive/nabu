@@ -194,6 +194,45 @@ describe LanguageRefreshService do
       expect(held_section(body_of(ActionMailer::Base.deliveries.sole))).to include("  Retired: code change\n  Tagged: collection_languages 1")
     end
 
+    # The old importer, and an admin before the box-only form, could both set the flag without moving
+    # the tags, so the rewrite is owed whatever set it.
+    it 'rewrites a one-to-one retirement whose row was already flagged Retired' do
+      aariya.update!(retired: true)
+      collection = create(:collection, languages: [aariya])
+
+      refresh.run
+
+      expect(collection.reload.languages).to contain_exactly(afar)
+
+      body = body_of(ActionMailer::Base.deliveries.sole)
+      expect(body).to include("Retired and rewritten: 1\n  Aariya (aaj) · ISO 639-3 → aar, 1 tag moved")
+      expect(held_section(body)).to eq("Needs a person\nNothing needs a person.\n\nFailures")
+    end
+
+    it 'says nothing more about an old one-to-one retirement once its tags have moved' do
+      aariya.update!(retired: true)
+      create(:collection, languages: [aariya])
+
+      refresh.run
+      refresh.run
+
+      expect(body_of(ActionMailer::Base.deliveries.last)).to include('Retired and rewritten: 0')
+    end
+
+    # Held is read from the database rather than from the stages, so a Source that answered nothing
+    # this Run cannot drop its Languages off the list.
+    it 'lists a Retired Language still tagged even when its Source failed' do
+      mandobo = create(:language, code: 'aax', name: 'Mandobo Atas', retired: true)
+      create(:collection, languages: [mandobo])
+      stub_request(:get, sil_codes_url).to_return(status: 503)
+
+      refresh.run
+
+      mail = ActionMailer::Base.deliveries.sole
+      expect(mail.subject).to include('1 need a person', '1 failure')
+      expect(held_section(body_of(mail))).to include("Mandobo Atas (aax) · ISO 639-3\n  Retired: no longer published")
+    end
+
     it 'retires a Code its Source no longer publishes and reinstates a Retired Code it publishes again' do
       vanished = create(:language, code: 'zzz', name: 'Gone')
       akkadian = create(:language, code: 'akk', name: 'Akkadian (retired)', retired: true)

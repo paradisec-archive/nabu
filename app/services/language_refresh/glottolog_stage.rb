@@ -58,7 +58,7 @@ module LanguageRefresh
 
       languages.each_value { |language| retire(language, published, changes) }
 
-      { changes:, counts: { country_links_added: add_country_links(published, languages) }, held: }
+      { changes:, counts: { country_links_added: add_country_links(published, languages) } }
     end
 
     private
@@ -125,10 +125,6 @@ module LanguageRefresh
 
         row['Countries'].to_s.split(';').filter_map { |country| [language.id, countries[country]] if countries[country] }
       end)
-    end
-
-    def held
-      Language.glottolog.where(retired: true).tagged.order(:code).map { |language| { 'language_id' => language.id } }
     end
   end
 end

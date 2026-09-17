@@ -58,13 +58,18 @@ class LanguageEquivalent < ApplicationRecord
 
   # What each of these Languages could be offered alongside, keyed by the Language the chips hang
   # under, strongest evidence first.
-  def self.options_for(languages)
+  #
+  # A chip adds a Language the picker was never asked for, so each option carries that Language's own
+  # Equivalents and its chips render in turn. One level deep and no further: A paired with B and B
+  # with C is two pairs, each its own click, and never a pairing of A with C.
+  def self.options_for(languages, nested: true)
     return {} if languages.empty?
 
     pairs = involving(languages.map(&:id)).includes(:language, :related_language).sort_by { |pair| [pair.evidence_rank, pair.id] }
+    offered = nested ? options_for(pairs.flat_map { |pair| [pair.language, pair.related_language] }.uniq - languages, nested: false) : {}
 
     languages.index_by(&:id).transform_values do |language|
-      pairs.select { |pair| pair.involves?(language) }.map { |pair| pair.option_for(language) }
+      pairs.select { |pair| pair.involves?(language) }.map { |pair| pair.option_for(language, offered) }
     end
   end
 
@@ -76,8 +81,10 @@ class LanguageEquivalent < ApplicationRecord
     language_id == this_language.id ? related_language : language
   end
 
-  def option_for(this_language)
-    other_than(this_language).picker_option.merge(reason: EVIDENCE[top_evidence])
+  def option_for(this_language, offered = {})
+    other = other_than(this_language)
+
+    other.picker_option(offered[other.id]).merge(reason: EVIDENCE[top_evidence])
   end
 
   # The fixed order evidence is read in, strongest first, wherever a pair's tags are held or shown.

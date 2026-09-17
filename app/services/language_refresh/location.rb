@@ -30,9 +30,7 @@ module LanguageRefresh
         { north_limit: point.latitude, south_limit: point.latitude, west_limit: point.longitude, east_limit: point.longitude }
       end
 
-      # A limit of zero is a real edge, and Rails reads a zero float as blank, so emptiness here is
-      # only ever nil. HasBoundaries#has_all_boundaries? asks with `north_limit?` and so calls a box
-      # on the equator empty.
+      # A limit of zero is a real edge, so emptiness here is only ever nil.
       def boxless?(language)
         limits_of(language).all?(&:nil?)
       end
@@ -40,7 +38,7 @@ module LanguageRefresh
       # Kilometres past the nearest edge, or nil where there is nothing to disagree: no point, or no
       # box to measure against. A box only partly filled in is nobody's to complete.
       def warning_distance(language, point)
-        return if point.nil? || limits_of(language).any?(&:nil?)
+        return if point.nil? || !language.has_all_boundaries?
 
         distance = distance_from_box(language, point)
         distance.round if distance > WARNING_THRESHOLD_KM

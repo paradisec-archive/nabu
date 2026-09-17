@@ -14,8 +14,10 @@ module HasBoundaries
       )
     end
 
+    # A limit of zero is a real edge — the equator and the prime meridian — and Rails reads a zero
+    # float as blank, so a missing limit is asked for as nil rather than with `north_limit?`.
     def has_all_boundaries?
-      north_limit? && south_limit? && west_limit? && east_limit?
+      [north_limit, south_limit, west_limit, east_limit].none?(&:nil?)
     end
 
     private
