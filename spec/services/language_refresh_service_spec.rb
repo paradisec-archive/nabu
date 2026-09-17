@@ -499,6 +499,92 @@ describe LanguageRefreshService do
         .to include("Bounding boxes filled from the Source point: 1\n  Warlpiri (warl1254) · Glottolog")
     end
 
+    describe 'a point that disagrees with a box someone already set' do
+      let(:sydney_box) { { north_limit: -33.8, south_limit: -33.9, west_limit: 151.1, east_limit: 151.3 } }
+
+      it 'warns how far outside the box the point lies and leaves the box alone' do
+        warlpiri = create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri', **sydney_box)
+
+        refresh.run
+
+        expect(warlpiri.reload).to have_attributes(**sydney_box)
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include(
+          "Location warnings: 1\n  Warlpiri (warl1254) · Glottolog, the Source point is 2496 km outside the Bounding box"
+        )
+      end
+
+      it 'raises the same warning again on the next Run' do
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri', **sydney_box)
+        refresh.run
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Location warnings: 1')
+      end
+
+      it 'raises no warning for a point inside the box' do
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri',
+                                      north_limit: -19.0, south_limit: -21.0, west_limit: 130.0, east_limit: 132.0)
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Location warnings: 0')
+      end
+
+      # 250 km is 2.248 degrees of latitude, so these two boxes sit either side of the threshold:
+      # the point is 249 km north of the first and 250 km north of the second.
+      it 'raises no warning for a point outside the box but nearer than 250 km' do
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri',
+                                      north_limit: -22.34, south_limit: -24.0, west_limit: 130.0, east_limit: 132.0)
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Location warnings: 0')
+      end
+
+      it 'warns for a point just past 250 km' do
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri',
+                                      north_limit: -22.35, south_limit: -24.0, west_limit: 130.0, east_limit: 132.0)
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('the Source point is 250 km outside the Bounding box')
+      end
+
+      it 'raises no warning for a point inside a box that crosses the antimeridian' do
+        stub_request(:get, glottolog_url)
+          .to_return(body: glottolog_languages.sub('-20.1008,131.05,warl1254', '-18.0,-179.0,warl1254'))
+        create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri',
+                                      north_limit: -17.0, south_limit: -19.0, west_limit: 177.0, east_limit: -178.0)
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Location warnings: 0')
+      end
+
+      it 'takes the Language but no box when the Source publishes a coordinate it cannot read' do
+        stub_request(:get, glottolog_url)
+          .to_return(body: glottolog_languages.sub('-20.1008,131.05,warl1254', 'hereabouts,131.05,warl1254'))
+
+        refresh.run
+
+        expect(LanguageRefreshRun.sole.sources.dig('glottolog', 'status')).to eq('applied')
+        expect(Language.find_by(code: 'warl1254')).to have_attributes(name: 'Warlpiri', north_limit: nil, west_limit: nil)
+      end
+
+      it 'neither fills nor warns when only some of the four limits are set' do
+        warlpiri = create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri', north_limit: -33.8, south_limit: -33.9)
+
+        refresh.run
+
+        expect(warlpiri.reload).to have_attributes(north_limit: -33.8, west_limit: nil)
+        body = body_of(ActionMailer::Base.deliveries.sole)
+        expect(body).to include('Bounding boxes filled from the Source point: 0')
+        expect(body).to include('Location warnings: 0')
+      end
+    end
+
     it 'reinstates a glottocode Glottolog publishes again' do
       refresh.run
       warlpiri = Language.find_by(code: 'warl1254')
@@ -556,13 +642,15 @@ describe LanguageRefreshService do
         expect(body).to include("Retired and held: 1\n  Unserdeutsch (unse1236) · Glottolog")
       end
 
-      # The Bounding box is the only thing a Source does not own, so a point that has moved is
-      # never applied over one. Reporting the disagreement is #1213's Location warning.
-      it 'never moves a box that already exists' do
+      # The Bounding box is the only thing a Source does not own, so a point that has moved is never
+      # applied over one. This one has moved 129 km, too little to be worth a person's time.
+      it 'never moves a box that already exists, and says nothing of a point that moved a little' do
         refresh.run
 
         expect(Language.find_by(code: 'warl1254').north_limit).to be_within(0.001).of(-20.1008)
-        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Bounding boxes filled from the Source point: 0')
+        body = body_of(ActionMailer::Base.deliveries.sole)
+        expect(body).to include('Bounding boxes filled from the Source point: 0')
+        expect(body).to include('Location warnings: 0')
       end
     end
   end

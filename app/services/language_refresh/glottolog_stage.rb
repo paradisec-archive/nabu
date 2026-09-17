@@ -37,7 +37,7 @@ module LanguageRefresh
     def apply(_run)
       published = @rows.index_by { |row| row['ID'] }
       languages = Language.glottolog.index_by(&:code)
-      changes = { new: [], renamed: [], dialect_changed: [], retired_held: [], reinstated: [], boxes_filled: [] }
+      changes = { new: [], renamed: [], dialect_changed: [], retired_held: [], reinstated: [], boxes_filled: [], location_warnings: [] }
 
       published.each do |code, row|
         language = languages[code]
@@ -61,7 +61,7 @@ module LanguageRefresh
     end
 
     def create(row, changes)
-      language = Language.create!(code: row['ID'], name: row['Name'], source:, dialect: LEVELS[row['Level']], **box(row))
+      language = Language.create!(code: row['ID'], name: row['Name'], source:, dialect: LEVELS[row['Level']], **Location.limits(point(row)))
       changes[:new] << entry(row)
       language
     end
@@ -69,11 +69,14 @@ module LanguageRefresh
     # One write per row, so a rename, a dialect reclassification, a Reinstatement and a first box
     # all land together and the Label reindex fires once.
     def update(language, row, changes)
+      distance = Location.warning_distance(language, point(row))
+      changes[:location_warnings] << entry(row).merge('distance_km' => distance) if distance
+
       attributes = {}
       attributes[:name] = row['Name'] if language.name != row['Name']
       attributes[:dialect] = LEVELS[row['Level']] if language.dialect? != LEVELS[row['Level']]
       attributes[:retired] = false if language.retired?
-      attributes.merge!(box(row)) if boxless?(language)
+      attributes.merge!(Location.limits(point(row))) if Location.boxless?(language)
       return language if attributes.empty?
 
       changes[:renamed] << entry(row).merge('old_name' => language.name) if attributes.key?(:name)
@@ -93,22 +96,12 @@ module LanguageRefresh
       changes[:retired_held] << { 'code' => language.code, 'name' => language.name, 'dialect' => language.dialect? }
     end
 
+    def point(row)
+      Location.point(row['Latitude'], row['Longitude'])
+    end
+
     def entry(row)
       { 'code' => row['ID'], 'name' => row['Name'], 'dialect' => LEVELS[row['Level']] }
-    end
-
-    # Glottolog publishes a point, never an extent, so an empty box becomes that point on all four
-    # sides. A box that already exists is never touched, whoever set it.
-    def box(row)
-      latitude = row['Latitude'].presence
-      longitude = row['Longitude'].presence
-      return {} if latitude.nil? || longitude.nil?
-
-      { north_limit: latitude, south_limit: latitude, west_limit: longitude, east_limit: longitude }
-    end
-
-    def boxless?(language)
-      [language.north_limit, language.south_limit, language.west_limit, language.east_limit].all?(&:nil?)
     end
 
     def add_country_links(published, languages)
