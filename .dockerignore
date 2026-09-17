@@ -32,6 +32,12 @@
 
 # Ignore assets.
 /node_modules/
+# Agent worktrees, local package/gem caches: never used by the image build
+# (bundle install and pnpm install run inside it), but CDK stages and hashes
+# the whole context on every synth.
+/.claude
+/.pnpm-store
+/vendor/bundle
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets
