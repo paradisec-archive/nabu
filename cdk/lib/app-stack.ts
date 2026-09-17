@@ -743,6 +743,10 @@ export class AppStack extends cdk.Stack {
       });
       catalogBucket.grantRead(jobRole);
       acknowledgeNag(jobRole, { id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' });
+      // The denyAnonymousAccess feature flag makes CDK attach a file system policy granting only
+      // ClientWrite and ClientRootAccess. A policy without ClientMount denies the mount outright, so
+      // the job has to be granted it explicitly and then mount as itself (useJobRole below).
+      scratchFileSystem.grantRootAccess(jobRole);
 
       const jobDefinition = new batch.EcsJobDefinition(this, 'MediafluxJobDefinition', {
         container: new batch.EcsFargateContainerDefinition(this, 'MediafluxJobContainer', {
@@ -765,6 +769,7 @@ export class AppStack extends cdk.Stack {
               name: 'mediaflux-scratch',
               fileSystem: scratchFileSystem,
               accessPointId: scratchAccessPoint.accessPointId,
+              useJobRole: true,
               containerPath: MEDIAFLUX_SCRATCH_PATH,
               enableTransitEncryption: true,
             }),
