@@ -101,8 +101,17 @@ module ApplicationHelper
     select_tag attribute, option_tags, data: html_data, class: "#{class_name} choices-select language", multiple: true
   end
 
-  def language_choices(languages)
-    languages.map { |language| [language.label, language.id, { data: { label_description: language.picker_description } }] }
+  # A form that offers chips carries each option's Equivalents with it, so the chips are there before
+  # the picker has been asked anything. Advanced search offers no chips and so carries none.
+  def language_choices(languages, equivalents: false)
+    offered = equivalents ? LanguageEquivalent.options_for(languages) : {}
+
+    languages.map do |language|
+      option = language.picker_option(offered[language.id])
+      data = { label_description: option[:description], custom_properties: option[:custom_properties] }.compact
+
+      [language.label, language.id, { data: }]
+    end
   end
 
   def mimetype_select_tag(attribute, options = {})

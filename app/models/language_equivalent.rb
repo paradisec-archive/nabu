@@ -28,7 +28,15 @@
 #     * **`related_language_id => languages.id`**
 #
 class LanguageEquivalent < ApplicationRecord
-  EVIDENCE = %w[glottolog:iso glottolog:closest_iso chirila:iso chirila:glottocode name].freeze
+  # Every kind of evidence a pair can rest on, strongest first, each against what a chip says for
+  # itself on hover. Nabu asserts no confidence beyond naming where the pairing came from.
+  EVIDENCE = {
+    'glottolog:iso' => 'Glottolog gives this ISO 639-3 code',
+    'glottolog:closest_iso' => 'Glottolog names this the closest ISO 639-3 code',
+    'chirila:iso' => 'Chirila pairs these by ISO 639-3 code',
+    'chirila:glottocode' => 'Chirila pairs these by glottocode',
+    'name' => 'Both Sources publish the same name'
+  }.freeze
 
   belongs_to :language
   belongs_to :related_language, class_name: 'Language'
@@ -48,11 +56,47 @@ class LanguageEquivalent < ApplicationRecord
     [one_id, other_id].minmax
   end
 
+  # What each of these Languages could be offered alongside, keyed by the Language the chips hang
+  # under, strongest evidence first.
+  def self.options_for(languages)
+    return {} if languages.empty?
+
+    pairs = involving(languages.map(&:id)).includes(:language, :related_language).sort_by { |pair| [pair.evidence_rank, pair.id] }
+
+    languages.index_by(&:id).transform_values do |language|
+      pairs.select { |pair| pair.involves?(language) }.map { |pair| pair.option_for(language) }
+    end
+  end
+
+  def involves?(this_language)
+    [language_id, related_language_id].include?(this_language.id)
+  end
+
   def other_than(this_language)
     language_id == this_language.id ? related_language : language
   end
 
+  def option_for(this_language)
+    other_than(this_language).picker_option.merge(reason: EVIDENCE[top_evidence])
+  end
+
+  def sorted_evidence
+    Array(evidence).sort_by { |tag| evidence_order(tag) }
+  end
+
+  def top_evidence
+    sorted_evidence.first
+  end
+
+  def evidence_rank
+    evidence_order(top_evidence)
+  end
+
   private
+
+  def evidence_order(tag)
+    EVIDENCE.keys.index(tag) || EVIDENCE.size
+  end
 
   def order_the_pair
     return if language_id.blank? || related_language_id.blank?
@@ -67,7 +111,7 @@ class LanguageEquivalent < ApplicationRecord
   end
 
   def evidence_is_a_list_of_known_tags
-    unknown = Array(evidence) - EVIDENCE
+    unknown = Array(evidence) - EVIDENCE.keys
     errors.add(:evidence, "has tags no seed produces: #{unknown.join(', ')}") if unknown.any?
     errors.add(:evidence, 'must say what the pair rests on') if Array(evidence).empty?
   end
