@@ -115,8 +115,8 @@ bin/release prod
 If necessary:
 
 ``` bash
-bin/aws/ecs_rake app deploy:migrate
-bin/aws/ecs_rake app searchkick:reindex
+bin/aws/ecs_rake app db:migrate
+bin/aws/ecs_rake app search:reindex
 ```
 
 ## Importing a production database into your development environment
@@ -132,28 +132,18 @@ nabu_run bin/rake db:migrate
 nabu_run bin/rake searchkick:reindex:all
 ```
 
-# New Ethnologue data
+# Language data
 
-We use the following source locations
+Every Language is brought into line with its Source by the Language Refresh, which runs
+monthly on the first Tuesday and emails a report. It reads ISO 639-3 from SIL, Glottolog
+from its latest release and AUSTLANG from AIATSIS, regenerates the advisory Equivalents,
+fills empty Bounding boxes and lists what needs a person.
 
-* <https://www.ethnologue.com/codes/>
-* <https://iso639-3.sil.org/code_tables/download_tables>
-
-Run the following rake task to import everything
+To run one by hand:
 
 ``` bash
-bundle exec rake import:ethnologue
+nabu_run bin/rake languages:refresh
 ```
-
-This will
-
-* Add new countries and update names
-* Update country names
-* Add new languages and update names (Only Living languages)
-* Add mappings of language to countries
-* All existing languages that are retired are marked as such, incl name change.
-* Where name changes occurred items in CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage are updated with the replacement language code.
-* Where splits happened, a message is printed.
 
 # OAI-PMH
 
