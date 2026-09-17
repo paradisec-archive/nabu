@@ -34,7 +34,7 @@ ActiveAdmin.register Language do
 
   filter :countries
   filter :code
-  filter :source, as: :select, collection: -> { Language::SOURCE_NAMES.invert }
+  filter :source, as: :select, collection: -> { Language.source_names.invert }
   filter :name
   filter :dialect
   filter :retired
@@ -45,7 +45,7 @@ ActiveAdmin.register Language do
 
   index do
     column :code
-    column(:source) { |language| Language::SOURCE_NAMES[language.source] }
+    column(:source, &:source_name)
     column :name
     column :dialect
     column :retired
@@ -58,7 +58,7 @@ ActiveAdmin.register Language do
     attributes_table_for(resource)  do
       row :id
       row :code
-      row(:source) { Language::SOURCE_NAMES[language.source] }
+      row(:source) { language.source_name }
       row :name
       row :dialect
       row :retired

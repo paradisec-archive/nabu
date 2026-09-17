@@ -11,7 +11,7 @@ module LanguageRefresh
     TAG_TABLES = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage].freeze
 
     # What each stage is called in the report. Every stage but the Equivalents one is a Source.
-    STAGE_NAMES = Language::SOURCE_NAMES.merge('equivalents' => 'Equivalents').freeze
+    STAGE_NAMES = Language.source_names.merge('equivalents' => 'Equivalents').freeze
 
     # A row carries its own column names, so the same row renders as a Label in the body and as a
     # line in the CSV, and a Source can add a column without disturbing the others.

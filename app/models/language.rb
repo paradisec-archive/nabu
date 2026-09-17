@@ -28,31 +28,39 @@
 class Language < ApplicationRecord
   include HasBoundaries
 
-  SOURCES = { iso639_3: 'iso639_3', glottolog: 'glottolog', austlang: 'austlang' }.freeze
+  # Everything Nabu holds about one Source. A Source is the truth for everything on a Language
+  # except its Bounding box, so each one is a single entry in SOURCES rather than another literal
+  # in every place that names, links or validates a Code.
+  #
+  # `code_format` is the shape a Source's Codes take, checked against every code each one publishes
+  # so a real code is never refused: all 1,204 AUSTLANG codes, 53 of which carry a suffix (A38.1,
+  # N116.A), and all 27,177 Glottolog rows, one of which starts with a numeral.
+  #
+  # `identifier` is the token a Source is known by outside Nabu: the propertyID of an RO-Crate
+  # identifier, and the prefix of an OLAC text entry.
+  Source = Data.define(:key, :name, :code_format, :uri_template, :identifier) do
+    def uri(code)
+      format(uri_template, code)
+    end
 
-  SOURCE_NAMES = { 'iso639_3' => 'ISO 639-3', 'glottolog' => 'Glottolog', 'austlang' => 'AUSTLANG' }.freeze
+    def code_shaped?(code)
+      code.match?(code_format)
+    end
 
-  # Shapes checked against every code each source publishes, so a real code is never refused: all
-  # 1,204 AUSTLANG codes, 53 of which carry a suffix (A38.1, N116.A), and all 27,177 Glottolog
-  # rows, one of which starts with a numeral.
-  CODE_FORMATS = {
-    'iso639_3' => /\A[a-z]{3}\z/,
-    'glottolog' => /\A[a-z0-9]{4}[0-9]{4}\z/,
-    'austlang' => /\A[A-Z][0-9]+(\.([0-9]+|[A-Z]))?\z/
-  }.freeze
+    # A person types a code in whatever case they please.
+    def code_shaped_any_case?(code)
+      code.match?(/#{code_format.source}/i)
+    end
+  end
 
-  # A person types a code in whatever case they please.
-  ANY_CASE_CODE_FORMATS = CODE_FORMATS.transform_values { |shape| Regexp.new(shape.source, Regexp::IGNORECASE) }.freeze
-
-  SOURCE_URIS = {
-    'iso639_3' => 'https://iso639-3.sil.org/code/%s',
-    'glottolog' => 'https://glottolog.org/resource/languoid/id/%s',
-    'austlang' => 'https://collection.aiatsis.gov.au/austlang/language/%s'
-  }.freeze
-
-  # The token a Source is known by outside Nabu: the propertyID of an RO-Crate identifier, and the
-  # prefix of an OLAC text entry.
-  SOURCE_IDENTIFIERS = { 'iso639_3' => 'iso639-3', 'glottolog' => 'glottolog', 'austlang' => 'austlang' }.freeze
+  SOURCES = [
+    Source.new(key: 'iso639_3', name: 'ISO 639-3', code_format: /\A[a-z]{3}\z/,
+               uri_template: 'https://iso639-3.sil.org/code/%s', identifier: 'iso639-3'),
+    Source.new(key: 'glottolog', name: 'Glottolog', code_format: /\A[a-z0-9]{4}[0-9]{4}\z/,
+               uri_template: 'https://glottolog.org/resource/languoid/id/%s', identifier: 'glottolog'),
+    Source.new(key: 'austlang', name: 'AUSTLANG', code_format: /\A[A-Z][0-9]+(\.([0-9]+|[A-Z]))?\z/,
+               uri_template: 'https://collection.aiatsis.gov.au/austlang/language/%s', identifier: 'austlang')
+  ].index_by(&:key).freeze
 
   LABEL_ATTRIBUTES = %w[name code source dialect].freeze
 
@@ -61,8 +69,8 @@ class Language < ApplicationRecord
       WHEN languages.code = :term THEN 0
       WHEN languages.retired THEN 5
       WHEN languages.dialect THEN 4
-      WHEN languages.source = '#{SOURCES[:iso639_3]}' THEN 1
-      WHEN languages.source = '#{SOURCES[:glottolog]}' THEN 2
+      WHEN languages.source = '#{SOURCES.fetch('iso639_3').key}' THEN 1
+      WHEN languages.source = '#{SOURCES.fetch('glottolog').key}' THEN 2
       ELSE 3
     END
   SQL
@@ -73,7 +81,7 @@ class Language < ApplicationRecord
 
   after_update_commit :reindex_tagged_records, if: -> { saved_changes.keys.intersect?(LABEL_ATTRIBUTES) }
 
-  enum :source, SOURCES, validate: true
+  enum :source, SOURCES.transform_values(&:key), validate: true
 
   validates :name, presence: true
   validates :source, presence: true
@@ -101,10 +109,15 @@ class Language < ApplicationRecord
     "#{name} (#{code}) · #{label_source_name}"
   end
 
-  # The Source itself, which is one of the three registries. The Label marks a Glottolog dialect as
-  # such, but that is a rendering of source and dialect together, not a fourth Source.
+  # Everything Nabu holds about the registry that issued this Code.
+  def source_definition
+    SOURCES[source]
+  end
+
+  # The Source itself. The Label marks a Glottolog dialect as such, but that is a rendering of
+  # source and dialect together, not a Source of its own.
   def source_name
-    SOURCE_NAMES[source]
+    source_definition&.name
   end
 
   def picker_description
@@ -120,14 +133,11 @@ class Language < ApplicationRecord
   end
 
   def source_uri
-    template = SOURCE_URIS[source]
-    return if template.nil?
-
-    format(template, code)
+    source_definition&.uri(code)
   end
 
   def source_identifier
-    SOURCE_IDENTIFIERS[source]
+    source_definition&.identifier
   end
 
   # OLAC's controlled vocabulary is ISO 639 only and olac:code is typed to it, so a Language from
@@ -166,11 +176,16 @@ class Language < ApplicationRecord
     token = token.to_s.strip
     return none if token.blank?
 
-    source, = ANY_CASE_CODE_FORMATS.find { |_, shape| token.match?(shape) }
+    source = SOURCES.values.find { |candidate| candidate.code_shaped_any_case?(token) }
     by_name = where(name: token)
     return by_name if source.nil?
 
-    by_name.or(where(code: token, source:))
+    by_name.or(where(code: token, source: source.key))
+  end
+
+  # Every Source's name, keyed by the enum value stored on a Language.
+  def self.source_names
+    SOURCES.transform_values(&:name)
   end
 
   def self.ransackable_attributes(_ = nil)
@@ -197,9 +212,9 @@ versions]
   def code_matches_its_source
     return if code.blank?
 
-    shape = CODE_FORMATS[source]
-    return if shape.nil? || code.match?(shape)
+    definition = source_definition
+    return if definition.nil? || definition.code_shaped?(code)
 
-    errors.add(:code, "is not shaped like a #{SOURCE_NAMES[source]} code")
+    errors.add(:code, "is not shaped like a #{definition.name} code")
   end
 end
