@@ -7,8 +7,6 @@ module LanguageRefresh
     WARNING_THRESHOLD_KM = 250
     EARTH_RADIUS_KM = 6371.0
 
-    LIMITS = %i[north_limit south_limit west_limit east_limit].freeze
-
     Point = Data.define(:latitude, :longitude)
 
     class << self
@@ -30,11 +28,6 @@ module LanguageRefresh
         { north_limit: point.latitude, south_limit: point.latitude, west_limit: point.longitude, east_limit: point.longitude }
       end
 
-      # A limit of zero is a real edge, so emptiness here is only ever nil.
-      def boxless?(language)
-        limits_of(language).all?(&:nil?)
-      end
-
       # Kilometres past the nearest edge, or nil where there is nothing to disagree: no point, or no
       # box to measure against. A box only partly filled in is nobody's to complete.
       def warning_distance(language, point)
@@ -45,10 +38,6 @@ module LanguageRefresh
       end
 
       private
-
-      def limits_of(language)
-        language.slice(*LIMITS).values
-      end
 
       def distance_from_box(language, point)
         nearest = Point.new(

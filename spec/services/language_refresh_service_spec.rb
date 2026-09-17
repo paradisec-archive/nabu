@@ -800,8 +800,7 @@ describe LanguageRefreshService do
           .to include("Bounding boxes filled from the Source point: 1\n  Widjandja (A38.1) · AUSTLANG")
       end
 
-      # A box is a person's to change once it exists, so a point that has moved is never applied over
-      # one. Reporting the disagreement is #1213's Location warning.
+      # A box is a person's to change once it exists; a point that has moved is a Location warning.
       it 'never moves a box that already exists' do
         serve_austlang { |records| records.first['approximate_latitude_of_language_variety'] = -30.0 }
         ActionMailer::Base.deliveries.clear

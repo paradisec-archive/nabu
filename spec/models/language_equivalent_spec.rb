@@ -64,8 +64,8 @@ describe LanguageEquivalent, type: :model do
     expect(equivalent.reload.evidence).to eq(%w[glottolog:iso name])
   end
 
-  # The regeneration slice writes this table in bulk, which skips the callbacks above, so the
-  # ordering has to hold at the database or a reversed duplicate would slip in.
+  # A bulk write skips the callbacks above, so the ordering has to hold at the database or a
+  # reversed duplicate would slip in.
   describe 'a bulk write' do
     it 'refuses a pair written the wrong way round' do
       row = { language_id: [iso.id, glottolog.id].max, related_language_id: [iso.id, glottolog.id].min, evidence: ['name'].to_json }

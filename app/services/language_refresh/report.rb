@@ -8,8 +8,6 @@ module LanguageRefresh
     FACET_WARNING = 0.8
     HELD_ATTACHMENT = 'needs-a-person.csv'.freeze
 
-    TAG_TABLES = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage].freeze
-
     # What each stage is called in the report. Every stage but the Equivalents one is a Source.
     STAGE_NAMES = Language.source_names.merge('equivalents' => 'Equivalents').freeze
 
@@ -136,7 +134,7 @@ module LanguageRefresh
     end
 
     def tag_counts(language)
-      TAG_TABLES.filter_map do |model|
+      Language::TAGGINGS.filter_map do |model|
         count = model.where(language_id: language.id).count
         "#{model.table_name} #{count}" if count.positive?
       end
@@ -163,8 +161,7 @@ module LanguageRefresh
     end
 
     def url_options
-      host = Rails.application.config.action_mailer.default_url_options&.dig(:host) || 'catalog.paradisec.org.au'
-      { host:, protocol: 'https' }
+      { host: Rails.application.config.action_mailer.default_url_options.fetch(:host), protocol: 'https' }
     end
 
     def held_csv
