@@ -14,6 +14,9 @@ describe LanguageRefreshService do
   let(:glottolog_url) { format(LanguageRefresh::GlottologStage::LANGUAGES_URL, 'v5.3') }
   let(:glottolog_languages) { fixtures.join('glottolog-languages.csv').read }
 
+  let(:austlang_url) { %r{\Ahttps://data\.gov\.au/data/api/3/action/datastore_search\?} }
+  let(:austlang_dataset) { fixtures.join('austlang-datastore.json').read }
+
   let!(:australia) { create(:country, code: 'AU', name: 'Australia') }
   let!(:papua_new_guinea) { create(:country, code: 'PG', name: 'Papua New Guinea') }
   let!(:vanuatu) { create(:country, code: 'VU', name: 'Vanuatu') }
@@ -31,6 +34,7 @@ describe LanguageRefreshService do
       .to_return(body: fixtures.join('LanguageIndex.tab').read, headers: { 'Last-Modified' => 'Fri, 27 Feb 2026 21:59:51 GMT' })
     stub_request(:get, releases_url).to_return(body: { tag_name: 'v5.3' }.to_json)
     stub_request(:get, glottolog_url).to_return(body: glottolog_languages)
+    stub_request(:get, austlang_url).to_return(body: austlang_dataset)
     ActionMailer::Base.deliveries.clear
   end
 
@@ -655,15 +659,235 @@ describe LanguageRefreshService do
     end
   end
 
-  describe 'both Sources' do
-    let(:stages) { described_class::STAGES }
+  describe 'the AUSTLANG stage' do
+    let(:stages) { [LanguageRefresh::AustlangStage] }
 
-    it 'runs the ISO 639-3 stage and then the Glottolog stage' do
+    def serve_austlang
+      payload = JSON.parse(austlang_dataset)
+      yield payload['result']['records']
+      payload['result']['total'] = payload['result']['records'].size
+      stub_request(:get, austlang_url).to_return(body: payload.to_json)
+    end
+
+    it 'takes every Language the datastore publishes, in one call' do
       refresh.run
 
-      expect(LanguageRefreshRun.sole.sources.keys).to eq(%w[iso639_3 glottolog])
+      expect(Language.austlang.pluck(:code)).to contain_exactly('C15', 'G5', 'A38.1', 'N116.A', 'A10')
+      expect(Language.find_by(code: 'C15', source: :austlang)).to have_attributes(name: 'Warlpiri', dialect: false, retired: false)
+      expect(a_request(:get, austlang_url)).to have_been_made.once
+    end
+
+    it 'fills a box from the published point and leaves a Language published at 0,0 boxless' do
+      refresh.run
+
+      expect(Language.find_by(code: 'C15', source: :austlang)).to have_attributes(
+        north_limit: be_within(0.001).of(-20.4336), south_limit: be_within(0.001).of(-20.4336),
+        west_limit: be_within(0.001).of(131.0524), east_limit: be_within(0.001).of(131.0524)
+      )
+      expect(Language.find_by(code: 'A38.1', source: :austlang))
+        .to have_attributes(north_limit: nil, south_limit: nil, west_limit: nil, east_limit: nil)
+    end
+
+    it 'links every Language to Australia' do
+      refresh.run
+
+      expect(Language.austlang.map { |language| language.countries.to_a }).to all(eq([australia]))
+    end
+
+    it 'records the version and the counts on the Run and prints them in the report' do
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources['austlang']).to include(
+        'status' => 'applied', 'version' => { 'austlang_dataset' => a_string_starting_with('sha256:') }, 'rows' => 5,
+        'counts' => { 'country_links_added' => 5 }
+      )
+      body = body_of(ActionMailer::Base.deliveries.sole)
+      expect(body).to match(/AUSTLANG\nStatus: applied\nVersions: austlang_dataset sha256:\h{12}\nRows read: 5/)
+      expect(body).to include("New: 5\n  Warlpiri (C15) · AUSTLANG")
+      expect(body).to include("Country links added: 5\n")
+    end
+
+    it 'gives a new version when the dataset changes, so a Run can tell one download from the next' do
+      refresh.run
+      first = LanguageRefreshRun.sole.sources.dig('austlang', 'version')
+      serve_austlang { |records| records.first['language_name'] = 'Walpiri' }
+
+      refresh.run
+
+      expect(LanguageRefreshRun.last.sources.dig('austlang', 'version')).not_to eq(first)
+    end
+
+    describe 'a second Run against a changed dataset' do
+      before { refresh.run }
+
+      it 'applies and reports a rename' do
+        serve_austlang { |records| records.first['language_name'] = 'Walpiri' }
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(Language.find_by(code: 'C15', source: :austlang).name).to eq('Walpiri')
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Renamed: 1\n  Walpiri (C15) · AUSTLANG, was Warlpiri")
+      end
+
+      it 'fills a box on a Language AUSTLANG has since given a point for' do
+        serve_austlang do |records|
+          record = records.find { |row| row['language_code'] == 'A38.1' }
+          record['approximate_latitude_of_language_variety'] = -26.0
+          record['approximate_longitude_of_language_variety'] = 126.0
+        end
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(Language.find_by(code: 'A38.1', source: :austlang).north_limit).to be_within(0.001).of(-26.0)
+        expect(body_of(ActionMailer::Base.deliveries.sole))
+          .to include("Bounding boxes filled from the Source point: 1\n  Widjandja (A38.1) · AUSTLANG")
+      end
+
+      # A box is a person's to change once it exists, so a point that has moved is never applied over
+      # one. Reporting the disagreement is #1213's Location warning.
+      it 'never moves a box that already exists' do
+        serve_austlang { |records| records.first['approximate_latitude_of_language_variety'] = -30.0 }
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(Language.find_by(code: 'C15', source: :austlang).north_limit).to be_within(0.001).of(-20.4336)
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Bounding boxes filled from the Source point: 0')
+      end
+
+      it 'retires a Code AUSTLANG no longer publishes and rewrites nothing' do
+        warlpiri = Language.find_by(code: 'C15', source: :austlang)
+        item = create(:item, content_languages: [warlpiri])
+        serve_austlang { |records| records.reject! { |row| row['language_code'] == 'C15' } }
+        stub_const('LanguageRefreshService::SHRINK_LIMIT', 0.5)
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(warlpiri.reload).to have_attributes(retired: true, name: 'Warlpiri')
+        expect(item.reload.content_languages).to eq([warlpiri])
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Retired and held: 1\n  Warlpiri (C15) · AUSTLANG")
+      end
+
+      it 'lists a Retired Language under needs a person while it is still tagged' do
+        warlpiri = Language.find_by(code: 'C15', source: :austlang)
+        create(:item, content_languages: [warlpiri])
+        serve_austlang { |records| records.reject! { |row| row['language_code'] == 'C15' } }
+        stub_const('LanguageRefreshService::SHRINK_LIMIT', 0.5)
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        body = body_of(ActionMailer::Base.deliveries.sole)
+        expect(body).to include(
+          "Warlpiri (C15) · AUSTLANG\n  Retired: no longer published\n  Tagged: collection_languages 1, item_content_languages 1"
+        )
+      end
+
+      it 'reinstates a Code AUSTLANG publishes again' do
+        warlpiri = Language.find_by(code: 'C15', source: :austlang)
+        warlpiri.update!(retired: true)
+        ActionMailer::Base.deliveries.clear
+
+        refresh.run
+
+        expect(warlpiri.reload.retired).to be(false)
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Reinstated: 1\n  Warlpiri (C15) · AUSTLANG")
+      end
+    end
+
+    describe 'a point that disagrees with a box' do
+      it 'warns rather than moving a box a person already has, and says how far out the point is' do
+        # Warlpiri is published at -20.4336, 131.0524; this box is over Sydney.
+        warlpiri = create(:language, :austlang, code: 'C15', name: 'Warlpiri',
+                                                north_limit: -33.0, south_limit: -34.0, west_limit: 150.0, east_limit: 151.0)
+
+        refresh.run
+
+        expect(warlpiri.reload).to have_attributes(north_limit: -33.0, south_limit: -34.0, west_limit: 150.0, east_limit: 151.0)
+        expect(body_of(ActionMailer::Base.deliveries.sole))
+          .to match(/Location warnings: 1\n  Warlpiri \(C15\) · AUSTLANG, the Source point is \d+ km outside the Bounding box/)
+      end
+
+      it 'raises no warning for a Language AIATSIS publishes at 0,0' do
+        create(:language, :austlang, code: 'A10', name: 'Ngurlu',
+                                     north_limit: -33.0, south_limit: -34.0, west_limit: 150.0, east_limit: 151.0)
+
+        refresh.run
+
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Location warnings: 0')
+      end
+    end
+
+    describe 'a datastore that does not answer the table' do
+      def failure
+        refresh.run
+        LanguageRefreshRun.last.sources['austlang']
+      end
+
+      it 'fails the stage when CKAN reports no success' do
+        stub_request(:get, austlang_url).to_return(body: { success: false, error: { message: 'Not found: Resource' } }.to_json)
+
+        expect(failure).to include('status' => 'failed', 'error' => 'datastore_search refused the request: Not found: Resource')
+        expect(Language.austlang.count).to eq(0)
+      end
+
+      it 'fails the stage when the table is missing a column the stage reads' do
+        stub_request(:get, austlang_url).to_return(
+          body: { success: true, result: { fields: [{ id: 'language_code' }], records: [], total: 0 } }.to_json
+        )
+
+        expect(failure).to include(
+          'status' => 'failed',
+          'error' => 'datastore_search is missing columns language_name, ' \
+                     'approximate_latitude_of_language_variety, approximate_longitude_of_language_variety'
+        )
+      end
+
+      it 'fails the stage rather than retire every Language the page left out' do
+        payload = JSON.parse(austlang_dataset)
+        payload['result']['records'] = payload['result']['records'].first(2)
+        stub_request(:get, austlang_url).to_return(body: payload.to_json)
+
+        expect(failure).to include('status' => 'failed', 'error' => 'datastore_search answered 2 of 5 rows')
+      end
+
+      it 'fails the stage when the datastore answers something other than JSON' do
+        stub_request(:get, austlang_url).to_return(body: '<html>Gateway timeout</html>')
+
+        expect(failure).to include('status' => 'failed', 'error' => a_string_including('did not answer with JSON'))
+      end
+    end
+  end
+
+  describe 'every Source' do
+    let(:stages) { described_class::STAGES }
+
+    # MySQL normalises the keys of a JSON object by length, so a Run records which Sources ran but
+    # never the order they ran in.
+    it 'applies every Source in one Run' do
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources.keys).to contain_exactly('iso639_3', 'glottolog', 'austlang')
       expect(Language.iso639_3.count).to eq(34)
       expect(Language.glottolog.count).to eq(5)
+      expect(Language.austlang.count).to eq(5)
+    end
+
+    it 'leaves the other Sources applied when the AUSTLANG datastore does not answer' do
+      stub_request(:get, austlang_url).to_return(status: 503)
+
+      refresh.run
+
+      run = LanguageRefreshRun.sole
+      expect(run).to be_completed
+      expect(run.sources.dig('iso639_3', 'status')).to eq('applied')
+      expect(run.sources.dig('glottolog', 'status')).to eq('applied')
+      expect(run.sources.dig('austlang', 'status')).to eq('failed')
+      expect(Language.austlang.count).to eq(0)
+      expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Failures\nAUSTLANG failed: GET ")
     end
 
     it 'fails only the Glottolog stage when the releases API does not answer' do
