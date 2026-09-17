@@ -3,18 +3,25 @@ import { execSync } from 'node:child_process';
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as backup from 'aws-cdk-lib/aws-backup';
+import * as batch from 'aws-cdk-lib/aws-batch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecrAssets from 'aws-cdk-lib/aws-ecr-assets';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ses from 'aws-cdk-lib/aws-ses';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import type { Construct } from 'constructs';
 
@@ -22,6 +29,12 @@ import { acknowledgeNag } from './nag';
 import type { AppProps } from './types';
 
 const SENTRY_DSN = 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608';
+
+// The ceiling here is the VPC, not the Fargate vCPU quota: the application subnets are /28s, so
+// there are only a few dozen task addresses in the whole account.
+const MEDIAFLUX_JOB_VCPUS = 4;
+const MEDIAFLUX_MAX_CONCURRENT_JOBS = 10;
+const MEDIAFLUX_SCRATCH_PATH = '/mnt/mediaflux-scratch';
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
@@ -684,13 +697,6 @@ export class AppStack extends cdk.Stack {
         directory: 'docker/mediaflux',
       });
 
-      const taskDefinition = new ecs.FargateTaskDefinition(this, 'CopyToMediaFluxTaskDefinition', {
-        cpu: 16384,
-        memoryLimitMiB: 32768,
-        ephemeralStorageGiB: 200,
-      });
-      acknowledgeNag(searchDomain, { id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' });
-
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
         secretName: '/nabu/mediaflux',
         secretObjectValue: {
@@ -699,57 +705,113 @@ export class AppStack extends cdk.Stack {
       });
       acknowledgeNag(mediafluxSecrets, { id: 'AwsSolutions-SMG4', reason: 'No auto rotation needed' });
 
-      taskDefinition.addContainer('MediafluxContainer', {
-        containerName: 'mediaflux',
-        image: ecs.ContainerImage.fromDockerImageAsset(image),
-        logging: new ecs.AwsLogDriver({ streamPrefix: 'copy-to-mediaflux' }),
-        pseudoTerminal: true,
-        environment: {
-          SENTRY_DSN,
-        },
-        secrets: {
-          // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
-          MFLUX_TOKEN: ecs.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
-        },
-      });
-      acknowledgeNag(taskDefinition, { id: 'AwsSolutions-ECS2', reason: 'We are fine with env variables' });
-      catalogBucket.grantRead(taskDefinition.taskRole);
+      // The USyd VPC only gives us /28s. appSubnets points at the public ones, which are shared with
+      // the ingress ALB and NLB and run out of addresses first, so the backup workload gets the
+      // application subnets to itself.
+      const mediafluxSubnets = ['a', 'b', 'c'].map((az, index) => {
+        const subnetId = ssm.StringParameter.valueForStringParameter(this, `/usyd/resources/subnets/private/apse2${az}-id`);
+        const availabilityZone = `ap-southeast-2${az}`;
+        const subnet = ec2.Subnet.fromSubnetAttributes(this, `MediafluxSubnet${index}`, { subnetId, availabilityZone });
+        cdk.Annotations.of(subnet).acknowledgeWarning('@aws-cdk/aws-ec2:noSubnetRouteTableId');
 
-      const cluster = new ecs.Cluster(this, 'NabuCluster', {
+        return subnet;
+      });
+
+      // Scratch space for objects too large for the 200 GiB Fargate ephemeral disk. Mount targets go
+      // in the data subnets so they don't spend addresses the upload jobs need.
+      const scratchFileSystem = new efs.FileSystem(this, 'MediafluxScratchFileSystem', {
         vpc,
-        containerInsightsV2: ecs.ContainerInsights.ENHANCED,
-      });
-      acknowledgeNag(cluster, {
-        id: 'AwsSolutions-ECS4',
-        reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
+        vpcSubnets: { subnets: dataSubnets },
+        throughputMode: efs.ThroughputMode.ELASTIC,
+        encrypted: true,
       });
 
-      const mediaFluxTask = new targets.EcsTask({
-        cluster,
-        enableExecuteCommand: true,
-        subnetSelection: {
-          subnets: appSubnets,
-        },
-        taskDefinition,
-        containerOverrides: [
-          {
-            containerName: 'mediaflux',
-            environment: [
-              {
-                name: 'S3_BUCKET',
-                value: events.EventField.fromPath('$.detail.bucket.name'),
-              },
-              {
-                name: 'S3_KEY',
-                value: events.EventField.fromPath('$.detail.object.key'),
-              },
-            ],
-          },
-        ],
+      const scratchAccessPoint = scratchFileSystem.addAccessPoint('MediafluxScratchAccessPoint', {
+        path: '/scratch',
+        createAcl: { ownerUid: '0', ownerGid: '0', permissions: '0755' },
+        posixUser: { uid: '0', gid: '0' },
       });
+
+      const uploadLogGroup = new logs.LogGroup(this, 'MediafluxUploadLogGroup', {
+        logGroupName: '/nabu/mediaflux-upload',
+        retention: logs.RetentionDays.ONE_YEAR,
+      });
+
+      const jobRole = new iam.Role(this, 'MediafluxJobRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+      catalogBucket.grantRead(jobRole);
+      acknowledgeNag(jobRole, { id: 'AwsSolutions-IAM5', reason: 'Star on S3 get is fine' });
+
+      const jobDefinition = new batch.EcsJobDefinition(this, 'MediafluxJobDefinition', {
+        container: new batch.EcsFargateContainerDefinition(this, 'MediafluxJobContainer', {
+          image: ecs.ContainerImage.fromDockerImageAsset(image),
+          cpu: MEDIAFLUX_JOB_VCPUS,
+          memory: cdk.Size.gibibytes(16),
+          ephemeralStorageSize: cdk.Size.gibibytes(200),
+          jobRole,
+          logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'copy-to-mediaflux', logGroup: uploadLogGroup }),
+          environment: {
+            SENTRY_DSN,
+            LARGE_OBJECT_SCRATCH_DIR: MEDIAFLUX_SCRATCH_PATH,
+          },
+          secrets: {
+            // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
+            MFLUX_TOKEN: batch.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
+          },
+          volumes: [
+            batch.EcsVolume.efs({
+              name: 'mediaflux-scratch',
+              fileSystem: scratchFileSystem,
+              accessPointId: scratchAccessPoint.accessPointId,
+              containerPath: MEDIAFLUX_SCRATCH_PATH,
+              enableTransitEncryption: true,
+            }),
+          ],
+        }),
+        // A failed upload now goes back on the queue instead of needing a human to spot it in the
+        // weekly size report. Covers the infrastructure failures as well as the transient
+        // "Listening socket closed!" drops mid-transfer.
+        retryAttempts: 3,
+        timeout: cdk.Duration.hours(12),
+      });
+
+      const computeEnvironment = new batch.FargateComputeEnvironment(this, 'MediafluxComputeEnvironment', {
+        vpc,
+        vpcSubnets: { subnets: mediafluxSubnets },
+        maxvCpus: MEDIAFLUX_JOB_VCPUS * MEDIAFLUX_MAX_CONCURRENT_JOBS,
+      });
+      scratchFileSystem.connections.allowDefaultPortFrom(computeEnvironment);
+
+      const jobQueue = new batch.JobQueue(this, 'MediafluxJobQueue', {
+        computeEnvironments: [{ computeEnvironment, order: 1 }],
+      });
+
+      const alarmTopic = new sns.Topic(this, 'MediafluxAlarmTopic', {
+        displayName: 'Nabu Mediaflux backup alarms',
+        enforceSSL: true,
+      });
+      acknowledgeNag(alarmTopic, { id: 'AwsSolutions-SNS2', reason: 'Alarm metadata only, no catalog content' });
+
+      // Catches the case the job can never report on itself: EventBridge failing to submit the job
+      // at all. Everything past submission reports to Sentry from inside the container.
+      const eventDlq = new sqs.Queue(this, 'MediafluxEventDlq', {
+        retentionPeriod: cdk.Duration.days(14),
+        enforceSSL: true,
+      });
+      acknowledgeNag(eventDlq, { id: 'AwsSolutions-SQS3', reason: 'This is itself a dead letter queue' });
+
+      new cloudwatch.Alarm(this, 'MediafluxEventDlqAlarm', {
+        alarmDescription: 'An object created in the catalog bucket never made it onto the Mediaflux job queue',
+        metric: eventDlq.metricApproximateNumberOfMessagesVisible(),
+        threshold: 0,
+        evaluationPeriods: 1,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+        treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      }).addAlarmAction(new cloudwatchActions.SnsAction(alarmTopic));
 
       new events.Rule(this, 'S3PutEventRule', {
-        description: 'Rule to trigger Fargate task on S3 put event',
+        description: 'Rule to queue a Mediaflux backup job on S3 put event',
         eventPattern: {
           source: ['aws.s3'],
           detailType: ['Object Created'],
@@ -762,7 +824,45 @@ export class AppStack extends cdk.Stack {
             },
           },
         },
-        targets: [mediaFluxTask],
+        targets: [
+          new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
+            jobName: 'copy-to-mediaflux',
+            deadLetterQueue: eventDlq,
+            retryAttempts: 5,
+            event: events.RuleTargetInput.fromObject({
+              ContainerOverrides: {
+                Environment: [
+                  { Name: 'S3_BUCKET', Value: events.EventField.fromPath('$.detail.bucket.name') },
+                  { Name: 'S3_KEY', Value: events.EventField.fromPath('$.detail.object.key') },
+                ],
+              },
+            }),
+          }),
+        ],
+      });
+
+      // A job that exhausts its retries has usually failed before the container ran, so there is no
+      // code left to tell Sentry about it.
+      new events.Rule(this, 'MediafluxJobFailureRule', {
+        description: 'Alert when a Mediaflux backup job fails after exhausting its retries',
+        eventPattern: {
+          source: ['aws.batch'],
+          detailType: ['Batch Job State Change'],
+          detail: {
+            status: ['FAILED'],
+            jobQueue: [jobQueue.jobQueueArn],
+          },
+        },
+        targets: [new targets.SnsTopic(alarmTopic)],
+      });
+
+      const cluster = new ecs.Cluster(this, 'NabuCluster', {
+        vpc,
+        containerInsightsV2: ecs.ContainerInsights.ENHANCED,
+      });
+      acknowledgeNag(cluster, {
+        id: 'AwsSolutions-ECS4',
+        reason: 'https://github.com/cdklabs/cdk-nag/pull/1927',
       });
 
       const inventoryTaskDefinition = new ecs.FargateTaskDefinition(this, 'MediafluxInventoryTaskDefinition', {
@@ -791,7 +891,7 @@ export class AppStack extends cdk.Stack {
       const inventoryTask = new targets.EcsTask({
         cluster,
         taskDefinition: inventoryTaskDefinition,
-        subnetSelection: { subnets: appSubnets },
+        subnetSelection: { subnets: mediafluxSubnets },
       });
 
       new events.Rule(this, 'MediafluxInventoryScheduleRule', {
