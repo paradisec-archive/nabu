@@ -14,8 +14,9 @@ Sentry.init({
 
 // unimelb-mf-upload only accepts local paths, so the object has to land on a filesystem first.
 // Fargate ephemeral storage stops at 200 GiB and that is the platform maximum, not a setting we can
-// raise, so anything near it goes to the EFS scratch volume instead.
-const LARGE_OBJECT_THRESHOLD_BYTES = 180 * 1024 ** 3;
+// raise, so anything near it goes to the EFS scratch volume instead. The threshold comes from the
+// stack, which routes on the same number, so the two cannot drift apart.
+const LARGE_OBJECT_THRESHOLD_BYTES = Number.parseInt(process.env.MEDIAFLUX_LARGE_OBJECT_BYTES ?? '', 10) || 180 * 1024 ** 3;
 
 // Set once the scratch directory exists, so the top-level handler can still remove it. EFS scratch
 // outlives the task, so a file left behind is billed until someone notices.
@@ -100,7 +101,18 @@ const main = async () => {
   }
 
   const size = response.ContentLength ?? 0;
-  const scratchBase = size > LARGE_OBJECT_THRESHOLD_BYTES && process.env.LARGE_OBJECT_SCRATCH_DIR ? process.env.LARGE_OBJECT_SCRATCH_DIR : '/tmp';
+  const isLarge = size > LARGE_OBJECT_THRESHOLD_BYTES;
+
+  // Only the large-object job definition mounts the scratch volume. Landing here without it means
+  // the object reached the wrong queue, and /tmp will run out partway through the download — say so
+  // now rather than leaving an ENOSPC to be worked backwards from.
+  if (isLarge && !process.env.LARGE_OBJECT_SCRATCH_DIR) {
+    const message = `${key} is ${size} bytes but has no scratch volume, the download will exhaust /tmp`;
+    console.error(message);
+    Sentry.captureMessage(message, 'error');
+  }
+
+  const scratchBase = isLarge && process.env.LARGE_OBJECT_SCRATCH_DIR ? process.env.LARGE_OBJECT_SCRATCH_DIR : '/tmp';
   // Always work in a job-scoped subdirectory: the EFS volume is shared between concurrent jobs, and
   // it keeps the cleanup below from ever being pointed at /tmp itself.
   const scratchDir = join(scratchBase, process.env.AWS_BATCH_JOB_ID ?? `nabu-${process.pid}`);

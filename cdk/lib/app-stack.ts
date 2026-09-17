@@ -35,6 +35,9 @@ const SENTRY_DSN = 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.i
 const MEDIAFLUX_JOB_VCPUS = 4;
 const MEDIAFLUX_MAX_CONCURRENT_JOBS = 10;
 const MEDIAFLUX_SCRATCH_PATH = '/mnt/mediaflux-scratch';
+// Only a handful of objects in the catalogue are too big for the 200 GiB Fargate disk. The rule
+// routes on this, and the container is told the same number so the two can't drift apart.
+const MEDIAFLUX_LARGE_OBJECT_BYTES = 180 * 1024 ** 3;
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, appProps: AppProps, props?: cdk.StackProps) {
@@ -748,8 +751,11 @@ export class AppStack extends cdk.Stack {
       // the job has to be granted it explicitly and then mount as itself (useJobRole below).
       scratchFileSystem.grantRootAccess(jobRole);
 
-      const jobDefinition = new batch.EcsJobDefinition(this, 'MediafluxJobDefinition', {
-        container: new batch.EcsFargateContainerDefinition(this, 'MediafluxJobContainer', {
+      // Only the large-object definition mounts the scratch volume. When every job mounted it, a
+      // misconfigured file system policy stopped uploads of ordinary small files that would never
+      // have touched it.
+      const mediafluxContainer = (id: string, scratch: boolean) =>
+        new batch.EcsFargateContainerDefinition(this, id, {
           image: ecs.ContainerImage.fromDockerImageAsset(image),
           cpu: MEDIAFLUX_JOB_VCPUS,
           memory: cdk.Size.gibibytes(16),
@@ -758,26 +764,38 @@ export class AppStack extends cdk.Stack {
           logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'copy-to-mediaflux', logGroup: uploadLogGroup }),
           environment: {
             SENTRY_DSN,
-            LARGE_OBJECT_SCRATCH_DIR: MEDIAFLUX_SCRATCH_PATH,
+            MEDIAFLUX_LARGE_OBJECT_BYTES: `${MEDIAFLUX_LARGE_OBJECT_BYTES}`,
+            ...(scratch ? { LARGE_OBJECT_SCRATCH_DIR: MEDIAFLUX_SCRATCH_PATH } : {}),
           },
           secrets: {
             // NOTE: This token is tied to John Ferlito's account and will need to be replaced if his account is removed
             MFLUX_TOKEN: batch.Secret.fromSecretsManager(mediafluxSecrets, 'token'),
           },
-          volumes: [
-            batch.EcsVolume.efs({
-              name: 'mediaflux-scratch',
-              fileSystem: scratchFileSystem,
-              accessPointId: scratchAccessPoint.accessPointId,
-              useJobRole: true,
-              containerPath: MEDIAFLUX_SCRATCH_PATH,
-              enableTransitEncryption: true,
-            }),
-          ],
-        }),
-        // A failed upload now goes back on the queue instead of needing a human to spot it in the
-        // weekly size report. Covers the infrastructure failures as well as the transient
-        // "Listening socket closed!" drops mid-transfer.
+          volumes: scratch
+            ? [
+                batch.EcsVolume.efs({
+                  name: 'mediaflux-scratch',
+                  fileSystem: scratchFileSystem,
+                  accessPointId: scratchAccessPoint.accessPointId,
+                  useJobRole: true,
+                  containerPath: MEDIAFLUX_SCRATCH_PATH,
+                  enableTransitEncryption: true,
+                }),
+              ]
+            : [],
+        });
+
+      // A failed upload goes back on the queue instead of needing a human to spot it in the weekly
+      // size report. Covers the infrastructure failures as well as the transient
+      // "Listening socket closed!" drops mid-transfer.
+      const jobDefinition = new batch.EcsJobDefinition(this, 'MediafluxJobDefinition', {
+        container: mediafluxContainer('MediafluxJobContainer', false),
+        retryAttempts: 3,
+        timeout: cdk.Duration.hours(12),
+      });
+
+      const largeJobDefinition = new batch.EcsJobDefinition(this, 'MediafluxLargeJobDefinition', {
+        container: mediafluxContainer('MediafluxLargeJobContainer', true),
         retryAttempts: 3,
         timeout: cdk.Duration.hours(12),
       });
@@ -816,35 +834,54 @@ export class AppStack extends cdk.Stack {
         treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
       }).addAlarmAction(new cloudwatchActions.SnsAction(alarmTopic));
 
-      new events.Rule(this, 'S3PutEventRule', {
-        description: 'Rule to queue a Mediaflux backup job on S3 put event',
-        eventPattern: {
-          source: ['aws.s3'],
-          detailType: ['Object Created'],
-          detail: {
-            bucket: {
-              name: [catalogBucket.bucketName],
+      const mediafluxTarget = (definition: batch.EcsJobDefinition) =>
+        new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, definition.jobDefinitionArn, definition, {
+          jobName: 'copy-to-mediaflux',
+          deadLetterQueue: eventDlq,
+          retryAttempts: 5,
+          event: events.RuleTargetInput.fromObject({
+            ContainerOverrides: {
+              Environment: [
+                { Name: 'S3_BUCKET', Value: events.EventField.fromPath('$.detail.bucket.name') },
+                { Name: 'S3_KEY', Value: events.EventField.fromPath('$.detail.object.key') },
+              ],
             },
-            object: {
-              key: [{ prefix: '' }],
-            },
+          }),
+        });
+
+      const objectCreated = (size: unknown) => ({
+        source: ['aws.s3'],
+        detailType: ['Object Created'],
+        detail: {
+          bucket: {
+            name: [catalogBucket.bucketName],
+          },
+          object: {
+            key: [{ prefix: '' }],
+            size,
           },
         },
-        targets: [
-          new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
-            jobName: 'copy-to-mediaflux',
-            deadLetterQueue: eventDlq,
-            retryAttempts: 5,
-            event: events.RuleTargetInput.fromObject({
-              ContainerOverrides: {
-                Environment: [
-                  { Name: 'S3_BUCKET', Value: events.EventField.fromPath('$.detail.bucket.name') },
-                  { Name: 'S3_KEY', Value: events.EventField.fromPath('$.detail.object.key') },
-                ],
-              },
-            }),
-          }),
-        ],
+      });
+
+      // Three rules rather than two, because an Object Created event without a size would otherwise
+      // match neither and be dropped with nothing to show for it. Anything unsized is treated as
+      // large: that definition can handle an object of any size, the plain one cannot.
+      new events.Rule(this, 'S3PutEventRule', {
+        description: 'Rule to queue a Mediaflux backup job on S3 put event',
+        eventPattern: objectCreated([{ numeric: ['<=', MEDIAFLUX_LARGE_OBJECT_BYTES] }]),
+        targets: [mediafluxTarget(jobDefinition)],
+      });
+
+      new events.Rule(this, 'S3PutLargeObjectEventRule', {
+        description: 'Rule to queue a Mediaflux backup job for objects too big for the Fargate disk',
+        eventPattern: objectCreated([{ numeric: ['>', MEDIAFLUX_LARGE_OBJECT_BYTES] }]),
+        targets: [mediafluxTarget(largeJobDefinition)],
+      });
+
+      new events.Rule(this, 'S3PutUnsizedObjectEventRule', {
+        description: 'Rule to queue a Mediaflux backup job when the event carries no object size',
+        eventPattern: objectCreated([{ exists: false }]),
+        targets: [mediafluxTarget(largeJobDefinition)],
       });
 
       // A job that exhausts its retries has usually failed before the container ran, so there is no
