@@ -848,9 +848,17 @@ export class AppStack extends cdk.Stack {
       });
 
       // A job that exhausts its retries has usually failed before the container ran, so there is no
-      // code left to tell Sentry about it.
+      // code left to tell Sentry about it. Failures land in a queue rather than mailing one message
+      // each: a single EFS misconfiguration produced 221 of them, which buries the signal it was
+      // meant to raise. The queue keeps each failure for triage and the alarm below reports the rate.
+      const jobFailureQueue = new sqs.Queue(this, 'MediafluxJobFailureQueue', {
+        retentionPeriod: cdk.Duration.days(14),
+        enforceSSL: true,
+      });
+      acknowledgeNag(jobFailureQueue, { id: 'AwsSolutions-SQS3', reason: 'Holds failures for triage, it is not a work queue' });
+
       new events.Rule(this, 'MediafluxJobFailureRule', {
-        description: 'Alert when a Mediaflux backup job fails after exhausting its retries',
+        description: 'Record Mediaflux backup jobs that fail after exhausting their retries',
         eventPattern: {
           source: ['aws.batch'],
           detailType: ['Batch Job State Change'],
@@ -859,8 +867,22 @@ export class AppStack extends cdk.Stack {
             jobQueue: [jobQueue.jobQueueArn],
           },
         },
-        targets: [new targets.SnsTopic(alarmTopic)],
+        targets: [new targets.SqsQueue(jobFailureQueue)],
       });
+
+      // Alarms notify on the transition into ALARM, so a run of failures raises one message and then
+      // stays put until it recovers, however many jobs fail behind it.
+      new cloudwatch.Alarm(this, 'MediafluxJobFailureAlarm', {
+        alarmDescription: 'Mediaflux backup jobs are failing after exhausting their retries',
+        metric: jobFailureQueue.metricNumberOfMessagesSent({
+          statistic: 'Sum',
+          period: cdk.Duration.minutes(15),
+        }),
+        threshold: 0,
+        evaluationPeriods: 1,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+        treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      }).addAlarmAction(new cloudwatchActions.SnsAction(alarmTopic));
 
       const cluster = new ecs.Cluster(this, 'NabuCluster', {
         vpc,
