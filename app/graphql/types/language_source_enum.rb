@@ -5,8 +5,8 @@ module Types
     graphql_name 'LanguageSource'
     description 'The Source a language code comes from'
 
-    Language::SOURCE_NAMES.each do |source, source_name|
-      value source.upcase, source_name, value: source
+    Language::SOURCES.each_value do |source|
+      value source.key.upcase, source.name, value: source.key
     end
   end
 end
