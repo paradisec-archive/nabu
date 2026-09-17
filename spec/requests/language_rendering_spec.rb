@@ -36,6 +36,29 @@ describe 'Language rendering', type: :request do
     end
   end
 
+  # "Set map from language" asks this endpoint for each tagged Language and extends the map to every
+  # box it gets back, so a Language the Refresh gave a box to can seed a map like any other.
+  describe 'the box behind "Set map from language"' do
+    before do
+      create(:country, code: 'AU', name: 'Australia')
+      stub_request(:get, LanguageRefresh::GlottologStage::RELEASES_URL).to_return(body: { tag_name: 'v5.3' }.to_json)
+      stub_request(:get, format(LanguageRefresh::GlottologStage::LANGUAGES_URL, 'v5.3'))
+        .to_return(body: Rails.root.join('spec/support/data/language_refresh/glottolog-languages.csv').read)
+      sign_in create(:user)
+    end
+
+    it 'answers with the Bounding box the Refresh filled from the Source point' do
+      LanguageRefreshService.new(stages: [LanguageRefresh::GlottologStage]).run
+
+      get language_path(Language.find_by(code: 'warl1254'), location_only: true, format: :json)
+
+      expect(response.parsed_body).to include(
+        'north_limit' => be_within(0.001).of(-20.1008), 'south_limit' => be_within(0.001).of(-20.1008),
+        'west_limit' => be_within(0.001).of(131.05), 'east_limit' => be_within(0.001).of(131.05)
+      )
+    end
+  end
+
   describe 'item bulk edit', :search do
     before do
       item.reindex(refresh: true)
