@@ -78,8 +78,17 @@
         "approximate_latitude_of_language_variety": 0,
         "approximate_longitude_of_language_variety": 0,
         "uri": "https://collection.aiatsis.gov.au/austlang/language/a10"
+      },
+      {
+        "_id": 158,
+        "language_code": "C41",
+        "language_name": "Yarlpiri",
+        "language_synonym": "Lander Yalpari",
+        "approximate_latitude_of_language_variety": -20.483628749587,
+        "approximate_longitude_of_language_variety": 132.13197487778,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/c41"
       }
     ],
-    "total": 5
+    "total": 6
   }
 }
