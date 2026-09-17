@@ -360,11 +360,24 @@ describe LanguageRefreshService do
   describe 'two Runs at once' do
     # A second database session, as a Run in another process would hold.
     let(:other_session) { ActiveRecord::Base.connection.class.new(ActiveRecord::Base.connection_db_config.configuration_hash) }
+    let(:lock) { described_class.lock_name(ActiveRecord::Base.connection.current_database) }
 
     after { other_session.disconnect! }
 
+    it 'names the database in the lock, so a Run against another database does not hold this one off' do
+      expect(described_class.lock_name('nabu_other')).to eq('nabu_language_refresh_nabu_other')
+      expect(described_class.lock_name('nabu_other')).not_to eq(described_class.lock_name('nabu_elsewhere'))
+    end
+
+    it 'keeps the lock within the length MySQL allows when the database name is long' do
+      long = "nabu_test_#{'a' * 60}"
+
+      expect(described_class.lock_name(long).length).to be <= described_class::LOCK_NAME_LIMIT
+      expect(described_class.lock_name(long)).not_to eq(described_class.lock_name("#{long}_2"))
+    end
+
     it 'lets the second Run exit without running' do
-      other_session.select_value("SELECT GET_LOCK('#{described_class::LOCK_NAME}', 0)")
+      other_session.select_value("SELECT GET_LOCK('#{lock}', 0)")
 
       expect(refresh.run).to be_nil
 
@@ -375,9 +388,9 @@ describe LanguageRefreshService do
     end
 
     it 'runs again once the other Run lets go' do
-      other_session.select_value("SELECT GET_LOCK('#{described_class::LOCK_NAME}', 0)")
+      other_session.select_value("SELECT GET_LOCK('#{lock}', 0)")
       refresh.run
-      other_session.select_value("SELECT RELEASE_LOCK('#{described_class::LOCK_NAME}')")
+      other_session.select_value("SELECT RELEASE_LOCK('#{lock}')")
 
       expect(refresh.run).to be_completed
     end

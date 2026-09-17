@@ -1,14 +1,27 @@
+require 'digest'
+
 class LanguageRefreshService
   # Equivalents last: they are seeded from the Languages every Source stage has just written.
   STAGES = [
     LanguageRefresh::IsoStage, LanguageRefresh::GlottologStage, LanguageRefresh::AustlangStage, LanguageRefresh::EquivalentsStage
   ].freeze
   SHRINK_LIMIT = 0.05
-  LOCK_NAME = 'nabu_language_refresh'.freeze
+  LOCK_PREFIX = 'nabu_language_refresh'.freeze
+  # MySQL's own cap on a lock name.
+  LOCK_NAME_LIMIT = 64
 
   def initialize(fetcher: LanguageRefresh::Fetcher.new, stages: STAGES)
     @fetcher = fetcher
     @stages = stages
+  end
+
+  # A MySQL named lock belongs to the server, not to the database the Run reads, so the database
+  # names the lock: parallel test workers share one server and would otherwise take each other's.
+  def self.lock_name(database)
+    name = "#{LOCK_PREFIX}_#{database}"
+    return name if name.length <= LOCK_NAME_LIMIT
+
+    "#{LOCK_PREFIX}_#{Digest::SHA256.hexdigest(database)[0, 16]}"
   end
 
   def run
@@ -36,7 +49,9 @@ class LanguageRefreshService
   # A MySQL named lock belongs to the session, so a Run that dies releases it with its connection.
   def with_lock
     ActiveRecord::Base.with_connection do |connection|
-      unless connection.get_advisory_lock(LOCK_NAME)
+      lock = self.class.lock_name(connection.current_database)
+
+      unless connection.get_advisory_lock(lock)
         Rails.logger.warn('Language Refresh skipped: another Run holds the lock')
         return
       end
@@ -44,7 +59,7 @@ class LanguageRefreshService
       begin
         yield
       ensure
-        connection.release_advisory_lock(LOCK_NAME)
+        connection.release_advisory_lock(lock)
       end
     end
   end
