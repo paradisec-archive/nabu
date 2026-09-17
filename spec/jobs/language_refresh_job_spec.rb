@@ -4,12 +4,15 @@ describe LanguageRefreshJob do
   let(:fixtures) { Rails.root.join('spec/support/data/language_refresh') }
 
   before do
+    create(:country, code: 'AU', name: 'Australia')
     stub_request(:get, LanguageRefresh::IsoStage::SIL_CODES_URL).to_return(body: fixtures.join('iso-639-3.tab').read)
     stub_request(:get, LanguageRefresh::IsoStage::SIL_RETIREMENTS_URL).to_return(body: fixtures.join('iso-639-3_Retirements.tab').read)
     stub_request(:get, LanguageRefresh::IsoStage::ETHNOLOGUE_INDEX_URL).to_return(body: fixtures.join('LanguageIndex.tab').read)
     stub_request(:get, LanguageRefresh::GlottologStage::RELEASES_URL).to_return(body: { tag_name: 'v5.3' }.to_json)
     stub_request(:get, format(LanguageRefresh::GlottologStage::LANGUAGES_URL, 'v5.3'))
       .to_return(body: fixtures.join('glottolog-languages.csv').read)
+    stub_request(:get, %r{\Ahttps://data\.gov\.au/data/api/3/action/datastore_search\?})
+      .to_return(body: fixtures.join('austlang-datastore.json').read)
   end
 
   it 'runs the Refresh over every Source' do
@@ -18,6 +21,7 @@ describe LanguageRefreshJob do
     expect(LanguageRefreshRun.sole).to be_completed
     expect(Language.iso639_3.count).to eq(34)
     expect(Language.glottolog.count).to eq(5)
+    expect(Language.austlang.count).to eq(5)
   end
 
   it 'runs on the maintenance queue' do
