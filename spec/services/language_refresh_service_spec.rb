@@ -484,7 +484,10 @@ describe LanguageRefreshService do
       refresh.run
 
       expect(LanguageRefreshRun.sole.sources['glottolog'])
-        .to include('status' => 'failed', 'error' => 'languages.csv is missing columns Level, Countries, Family_ID, Latitude, Longitude')
+        .to include(
+          'status' => 'failed',
+          'error' => 'languages.csv is missing columns Level, Countries, Family_ID, Latitude, Longitude, ISO639P3code, Closest_ISO369P3code'
+        )
     end
 
     it 'reads a dialect as a Glottolog dialect wherever the report names it' do
@@ -672,7 +675,7 @@ describe LanguageRefreshService do
     it 'takes every Language the datastore publishes, in one call' do
       refresh.run
 
-      expect(Language.austlang.pluck(:code)).to contain_exactly('C15', 'G5', 'A38.1', 'N116.A', 'A10')
+      expect(Language.austlang.pluck(:code)).to contain_exactly('C15', 'G5', 'A38.1', 'N116.A', 'A10', 'C41')
       expect(Language.find_by(code: 'C15', source: :austlang)).to have_attributes(name: 'Warlpiri', dialect: false, retired: false)
       expect(a_request(:get, austlang_url)).to have_been_made.once
     end
@@ -698,13 +701,13 @@ describe LanguageRefreshService do
       refresh.run
 
       expect(LanguageRefreshRun.sole.sources['austlang']).to include(
-        'status' => 'applied', 'version' => { 'austlang_dataset' => a_string_starting_with('sha256:') }, 'rows' => 5,
-        'counts' => { 'country_links_added' => 5 }
+        'status' => 'applied', 'version' => { 'austlang_dataset' => a_string_starting_with('sha256:') }, 'rows' => 6,
+        'counts' => { 'country_links_added' => 6 }
       )
       body = body_of(ActionMailer::Base.deliveries.sole)
-      expect(body).to match(/AUSTLANG\nStatus: applied\nVersions: austlang_dataset sha256:\h{12}\nRows read: 5/)
-      expect(body).to include("New: 5\n  Warlpiri (C15) · AUSTLANG")
-      expect(body).to include("Country links added: 5\n")
+      expect(body).to match(/AUSTLANG\nStatus: applied\nVersions: austlang_dataset sha256:\h{12}\nRows read: 6/)
+      expect(body).to include("New: 6\n  Warlpiri (C15) · AUSTLANG")
+      expect(body).to include("Country links added: 6\n")
     end
 
     it 'gives a new version when the dataset changes, so a Run can tell one download from the next' do
@@ -851,7 +854,7 @@ describe LanguageRefreshService do
         payload['result']['records'] = payload['result']['records'].first(2)
         stub_request(:get, austlang_url).to_return(body: payload.to_json)
 
-        expect(failure).to include('status' => 'failed', 'error' => 'datastore_search answered 2 of 5 rows')
+        expect(failure).to include('status' => 'failed', 'error' => 'datastore_search answered 2 of 6 rows')
       end
 
       it 'fails the stage when the datastore answers something other than JSON' do
@@ -859,6 +862,104 @@ describe LanguageRefreshService do
 
         expect(failure).to include('status' => 'failed', 'error' => a_string_including('did not answer with JSON'))
       end
+    end
+  end
+
+  describe 'the Equivalents stage' do
+    let(:stages) { described_class::STAGES }
+    let(:warlpiri) { Language.find_by(code: 'wbp', source: :iso639_3) }
+    let(:glottolog_warlpiri) { Language.find_by(code: 'warl1254', source: :glottolog) }
+    let(:southern_warlpiri) { Language.find_by(code: 'sout2762', source: :glottolog) }
+    let(:austlang_warlpiri) { Language.find_by(code: 'C15', source: :austlang) }
+    let(:yarlpiri) { Language.find_by(code: 'C41', source: :austlang) }
+
+    before { stub_const('LanguageRefresh::EquivalentsStage::CHIRILA_FILE', fixtures.join('chirila-codes.csv')) }
+
+    def evidence_between(one, other)
+      language_id, related_language_id = LanguageEquivalent.ordered_pair(one.id, other.id)
+      LanguageEquivalent.find_by(language_id:, related_language_id:)&.evidence
+    end
+
+    def rename_austlang_warlpiri
+      payload = JSON.parse(austlang_dataset)
+      payload['result']['records'].first['language_name'] = 'Walpiri'
+      stub_request(:get, austlang_url).to_return(body: payload.to_json)
+    end
+
+    it 'pairs a Glottolog Language with the ISO Code it names, accumulating the evidence of a shared name' do
+      refresh.run
+
+      expect(evidence_between(glottolog_warlpiri, warlpiri)).to eq(['glottolog:iso', 'name'])
+    end
+
+    it 'pairs a Glottolog dialect with the closest ISO Code Glottolog names for it' do
+      refresh.run
+
+      expect(evidence_between(southern_warlpiri, warlpiri)).to eq(['glottolog:closest_iso'])
+    end
+
+    it 'pairs an AUSTLANG Language with the ISO Code and the glottocode Chirila names beside it' do
+      refresh.run
+
+      expect(evidence_between(yarlpiri, warlpiri)).to eq(['chirila:iso'])
+      expect(evidence_between(yarlpiri, glottolog_warlpiri)).to eq(['chirila:glottocode'])
+    end
+
+    it 'pairs two Sources that publish the same name' do
+      refresh.run
+
+      expect(evidence_between(austlang_warlpiri, warlpiri)).to eq(['name'])
+      expect(evidence_between(austlang_warlpiri, glottolog_warlpiri)).to eq(['name'])
+    end
+
+    it 'takes no pair a Source names against a Code no Source holds' do
+      refresh.run
+
+      expect(LanguageEquivalent.count).to eq(6)
+      expect(Language.find_by(code: 'ngar1284', source: :glottolog).equivalents).to be_empty
+    end
+
+    it 'writes the whole table again on the next Run, dropping a pair whose evidence has gone' do
+      refresh.run
+      rename_austlang_warlpiri
+
+      refresh.run
+
+      expect(evidence_between(austlang_warlpiri, warlpiri)).to be_nil
+      expect(evidence_between(austlang_warlpiri, glottolog_warlpiri)).to be_nil
+      expect(evidence_between(glottolog_warlpiri, warlpiri)).to eq(['glottolog:iso', 'name'])
+      expect(LanguageEquivalent.count).to eq(4)
+    end
+
+    it "downloads Glottolog's table once for the Run, though two stages read it" do
+      refresh.run
+
+      expect(a_request(:get, glottolog_url)).to have_been_made.once
+    end
+
+    it 'writes no PaperTrail versions' do
+      expect { refresh.run }.not_to(change { PaperTrail::Version.where(item_type: 'LanguageEquivalent').count })
+    end
+
+    it 'records what it read and the pairs it wrote in the Run and the report' do
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources['equivalents']).to include(
+        'status' => 'applied',
+        'version' => {
+          'chirila-codes.csv' => LanguageRefresh::EquivalentsStage::CHIRILA_VERSION, 'languages.csv' => 'Glottolog 5.3'
+        },
+        'rows' => 3,
+        'counts' => {
+          'pairs' => 6, 'glottolog_iso' => 1, 'glottolog_closest_iso' => 1, 'chirila_iso' => 1, 'chirila_glottocode' => 1, 'name' => 3
+        }
+      )
+      expect(body_of(ActionMailer::Base.deliveries.sole)).to include(
+        "Equivalents\nStatus: applied\n" \
+        "Versions: chirila-codes.csv #{LanguageRefresh::EquivalentsStage::CHIRILA_VERSION}, languages.csv Glottolog 5.3\n" \
+        "Rows read: 3\n\nPairs: 6\nGlottolog iso: 1\nGlottolog closest iso: 1\n" \
+        "Chirila iso: 1\nChirila glottocode: 1\nName: 3"
+      )
     end
   end
 
@@ -870,10 +971,10 @@ describe LanguageRefreshService do
     it 'applies every Source in one Run' do
       refresh.run
 
-      expect(LanguageRefreshRun.sole.sources.keys).to contain_exactly('iso639_3', 'glottolog', 'austlang')
+      expect(LanguageRefreshRun.sole.sources.keys).to contain_exactly('iso639_3', 'glottolog', 'austlang', 'equivalents')
       expect(Language.iso639_3.count).to eq(34)
       expect(Language.glottolog.count).to eq(5)
-      expect(Language.austlang.count).to eq(5)
+      expect(Language.austlang.count).to eq(6)
     end
 
     it 'leaves the other Sources applied when the AUSTLANG datastore does not answer' do
@@ -886,11 +987,14 @@ describe LanguageRefreshService do
       expect(run.sources.dig('iso639_3', 'status')).to eq('applied')
       expect(run.sources.dig('glottolog', 'status')).to eq('applied')
       expect(run.sources.dig('austlang', 'status')).to eq('failed')
+      expect(run.sources.dig('equivalents', 'status')).to eq('applied')
       expect(Language.austlang.count).to eq(0)
       expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Failures\nAUSTLANG failed: GET ")
     end
 
-    it 'fails only the Glottolog stage when the releases API does not answer' do
+    # The Equivalents stage reads Glottolog's table too, so it fails with it rather than regenerate
+    # the table without the pairs that column seeds.
+    it 'fails the Glottolog and Equivalents stages when the releases API does not answer' do
       stub_request(:get, releases_url).to_return(status: 503)
 
       refresh.run
@@ -899,6 +1003,7 @@ describe LanguageRefreshService do
       expect(run).to be_completed
       expect(run.sources.dig('iso639_3', 'status')).to eq('applied')
       expect(run.sources.dig('glottolog', 'status')).to eq('failed')
+      expect(run.sources.dig('equivalents', 'status')).to eq('failed')
       expect(Language.iso639_3.count).to eq(34)
       expect(Language.glottolog.count).to eq(0)
       expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Failures\nGlottolog failed: GET #{releases_url}")
