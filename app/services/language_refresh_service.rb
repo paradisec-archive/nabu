@@ -1,10 +1,11 @@
 class LanguageRefreshService
-  STAGES = [LanguageRefresh::IsoStage].freeze
+  STAGES = [LanguageRefresh::IsoStage, LanguageRefresh::GlottologStage].freeze
   SHRINK_LIMIT = 0.05
   LOCK_NAME = 'nabu_language_refresh'.freeze
 
-  def initialize(fetcher: LanguageRefresh::Fetcher.new)
+  def initialize(fetcher: LanguageRefresh::Fetcher.new, stages: STAGES)
     @fetcher = fetcher
+    @stages = stages
   end
 
   def run
@@ -12,7 +13,7 @@ class LanguageRefreshService
       run = LanguageRefreshRun.create!(started_at: Time.current)
 
       begin
-        STAGES.each { |stage_class| run_stage(run, stage_class.new(@fetcher)) }
+        @stages.each { |stage_class| run_stage(run, stage_class.new(@fetcher)) }
         run.update!(report: LanguageRefresh::Report.new(run).body)
         LanguageRefreshMailer.with(run:).report.deliver_now
         run.update!(status: :completed, finished_at: Time.current)
