@@ -17,11 +17,7 @@
 # **`updated_at`**   | `datetime`         | `not null`
 #
 class LanguageRefreshRun < ApplicationRecord
-  STATUSES = { running: 'running', completed: 'completed', failed: 'failed' }.freeze
-
-  enum :status, STATUSES, validate: true
-
-  validates :status, presence: true
+  enum :status, %w[running completed failed].index_by(&:to_sym), validate: true
 
   after_initialize { self.sources ||= {} }
 

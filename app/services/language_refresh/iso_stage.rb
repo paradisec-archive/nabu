@@ -12,7 +12,7 @@ module LanguageRefresh
     # non-existent code leaves its tags where they are for someone to re-tag.
     ONE_TO_ONE = %w[C D M].freeze
 
-    JOIN_TABLES = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage, CountriesLanguage].freeze
+    JOIN_TABLES = [*Language::TAGGINGS, CountriesLanguage].freeze
 
     def initialize(fetcher)
       @fetcher = fetcher
@@ -136,11 +136,11 @@ module LanguageRefresh
 
     def move(model, language, replacement)
       parent_key = (model.column_names - %w[id language_id created_at updated_at]).first
+      already_tagged = model.where(language_id: replacement.id).pluck(parent_key).to_set
       moved = 0
 
       model.where(language_id: language.id).find_each do |record|
-        duplicate = model.exists?(parent_key => record[parent_key], language_id: replacement.id)
-        duplicate ? record.destroy! : record.update!(language_id: replacement.id)
+        already_tagged.include?(record[parent_key]) ? record.destroy! : record.update!(language_id: replacement.id)
         moved += 1
       end
 

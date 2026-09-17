@@ -41,7 +41,7 @@ class LanguageEquivalent < ApplicationRecord
   belongs_to :language
   belongs_to :related_language, class_name: 'Language'
 
-  before_validation :order_the_pair
+  before_validation :order_the_pair, :order_the_evidence
 
   validates :language_id, uniqueness: { scope: :related_language_id }
   validate :two_different_languages
@@ -87,25 +87,18 @@ class LanguageEquivalent < ApplicationRecord
     other.picker_option(offered[other.id]).merge(reason: EVIDENCE[top_evidence])
   end
 
-  # The fixed order evidence is read in, strongest first, wherever a pair's tags are held or shown.
+  # Evidence is stored strongest first, so a pair's top evidence is its first tag. A bulk writer skips
+  # the callback and so orders its own rows through here.
   def self.sort_evidence(tags)
-    tags.sort_by { |tag| evidence_order(tag) }
-  end
-
-  def self.evidence_order(tag)
-    EVIDENCE.keys.index(tag) || EVIDENCE.size
-  end
-
-  def sorted_evidence
-    self.class.sort_evidence(Array(evidence))
+    tags.sort_by { |tag| EVIDENCE.keys.index(tag) || EVIDENCE.size }
   end
 
   def top_evidence
-    sorted_evidence.first
+    Array(evidence).first
   end
 
   def evidence_rank
-    self.class.evidence_order(top_evidence)
+    EVIDENCE.keys.index(top_evidence) || EVIDENCE.size
   end
 
   private
@@ -114,6 +107,10 @@ class LanguageEquivalent < ApplicationRecord
     return if language_id.blank? || related_language_id.blank?
 
     self.language_id, self.related_language_id = self.class.ordered_pair(language_id, related_language_id)
+  end
+
+  def order_the_evidence
+    self.evidence = self.class.sort_evidence(Array(evidence))
   end
 
   def two_different_languages

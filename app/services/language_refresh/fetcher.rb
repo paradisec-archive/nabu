@@ -4,7 +4,11 @@ module LanguageRefresh
   class Fetcher
     class FetchError < StandardError; end
 
-    Response = Data.define(:url, :body, :version)
+    Response = Data.define(:url, :body, :version) do
+      def name
+        File.basename(URI(url).path)
+      end
+    end
 
     RETRIES = 3
     TIMEOUT = 60

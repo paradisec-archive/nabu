@@ -8,7 +8,7 @@ module LanguageRefresh
       header, *lines = response.body.split(/\r?\n/).reject(&:blank?)
       columns = header.to_s.split("\t")
       missing = required_columns - columns
-      raise Fetcher::FetchError, "#{File.basename(URI(response.url).path)} is missing columns #{missing.join(', ')}" if missing.any?
+      raise Fetcher::FetchError, "#{response.name} is missing columns #{missing.join(', ')}" if missing.any?
 
       @version = response.version
       @rows = lines.map { |line| columns.zip(line.split("\t", -1)).to_h }

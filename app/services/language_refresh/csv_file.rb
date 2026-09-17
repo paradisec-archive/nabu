@@ -9,7 +9,7 @@ module LanguageRefresh
     def initialize(response, required_columns)
       table = parse(response)
       missing = required_columns - table.headers.compact
-      raise Fetcher::FetchError, "#{name_of(response)} is missing columns #{missing.join(', ')}" if missing.any?
+      raise Fetcher::FetchError, "#{response.name} is missing columns #{missing.join(', ')}" if missing.any?
 
       @version = response.version
       @rows = table.map(&:to_h)
@@ -20,11 +20,7 @@ module LanguageRefresh
     def parse(response)
       CSV.parse(response.body, headers: true)
     rescue CSV::MalformedCSVError => e
-      raise Fetcher::FetchError, "#{name_of(response)} is not a CSV table: #{e.message}"
-    end
-
-    def name_of(response)
-      File.basename(URI(response.url).path)
+      raise Fetcher::FetchError, "#{response.name} is not a CSV table: #{e.message}"
     end
   end
 end
