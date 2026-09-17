@@ -21,7 +21,8 @@ describe LanguageRefreshJob do
     expect(LanguageRefreshRun.sole).to be_completed
     expect(Language.iso639_3.count).to eq(34)
     expect(Language.glottolog.count).to eq(5)
-    expect(Language.austlang.count).to eq(5)
+    expect(Language.austlang.count).to eq(6)
+    expect(LanguageEquivalent.count).to be_positive
   end
 
   it 'runs on the maintenance queue' do
