@@ -7,11 +7,17 @@ describe LanguageRefreshService do
   let(:sil_retirements_url) { LanguageRefresh::IsoStage::SIL_RETIREMENTS_URL }
   let(:ethnologue_index_url) { LanguageRefresh::IsoStage::ETHNOLOGUE_INDEX_URL }
   let(:sil_codes) { fixtures.join('iso-639-3.tab').read }
-  let(:refresh) { described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0)) }
+  let(:stages) { [LanguageRefresh::IsoStage] }
+  let(:refresh) { described_class.new(fetcher: LanguageRefresh::Fetcher.new(backoff: 0), stages:) }
+
+  let(:releases_url) { LanguageRefresh::GlottologStage::RELEASES_URL }
+  let(:glottolog_url) { format(LanguageRefresh::GlottologStage::LANGUAGES_URL, 'v5.3') }
+  let(:glottolog_languages) { fixtures.join('glottolog-languages.csv').read }
 
   let!(:australia) { create(:country, code: 'AU', name: 'Australia') }
   let!(:papua_new_guinea) { create(:country, code: 'PG', name: 'Papua New Guinea') }
   let!(:vanuatu) { create(:country, code: 'VU', name: 'Vanuatu') }
+  let!(:united_states) { create(:country, code: 'US', name: 'United States') }
 
   def body_of(mail)
     (mail.text_part || mail.body).decoded
@@ -23,6 +29,8 @@ describe LanguageRefreshService do
       .to_return(body: fixtures.join('iso-639-3_Retirements.tab').read, headers: { 'Last-Modified' => 'Mon, 13 Jul 2026 04:12:00 GMT' })
     stub_request(:get, ethnologue_index_url)
       .to_return(body: fixtures.join('LanguageIndex.tab').read, headers: { 'Last-Modified' => 'Fri, 27 Feb 2026 21:59:51 GMT' })
+    stub_request(:get, releases_url).to_return(body: { tag_name: 'v5.3' }.to_json)
+    stub_request(:get, glottolog_url).to_return(body: glottolog_languages)
     ActionMailer::Base.deliveries.clear
   end
 
@@ -68,7 +76,7 @@ describe LanguageRefreshService do
         'counts' => { 'country_links_added' => 5 }
       )
       expect(run.sources.dig('iso639_3', 'changes', 'new').size).to eq(32)
-      expect(run.sources.dig('iso639_3', 'changes', 'renamed')).to eq([['tpi', 'Pisin, Tok', 'Tok Pisin']])
+      expect(run.sources.dig('iso639_3', 'changes', 'renamed')).to eq([{ 'code' => 'tpi', 'name' => 'Tok Pisin', 'old_name' => 'Pisin, Tok' }])
     end
 
     it 'emails one report with the counts in the subject, a section per Source and a long list attached as CSV' do
@@ -411,6 +419,177 @@ describe LanguageRefreshService do
 
       expect(LanguageRefreshRun.sole.sources.dig('iso639_3', 'status')).to eq('applied')
       expect(Language.find_by(code: 'aaa').name).to eq('Ghotuo Renamed')
+    end
+  end
+
+  describe 'the Glottolog stage' do
+    let(:stages) { [LanguageRefresh::GlottologStage] }
+
+    it 'takes every language and dialect, and never a family or anything under Bookkeeping' do
+      refresh.run
+
+      expect(Language.glottolog.pluck(:code)).to contain_exactly('warl1254', 'sout2762', 'ngar1284', 'unse1236', 'paya1237')
+      expect(Language.find_by(code: 'sout2762')).to have_attributes(name: 'Southern Warlpiri', dialect: true)
+      expect(Language.find_by(code: 'warl1254')).to have_attributes(name: 'Warlpiri', dialect: false)
+    end
+
+    it 'fills a box from the Source point and leaves a Language Glottolog gives no point for boxless' do
+      refresh.run
+
+      expect(Language.find_by(code: 'warl1254')).to have_attributes(
+        north_limit: be_within(0.001).of(-20.1008), south_limit: be_within(0.001).of(-20.1008),
+        west_limit: be_within(0.001).of(131.05), east_limit: be_within(0.001).of(131.05)
+      )
+      expect(Language.find_by(code: 'paya1237'))
+        .to have_attributes(north_limit: nil, south_limit: nil, west_limit: nil, east_limit: nil)
+    end
+
+    it 'links each Language to the countries Glottolog lists for it' do
+      refresh.run
+
+      expect(Language.find_by(code: 'warl1254').countries).to contain_exactly(australia)
+      expect(Language.find_by(code: 'unse1236').countries).to contain_exactly(australia, papua_new_guinea)
+      expect(Language.find_by(code: 'paya1237').countries).to contain_exactly(united_states)
+      expect(Language.find_by(code: 'sout2762').countries).to be_empty
+    end
+
+    it 'reads the release tag from the API rather than a branch, and records it' do
+      refresh.run
+
+      expect(a_request(:get, releases_url)).to have_been_made
+      expect(LanguageRefreshRun.sole.sources['glottolog']).to include(
+        'status' => 'applied', 'version' => { 'languages.csv' => 'Glottolog 5.3' }, 'rows' => 5
+      )
+      expect(body_of(ActionMailer::Base.deliveries.sole))
+        .to include("Glottolog\nStatus: applied\nVersions: languages.csv Glottolog 5.3\nRows read: 5")
+    end
+
+    it 'fails the stage when the releases API names no tag' do
+      stub_request(:get, releases_url).to_return(body: '{}')
+
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources['glottolog'])
+        .to include('status' => 'failed', 'error' => "#{releases_url} named no release tag")
+      expect(Language.glottolog.count).to eq(0)
+    end
+
+    it 'fails the stage when the CSV is not the table Glottolog publishes' do
+      stub_request(:get, glottolog_url).to_return(body: "ID,Name\nwarl1254,Warlpiri\n")
+
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources['glottolog'])
+        .to include('status' => 'failed', 'error' => 'languages.csv is missing columns Level, Countries, Family_ID, Latitude, Longitude')
+    end
+
+    it 'reads a dialect as a Glottolog dialect wherever the report names it' do
+      refresh.run
+
+      expect(body_of(ActionMailer::Base.deliveries.sole)).to include('  Southern Warlpiri (sout2762) · Glottolog dialect')
+    end
+
+    it 'reports a box it filled on a Language that already existed without one' do
+      existing = create(:language, :glottolog, code: 'warl1254', name: 'Warlpiri')
+
+      refresh.run
+
+      expect(existing.reload.north_limit).to be_within(0.001).of(-20.1008)
+      expect(body_of(ActionMailer::Base.deliveries.sole))
+        .to include("Bounding boxes filled from the Source point: 1\n  Warlpiri (warl1254) · Glottolog")
+    end
+
+    it 'reinstates a glottocode Glottolog publishes again' do
+      refresh.run
+      warlpiri = Language.find_by(code: 'warl1254')
+      warlpiri.update!(retired: true)
+      ActionMailer::Base.deliveries.clear
+
+      refresh.run
+
+      expect(warlpiri.reload.retired).to be(false)
+      expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Reinstated: 1\n  Warlpiri (warl1254) · Glottolog")
+    end
+
+    it 'retires a glottocode that has gone and lists it under needs a person while it is still tagged' do
+      refresh.run
+      ngarinyin = Language.find_by(code: 'ngar1284')
+      create(:collection, languages: [ngarinyin])
+      stub_request(:get, glottolog_url).to_return(body: glottolog_languages.lines.grep_v(/\Angar1284,/).join)
+      stub_const('LanguageRefreshService::SHRINK_LIMIT', 0.5)
+      ActionMailer::Base.deliveries.clear
+
+      refresh.run
+
+      expect(ngarinyin.reload.retired).to be(true)
+      body = body_of(ActionMailer::Base.deliveries.sole)
+      expect(body).to include("Retired and held: 1\n  Ngarinyin (ngar1284) · Glottolog")
+      expect(body).to include("Ngarinyin (ngar1284) · Glottolog\n  Retired: no longer published\n  Tagged: collection_languages 1")
+    end
+
+    describe 'a second Run against a changed release' do
+      let(:changed) do
+        glottolog_languages
+          .sub('ngar1284,Ngarinyin,', 'ngar1284,Ngarinjin,')
+          .sub('-20.1008,131.05,warl1254', '-19.5,130.0,warl1254')
+          .sub('sout2762,,dialect,', 'sout2762,,language,')
+          .sub('AU;PG,indo1319,', 'AU;PG,book1242,')
+      end
+
+      before do
+        refresh.run
+        stub_request(:get, glottolog_url).to_return(body: changed)
+        stub_const('LanguageRefreshService::SHRINK_LIMIT', 0.5)
+        ActionMailer::Base.deliveries.clear
+      end
+
+      it 'applies a rename, a dialect reclassification and retires a language moved into Bookkeeping' do
+        refresh.run
+
+        expect(Language.find_by(code: 'ngar1284').name).to eq('Ngarinjin')
+        expect(Language.find_by(code: 'sout2762').dialect).to be(false)
+        expect(Language.find_by(code: 'unse1236')).to have_attributes(retired: true, name: 'Unserdeutsch')
+
+        body = body_of(ActionMailer::Base.deliveries.sole)
+        expect(body).to include("Renamed: 1\n  Ngarinjin (ngar1284) · Glottolog, was Ngarinyin")
+        expect(body).to include("Dialect flag changed: 1\n  Southern Warlpiri (sout2762) · Glottolog")
+        expect(body).to include("Retired and held: 1\n  Unserdeutsch (unse1236) · Glottolog")
+      end
+
+      # The Bounding box is the only thing a Source does not own, so a point that has moved is
+      # never applied over one. Reporting the disagreement is #1213's Location warning.
+      it 'never moves a box that already exists' do
+        refresh.run
+
+        expect(Language.find_by(code: 'warl1254').north_limit).to be_within(0.001).of(-20.1008)
+        expect(body_of(ActionMailer::Base.deliveries.sole)).to include('Bounding boxes filled from the Source point: 0')
+      end
+    end
+  end
+
+  describe 'both Sources' do
+    let(:stages) { described_class::STAGES }
+
+    it 'runs the ISO 639-3 stage and then the Glottolog stage' do
+      refresh.run
+
+      expect(LanguageRefreshRun.sole.sources.keys).to eq(%w[iso639_3 glottolog])
+      expect(Language.iso639_3.count).to eq(34)
+      expect(Language.glottolog.count).to eq(5)
+    end
+
+    it 'fails only the Glottolog stage when the releases API does not answer' do
+      stub_request(:get, releases_url).to_return(status: 503)
+
+      refresh.run
+
+      run = LanguageRefreshRun.sole
+      expect(run).to be_completed
+      expect(run.sources.dig('iso639_3', 'status')).to eq('applied')
+      expect(run.sources.dig('glottolog', 'status')).to eq('failed')
+      expect(Language.iso639_3.count).to eq(34)
+      expect(Language.glottolog.count).to eq(0)
+      expect(body_of(ActionMailer::Base.deliveries.sole)).to include("Failures\nGlottolog failed: GET #{releases_url}")
     end
   end
 end

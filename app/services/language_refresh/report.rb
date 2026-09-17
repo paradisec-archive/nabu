@@ -10,34 +10,24 @@ module LanguageRefresh
 
     TAG_TABLES = [CollectionLanguage, ItemContentLanguage, ItemSubjectLanguage].freeze
 
+    # A row carries its own column names, so the same row renders as a Label in the body and as a
+    # line in the CSV, and a Source can add a column without disturbing the others.
     LISTS = {
-      'new' => {
-        title: 'New',
-        columns: %w[code name],
-        describe: ->(source, (code, name)) { Language.new(source:, code:, name:).label }
-      },
+      'new' => { title: 'New', columns: %w[code name] },
       'renamed' => {
         title: 'Renamed',
-        columns: %w[code old_name new_name],
-        describe: ->(source, (code, old_name, new_name)) { "#{Language.new(source:, code:, name: new_name).label}, was #{old_name}" }
+        columns: %w[code old_name name],
+        describe: ->(row, label) { "#{label}, was #{row['old_name']}" }
       },
+      'dialect_changed' => { title: 'Dialect flag changed', columns: %w[code name dialect] },
       'retired_rewritten' => {
         title: 'Retired and rewritten',
         columns: %w[code name change_to moved],
-        describe: lambda { |source, (code, name, change_to, moved)|
-          "#{Language.new(source:, code:, name:).label} → #{change_to}, #{moved} #{'tag'.pluralize(moved)} moved"
-        }
+        describe: ->(row, label) { "#{label} → #{row['change_to']}, #{row['moved']} #{'tag'.pluralize(row['moved'])} moved" }
       },
-      'retired_held' => {
-        title: 'Retired and held',
-        columns: %w[code name],
-        describe: ->(source, (code, name)) { Language.new(source:, code:, name:).label }
-      },
-      'reinstated' => {
-        title: 'Reinstated',
-        columns: %w[code name],
-        describe: ->(source, (code, name)) { Language.new(source:, code:, name:).label }
-      }
+      'retired_held' => { title: 'Retired and held', columns: %w[code name] },
+      'reinstated' => { title: 'Reinstated', columns: %w[code name] },
+      'boxes_filled' => { title: 'Bounding boxes filled from the Source point', columns: %w[code name] }
     }.freeze
 
     def initialize(run)
@@ -177,9 +167,9 @@ module LanguageRefresh
       lines << "Rows read: #{entry['rows']}" if entry['rows']
       return lines.join("\n") unless entry['status'] == 'applied'
 
-      LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) }
+      LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) if entry.dig('changes', key) }
       entry.fetch('counts', {}).each { |key, count| lines << '' << "#{key.humanize}: #{count}" }
-      lines << '' << 'Bounding boxes filled and Location warnings are not checked by the Refresh yet.'
+      lines << '' << 'Location warnings are not checked by the Refresh yet.'
       lines.join("\n")
     end
 
@@ -195,15 +185,20 @@ module LanguageRefresh
 
     def list_lines(source, key, rows)
       lines = ["#{LISTS[key][:title]}: #{rows.size}"]
-      lines += rows.first(INLINE_LIMIT).map { |row| "  #{LISTS[key][:describe].call(source, row)}" }
+      lines += rows.first(INLINE_LIMIT).map { |row| "  #{describe(source, key, row)}" }
       lines << "  and #{rows.size - INLINE_LIMIT} more in #{attachment_name(source, key)}" if rows.size > INLINE_LIMIT
       lines.join("\n")
+    end
+
+    def describe(source, key, row)
+      label = Language.new(source:, code: row['code'], name: row['name'], dialect: row['dialect'] || false).label
+      LISTS[key][:describe]&.call(row, label) || label
     end
 
     def csv(columns, rows)
       CSV.generate do |file|
         file << columns
-        rows.each { |row| file << row }
+        rows.each { |row| file << columns.map { |column| row[column] } }
       end
     end
 
