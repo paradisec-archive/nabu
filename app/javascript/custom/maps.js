@@ -21,7 +21,8 @@ const set_map_bounds_from_ajax = async (path, ids) => {
     const response = await fetch(`${path}${id}?location_only=true`);
     const data = await response.json();
 
-    if (!data || !data.north_limit) {
+    // A limit of 0 is a real edge — the equator and the prime meridian — so only a missing one counts as no box.
+    if (!data || typeof data.north_limit !== 'number') {
       console.info('NO data', data);
       return;
     }

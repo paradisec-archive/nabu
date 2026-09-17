@@ -27,7 +27,12 @@ module LanguageRefresh
       },
       'retired_held' => { title: 'Retired and held', columns: %w[code name] },
       'reinstated' => { title: 'Reinstated', columns: %w[code name] },
-      'boxes_filled' => { title: 'Bounding boxes filled from the Source point', columns: %w[code name] }
+      'boxes_filled' => { title: 'Bounding boxes filled from the Source point', columns: %w[code name] },
+      'location_warnings' => {
+        title: 'Location warnings',
+        columns: %w[code name distance_km],
+        describe: ->(row, label) { "#{label}, the Source point is #{row['distance_km']} km outside the Bounding box" }
+      }
     }.freeze
 
     def initialize(run)
@@ -169,7 +174,6 @@ module LanguageRefresh
 
       LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) if entry.dig('changes', key) }
       entry.fetch('counts', {}).each { |key, count| lines << '' << "#{key.humanize}: #{count}" }
-      lines << '' << 'Location warnings are not checked by the Refresh yet.'
       lines.join("\n")
     end
 
