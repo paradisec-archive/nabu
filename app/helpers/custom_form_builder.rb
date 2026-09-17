@@ -71,12 +71,15 @@ class CustomFormBuilder < ActionView::Helpers::FormBuilder
       'search-url': @template.languages_path,
       placeholder: 'Choose a language...',
       'extra-name': 'country_ids',
-      'extra-selector': '#collection_country_ids'
+      'extra-selector': '#collection_country_ids',
+      equivalents: true
     }
     class_name = options.delete 'class'
     languages = @object.send(attribute.to_s.sub('_id', '').to_sym)
+    choices = @template.language_choices(languages, equivalents: true)
+    field = select(attribute, choices, { multiple: true }, { data: html_data, class: "#{class_name} choices-select language" })
 
-    select(attribute, @template.language_choices(languages), { multiple: true }, { data: html_data, class: "#{class_name} choices-select language" })
+    field + @template.tag.div(class: 'language-equivalents', id: "#{field_id(attribute)}_equivalents")
   end
 
   def university_select(attribute, options = {})

@@ -111,6 +111,14 @@ class Language < ApplicationRecord
     'Retired' if retired?
   end
 
+  # How a Language is offered wherever a picker is built. Choices.js carries whatever else a chip
+  # needs as the choice's custom properties.
+  def picker_option(equivalents = nil)
+    properties = { equivalents: } if equivalents.present?
+
+    { value: id, label:, description: picker_description, custom_properties: properties }.compact
+  end
+
   def source_uri
     template = SOURCE_URIS[source]
     return if template.nil?

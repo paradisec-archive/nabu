@@ -10,13 +10,16 @@ class LanguagesController < ApplicationController
     hits = hits.in_countries(params[:country_ids]) if params[:country_ids]
 
     languages = (hits.to_a + Language.special.to_a).uniq
+    offered = LanguageEquivalent.options_for(languages)
 
-    render json: { results: languages.map { |language| { value: language.id, label: language.label, description: language.picker_description }.compact } }
+    render json: { results: languages.map { |language| language.picker_option(offered[language.id]) } }
   end
 
   def show
     respond_with @language
   end
+
+  private
 
   def language_params
     params.require(:language)
