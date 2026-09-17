@@ -109,11 +109,6 @@ class Language < ApplicationRecord
     "#{name} (#{code}) · #{label_source_name}"
   end
 
-  # Everything Nabu holds about the registry that issued this Code.
-  def source_definition
-    SOURCES[source]
-  end
-
   # The Source itself. The Label marks a Glottolog dialect as such, but that is a rendering of
   # source and dialect together, not a Source of its own.
   def source_name
@@ -198,6 +193,11 @@ versions]
   end
 
   private
+
+  # The Source that issued this Code; the readers above are how the rest of Nabu reaches its fields.
+  def source_definition
+    SOURCES[source]
+  end
 
   def label_source_name
     return 'Glottolog dialect' if glottolog? && dialect?
