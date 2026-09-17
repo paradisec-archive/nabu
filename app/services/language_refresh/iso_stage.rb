@@ -65,7 +65,7 @@ module LanguageRefresh
         next if languages.key?(code)
 
         languages[code] = Language.create!(code:, name:, source:)
-        [code, name]
+        { 'code' => code, 'name' => name }
       end
     end
 
@@ -77,7 +77,7 @@ module LanguageRefresh
 
         was = language.name
         language.update!(name:)
-        [code, was, name]
+        { 'code' => code, 'name' => name, 'old_name' => was }
       end
     end
 
@@ -86,7 +86,7 @@ module LanguageRefresh
         next unless language.retired? && published.key?(language.code)
 
         language.update!(retired: false)
-        [language.code, language.name]
+        { 'code' => language.code, 'name' => language.name }
       end
     end
 
@@ -102,12 +102,12 @@ module LanguageRefresh
         language.update!(retired: true)
 
         if replacement.nil?
-          held << [language.code, language.name]
+          held << { 'code' => language.code, 'name' => language.name }
           next
         end
 
         moved = rewrite(language, replacement, run)
-        rewritten << [language.code, language.name, replacement.code, moved]
+        rewritten << { 'code' => language.code, 'name' => language.name, 'change_to' => replacement.code, 'moved' => moved }
         reindex << replacement.id if moved.positive?
       end
 
@@ -151,16 +151,12 @@ module LanguageRefresh
 
     def add_country_links(languages)
       countries = Country.pluck(:code, :id).to_h
-      wanted = @index.rows.filter_map do |row|
+
+      CountryLinks.add(@index.rows.filter_map do |row|
         language = languages[row['LangID']]
         country_id = countries[row['CountryID']]
         [language.id, country_id] if language && !language.retired? && country_id
-      end.uniq
-
-      linked = CountriesLanguage.where(language_id: wanted.map(&:first).uniq).pluck(:language_id, :country_id).to_set
-      added = wanted.reject { |pair| linked.include?(pair) }
-      CountriesLanguage.insert_all(added.map { |language_id, country_id| { language_id:, country_id: } }) if added.any?
-      added.size
+      end)
     end
   end
 end
