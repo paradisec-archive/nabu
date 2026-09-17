@@ -1,5 +1,5 @@
 class LanguageRefreshService
-  STAGES = [LanguageRefresh::IsoStage, LanguageRefresh::GlottologStage].freeze
+  STAGES = [LanguageRefresh::IsoStage, LanguageRefresh::GlottologStage, LanguageRefresh::AustlangStage].freeze
   SHRINK_LIMIT = 0.05
   LOCK_NAME = 'nabu_language_refresh'.freeze
 

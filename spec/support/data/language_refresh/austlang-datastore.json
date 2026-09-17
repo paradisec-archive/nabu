@@ -1,0 +1,85 @@
+{
+  "help": "https://data.gov.au/data/api/3/action/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "e9a9ea06-d821-4b53-a05f-877409a1a19c",
+    "fields": [
+      {
+        "id": "_id",
+        "type": "int"
+      },
+      {
+        "id": "language_code",
+        "type": "text"
+      },
+      {
+        "id": "language_name",
+        "type": "text"
+      },
+      {
+        "id": "language_synonym",
+        "type": "text"
+      },
+      {
+        "id": "approximate_latitude_of_language_variety",
+        "type": "numeric"
+      },
+      {
+        "id": "approximate_longitude_of_language_variety",
+        "type": "numeric"
+      },
+      {
+        "id": "uri",
+        "type": "text"
+      }
+    ],
+    "records": [
+      {
+        "_id": 128,
+        "language_code": "C15",
+        "language_name": "Warlpiri",
+        "language_synonym": "Warlpiri|Lander Warlpiri|Ngalia|Walbiri|Walmalla|Walpiri|Waneiga|Warlmala|Walpiri|Alpira|Alpiri|Elpira|Ilpara|Ilpira|Ilpirra|Nambulatji|Njambalatji|Ulperra|Wailbri|Walbrai|Walbri|Waljbiri|Waljpiri|Walpari|Warrabri|Wolperi|Wolpirra|Walbiri|Waibry|Nambutj|Nambutju|Nambutj|Waibri|Walbiri|Albura|Boonara|Bunara|Buruwatung|Ipara|Jalpiri|Kolo|Kukuruba|Manggai|Munga|Nambuda|Nanbuda|Ngadi|Ngali|Ngaliya|Ngallea|Ngallia|Ngardi|Ngari|Ngarilia|Ngarliya; Warrmarla; Warnayaka; Ngardilypa|Yarlpiri|Njalia|Ooldean|Panara|Puruwantung|Waiangadi|Waiangara|Waingara|Wakirti Warlpiri|Walmala|Walmanba|Wanaeka|Wanajaga|Wanajaka|Wanajeka|Wanayaga|Warangari|Waringari|Warniaka|Warramulla|Wawilja|Wommana|Woneiga|Nam bulatji|Wal bri",
+        "approximate_latitude_of_language_variety": -20.433595605496,
+        "approximate_longitude_of_language_variety": 131.05240928361,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/c15"
+      },
+      {
+        "_id": 390,
+        "language_code": "G5",
+        "language_name": "Wangka-yutjurru",
+        "language_synonym": "Wangka yutjuru|Wanggamanha|Wongkadjera/Wangka yutjuru|Julaolinja|Lanima|Rungarungawa|Wongkadjera|Wangkadjera|Wanggadjara|Wanggayudyuru|Wangka jutjuru|Wonkajara|Wonkatyeri|Wonkoyara",
+        "approximate_latitude_of_language_variety": -22.881736269643,
+        "approximate_longitude_of_language_variety": 138.56573007749,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/g5"
+      },
+      {
+        "_id": 56,
+        "language_code": "A38.1",
+        "language_name": "Widjandja",
+        "language_synonym": "Ngadadjara|Jabungadja|Ku:rara|Nadadjara|Nga:da|Nga:dapitjardi|Ngad adara|Ngadatara|Ngadatjara|Ngadawongga|Ngadjatara|Nganadjara|Ngatatara|Ngatatjara|Rumudjara|Teitudjara|Wan:udjara|Warara|Wirtjandja|Witjandja",
+        "approximate_latitude_of_language_variety": 0,
+        "approximate_longitude_of_language_variety": 0,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/a38.1"
+      },
+      {
+        "_id": 559,
+        "language_code": "N116.A",
+        "language_name": "Bilin",
+        "language_synonym": "",
+        "approximate_latitude_of_language_variety": 0,
+        "approximate_longitude_of_language_variety": 0,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/n116."
+      },
+      {
+        "_id": 2,
+        "language_code": "A10",
+        "language_name": "Ngurlu",
+        "language_synonym": "Wangkathaa|Maduwongga|Waljen|Wanggaji|Wangkayi|Pindini|Jaa|Jata|Kuru|Kurutjara|Nanu|Nata|Nguludjara|Ngulutjara|Njata",
+        "approximate_latitude_of_language_variety": 0,
+        "approximate_longitude_of_language_variety": 0,
+        "uri": "https://collection.aiatsis.gov.au/austlang/language/a10"
+      }
+    ],
+    "total": 5
+  }
+}
