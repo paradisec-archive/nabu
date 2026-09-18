@@ -117,7 +117,7 @@ module Types
 
       bwf = {
         'FileName' => filename,
-        'Description' => desc.join('\n').truncate(240),
+        'Description' => desc.join('\n').truncate_bytes(240, omission: '...'),
         'Originator' => i.collector_name,
         'OriginationDate' => i.originated_on,
         'BextVersion' => 1,
