@@ -1,0 +1,103 @@
+require 'digest'
+
+class LanguageRefreshService
+  # Equivalents last: they are seeded from the Languages every Source stage has just written.
+  STAGES = [
+    LanguageRefresh::IsoStage, LanguageRefresh::GlottologStage, LanguageRefresh::AustlangStage, LanguageRefresh::EquivalentsStage
+  ].freeze
+  SHRINK_LIMIT = 0.05
+  LOCK_PREFIX = 'nabu_language_refresh'.freeze
+  # MySQL's own cap on a lock name.
+  LOCK_NAME_LIMIT = 64
+
+  def initialize(fetcher: LanguageRefresh::Fetcher.new, stages: STAGES)
+    @fetcher = fetcher
+    @stages = stages
+  end
+
+  # A MySQL named lock belongs to the server, not to the database the Run reads, so the database
+  # names the lock: parallel test workers share one server and would otherwise take each other's.
+  def self.lock_name(database)
+    name = "#{LOCK_PREFIX}_#{database}"
+    return name if name.length <= LOCK_NAME_LIMIT
+
+    "#{LOCK_PREFIX}_#{Digest::SHA256.hexdigest(database)[0, 16]}"
+  end
+
+  def run
+    with_lock do
+      run = LanguageRefreshRun.create!(started_at: Time.current)
+
+      fetcher = LanguageRefresh::CachingFetcher.new(@fetcher)
+
+      begin
+        @stages.each { |stage_class| run_stage(run, stage_class.new(fetcher)) }
+        run.update!(report: LanguageRefresh::Report.new(run).body)
+        LanguageRefreshMailer.with(run:).report.deliver_now
+        run.update!(status: :completed, finished_at: Time.current)
+      rescue StandardError
+        run.update!(status: :failed, finished_at: Time.current)
+        raise
+      end
+
+      run
+    end
+  end
+
+  private
+
+  # A MySQL named lock belongs to the session, so a Run that dies releases it with its connection.
+  def with_lock
+    ActiveRecord::Base.with_connection do |connection|
+      lock = self.class.lock_name(connection.current_database)
+
+      unless connection.get_advisory_lock(lock)
+        Rails.logger.warn('Language Refresh skipped: another Run holds the lock')
+        return
+      end
+
+      begin
+        yield
+      ensure
+        connection.release_advisory_lock(lock)
+      end
+    end
+  end
+
+  def run_stage(run, stage)
+    entry = { 'started_at' => Time.current }
+
+    stage.fetch
+    entry.merge!('version' => stage.version, 'rows' => stage.row_count)
+
+    shrinkage = shrinkage(run, stage)
+    return entry.merge!('status' => 'refused', 'error' => shrinkage) if shrinkage
+
+    result = PaperTrail.request(enabled: false) { Language.transaction(requires_new: true) { stage.apply(run) } }
+    reindex(result.delete(:reindex))
+    entry.merge!('status' => 'applied', **result.deep_stringify_keys)
+  rescue StandardError => e
+    Sentry.capture_exception(e, extra: { language_refresh_run: run.id, source: stage.source })
+    Rails.logger.error("Language Refresh #{stage.source} failed: #{e.class}: #{e.message}")
+    entry.merge!('status' => 'failed', 'error' => e.message)
+  ensure
+    run.record_source(stage.source, entry.merge('finished_at' => Time.current))
+  end
+
+  # Rewriting a join table moves tags no Language callback sees, so the Refresh reindexes the
+  # Languages the tags landed on once the stage's transaction has committed.
+  def reindex(language_ids)
+    Language.where(id: language_ids).find_each { |language| LanguageReindexJob.perform_later(language) }
+  end
+
+  # A download that lost rows looks exactly like a mass retirement, so a big enough drop is refused.
+  def shrinkage(run, stage)
+    previous = run.previous_rows(stage.source)
+    return if previous.nil? || previous.zero?
+
+    drop = (previous - stage.row_count).fdiv(previous)
+    return if drop <= SHRINK_LIMIT
+
+    "#{stage.row_count} rows is #{(drop * 100).round(1)}% fewer than the #{previous} the last applied Run read"
+  end
+end

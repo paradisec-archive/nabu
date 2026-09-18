@@ -9,40 +9,58 @@
 # ------------------ | ------------------ | ---------------------------
 # **`id`**           | `integer`          | `not null, primary key`
 # **`code`**         | `string(255)`      |
+# **`dialect`**      | `boolean`          | `default(FALSE), not null`
 # **`east_limit`**   | `float(24)`        |
 # **`name`**         | `string(255)`      |
 # **`north_limit`**  | `float(24)`        |
-# **`retired`**      | `boolean`          |
+# **`retired`**      | `boolean`          | `default(FALSE), not null`
+# **`source`**       | `string(255)`      | `not null`
 # **`south_limit`**  | `float(24)`        |
 # **`west_limit`**   | `float(24)`        |
 #
 # ### Indexes
 #
-# * `index_languages_on_code` (_unique_):
+# * `index_languages_on_code_and_source` (_unique_):
 #     * **`code`**
+#     * **`source`**
 #
 ActiveAdmin.register Language do
   menu parent: 'Other Entities'
   config.sort_order = 'name_asc'
-  actions :all, except: [:destroy]
+  # Sources own every field but the Bounding box, so rows are never created or deleted by hand.
+  actions :index, :show, :edit, :update
 
-  permit_params :name, :code, :retired, :north_limit, :south_limit, :west_limit, :east_limit, countries_languages_attributes: %i[_destroy country_id]
+  permit_params :north_limit, :south_limit, :west_limit, :east_limit
 
   filter :countries
   filter :code
+  filter :source, as: :select, collection: -> { Language.source_names.invert }
   filter :name
+  filter :dialect
   filter :retired
   # Don't filter by items_for_content, items_for_subject, or collections.
   # Doesn't make sense.
   # Don't filter by north_limit, east_limit, south_limit or west_limit .
   # No strong business case for doing so.
 
+  index do
+    column :code
+    column(:source, &:source_name)
+    column :name
+    column :dialect
+    column :retired
+    column('Bounding box') { |language| status_tag language.has_all_boundaries? }
+    actions
+  end
+
   # show page
   show do |language|
     attributes_table_for(resource)  do
       row :id
       row :code
+      row(:source) { language.source_name }
       row :name
+      row :dialect
       row :retired
       row :north_limit
       row :east_limit
@@ -64,21 +82,11 @@ ActiveAdmin.register Language do
   end
 
   form do |f|
-    f.inputs 'Language Details' do # physician's fields
-      f.input :code
-      f.input :name
-      f.input :retired
+    f.inputs "Bounding box for #{f.object.label}" do
       f.input :north_limit
       f.input :east_limit
       f.input :south_limit
       f.input :west_limit
-    end
-
-    f.has_many :countries_languages do |country|
-      if !country.object.nil?
-        country.input :_destroy, as: :boolean, label: 'Destroy?'
-      end
-      country.input :country
     end
     f.actions
   end

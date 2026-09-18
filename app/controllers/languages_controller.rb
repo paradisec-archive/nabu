@@ -3,28 +3,23 @@ class LanguagesController < ApplicationController
 
   respond_to :json
 
+  PICKER_LIMIT = 20
+
   def index
-    @languages = @languages
-      .includes(:countries)
-      .order('languages.name')
-      .where('languages.name like ? OR languages.code like ?', "%#{params[:term] || params[:q]}%", "%#{params[:term] || params[:q]}%")
-      .limit(10)
+    hits = @languages.picker_search(params[:term] || params[:q]).limit(PICKER_LIMIT)
+    hits = hits.in_countries(params[:country_ids]) if params[:country_ids]
 
-    @languages = @languages.where(countries_languages: { country_id: params[:country_ids] }) if params[:country_ids]
+    languages = (hits.to_a + Language.special.to_a).uniq
+    offered = LanguageEquivalent.options_for(languages)
 
-    @languages = @languages.to_a
-
-    # These are fake languages which we always want in the list
-    @languages << Language.find_by_code('mul')
-    @languages << Language.find_by_code('und')
-    @languages << Language.find_by_code('zxx')
-
-    render json: { results: @languages.map { |l| { value: l.id, label: l.name } } }
+    render json: { results: languages.map { |language| language.picker_option(offered[language.id]) } }
   end
 
   def show
     respond_with @language
   end
+
+  private
 
   def language_params
     params.require(:language)

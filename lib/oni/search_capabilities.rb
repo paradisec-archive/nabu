@@ -33,6 +33,8 @@ module Oni
       'full_identifier' => { type: 'string', label: 'Identifier' }
     }.freeze
 
+    LANGUAGE_FACET_LIMIT = 10_000
+
     DECLARED_FILTERS = FILTERS.transform_values { |declaration| declaration.slice(:type, :label) }.freeze
 
     FACETS = FILTERS.transform_values { |declaration| declaration.slice(:label) }.freeze

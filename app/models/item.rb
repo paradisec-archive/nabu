@@ -351,6 +351,7 @@ class Item < ApplicationRecord
     user_ids = users.map(&:id)
     collection_admin_ids = collection.admins.map(&:id)
     collection_user_ids = collection.users.map(&:id)
+    content_language_labels = content_languages.map(&:label).uniq
 
     data = {
       # Full text plus advanced search
@@ -379,11 +380,9 @@ class Item < ApplicationRecord
       collector_sortname:,
       university_name:,
       operator_name:,
-      languages: content_languages.map(&:name).uniq,
-      languages_with_code: content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
-      content_languages: content_languages.map(&:name).uniq,
-      content_languages_code: content_languages.map(&:code).uniq,
-      subject_languages: subject_languages.map(&:name).uniq,
+      languages_with_code: content_language_labels,
+      content_languages: content_language_labels,
+      subject_languages: subject_languages.map(&:label).uniq,
       countries: countries.map(&:name).uniq,
       country_codes: countries.map(&:code).uniq,
       data_categories: data_categories.map(&:name).uniq,
@@ -587,12 +586,8 @@ class Item < ApplicationRecord
         xml.tag! 'dc:contributor', agent.user.name, 'xsi:type' => 'olac:role', 'olac:code' => agent.agent_role.name
       end
 
-      subject_languages.each do |language|
-        xml.tag! 'dc:subject', 'xsi:type' => 'olac:language', 'olac:code' => language.code
-      end
-      content_languages.each do |language|
-        xml.tag! 'dc:language', 'xsi:type' => 'olac:language', 'olac:code' => language.code
-      end
+      subject_languages.each { |language| olac_language_tag(xml, 'dc:subject', language) }
+      content_languages.each { |language| olac_language_tag(xml, 'dc:language', language) }
 
       format = ''
       format += "Digitised: #{digitised_on? ? 'yes' : 'no'}"
@@ -654,6 +649,12 @@ class Item < ApplicationRecord
 
   def to_param
     identifier
+  end
+
+  def olac_language_tag(xml, element, language)
+    return xml.tag!(element, language.olac_text) unless language.iso639_3?
+
+    xml.tag! element, 'xsi:type' => 'olac:language', 'olac:code' => language.code
   end
 
   # ensure the collection mentions all countries and languages present in the item
@@ -728,7 +729,7 @@ class Item < ApplicationRecord
     }
 
     json[:properties][:description] = description if description
-    json[:properties][:languages] = subject_languages.map(&:name_with_code).join(', ') unless subject_languages.empty?
+    json[:properties][:languages] = subject_languages.map(&:label).join(', ') unless subject_languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
     json[:properties][:license] = access_condition.name if access_condition
     json[:properties][:rights] = access_condition.name if access_condition
