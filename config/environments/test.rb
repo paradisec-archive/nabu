@@ -55,7 +55,9 @@ Rails.application.configure do
   # Our Stuff
   ########################
 
-  config.active_job.queue_adapter = :inline
+  # Not :inline, which refuses a job enqueued for the future and so cannot run a debounced one. The
+  # test adapter is told to perform as it enqueues in spec/support/active_job.rb, so jobs still run.
+  config.active_job.queue_adapter = :test
 
   # bin/test runs db:prepare, which would otherwise rewrite db/*schema.rb from the test databases
   config.active_record.dump_schema_after_migration = false
