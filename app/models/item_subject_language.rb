@@ -21,6 +21,8 @@
 #
 # ### Foreign Keys
 #
+# * `fk_rails_...` (_ON DELETE => cascade_):
+#     * **`item_id => items.id`**
 # * `fk_rails_...`:
 #     * **`language_id => languages.id`**
 #

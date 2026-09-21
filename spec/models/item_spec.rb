@@ -123,4 +123,20 @@ describe Item, type: :model do
       expect(build(:item, originated_on: nil, received_on: nil, digitised_on: nil)).to be_valid
     end
   end
+
+  describe 'join rows when deleted without callbacks', :no_catalog_upload do
+    it 'are removed by the database' do
+      item = create(:item)
+      item.countries << create(:country)
+      item.item_agents.create!(user: create(:user), agent_role: create(:agent_role))
+      item.data_categories << DataCategory.create!(name: 'lexicon')
+      item.data_types << DataType.create!(name: 'Sound')
+      join_rows = [ItemCountry, ItemSubjectLanguage, ItemContentLanguage, ItemAgent, ItemDataCategory, ItemDataType].map { |model| model.where(item_id: item.id) }
+      expect(join_rows).to all(exist)
+
+      described_class.where(id: item.id).delete_all
+
+      expect(join_rows).to all(satisfy { |rows| !rows.exists? })
+    end
+  end
 end

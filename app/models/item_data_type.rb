@@ -18,6 +18,11 @@
 # * `index_item_data_types_on_item_id`:
 #     * **`item_id`**
 #
+# ### Foreign Keys
+#
+# * `fk_rails_...` (_ON DELETE => cascade_):
+#     * **`item_id => items.id`**
+#
 
 class ItemDataType < ApplicationRecord
   has_paper_trail
