@@ -30,6 +30,8 @@ module Nabu
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks nabu/test_namespace.rb])
 
+    config.mailer_from = 'admin@paradisec.org.au'
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
