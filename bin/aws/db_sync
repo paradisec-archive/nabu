@@ -127,14 +127,15 @@ dump_prod_to_s3() {
 target_dev() {
   dump_prod_to_s3
 
-  echo "Ensuring ${DEV_DB_NAME} exists..."
-  echo "CREATE DATABASE IF NOT EXISTS ${DEV_DB_NAME};" | mysql -h "$DEV_DB_HOST" -u root
-
   # Download to a file first — the S3 pull is the expensive step, so keep the
   # dump around for manual recovery if the mysql restore breaks.
   local dump_file="${TMPDIR:-/tmp}/nabu-dump-${TS}.sql.bz2"
   echo "Downloading dump to ${dump_file}..."
   aws s3 cp "s3://${PROD_BUCKET}/${KEY}" "$dump_file" --profile "$PROD_PROFILE"
+
+  # Recreated rather than restored over, so tables prod no longer has don't survive.
+  echo "Recreating ${DEV_DB_NAME}..."
+  echo "DROP DATABASE IF EXISTS ${DEV_DB_NAME}; CREATE DATABASE ${DEV_DB_NAME};" | mysql -h "$DEV_DB_HOST" -u root
 
   echo "Restoring into ${DEV_DB_NAME}..."
   bunzip2 -c "$dump_file" | mysql -h "$DEV_DB_HOST" -u root "$DEV_DB_NAME"
@@ -185,12 +186,18 @@ target_staging() {
 
   # 3. Restore — detached run-task in the staging container. The in-container
   #    hostname grep is the last-line structural guard before mysql runs.
+  #    The dump only drops tables prod has, so every staging table is dropped
+  #    first; otherwise tables prod no longer has survive the restore.
   local task_def restore_cmd restore_arn
   task_def=$(discover_app_task_def "$STAGE_PROFILE")
   restore_cmd="set -euo pipefail
 echo \"\$NABU_DATABASE_HOSTNAME\" | grep -q stage || { echo 'target is not staging RDS'; exit 1; }
+db() { mysql -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" nabu \"\$@\"; }
+{ echo 'SET FOREIGN_KEY_CHECKS=0;'
+  db -N -e \"SELECT CONCAT(IF(table_type = 'VIEW', 'DROP VIEW ', 'DROP TABLE '), table_name, ';') FROM information_schema.tables WHERE table_schema = DATABASE()\"
+} | db
 bundle exec ruby -raws-sdk-s3 -e '\$stdout.binmode; Aws::S3::Client.new(region: %q{${REGION}}).get_object(bucket: %q{${STAGE_BUCKET}}, key: %q{${KEY}}) { |chunk| \$stdout.write(chunk) }' \\
-  | bunzip2 | mysql -u nabu -h \"\$NABU_DATABASE_HOSTNAME\" --password=\"\$NABU_DATABASE_PASSWORD\" nabu"
+  | bunzip2 | db"
 
   echo 'Firing staging restore task...'
   restore_arn=$(fire_task "$STAGE_PROFILE" "$cluster" "$task_def" "$restore_cmd")
