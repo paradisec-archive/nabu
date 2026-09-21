@@ -644,6 +644,13 @@ export class AppStack extends cdk.Stack {
     });
 
     if (env === 'stage') {
+      // Stage sends as its own subdomain and signs for it. The apex domain's DMARC policy is
+      // p=quarantine, and stage holds no key to sign as the apex, so mail claiming to be from
+      // there fails alignment and is filed as spam or dropped outright.
+      new ses.EmailIdentity(this, 'StageDomainSesIdentity', {
+        identity: ses.Identity.publicHostedZone(zone),
+      });
+
       // To
       const testers = ['johnf@inodes.org', 'jodie.kell@sydney.edu.au', 'julia.miller@anu.edu.au', 'enwardy@hotmail.com', 'thien@unimelb.edu.au'];
       testers.forEach((email) => {
