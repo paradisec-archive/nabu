@@ -22,7 +22,7 @@ export class MainStack extends cdk.Stack {
   public adminCertificate: acm.ICertificate;
   public tempCertificate: acm.ICertificate;
 
-  public zone: route53.IHostedZone;
+  public zone: route53.IPublicHostedZone;
 
   constructor(scope: Construct, id: string, environment: Environment, props?: cdk.StackProps) {
     super(scope, id, props);
