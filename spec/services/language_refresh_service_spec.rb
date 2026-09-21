@@ -304,6 +304,97 @@ describe LanguageRefreshService do
     expect(mail.attachments).to be_empty
   end
 
+  describe 'the HTML part' do
+    let(:afar) { create(:language, code: 'aar', name: 'Afar') }
+
+    def html_of(mail)
+      Nokogiri::HTML(mail.html_part.decoded)
+    end
+
+    def table_after(html, heading)
+      html.at_xpath("//*[self::h3 or self::h4][normalize-space()='#{heading}']/following-sibling::table[1]")
+    end
+
+    def cells(table)
+      table.css('tr').map { |row| row.css('th, td').map { |cell| cell.text.strip } }
+    end
+
+    it 'sends the report as HTML beside the plain text, each list a table capped like the text' do
+      create(:language, code: 'wbp', name: 'Warlpiri')
+      create(:language, code: 'tpi', name: 'Pisin, Tok')
+
+      refresh.run
+
+      mail = ActionMailer::Base.deliveries.sole
+      expect(mail).to be_multipart
+      expect(mail.text_part.decoded).to include('and 12 more in iso639_3-new.csv')
+
+      html = html_of(mail)
+      expect(html.at('h2').text).to eq("Language Refresh Run #{LanguageRefreshRun.sole.id}")
+
+      summary = cells(html.at('table'))
+      expect(summary.first).to eq(['', 'ISO 639-3'])
+      expect(summary).to include(%w[Status applied], %w[New 32], %w[Renamed 1], ['Country links added', '5'])
+
+      new_rows = cells(table_after(html, 'New: 32'))
+      expect(new_rows.size).to eq(LanguageRefresh::Report::INLINE_LIMIT + 1)
+      expect(new_rows.second).to eq(['Ghotuo (aaa) · ISO 639-3'])
+      expect(html.text).to include('and 12 more in iso639_3-new.csv')
+
+      expect(cells(table_after(html, 'Renamed: 1'))).to eq([['Language', 'Old name'], ['Tok Pisin (tpi) · ISO 639-3', 'Pisin, Tok']])
+    end
+
+    it 'says nothing needs a person and nothing failed when nothing changed' do
+      2.times { refresh.run }
+
+      html = html_of(ActionMailer::Base.deliveries.last)
+      expect(html.at_xpath("//h3[normalize-space()='Needs a person: 0']/following-sibling::p[1]").text).to eq('Nothing needs a person.')
+      expect(html.at_xpath("//h3[normalize-space()='Failures']/following-sibling::p[1]").text).to eq('None.')
+      expect(cells(html.at('table'))).to include(%w[New 0], %w[Renamed 0])
+      expect(html.css('h4')).to be_empty
+    end
+
+    it 'lists a failed stage under Failures and shows no lists for it' do
+      stub_request(:get, sil_codes_url).to_return(status: 503)
+
+      refresh.run
+
+      html = html_of(ActionMailer::Base.deliveries.sole)
+      expect(html.css('li').map(&:text)).to eq(["ISO 639-3 failed: GET #{sil_codes_url} failed after 4 attempts: HTTP 503"])
+      expect(cells(html.at('table'))).to include(%w[Status failed])
+      expect(html.at_xpath("//h3[normalize-space()='ISO 639-3']/following-sibling::p[1]").text.strip).to eq('Status: failed')
+      expect(html.css('h4')).to be_empty
+    end
+
+    it 'links each Held Language to its records, capped like the text' do
+      mandobo = create(:language, code: 'aax', name: 'Mandobo Atas')
+      collection = create(:collection, languages: [mandobo])
+      21.times { create(:item, collection:, content_languages: [mandobo], subject_languages: [afar]) }
+      first_item = collection.items.order(:identifier).first
+
+      refresh.run
+
+      mail = ActionMailer::Base.deliveries.sole
+      html = html_of(mail)
+      held = table_after(html, 'Mandobo Atas (aax) · ISO 639-3')
+      expect(cells(held).first(3)).to eq(
+        [
+          %w[Retired split],
+          ['Remedy', 'Split into Ambrak [aag] and Amal [aad]'],
+          ['Tagged', 'collection_languages 1, item_content_languages 21']
+        ]
+      )
+
+      links = held.css('a')
+      expect(links.size).to eq(LanguageRefresh::Report::INLINE_LIMIT)
+      expect(links.first.text).to eq(collection.identifier)
+      expect(links.first['href']).to eq("https://www.example.com/collections/#{collection.identifier}/edit")
+      expect(links[1]['href']).to eq("https://www.example.com/collections/#{collection.identifier}/items/#{first_item.identifier}/edit")
+      expect(html.text).to include('and 2 more in needs-a-person.csv')
+      expect(body_of(mail)).to include('  and 2 more in needs-a-person.csv')
+    end
+  end
+
   describe 'a report that cannot be sent' do
     around do |example|
       method, settings = ActionMailer::Base.delivery_method, ActionMailer::Base.smtp_settings

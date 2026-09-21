@@ -2,7 +2,8 @@ require 'csv'
 
 module LanguageRefresh
   # Renders a Run's report. The in-use Language count and everything under "Needs a person" are read
-  # live from the database; the rest comes from the Run.
+  # live from the database; the rest comes from the Run. The text body and the mailer's HTML part both
+  # render the same section data, so the two cannot drift.
   class Report
     INLINE_LIMIT = 20
     FACET_WARNING = 0.8
@@ -36,6 +37,46 @@ module LanguageRefresh
       }
     }.freeze
 
+    Held = Data.define(:language, :reason, :remedy, :tags, :links) do
+      def retired_because = reason || 'no longer published'
+      def shown_links = links.first(INLINE_LIMIT)
+      def more = [links.size - INLINE_LIMIT, 0].max
+      def attachment = HELD_ATTACHMENT
+    end
+
+    # A row reads as its Label plus whichever columns the Label does not already say.
+    Listing = Data.define(:source, :key, :rows) do
+      def title = LISTS.fetch(key)[:title]
+      def columns = LISTS.fetch(key)[:columns]
+      def shown = rows.first(INLINE_LIMIT)
+      def more = [rows.size - INLINE_LIMIT, 0].max
+      def attachment = "#{source}-#{key}.csv"
+      def headers = ['Language', *extra_columns.map(&:humanize)]
+      def cells(row) = [label(row), *extra_columns.map { |column| row[column] }]
+      def line(row) = LISTS.fetch(key)[:describe]&.call(row, label(row)) || label(row)
+
+      private
+
+      def extra_columns = columns - %w[code name dialect]
+
+      def label(row)
+        Language.new(source:, code: row['code'], name: row['name'], dialect: row['dialect'] || false).label
+      end
+    end
+
+    SourceSummary = Data.define(:name, :status, :versions, :rows_read, :lists, :counts) do
+      def applied? = status == 'applied'
+      def totals = lists.to_h { |listing| [listing.title, listing.rows.size] }.merge(counts.to_h)
+    end
+
+    # Every index builds the language facet from item content languages, a collection's included.
+    InUse = Data.define(:count, :cap) do
+      def warning? = count > cap * FACET_WARNING
+      def warning = "past #{(FACET_WARNING * 100).round}% of the language facet cap"
+    end
+
+    attr_reader :run
+
     def initialize(run)
       @run = run
     end
@@ -52,28 +93,60 @@ module LanguageRefresh
       "[NABU Admin] Language Refresh: #{counts.join(', ')}"
     end
 
+    def started_at
+      @run.started_at&.in_time_zone('Australia/Sydney')&.strftime('%F %R %Z')
+    end
+
     def body
       [
-        "Language Refresh Run #{@run.id}, started #{@run.started_at&.in_time_zone('Australia/Sydney')&.strftime('%F %R %Z')}",
-        needs_a_person_section,
-        failures_section,
-        *@run.sources.map { |source, entry| source_section(source, entry) },
-        in_use_section
+        "Language Refresh Run #{@run.id}, started #{started_at}",
+        needs_a_person_text,
+        "Failures\n#{failures.any? ? failures.join("\n") : 'None.'}",
+        *sources.map { |source| source_text(source) },
+        in_use_text
       ].join("\n\n")
     end
 
     def attachments
-      files = @run.sources.each_with_object({}) do |(source, entry), collected|
-        LISTS.each do |key, list|
-          rows = changes(entry, key)
-          next if rows.size <= INLINE_LIMIT
-
-          collected[attachment_name(source, key)] = csv(list[:columns], rows)
-        end
+      files = sources.flat_map(&:lists).each_with_object({}) do |listing, collected|
+        collected[listing.attachment] = csv(listing.columns, listing.rows) if listing.more.positive?
       end
 
-      files[HELD_ATTACHMENT] = held_csv if held.any? { |entry| links_for(entry).size > INLINE_LIMIT }
+      files[HELD_ATTACHMENT] = held_csv if held.any? { |entry| entry.more.positive? }
       files
+    end
+
+    def failures
+      @failures ||= @run.sources.filter_map do |source, entry|
+        "#{STAGE_NAMES.fetch(source)} #{entry['status']}: #{entry['error']}" if %w[failed refused].include?(entry['status'])
+      end
+    end
+
+    # Every Retired Language still tagged, whichever Run retired it, read from the database rather
+    # than from the stages, so a Source that failed its fetch shortens nothing. A stage that did run
+    # says why its own Languages were retired and what to do about them.
+    def held
+      @held ||= held_languages.map do |language|
+        reason = reasons.fetch(language.id, {})
+        Held.new(language:, reason: reason['reason'], remedy: reason['remedy'].presence, tags: tag_counts(language), links: edit_links(language))
+      end
+    end
+
+    def sources
+      @sources ||= @run.sources.map do |source, entry|
+        applied = entry['status'] == 'applied'
+        lists = LISTS.keys.filter_map { |key| Listing.new(source:, key:, rows: entry.dig('changes', key)) if entry.dig('changes', key) }
+        counts = entry.fetch('counts', {}).map { |key, count| [key.humanize, count] }
+
+        SourceSummary.new(
+          name: STAGE_NAMES.fetch(source), status: entry['status'], versions: entry['version'], rows_read: entry['rows'],
+          lists: applied ? lists : [], counts: applied ? counts : []
+        )
+      end
+    end
+
+    def in_use
+      @in_use ||= InUse.new(count: ItemContentLanguage.distinct.count(:language_id), cap: Oni::SearchCapabilities::LANGUAGE_FACET_LIMIT)
     end
 
     private
@@ -86,51 +159,12 @@ module LanguageRefresh
       @run.sources.values.sum { |entry| changes(entry, key).size }
     end
 
-    def failures
-      @failures ||= @run.sources.filter_map do |source, entry|
-        "#{STAGE_NAMES.fetch(source)} #{entry['status']}: #{entry['error']}" if %w[failed refused].include?(entry['status'])
-      end
-    end
-
-    def failures_section
-      "Failures\n#{failures.any? ? failures.join("\n") : 'None.'}"
-    end
-
-    # Every Retired Language still tagged, whichever Run retired it, read from the database rather
-    # than from the stages, so a Source that failed its fetch shortens nothing. A stage that did run
-    # says why its own Languages were retired and what to do about them.
-    def held
-      @held ||= held_languages.map { |language| reasons.fetch(language.id, { 'language_id' => language.id }) }
-    end
-
     def held_languages
-      @held_languages ||= Language.where(retired: true).tagged.in_order_of(:source, Language.source_names.keys).order(:code)
+      Language.where(retired: true).tagged.in_order_of(:source, Language.source_names.keys).order(:code)
     end
 
     def reasons
       @reasons ||= @run.sources.values.flat_map { |entry| entry['held'] || [] }.index_by { |entry| entry['language_id'] }
-    end
-
-    def needs_a_person_section
-      return "Needs a person\nNothing needs a person." if held.empty?
-
-      ['Needs a person', *held.map { |entry| held_lines(entry) }].join("\n")
-    end
-
-    def held_lines(entry)
-      language = languages[entry['language_id']]
-      links = links_for(entry)
-
-      lines = [language.label, "  Retired: #{entry['reason'] || 'no longer published'}"]
-      lines << "  Remedy: #{entry['remedy']}" if entry['remedy'].present?
-      lines << "  Tagged: #{tag_counts(language).join(', ')}"
-      lines += links.first(INLINE_LIMIT).map { |identifier, url| "  #{identifier}: #{url}" }
-      lines << "  and #{links.size - INLINE_LIMIT} more in #{HELD_ATTACHMENT}" if links.size > INLINE_LIMIT
-      lines.join("\n")
-    end
-
-    def languages
-      @languages ||= held_languages.index_by(&:id)
     end
 
     def tag_counts(language)
@@ -138,11 +172,6 @@ module LanguageRefresh
         count = model.where(language_id: language.id).count
         "#{model.table_name} #{count}" if count.positive?
       end
-    end
-
-    def links_for(entry)
-      @links_for ||= {}
-      @links_for[entry['language_id']] ||= edit_links(languages[entry['language_id']])
     end
 
     def edit_links(language)
@@ -168,46 +197,12 @@ module LanguageRefresh
       CSV.generate do |csv|
         csv << %w[source code name reason remedy record url]
         held.each do |entry|
-          language = languages[entry['language_id']]
-          links_for(entry).each do |identifier, url|
-            csv << [language.source, language.code, language.name, entry['reason'], entry['remedy'], identifier, url]
+          language = entry.language
+          entry.links.each do |identifier, url|
+            csv << [language.source, language.code, language.name, entry.reason, entry.remedy, identifier, url]
           end
         end
       end
-    end
-
-    def source_section(source, entry)
-      lines = [STAGE_NAMES.fetch(source), "Status: #{entry['status']}"]
-      lines << "Versions: #{entry['version'].map { |file, version| "#{file} #{version}" }.join(', ')}" if entry['version']
-      lines << "Rows read: #{entry['rows']}" if entry['rows']
-      return lines.join("\n") unless entry['status'] == 'applied'
-
-      LISTS.each_key { |key| lines << '' << list_lines(source, key, changes(entry, key)) if entry.dig('changes', key) }
-      counts = entry.fetch('counts', {}).map { |key, count| "#{key.humanize}: #{count}" }
-      lines << '' << counts.join("\n") if counts.any?
-      lines.join("\n")
-    end
-
-    # Every index builds the language facet from item content languages, a collection's included.
-    def in_use_section
-      cap = Oni::SearchCapabilities::LANGUAGE_FACET_LIMIT
-      in_use = ItemContentLanguage.distinct.count(:language_id)
-
-      lines = ['In-use Languages', "#{in_use} of the #{cap} the language facet holds."]
-      lines << "WARNING: past #{(FACET_WARNING * 100).round}% of the language facet cap" if in_use > cap * FACET_WARNING
-      lines.join("\n")
-    end
-
-    def list_lines(source, key, rows)
-      lines = ["#{LISTS[key][:title]}: #{rows.size}"]
-      lines += rows.first(INLINE_LIMIT).map { |row| "  #{describe(source, key, row)}" }
-      lines << "  and #{rows.size - INLINE_LIMIT} more in #{attachment_name(source, key)}" if rows.size > INLINE_LIMIT
-      lines.join("\n")
-    end
-
-    def describe(source, key, row)
-      label = Language.new(source:, code: row['code'], name: row['name'], dialect: row['dialect'] || false).label
-      LISTS[key][:describe]&.call(row, label) || label
     end
 
     def csv(columns, rows)
@@ -217,8 +212,41 @@ module LanguageRefresh
       end
     end
 
-    def attachment_name(source, key)
-      "#{source}-#{key}.csv"
+    def needs_a_person_text
+      return "Needs a person\nNothing needs a person." if held.empty?
+
+      ['Needs a person', *held.map { |entry| held_text(entry) }].join("\n")
+    end
+
+    def held_text(entry)
+      lines = [entry.language.label, "  Retired: #{entry.retired_because}"]
+      lines << "  Remedy: #{entry.remedy}" if entry.remedy
+      lines << "  Tagged: #{entry.tags.join(', ')}"
+      lines += entry.shown_links.map { |identifier, url| "  #{identifier}: #{url}" }
+      lines << "  and #{entry.more} more in #{entry.attachment}" if entry.more.positive?
+      lines.join("\n")
+    end
+
+    def source_text(source)
+      lines = [source.name, "Status: #{source.status}"]
+      lines << "Versions: #{source.versions.map { |file, version| "#{file} #{version}" }.join(', ')}" if source.versions
+      lines << "Rows read: #{source.rows_read}" if source.rows_read
+      source.lists.each { |listing| lines << '' << list_text(listing) }
+      lines << '' << source.counts.map { |name, count| "#{name}: #{count}" }.join("\n") if source.counts.any?
+      lines.join("\n")
+    end
+
+    def list_text(listing)
+      lines = ["#{listing.title}: #{listing.rows.size}"]
+      lines += listing.shown.map { |row| "  #{listing.line(row)}" }
+      lines << "  and #{listing.more} more in #{listing.attachment}" if listing.more.positive?
+      lines.join("\n")
+    end
+
+    def in_use_text
+      lines = ['In-use Languages', "#{in_use.count} of the #{in_use.cap} the language facet holds."]
+      lines << "WARNING: #{in_use.warning}" if in_use.warning?
+      lines.join("\n")
     end
   end
 end

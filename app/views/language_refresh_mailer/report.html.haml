@@ -1,0 +1,87 @@
+- table = 'border-collapse: collapse; margin: 0 0 16px 0;'
+- box = 'padding: 4px 8px; border: 1px solid #cccccc; vertical-align: top;'
+- cell = "#{box} text-align: left;"
+- header = "#{cell} background-color: #eeeeee;"
+- count = "#{box} text-align: right;"
+- more = 'margin: 0 0 16px 0; font-style: italic;'
+- totals = @report.sources.flat_map { |source| source.totals.keys }.uniq
+
+%h2 Language Refresh Run #{@report.run.id}
+%p Started #{@report.started_at}
+
+%table{ cellpadding: 0, cellspacing: 0, style: table }
+  %tr
+    %th{ style: header }
+    - @report.sources.each do |source|
+      %th{ style: header }= source.name
+  %tr
+    %th{ style: header } Status
+    - @report.sources.each do |source|
+      %td{ style: cell }= source.status
+  %tr
+    %th{ style: header } Rows read
+    - @report.sources.each do |source|
+      %td{ style: count }= source.rows_read
+  - totals.each do |total|
+    %tr
+      %th{ style: header }= total
+      - @report.sources.each do |source|
+        %td{ style: count }= source.totals[total]
+
+%h3{ style: 'margin: 24px 0 8px 0; padding: 8px; background-color: #fff4ce; border-left: 4px solid #d29922;' }
+  Needs a person: #{@report.held.size}
+- if @report.held.empty?
+  %p Nothing needs a person.
+- @report.held.each do |entry|
+  %h4{ style: 'margin: 16px 0 4px 0;' }= entry.language.label
+  %table{ cellpadding: 0, cellspacing: 0, style: table }
+    %tr
+      %th{ style: header } Retired
+      %td{ style: cell }= entry.retired_because
+    - if entry.remedy
+      %tr
+        %th{ style: header } Remedy
+        %td{ style: cell }= entry.remedy
+    %tr
+      %th{ style: header } Tagged
+      %td{ style: cell }= entry.tags.join(', ')
+    %tr
+      %th{ style: header } Records
+      %td{ style: cell }= safe_join(entry.shown_links.map { |identifier, url| link_to(identifier, url) }, tag.br)
+  - if entry.more.positive?
+    %p{ style: more } and #{entry.more} more in #{entry.attachment}
+
+%h3 Failures
+- if @report.failures.empty?
+  %p None.
+- else
+  %ul
+    - @report.failures.each do |failure|
+      %li= failure
+
+- @report.sources.each do |source|
+  %h3= source.name
+  %p
+    Status: #{source.status}
+    - if source.versions
+      %br
+      Versions: #{source.versions.map { |file, version| "#{file} #{version}" }.join(', ')}
+  - source.lists.each do |listing|
+    - next if listing.rows.empty?
+
+    %h4{ style: 'margin: 16px 0 4px 0;' } #{listing.title}: #{listing.rows.size}
+    %table{ cellpadding: 0, cellspacing: 0, style: table }
+      %tr
+        - listing.headers.each do |heading|
+          %th{ style: header }= heading
+      - listing.shown.each do |row|
+        %tr
+          - listing.cells(row).each do |value|
+            %td{ style: cell }= value
+    - if listing.more.positive?
+      %p{ style: more } and #{listing.more} more in #{listing.attachment}
+
+%h3 In-use Languages
+%p #{@report.in_use.count} of the #{@report.in_use.cap} the language facet holds.
+- if @report.in_use.warning?
+  %p{ style: 'color: #b00020; font-weight: bold;' } WARNING: #{@report.in_use.warning}
