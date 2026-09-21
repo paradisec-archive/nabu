@@ -19,6 +19,11 @@
 #     * **`user_id`**
 #     * **`agent_role_id`**
 #
+# ### Foreign Keys
+#
+# * `fk_rails_...` (_ON DELETE => cascade_):
+#     * **`item_id => items.id`**
+#
 
 class ItemAgent < ApplicationRecord
   has_paper_trail

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_000001) do
   create_table "access_conditions", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.string "name"
@@ -523,7 +523,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_000001) do
   add_foreign_key "essence_annotations", "essences", column: "annotation_essence_id", on_delete: :cascade
   add_foreign_key "essence_annotations", "essences", column: "target_essence_id", on_delete: :cascade
   add_foreign_key "essences", "users", column: "created_by_id"
+  add_foreign_key "item_agents", "items", on_delete: :cascade
+  add_foreign_key "item_content_languages", "items", on_delete: :cascade
   add_foreign_key "item_content_languages", "languages"
+  add_foreign_key "item_countries", "items", on_delete: :cascade
+  add_foreign_key "item_data_categories", "items", on_delete: :cascade
+  add_foreign_key "item_data_types", "items", on_delete: :cascade
+  add_foreign_key "item_subject_languages", "items", on_delete: :cascade
   add_foreign_key "item_subject_languages", "languages"
   add_foreign_key "language_equivalents", "languages"
   add_foreign_key "language_equivalents", "languages", column: "related_language_id"

@@ -17,6 +17,11 @@
 #     * **`item_id`**
 #     * **`data_category_id`**
 #
+# ### Foreign Keys
+#
+# * `fk_rails_...` (_ON DELETE => cascade_):
+#     * **`item_id => items.id`**
+#
 
 class ItemDataCategory < ApplicationRecord
   has_paper_trail

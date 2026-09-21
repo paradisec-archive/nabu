@@ -88,4 +88,27 @@ describe CollectionDestructionService, :no_catalog_upload do
       expect(Permission.where(grantable: collection)).not_to exist
     end
   end
+
+  context 'when the items have join rows and comments' do
+    before do
+      item.countries << create(:country)
+      item.item_agents.create!(user: create(:user), agent_role: create(:agent_role))
+      item.data_categories << DataCategory.create!(name: 'lexicon')
+      item.data_types << DataType.create!(name: 'Sound')
+      item.comments.create!(body: 'A comment', owner: create(:user))
+      item.users << create(:user)
+    end
+
+    it 'removes every dependent row Item declares' do
+      dependents = Item.reflect_on_all_associations.select { |a| a.options[:dependent] == :destroy }
+      rows = dependents.to_h { |a| [a.name, Array(item.public_send(a.name))] }
+      expect(rows.select { |_, records| records.empty? }.keys).to be_empty
+
+      expect(described_class.destroy(collection)[:success]).to be(true)
+
+      rows.each do |name, records|
+        expect(records.first.class.where(id: records.map(&:id))).not_to exist, "expected no #{name} rows"
+      end
+    end
+  end
 end
