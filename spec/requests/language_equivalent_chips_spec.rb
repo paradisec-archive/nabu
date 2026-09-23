@@ -173,6 +173,36 @@ describe 'Equivalent chips', type: :request do
     end
   end
 
+  describe 'a dialect placed only under its closest ISO code' do
+    let(:dialect) { create(:language, :glottolog_dialect, code: 'laja1237', name: 'Lajamanu Warlpiri') }
+    let(:named_dialect) { create(:language, :glottolog_dialect, code: 'warl1255', name: 'Warlpiri') }
+    let(:closest_language) { create(:language, :glottolog, code: 'ngar1297', name: 'Ngardily') }
+
+    before do
+      create(:language_equivalent, language: iso, related_language: dialect, evidence: ['glottolog:closest_iso'])
+      create(:language_equivalent, language: iso, related_language: named_dialect, evidence: %w[glottolog:closest_iso name])
+      create(:language_equivalent, language: iso, related_language: closest_language, evidence: ['glottolog:closest_iso'])
+
+      get edit_collection_item_path(collection, item)
+    end
+
+    def chip_for(language)
+      chips_on('select#item_content_language_ids', iso).find { |chip| chip['value'] == language.id }
+    end
+
+    it 'is collapsed, so its chip waits behind the toggle' do
+      expect(chip_for(dialect)).to include('collapsed' => true)
+    end
+
+    it 'is not collapsed when other evidence pairs it too' do
+      expect(chip_for(named_dialect)).not_to have_key('collapsed')
+    end
+
+    it 'is not collapsed when Glottolog calls it a language' do
+      expect(chip_for(closest_language)).not_to have_key('collapsed')
+    end
+  end
+
   describe 'a form completed by clicking the chips' do
     it 'keeps the tagged Language and both Equivalents on an item' do
       patch collection_item_path(collection, item), params: { item: { content_language_ids: [iso.id, glottolog.id, austlang.id] } }
