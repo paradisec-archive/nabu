@@ -577,6 +577,16 @@ body.bp {
     &:not(:empty) {
       margin: 4px 0;
     }
+
+    &:not(.show-collapsed) .language-equivalent[data-collapsed] {
+      display: none;
+    }
+  }
+
+  .language-equivalents-dialects {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
   }
 
   // The reset comes from .link-button, which the chip also carries.

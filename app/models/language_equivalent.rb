@@ -84,7 +84,7 @@ class LanguageEquivalent < ApplicationRecord
   def option_for(this_language, offered = {})
     other = other_than(this_language)
 
-    other.picker_option(offered[other.id]).merge(reason: EVIDENCE[top_evidence])
+    other.picker_option(offered[other.id]).merge({ reason: EVIDENCE[top_evidence], collapsed: (true if dialect_under_closest_iso?(other)) }.compact)
   end
 
   # Evidence is stored strongest first, so a pair's top evidence is its first tag. A bulk writer skips
@@ -102,6 +102,12 @@ class LanguageEquivalent < ApplicationRecord
   end
 
   private
+
+  # Glottolog gives every dialect its parent's code as the closest ISO code, so a dialect paired on
+  # nothing else is part of that language rather than another name for it.
+  def dialect_under_closest_iso?(other)
+    other.dialect? && Array(evidence) == ['glottolog:closest_iso']
+  end
 
   def order_the_pair
     return if language_id.blank? || related_language_id.blank?

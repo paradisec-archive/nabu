@@ -6,6 +6,7 @@ interface Equivalent {
   label: string;
   description?: string;
   reason?: string;
+  collapsed?: boolean;
   custom_properties?: object;
 }
 
@@ -23,6 +24,9 @@ const buildChip = (equivalent: Equivalent, instance: Choices) => {
   }
   if (equivalent.description) {
     chip.dataset.labelDescription = equivalent.description;
+  }
+  if (equivalent.collapsed) {
+    chip.dataset.collapsed = '';
   }
 
   chip.addEventListener('click', () => {
@@ -44,6 +48,16 @@ export const setupEquivalentChips = (select: HTMLSelectElement, instance: Choice
     return;
   }
 
+  // Collapsed chips are hidden by CSS until this field's toggle is ticked.
+  const toggle = document.createElement('label');
+  toggle.className = 'language-equivalents-dialects hidden';
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.addEventListener('change', () => chips.classList.toggle('show-collapsed', checkbox.checked));
+  const count = document.createTextNode('');
+  toggle.append(checkbox, count);
+  chips.after(toggle);
+
   const render = () => {
     const tagged = instance.getValue() as EventChoice[];
     const taggedValues = new Set(tagged.map((choice) => String(choice.value)));
@@ -52,13 +66,20 @@ export const setupEquivalentChips = (select: HTMLSelectElement, instance: Choice
     for (const choice of tagged) {
       for (const equivalent of equivalentsOf(choice)) {
         const value = String(equivalent.value);
-        if (!taggedValues.has(value) && !offered.has(value)) {
+        const existing = offered.get(value);
+        // A dialect offered on stronger evidence by another tagged Language is not collapsed.
+        if (!taggedValues.has(value) && (!existing || (existing.collapsed && !equivalent.collapsed))) {
           offered.set(value, equivalent);
         }
       }
     }
 
-    chips.replaceChildren(...Array.from(offered.values(), (equivalent) => buildChip(equivalent, instance)));
+    const all = Array.from(offered.values());
+    const collapsed = all.filter((equivalent) => equivalent.collapsed).length;
+
+    toggle.classList.toggle('hidden', collapsed === 0);
+    count.data = ` Show dialects (${collapsed})`;
+    chips.replaceChildren(...all.map((equivalent) => buildChip(equivalent, instance)));
   };
 
   select.addEventListener('addItem', render);
