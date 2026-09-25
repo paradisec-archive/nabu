@@ -1,0 +1,9 @@
+ID,Name,Macroarea,Latitude,Longitude,Glottocode,ISO639P3code,Level,Countries,Family_ID,Language_ID,Closest_ISO369P3code,First_Year_Of_Documentation,Last_Year_Of_Documentation,Is_Isolate
+pama1250,Pama-Nyungan,Australia;Papunesia,-24.94825463739871,137.80340501238103,pama1250,,family,,,,,,,
+warl1254,Warlpiri,Australia,-20.1008,131.05,warl1254,wbp,language,AU,pama1250,,wbp,,,false
+sout2762,Southern Warlpiri,Australia,-20.1008,131.05,sout2762,,dialect,,pama1250,warl1254,wbp,,,
+ngar1284,Ngarinyin,Australia,-16.4006,126.433,ngar1284,ung,language,AU,worr1236,,ung,,,false
+taih1245,Tai Pao (Retired),Eurasia,19.1282,104.225,taih1245,thc,language,LA;VN,book1242,,thc,,,false
+unse1236,Unserdeutsch,Papunesia,-4.19566,152.183,unse1236,uln,language,AU;PG,indo1319,,uln,,,false
+kich1267,"K'iche', Joyabaj",North America,,,kich1267,quj,language,GT,book1242,,quj,,,false
+paya1237,Payaya,North America,,,paya1237,,language,US,uncl1493,,,,,false

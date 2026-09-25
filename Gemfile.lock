@@ -159,6 +159,9 @@ GEM
       unaccent (~> 0.3)
     country_select (11.0.0)
       countries (> 6.0, < 9.0)
+    crack (1.0.1)
+      bigdecimal
+      rexml
     crass (1.0.7)
     cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
@@ -232,6 +235,7 @@ GEM
     has_scope (0.9.0)
       actionpack (>= 7.0)
       activesupport (>= 7.0)
+    hashdiff (1.2.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.3)
@@ -565,6 +569,10 @@ GEM
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
       railties (>= 8.0.0)
+    webmock (3.26.4)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.8.2)
       base64
       websocket-extensions (>= 0.1.0)
@@ -641,6 +649,7 @@ DEPENDENCIES
   traceroute
   tzinfo-data
   web-console
+  webmock
 
 BUNDLED WITH
    2.6.9

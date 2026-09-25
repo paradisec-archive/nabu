@@ -564,6 +564,49 @@ body.bp {
   .choices__inner {
     min-height: inherit;
   }
+  .choices__list--multiple .choices__item[data-label-description]::before {
+    content: attr(data-label-description) ' · ';
+    font-style: italic;
+  }
+
+  .language-equivalents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    &:not(:empty) {
+      margin: 4px 0;
+    }
+
+    &:not(.show-collapsed) .language-equivalent[data-collapsed] {
+      display: none;
+    }
+  }
+
+  .language-equivalents-dialects {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  // The reset comes from .link-button, which the chip also carries.
+  .language-equivalent {
+    background: #F0F3F7;
+    border: solid 1px #C6CFDC;
+    border-radius: 12px;
+    font-size: 12px;
+    padding: 2px 10px;
+
+    &:hover,
+    &:focus {
+      background: #E1E8F1;
+    }
+
+    &[data-label-description]::after {
+      content: ' · ' attr(data-label-description);
+      font-style: italic;
+    }
+  }
 
   .invisible {
     visibility: hidden;

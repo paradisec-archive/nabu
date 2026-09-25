@@ -291,7 +291,7 @@ module Api
         aggs = {
           collection_title: {},
           access_condition_name: {},
-          languages_with_code: { limit: 2000 },
+          languages_with_code: { limit: Oni::SearchCapabilities::LANGUAGE_FACET_LIMIT },
           countries: {},
           collector_name: {},
           encodingFormat: {},

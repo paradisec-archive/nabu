@@ -1,3 +1,5 @@
+import type { EventChoice } from 'choices.js';
+
 import { getChoicesInstance } from './choices_setup';
 
 const copyLanguage = (src: string, dst: string) => {
@@ -21,10 +23,20 @@ const copyLanguage = (src: string, dst: string) => {
 
     const dstInstance = getChoicesInstance(dstSelect);
 
+    // A choice's Equivalents live on the Choices.js instance rather than on the option, so they are
+    // read from there; without them the copied Languages would offer no chips.
+    const srcSelected = (getChoicesInstance(srcSelect)?.getValue() ?? []) as EventChoice[];
+    const srcProperties = new Map(srcSelected.map((choice) => [String(choice.value), choice.customProperties]));
+
     // Collect selected options from source
-    const selectedOptions: { value: string; label: string }[] = [];
+    const selectedOptions: { value: string; label: string; labelDescription?: string; customProperties?: object }[] = [];
     for (const srcOption of srcSelect.selectedOptions) {
-      selectedOptions.push({ value: srcOption.value, label: srcOption.text });
+      selectedOptions.push({
+        value: srcOption.value,
+        label: srcOption.text,
+        labelDescription: srcOption.dataset.labelDescription,
+        customProperties: srcProperties.get(srcOption.value),
+      });
     }
 
     if (!dstInstance) {

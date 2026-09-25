@@ -276,10 +276,9 @@ class Collection < ApplicationRecord
       collector_sortname:,
       operator_name:,
       field_of_research: field_of_research_name,
-      languages: languages.map(&:name).uniq,
-      languages_with_code: content_languages.map { |l| "#{l.name} (#{l.code})" }.uniq,
+      languages: languages.map(&:label).uniq,
+      languages_with_code: content_languages.map(&:label).uniq,
       countries: countries.map(&:name).uniq,
-      language_codes: languages.map(&:code).uniq,
 
       # Oni
       encodingFormat: essences.map(&:mimetype).uniq,
@@ -522,7 +521,7 @@ class Collection < ApplicationRecord
 
           languages.each do |language|
             xml.subject language.name, 'type' => 'local'
-            xml.subject language.code, 'type' => 'iso639-3'
+            xml.subject language.code, 'type' => 'iso639' if language.iso639_3?
           end
 
           xml.subject field_of_research.identifier, 'type' => 'anzsrc-for' if field_of_research
@@ -555,8 +554,8 @@ class Collection < ApplicationRecord
 
           languages.each do |language|
             xml.relatedInfo 'type' => 'website' do
-              xml.identifier "http://www.ethnologue.com/show_language.asp?code=#{language.code}", 'type' => 'uri'
-              xml.title "Ethnologue entry for #{language.name}"
+              xml.identifier language.source_uri, 'type' => 'uri'
+              xml.title "#{language.source_name} entry for #{language.name}"
             end
           end
         end
@@ -645,7 +644,7 @@ class Collection < ApplicationRecord
     }
 
     json[:properties][:description] = description if description
-    json[:properties][:languages] = languages.map(&:name_with_code).join(', ') unless languages.empty?
+    json[:properties][:languages] = languages.map(&:label).join(', ') unless languages.empty?
     json[:properties][:countries] = countries.map(&:name_with_code).join(', ') unless countries.empty?
     json[:properties][:license] = access_condition.name if access_condition
     json[:properties][:rights] = access_condition.name if access_condition

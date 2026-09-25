@@ -1,4 +1,6 @@
 class CollectionDestructionService
+  ITEM_DEPENDENTS = [ItemCountry, ItemSubjectLanguage, ItemContentLanguage, ItemAgent, ItemDataCategory, ItemDataType].freeze
+
   def self.destroy(collection)
     catalog = Nabu::Catalog.instance
 
@@ -10,10 +12,12 @@ class CollectionDestructionService
 
     # delete_all is efficient but skips ActiveRecord callbacks, so the `dependent: :destroy`
     # cleanup on Item/Essence never fires. Remove the dependent rows ourselves to avoid orphans:
-    # the denormalised entity rows and the items' and collection's access grants. Permission has
-    # no DB foreign key to its polymorphic grantable, so deleting items would otherwise strand
-    # their grant rows.
+    # the items' join rows and comments, the denormalised entity rows, and the items' and
+    # collection's access grants. Permission and Comment have no DB foreign key to their
+    # polymorphic owner, so deleting items would otherwise strand them.
     Essence.where(id: essence_ids).delete_all
+    ITEM_DEPENDENTS.each { |model| model.where(item_id: item_ids).delete_all }
+    Comment.where(commentable_type: 'Item', commentable_id: item_ids).delete_all
     Permission.where(grantable_type: 'Item', grantable_id: item_ids).delete_all
     Permission.where(grantable_type: 'Collection', grantable_id: collection.id).delete_all
     deleted_items_count = Item.where(collection_id: collection.id).delete_all

@@ -377,15 +377,15 @@ class ItemsController < ApplicationController
   def build_deletable_params(item, items)
     item.bulk_deleteable[:countries] = bulk_deletable_relation(ItemCountry, Country, :country_id, items)
     item.bulk_deleteable[:subject_languages] =
-      bulk_deletable_relation(ItemSubjectLanguage, Language, :language_id, items)
+      bulk_deletable_relation(ItemSubjectLanguage, Language, :language_id, items, text: :label)
     item.bulk_deleteable[:content_languages] =
-      bulk_deletable_relation(ItemContentLanguage, Language, :language_id, items)
+      bulk_deletable_relation(ItemContentLanguage, Language, :language_id, items, text: :label)
     item.bulk_deleteable[:data_categories] =
       bulk_deletable_relation(ItemDataCategory, DataCategory, :data_category_id, items)
     item.bulk_deleteable[:data_types] = bulk_deletable_relation(ItemDataType, DataType, :data_type_id, items)
   end
 
-  def bulk_deletable_relation(relation, associated_resource, associated_resource_id, items)
+  def bulk_deletable_relation(relation, associated_resource, associated_resource_id, items, text: :name)
     ids = relation.where(item_id: items.map(&:id))
                   .group_by(&associated_resource_id)
                   .keys
@@ -393,7 +393,7 @@ class ItemsController < ApplicationController
     return if ids.blank?
 
     associated_resource.where(id: ids).map do |resource|
-      { id: resource.id, text: resource.name }
+      { id: resource.id, text: resource.public_send(text) }
     end
   end
 

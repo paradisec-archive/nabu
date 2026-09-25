@@ -13,6 +13,8 @@ if (apiKey) {
 setOptions(opts);
 await importLibrary('maps');
 
+const LIMITS = ['north_limit', 'south_limit', 'east_limit', 'west_limit'];
+
 const set_map_bounds_from_ajax = async (path, ids) => {
   const marker_bounds = new google.maps.LatLngBounds();
 
@@ -21,9 +23,12 @@ const set_map_bounds_from_ajax = async (path, ids) => {
     const response = await fetch(`${path}${id}?location_only=true`);
     const data = await response.json();
 
-    if (!data || !data.north_limit) {
+    // A limit of 0 is a real edge — the equator and the prime meridian — so only a missing one counts
+    // as no box. A box has to be whole to bound anything, and one id without one says nothing about
+    // the rest.
+    if (!data || LIMITS.some((limit) => typeof data[limit] !== 'number')) {
       console.info('NO data', data);
-      return;
+      continue;
     }
 
     const { north_limit, south_limit, east_limit, west_limit } = data;

@@ -1,0 +1,8 @@
+shared:
+  recipients:
+    - johnf@inodes.org
+
+production:
+  recipients:
+    - thien@unimelb.edu.au
+    - johnf@inodes.org
