@@ -20,25 +20,39 @@ class CatalogMediafluxValidatorService
     missing = []
     size_mismatch = []
     ignored_too_new = 0
+    ignored_changed = 0
 
     s3_files.each do |path, s3|
       if s3[:last_modified] >= cutoff
         ignored_too_new += 1
-      elsif mediaflux_files.key?(path)
-        if mediaflux_files[path] != s3[:size]
-          size_mismatch << { path:, s3_size: s3[:size], mediaflux_size: mediaflux_files[path] }
-        end
-      else
+        next
+      end
+      next if mediaflux_files[path] == s3[:size]
+
+      # The S3 inventory predates the mediaflux snapshot, so the object may have changed or gone since.
+      live = live_object(path)
+      if live.nil? || live.last_modified >= csv_date.to_time(:utc)
+        ignored_changed += 1
+      elsif !mediaflux_files.key?(path)
         missing << path
+      elsif mediaflux_files[path] != live.content_length
+        size_mismatch << { path:, s3_size: live.content_length, mediaflux_size: mediaflux_files[path] }
       end
     end
 
     Rails.logger.info "CatalogMediafluxValidator: ignored #{ignored_too_new} files uploaded on or after the mediaflux snapshot date of #{csv_date}"
+    Rails.logger.info "CatalogMediafluxValidator: ignored #{ignored_changed} files changed or deleted in S3 since the S3 inventory"
 
     AdminMailer.with(missing:, size_mismatch:).catalog_mediaflux_report.deliver_now
   end
 
   private
+
+  def live_object(path)
+    @s3.head_object(bucket: 'nabu-catalog-prod', key: path)
+  rescue Aws::S3::Errors::NotFound
+    nil
+  end
 
   def extract_s3_files(inventory_csv)
     s3_files = {}
