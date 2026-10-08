@@ -8,18 +8,23 @@
     "@sentry/browser": "^11.5.0",
     "choices.js": "^11.2.4",
     "sass": "^1.105.1",
-    "tailwindcss": "^4.3.3",
-    "uuid": "^14.0.2"
+    "tailwindcss": "^4.3.3"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
     "build:css": "pnpm build:css_app && pnpm build:css_active_admin",
     "build:css_app": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
-    "build:css_active_admin": "npx @tailwindcss/cli -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify"
+    "build:css_active_admin": "pnpm dlx @tailwindcss/cli -i ./app/assets/stylesheets/active_admin.css -o ./app/assets/builds/active_admin.css --minify",
+    "lint:biome": "biome check .",
+    "lint:knip": "knip"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
-    "esbuild": "^0.28.2"
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "esbuild": "^0.28.2",
+    "knip": "^6.40.0",
+    "lefthook": "^2.2.0"
   },
   "packageManager": "pnpm@12.10.1"
 }
