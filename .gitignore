@@ -51,5 +51,3 @@
 #sorbet
 # They recommend you commit these but I'm not convinced
 sorbet/rbi
-
-.claude/settings.local.json
