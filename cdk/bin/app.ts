@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import 'source-map-support/register';
 import { AppStack } from '../lib/app-stack';
 import { DrStack } from '../lib/dr-stack';
 import { MainStack } from '../lib/main-stack';
