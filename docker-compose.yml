@@ -97,10 +97,13 @@ services:
     build:
       context: docker
       dockerfile: oni.Dockerfile
-      args:
-        ROCRATE_API_ENDPOINT: https://localhost:3443
-        ROCRATE_API_CLIENTID: 8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ
-        SENTRY_ENV: dev
+    environment:
+      ONI_API_ENDPOINT: https://localhost:3443/api/v1/oni
+      ONI_OIDC_ENDPOINT: https://localhost:3443
+      ONI_OIDC_CLIENT_ID: 8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ
+      ONI_SENTRY_DSN: https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608
+      ONI_SENTRY_ENVIRONMENT: dev
+      ONI_GA_MEASUREMENT_ID: G-G9M2J7CBHC
 
 volumes:
   s3-data:
