@@ -377,19 +377,18 @@ export class AppStack extends cdk.Stack {
     oniTaskDefinition.addContainer('OniContainer', {
       containerName: 'oni',
       memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('../docker', {
-        file: 'oni.Dockerfile',
-        buildArgs: {
-          ROCRATE_API_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au' : 'https://admin-catalog.nabu-stage.paradisec.org.au',
-          ROCRATE_API_CLIENTID: '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
-          SENTRY_ENV: env,
-        },
-      }),
+      image: ecs.ContainerImage.fromAsset('../docker', { file: 'oni.Dockerfile' }),
       portMappings: [{ name: 'oni', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
       environment: {
         AWS_REGION: region,
         BUCKET_NAME: catalogBucket.bucketName,
+        ONI_API_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au/api/v1/oni' : 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
+        ONI_OIDC_ENDPOINT: env === 'prod' ? 'https://admin-catalog.paradisec.org.au' : 'https://admin-catalog.nabu-stage.paradisec.org.au',
+        ONI_OIDC_CLIENT_ID: '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
+        ONI_SENTRY_DSN: 'https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608',
+        ONI_SENTRY_ENVIRONMENT: env,
+        ONI_GA_MEASUREMENT_ID: 'G-G9M2J7CBHC',
       },
     });
 

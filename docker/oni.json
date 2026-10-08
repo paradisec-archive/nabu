@@ -16,6 +16,7 @@
       "errorPageImage": false
     },
     "logoFilename": "/logo.jpg",
+    "logoLink": "https://paradisec.org.au",
     "navHeight": "90px",
     "showEllipsis": false,
     "home": {
@@ -141,13 +142,8 @@
         "hide": ["@type", "dateCreated", "dateModified", "name", "filename"]
       }
     },
-    "analytics": {
-      "gaMeasurementId": "G-G9M2J7CBHC"
-    },
     "takedown": "mailto:admin@paradisec.org.au?subject=Content%20Removal%20Request&body=Hi%20Admins%2C%0A%0AURL%3A%20{url}%0A%0AReason%3A%20%3CWhy%20do%20you%20think%20this%20should%20be%20removed%3F%3E%0A%0A",
     "sentry": {
-      "dsn": "https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608",
-      "environment": "SENTRY_ENV",
       "tracesSampleRate": 0.1,
       "replaysSessionSampleRate": 0.1,
       "replaysOnErrorSampleRate": 1.0
@@ -298,12 +294,7 @@
   },
   "api": {
     "rocrate": {
-      "endpoint": "ROCRATE_API_ENDPOINT/api/v1/oni",
       "usesRedirects": true
-    },
-    "oidc": {
-      "endpoint": "ROCRATE_API_ENDPOINT",
-      "clientId": "ROCRATE_API_CLIENTID"
     }
   }
 }
