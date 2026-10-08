@@ -2,23 +2,37 @@
   "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
   "workspaces": {
     ".": {
-      // esbuild bundles app/javascript/*.*; advanced_search.js is served unbundled by Propshaft;
-      // tailwind config is loaded via @config in active_admin.css
-      "entry": ["app/javascript/*.{js,ts}", "app/javascript/custom/advanced_search.js", "tailwind-active_admin.config.mjs"],
+      "entry": [
+        // esbuild bundles these
+        "app/javascript/*.{js,ts}",
+        // served unbundled by Propshaft
+        "app/javascript/custom/advanced_search.js",
+        // loaded via @config in active_admin.css
+        "tailwind-active_admin.config.mjs"
+      ],
       "project": ["app/javascript/**/*.{js,ts}", "*.{js,mjs,ts}"],
+      // the glob in the esbuild build script
       "ignoreUnresolved": ["app/javascript/\\*\\.\\*"],
       // pulled in by `@import "tailwindcss"` in active_admin.css
       "ignoreDependencies": ["tailwindcss"]
     },
     "cdk": {
-      // cdk.json runs `tsx bin/app.ts`; bin/release runs cdk-agc
       "entry": ["bin/app.ts"],
       "project": ["{bin,lib}/**/*.ts"],
-      "ignoreDependencies": ["tsx", "cdk-agc"]
+      "ignoreDependencies": [
+        // cdk.json runs `tsx bin/app.ts`
+        "tsx",
+        // bin/release runs it
+        "cdk-agc"
+      ]
     },
     "cdk/docker/mediaflux": {
-      // archive.ts is the Dockerfile CMD; inventory.ts is run by the ECS task in cdk/lib/app-stack.ts
-      "entry": ["archive.ts", "inventory.ts"],
+      "entry": [
+        // Dockerfile CMD
+        "archive.ts",
+        // run by the ECS task in cdk/lib/app-stack.ts
+        "inventory.ts"
+      ],
       "project": ["*.ts"]
     }
   }
