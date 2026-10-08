@@ -1,0 +1,21 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: biome
+      run: pnpm run lint:biome
+
+    - name: knip
+      run: pnpm run lint:knip
+
+    - name: rubocop
+      glob: "{*.rb,*.rake,*.jb,Gemfile}"
+      run: bin/nabu_run bin/rubocop --force-exclusion {staged_files}
+
+    - name: cdk typecheck
+      glob: "cdk/**/*.ts"
+      run: pnpm --filter cdk build
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --edit {1}
