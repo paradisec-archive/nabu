@@ -388,7 +388,7 @@ export class AppStack extends cdk.Stack {
         ONI_OIDC_CLIENT_ID: '8XJwJIeei7hyeikp5tT-qvhYmFbrGdqGJ0zzS4GqwIQ',
         ONI_SENTRY_DSN: 'https://1e56e25f600c34067585f8607389413c@o4504801902985216.ingest.us.sentry.io/4510144987332608',
         ONI_SENTRY_ENVIRONMENT: env,
-        ONI_GA_MEASUREMENT_ID: 'G-G9M2J7CBHC',
+        ...(env === 'prod' && { ONI_GA_MEASUREMENT_ID: 'G-G9M2J7CBHC' }),
       },
     });
 
