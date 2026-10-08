@@ -1,14 +1,10 @@
-# Welcome to your CDK TypeScript project
+# Nabu infrastructure
 
-This is a blank project for CDK development with TypeScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+AWS CDK app for Nabu's staging and production stacks. `cdk.json` typechecks with `tsc` and then runs `bin/app.ts` with `tsx`.
 
 ## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+* `pnpm build`        typecheck
+* `pnpm cdk diff`     compare deployed stack with current state
+* `pnpm cdk synth`    emit the synthesised CloudFormation templates
+* `pnpm cdk deploy`   deploy a stack
