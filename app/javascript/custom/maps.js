@@ -1,4 +1,4 @@
-import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
 const useKey = ['production', 'staging'].includes(document.querySelector('body').dataset.railsEnv);
@@ -21,7 +21,7 @@ const set_map_bounds_from_ajax = async (path, ids) => {
     const response = await fetch(`${path}${id}?location_only=true`);
     const data = await response.json();
 
-    if (!data || !data.north_limit) {
+    if (!data?.north_limit) {
       console.info('NO data', data);
       return;
     }

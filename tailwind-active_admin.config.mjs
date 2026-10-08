@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execSync } from 'node:child_process';
 import activeAdminPlugin from '@activeadmin/activeadmin/plugin';
 
 const activeAdminPath = execSync('bundle show activeadmin', { encoding: 'utf-8' }).trim();
