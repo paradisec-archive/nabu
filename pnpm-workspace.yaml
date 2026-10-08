@@ -1,5 +1,12 @@
+update:
+  githubActions: true
+
+autoDedupe: true
+saveTypes: true
+
 packages:
   - cdk
+  - cdk/docker/mediaflux
 
 allowBuilds:
   "@parcel/watcher": true
