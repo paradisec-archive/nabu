@@ -95,7 +95,7 @@ gem 'aws-sdk-lambda' # Invoke paragest backfill Lambda
 gem 'aws-sdk-s3' # Talk to the catalog
 
 # Admin Dashboard
-gem 'activeadmin', '4.0.0.beta22'
+gem 'activeadmin', '4.0.0.beta23'
 gem 'mission_control-jobs' # Jobs dashboard
 gem 'country_select'
 
