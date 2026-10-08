@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!cdk/cdk.out", "!cdk/cdk.context.json", "!cdk.json"]
+    "includes": ["**", "!vendor", "!spec/support/schema", "!cdk/cdk.out", "!cdk/cdk.context.json", "!cdk.json"]
   },
   "formatter": {
     "enabled": true,
