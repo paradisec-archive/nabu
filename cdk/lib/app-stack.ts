@@ -96,8 +96,9 @@ export class AppStack extends cdk.Stack {
 
     const db = new rds.DatabaseInstance(this, 'RdsInstance', {
       engine: rds.DatabaseInstanceEngine.mysql({
-        version: rds.MysqlEngineVersion.VER_8_0,
+        version: rds.MysqlEngineVersion.of('8.4.11', '8.4'),
       }),
+      allowMajorVersionUpgrade: true,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MEDIUM),
       // storageEncrypted: true, // NOTE: It defaults to true, but SonarQube doesn't seem to know that
       credentials: rds.Credentials.fromGeneratedSecret('nabu'),
