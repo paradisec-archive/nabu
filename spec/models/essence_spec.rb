@@ -73,6 +73,44 @@ describe Essence, type: :model do
     end
   end
 
+  describe 'keeping the parent search documents current', :no_catalog_upload, :search do
+    include ActiveJob::TestHelper
+
+    def indexed(record)
+      record.class.search_index.refresh
+      record.class.search_index.retrieve(record)
+    end
+
+    let(:item) { create(:item, :reindex) }
+
+    it 'adds the media type to the item and collection documents when a file arrives', :aggregate_failures do
+      perform_enqueued_jobs { create(:essence, item:, filename: 'tape.wav', mimetype: 'audio/wav', size: 100) }
+
+      expect(indexed(item)['encodingFormat']).to eq(['audio/wav'])
+      expect(indexed(item.collection)['encodingFormat']).to eq(['audio/wav'])
+    end
+
+    it 'updates the item and collection documents when a file changes media type', :aggregate_failures do
+      essence = create(:essence, item:, filename: 'tape.wav', mimetype: 'audio/wav', size: 100)
+
+      perform_enqueued_jobs { essence.update!(mimetype: 'audio/x-wav') }
+
+      expect(indexed(item)['encodingFormat']).to eq(['audio/x-wav'])
+      expect(indexed(item.collection)['encodingFormat']).to eq(['audio/x-wav'])
+    end
+
+    it 'drops the media type from the item and collection documents when the file goes', :aggregate_failures do
+      essence = create(:essence, item:, filename: 'tape.wav', mimetype: 'audio/wav', size: 100)
+      [item, item.collection].each { |record| record.reload.reindex(refresh: true) }
+      expect(indexed(item)['encodingFormat']).to eq(['audio/wav'])
+
+      perform_enqueued_jobs { essence.destroy! }
+
+      expect(indexed(item)['encodingFormat']).to eq([])
+      expect(indexed(item.collection)['encodingFormat']).to eq([])
+    end
+  end
+
   describe 'auto-linking annotations on create' do
     it 'links a new transcript to existing media sharing its basename' do
       media = create(:essence, item: item, filename: 'interview.mp3', mimetype: 'audio/mp3', size: 100)

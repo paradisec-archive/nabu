@@ -416,6 +416,9 @@ class Essence < ApplicationRecord
       media_types: item.collection.essences.distinct.pluck(:mimetype).compact.sort.join(',').presence,
       essences_count: item.collection.essences.count
     )
+    # The item and collection search documents carry their essences' encodingFormat.
+    item&.reindex(mode: :async)
+    item&.collection&.reindex(mode: :async)
   end
 
   def entity_sync_attributes
