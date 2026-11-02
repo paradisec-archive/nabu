@@ -279,6 +279,8 @@ export class AppStack extends cdk.Stack {
           env === 'prod' ? 'https://admin-catalog.paradisec.org.au/api/v1/oni' : 'https://admin-catalog.nabu-stage.paradisec.org.au/api/v1/oni',
         EMAIL_FROM: 'admin@paradisec.org.au',
         BASE_PATH: '/downloader',
+        SENTRY_DSN: 'https://beea830b3604750d691d4e1e353b2286@o4504801902985216.ingest.us.sentry.io/4512359616086016',
+        SENTRY_ENVIRONMENT: env,
       },
       secrets: {
         SESSION_SECRET: ecs.Secret.fromSecretsManager(downloaderSecrets, 'SESSION_SECRET'),
