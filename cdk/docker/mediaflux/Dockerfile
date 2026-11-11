@@ -1,4 +1,4 @@
-FROM node:24-slim
+FROM node:lts-slim
 
 ARG MF_CLIENT_VERSION=0.8.6
 ARG MF_CLIENT_URL=https://gitlab.unimelb.edu.au/resplat-mediaflux/releases/raw/master/mediaflux/unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz
@@ -28,7 +28,7 @@ ENV MFLUX_TRANSPORT=https
 
 # Install Node dependencies
 COPY package.json /app/package.json
-RUN corepack enable pnpm && pnpm install --prod
+RUN npm install -g pnpm && pnpm install --prod
 
 COPY archive.ts /app/archive.ts
 COPY inventory.ts /app/inventory.ts
