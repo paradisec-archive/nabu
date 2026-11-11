@@ -1,4 +1,3 @@
-
 // Page layout can be done using mixins applied to your semantic classes and IDs:
 body.bp {
   #content {
@@ -7,30 +6,30 @@ body.bp {
 }
 
 body.bp ul.list-unstyled {
-  list-style: none;
   padding: 0;
   margin: 0;
+  list-style: none;
 }
 
 body.bp .input-inline {
-  padding: 0;
-  margin: 0;
   position: relative;
   height: 30.8px;
+  padding: 0;
+  margin: 0;
   .head {
     display: table-cell;
-    vertical-align: middle;
 
     width: 30%;
     max-width: 30%;
     height: 30.8px;
+    vertical-align: middle;
   }
   input {
     display: inline-block;
     &.tail {
       position: absolute;
-      right: 0;
       top: 0;
+      right: 0;
       width: 70%;
       max-width: 70%;
       margin: 0;
@@ -47,41 +46,43 @@ body.bp .input-inline {
     a {
       padding: 5px;
       margin: 2px 0;
-      &.next_page, &.previous_page {
+      &.next_page,
+      &.previous_page {
         padding: 2px;
         margin: 2px;
-
       }
     }
     .current {
-      font-weight: bold;
       font-style: normal;
+      font-weight: bold;
     }
   }
 
-  .next_page, .last_page, .previous_page, .first_page {
+  .next_page,
+  .last_page,
+  .previous_page,
+  .first_page {
     padding: 2px;
     margin: 2px;
-    border: 1px solid rgba(200,200,200,0.5);
-    border-radius: 4px;
     line-height: 1.2;
+    border: 1px solid rgba(200, 200, 200, 0.5);
+    border-radius: 4px;
     &.disabled {
       border: none;
       &:hover {
-        border: none;
         background: inherit;
+        border: none;
       }
     }
     &:hover {
-      border: 1px solid rgba(200,200,200,1);
-      background: rgba(200,200,200,0.5);
+      background: rgba(200, 200, 200, 0.5);
+      border: 1px solid rgba(200, 200, 200, 1);
     }
   }
-
 }
 
 .codeblock {
   padding: 10px;
-  border: 1px solid #adbede;
   background: #f5f5ff;
+  border: 1px solid #adbede;
 }

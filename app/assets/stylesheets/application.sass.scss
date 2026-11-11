@@ -9,11 +9,11 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
-@use 'choices.js/public/assets/styles/choices.min.css';
+@use "choices.js/public/assets/styles/choices.min.css";
 
-@use '../vendor/assets/stylesheets/blueprint/screen';
-@use '../vendor/assets/stylesheets/blueprint/plugins/liquid';
-@use '../vendor/assets/stylesheets/blueprint/plugins/fancy-type/screen' as screen2;
+@use "../vendor/assets/stylesheets/blueprint/screen";
+@use "../vendor/assets/stylesheets/blueprint/plugins/liquid";
+@use "../vendor/assets/stylesheets/blueprint/plugins/fancy-type/screen" as screen2;
 
-@use './_layout_style';
-@use './_page_layout';
+@use "./_layout_style";
+@use "./_page_layout";

@@ -28,7 +28,7 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Metrics/BlockLength:
-  CountAsOne: ['array', 'heredoc', 'method_call']
+  CountAsOne: ["array", "heredoc", "method_call"]
   Max: 100
 
 Metrics/AbcSize:

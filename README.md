@@ -23,14 +23,14 @@ docker compose up
 
 This brings up the following containers
 
-* app - the rails app
-* search - OpenSearch instance for search (dev + test), pinned to production's version
-* db - mysql data base (dev + test)
-* s3 - s3 mock
+- app - the rails app
+- search - OpenSearch instance for search (dev + test), pinned to production's version
+- db - mysql data base (dev + test)
+- s3 - s3 mock
 
-You can then easily run all the standard commands by prefixing with ***nabu***
+You can then easily run all the standard commands by prefixing with _**nabu**_
 
-``` bash
+```bash
 nabu_run bundle install
 nabu_run bundle exec rake db:prepare
 ```
@@ -51,7 +51,7 @@ Test indices are recreated by the next `bin/test` run.
 
 ## Running tests
 
-``` bash
+```bash
 nabu_run bin/test                          # the whole suite, in parallel
 nabu_run bin/test spec/models/item_spec.rb # specific files or examples
 nabu_run bin/test --only-failures          # what failed last time
@@ -69,7 +69,7 @@ Set `NABU_TEST_NAMESPACE` to choose a namespace explicitly, or to an empty strin
 
 ## Checking your work
 
-``` bash
+```bash
 nabu_run bin/ci
 ```
 
@@ -107,14 +107,14 @@ AWS_PROFILE=nabu-stage aws ecr get-login-password --region ap-southeast-2 | dock
 
 Use CDK to deploy new code via docker as well as any infrastructure changes
 
-``` bash
+```bash
 bin/release stage
 bin/release prod
 ```
 
 If necessary:
 
-``` bash
+```bash
 bin/aws/ecs_rake app db:migrate
 bin/aws/ecs_rake app search:reindex
 ```
@@ -125,7 +125,7 @@ bin/aws/ecs_rake app search:reindex
 local `nabu_devel`, and resets every user's password to `password`. See
 `docs/runbooks/db-sync.md` for the full design (it can also overwrite staging).
 
-``` bash
+```bash
 bin/aws/db_sync   # choose target 1) dev
 nabu_run bin/rails db:environment:set RAILS_ENV=development
 nabu_run bin/rake db:migrate
@@ -141,7 +141,7 @@ fills empty Bounding boxes and lists what needs a person.
 
 To run one by hand:
 
-``` bash
+```bash
 nabu_run bin/rake languages:refresh
 ```
 
@@ -149,55 +149,55 @@ nabu_run bin/rake languages:refresh
 
 OLAC available at:
 
-* <http://catalog.paradisec.org.au/oai/item>
+- <http://catalog.paradisec.org.au/oai/item>
 
 The feeds that OLAC harvests:
 
-* <http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac>
-* <http://catalog.paradisec.org.au/oai/item?verb=Identify> (Archive identification)
-* <http://catalog.paradisec.org.au/oai/item?verb=ListMetadataFormats>
-* <http://catalog.paradisec.org.au/oai/item?verb=ListIdentifiers&metadataPrefix=olac>
+- <http://catalog.paradisec.org.au/oai/item?verb=ListRecords&metadataPrefix=olac>
+- <http://catalog.paradisec.org.au/oai/item?verb=Identify> (Archive identification)
+- <http://catalog.paradisec.org.au/oai/item?verb=ListMetadataFormats>
+- <http://catalog.paradisec.org.au/oai/item?verb=ListIdentifiers&metadataPrefix=olac>
 
 Individual item:
 
-* <http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac>
+- <http://catalog.paradisec.org.au/oai/item?verb=GetRecord&identifier=oai:paradisec.org.au:AA1-002&metadataPrefix=olac>
 
 RIF-CS available at:
 
-* <http://catalog.paradisec.org.au/oai/collection>
+- <http://catalog.paradisec.org.au/oai/collection>
 
   use resulting server on an OAI repository explorer:
 
-* <http://www.language-archives.org/register/register.php> (OLAC)
-* <http://re.cs.uct.ac.za/>
-* <http://oval.base-search.net/> (OAI-PMH validator)
-* <http://validator.oaipmh.com/> (OAI-PMH validator)
-* <http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp> (test protocol)
+- <http://www.language-archives.org/register/register.php> (OLAC)
+- <http://re.cs.uct.ac.za/>
+- <http://oval.base-search.net/> (OAI-PMH validator)
+- <http://validator.oaipmh.com/> (OAI-PMH validator)
+- <http://repox.gulbenkian.pt/repox/jsp/testOAI-PMH.jsp> (test protocol)
 
   URLs to test:
 
-* [http://localhost:3000/oai/collection?verb=Identify
-* [http://localhost:3000/oai/collection?verb=ListMetadataFormats
-* [http://localhost:3000/oai/collection?verb=ListSets
-* [http://localhost:3000/oai/collection?verb=ListIdentifiers
-* <http://localhost:3000/oai/collection?verb=ListRecords>
+- [http://localhost:3000/oai/collection?verb=Identify
+- [http://localhost:3000/oai/collection?verb=ListMetadataFormats
+- [http://localhost:3000/oai/collection?verb=ListSets
+- [http://localhost:3000/oai/collection?verb=ListIdentifiers
+- <http://localhost:3000/oai/collection?verb=ListRecords>
 
 The feed that ANDS harvests:
 
-* <http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif>
+- <http://catalog.paradisec.org.au/oai/collection?verb=ListRecords&metadataPrefix=rif>
 
 Test at ANDS:
 
-* <https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au>
+- <https://demo.ands.org.au/registry/orca/admin/data_source_view.php?data_source_key=paradisec.org.au>
 
 Feed for a single collection:
 
-* <http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2>
+- <http://catalog.paradisec.org.au/oai/collection?verb=GetRecord&metadataPrefix=rif&identifier=oai:paradisec.org.au:AA2>
 
 To validate our XML output as per OLAC
 
-* Download <https://xerces.apache.org/mirrors.cgi#binary>
-* Extract it
+- Download <https://xerces.apache.org/mirrors.cgi#binary>
+- Extract it
 
 ```bash
 java -cp xercesImpl.jar:xercesSamples.jar sax.Counter -n -np -v -s -f item.xml
