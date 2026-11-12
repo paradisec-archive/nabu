@@ -21,7 +21,7 @@ services:
       AWS_SECRET_ACCESS_KEY:
       AWS_SESSION_TOKEN:
       NABU_CATALOG_BUCKET: nabu-catalog-prod
-      OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
+      OPENSEARCH_URL: http://search:9200
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
       RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
       RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
@@ -38,8 +38,8 @@ services:
   proxy:
     image: nginx
     ports:
-      - "3000:80"
-      - "3443:443"
+      - "127.0.0.1:3000:80"
+      - "127.0.0.1:3443:443"
     volumes:
       - ./docker/nginx.conf-dev:/etc/nginx/conf.d/default.conf
       - ./docker/cert.pem:/etc/nginx/certs/cert.pem
@@ -51,7 +51,7 @@ services:
   db:
     image: mysql:8.4
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     environment:
@@ -61,12 +61,11 @@ services:
   search:
     image: opensearchproject/opensearch:2.19.6
     ports:
-      - "9200:9200"
-      - "9600:9600"
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9600:9600"
     environment:
       discovery.type: single-node
-      plugins.security.ssl.http.enabled: false
-      OPENSEARCH_INITIAL_ADMIN_PASSWORD: fqo6bzr27*6Rdsshgsa7
+      DISABLE_SECURITY_PLUGIN: "true"
       cluster.routing.allocation.disk.watermark.low: 96%
       cluster.routing.allocation.disk.watermark.high: 97%
       cluster.routing.allocation.disk.watermark.flood_stage: 98%
@@ -78,14 +77,14 @@ services:
   # search-dashboards:
   #   image: opensearchproject/opensearch-dashboards:latest
   #   ports:
-  #     - "5601:5601"
+  #     - "127.0.0.1:5601:5601"
   #   environment:
   #     OPENSEARCH_HOSTS: '["http://search:9200"]'
 
   s3:
     image: adobe/s3mock
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     environment:
       initialBuckets: nabu-catalog-prod
     volumes:
@@ -93,7 +92,7 @@ services:
 
   oni:
     ports:
-      - "7000:80"
+      - "127.0.0.1:7000:80"
     build:
       context: docker
       dockerfile: oni.Dockerfile
