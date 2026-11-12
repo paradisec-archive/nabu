@@ -1,4 +1,5 @@
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
@@ -29,6 +30,24 @@ import { acknowledgeNag } from './nag';
 import type { AppProps } from './types';
 
 const SENTRY_DSN = 'https://aa8f28b06df84f358949b927e85a924e@o4504801902985216.ingest.sentry.io/4504801910980608';
+
+const RUBY_IMAGE = `ruby:${readFileSync('../.ruby-version', 'utf8')
+  .trim()
+  .replace(/^ruby-/, '')}-slim`;
+
+// CDK only hashes the build context, so a base image bin/release pulled fresh wouldn't trigger a rebuild without this
+const baseImageHash = (...images: string[]) =>
+  images
+    .map((image) => {
+      try {
+        return execFileSync('docker', ['image', 'inspect', '--format', '{{.Id}}', image], { stdio: ['ignore', 'pipe', 'ignore'] })
+          .toString()
+          .trim();
+      } catch {
+        return `${image}:not-pulled`;
+      }
+    })
+    .join(',');
 
 // The ceiling here is the VPC, not the Fargate vCPU quota: the application subnets are /28s, so
 // there are only a few dozen task addresses in the whole account.
@@ -350,6 +369,7 @@ export class AppStack extends cdk.Stack {
       memoryLimitMiB: 64,
       image: ecs.ContainerImage.fromAsset('../docker', {
         file: 'sentry-nginx.Dockerfile',
+        extraHash: baseImageHash('nginx:alpine'),
       }),
       portMappings: [{ name: 'nginx', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'SentryNginx' }),
@@ -380,7 +400,7 @@ export class AppStack extends cdk.Stack {
     oniTaskDefinition.addContainer('OniContainer', {
       containerName: 'oni',
       memoryLimitMiB: 128,
-      image: ecs.ContainerImage.fromAsset('../docker', { file: 'oni.Dockerfile' }),
+      image: ecs.ContainerImage.fromAsset('../docker', { file: 'oni.Dockerfile', extraHash: baseImageHash('ghcr.io/crate-works/oni:3') }),
       portMappings: [{ name: 'oni', containerPort: 80 }],
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'OniService' }),
       environment: {
@@ -438,6 +458,7 @@ export class AppStack extends cdk.Stack {
       buildArgs: {
         GIT_SHA: execSync('git rev-parse HEAD').toString().trim(),
       },
+      extraHash: baseImageHash('node:lts-slim', RUBY_IMAGE),
     });
 
     if (!db.secret) {
@@ -707,6 +728,7 @@ export class AppStack extends cdk.Stack {
     if (env === 'prod') {
       const image = new ecrAssets.DockerImageAsset(this, 'CopyToMediafluxImage', {
         directory: 'docker/mediaflux',
+        extraHash: baseImageHash('node:lts-slim'),
       });
 
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
