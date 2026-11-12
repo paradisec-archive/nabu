@@ -2,9 +2,12 @@
 
 CI.run do
   step 'Style: Ruby', 'bin/rubocop'
+  step 'Style: Biome', 'pnpm lint:biome'
+  step 'Unused code: knip', 'pnpm lint:knip'
 
   step 'Security: Brakeman code analysis', 'bin/brakeman --no-pager'
   step 'Security: Gem audit', 'bin/bundle-audit'
+  step 'Security: JavaScript audit', 'pnpm audit --audit-level=moderate'
 
   # Every step runs unless guarded, and the suite takes minutes
   if success?
