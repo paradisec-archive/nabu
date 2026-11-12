@@ -21,7 +21,7 @@ services:
       AWS_SECRET_ACCESS_KEY:
       AWS_SESSION_TOKEN:
       NABU_CATALOG_BUCKET: nabu-catalog-prod
-      OPENSEARCH_URL: http://admin:fqo6bzr27*6Rdsshgsa7@search:9200
+      OPENSEARCH_URL: http://search:9200
       OPENID_SIGNING_KEY: ${OPENID_SIGNING_KEY}
       RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
       RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
@@ -61,12 +61,12 @@ services:
   search:
     image: opensearchproject/opensearch:2.19.6
     ports:
-      - "9200:9200"
-      - "9600:9600"
+      # No security plugin, so keep it off the LAN
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9600:9600"
     environment:
       discovery.type: single-node
-      plugins.security.ssl.http.enabled: false
-      OPENSEARCH_INITIAL_ADMIN_PASSWORD: fqo6bzr27*6Rdsshgsa7
+      DISABLE_SECURITY_PLUGIN: "true"
       cluster.routing.allocation.disk.watermark.low: 96%
       cluster.routing.allocation.disk.watermark.high: 97%
       cluster.routing.allocation.disk.watermark.flood_stage: 98%
