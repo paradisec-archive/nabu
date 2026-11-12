@@ -9,6 +9,9 @@ Sentry.init do |config|
 
   config.enabled_environments = %w[production staging]
 
+  # Cron monitors for every task in config/recurring.yml
+  config.enabled_patches << :solid_queue_recurring
+
   # NOTE: We do this because otherwise when we enable debug logging in staging it impacts sentry too
   config.sdk_logger = Logger.new(STDOUT)
   config.sdk_logger.level = ::Logger::INFO

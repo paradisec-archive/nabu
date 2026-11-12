@@ -1,10 +1,10 @@
 # TODO
 
-* Do solidQ/activeJob errors get caught by sentry?
+- Do solidQ/activeJob errors get caught by sentry?
 
 ## AWS
 
-* Move the ECS to app instead of ingress subnet (MAYBE test in stage first)
+- Move the ECS to app instead of ingress subnet (MAYBE test in stage first)
 
 ## API
 
@@ -14,28 +14,28 @@ If we give tokens to more than paragest we need to rethink this
 
 ## Need Nick
 
-* Rotate the recaptcha keys and switch to v3
+- Rotate the recaptcha keys and switch to v3
 
 ## General Notes
 
-* Should some of the stuff we do as jobs be live?
+- Should some of the stuff we do as jobs be live?
 
 ## Stuff to replace
 
-* Move to_rif in collections controller to a haml template
-* Should we use authenticate_users on dashboard or should cancan just do it?
-* DB is all latin1 can we move to utf8mb4
-* set set_paper_trail_whodunnit - check live db to see if it's empty for users
-* Move enabling paper trail to base model and then disable on users specifically
-* CHeck f.submmit :confirm should this be data?
-* Can we move paper_trail to ApplicationRecord?
-* permit! used for search is bad
-* There dont' seem to be any graphql tests???
-* grpahql schema do we want all the nulls that were included in the upgrade
-* Add everything needed to search_params
-* language.retired to language.retired?
-* Fix comments so they are ajax again
-* paper-trail can we move to JSON serialzer
+- Move to_rif in collections controller to a haml template
+- Should we use authenticate_users on dashboard or should cancan just do it?
+- DB is all latin1 can we move to utf8mb4
+- set set_paper_trail_whodunnit - check live db to see if it's empty for users
+- Move enabling paper trail to base model and then disable on users specifically
+- CHeck f.submmit :confirm should this be data?
+- Can we move paper_trail to ApplicationRecord?
+- permit! used for search is bad
+- There dont' seem to be any graphql tests???
+- grpahql schema do we want all the nulls that were included in the upgrade
+- Add everything needed to search_params
+- language.retired to language.retired?
+- Fix comments so they are ajax again
+- paper-trail can we move to JSON serialzer
 
 ## OAI
 

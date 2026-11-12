@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,20 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!vendor", "!.claude/settings.local.json", "!spec/support/schema", "!cdk/cdk.out", "!cdk/cdk.context.json", "!cdk.json"]
+    "includes": [
+      "**",
+      "!vendor",
+      "!.claude/settings.local.json",
+      "!spec/support/schema",
+      "!cdk/cdk.out",
+      "!cdk/cdk.context.json",
+      "!cdk.json",
+      "!.annotaterb.yml",
+      "!pnpm-workspace.yaml",
+      "!config/locales/devise.en.yml",
+      "!config/locales/doorkeeper.en.yml",
+      "!config/locales/doorkeeper_openid_connect.en.yml"
+    ]
   },
   "formatter": {
     "enabled": true,

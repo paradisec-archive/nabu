@@ -17,14 +17,9 @@
       "ignoreDependencies": ["tailwindcss"]
     },
     "cdk": {
-      "entry": ["bin/app.ts"],
       "project": ["{bin,lib}/**/*.ts"],
-      "ignoreDependencies": [
-        // cdk.json runs `tsx bin/app.ts`
-        "tsx",
-        // bin/release runs it
-        "cdk-agc"
-      ]
+      // bin/release runs it
+      "ignoreDependencies": ["cdk-agc"]
     },
     "cdk/docker/mediaflux": {
       "entry": [

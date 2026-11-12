@@ -1,17 +1,14 @@
 module HasBoundaries
   extend ActiveSupport::Concern
 
+  Boundaries = Data.define(:north_limit, :south_limit, :west_limit, :east_limit)
+
   included do
     validate :extent_not_swapped
 
     def boundaries
       return unless has_all_boundaries?
-      OpenStruct.new(
-        north_limit: north_limit,
-        south_limit: south_limit,
-        west_limit: west_limit,
-        east_limit: east_limit
-      )
+      Boundaries.new(north_limit:, south_limit:, west_limit:, east_limit:)
     end
 
     # A limit of zero is a real edge — the equator and the prime meridian — and Rails reads a zero
