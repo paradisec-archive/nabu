@@ -31,9 +31,11 @@ if [ "$BRANCH_DEPLOY" != "true" ]; then
   git switch main
 fi
 
-# Pull docker images for the new release
-docker pull node:lts-alpine
-docker pull ubuntu:24.04
+# Pull base images so the release picks up upstream fixes; cdk/lib/app-stack.ts rebuilds any whose image changed
+RUBY_VERSION=$(sed 's/^ruby-//' .ruby-version)
+docker pull "ruby:${RUBY_VERSION}-slim"
+docker pull node:lts-slim
+docker pull nginx:alpine
 docker pull ghcr.io/crate-works/oni:3
 docker pull ghcr.io/crate-works/downloader:latest
 
