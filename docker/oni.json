@@ -144,9 +144,7 @@
     },
     "takedown": "mailto:admin@paradisec.org.au?subject=Content%20Removal%20Request&body=Hi%20Admins%2C%0A%0AURL%3A%20{url}%0A%0AReason%3A%20%3CWhy%20do%20you%20think%20this%20should%20be%20removed%3F%3E%0A%0A",
     "sentry": {
-      "tracesSampleRate": 0.1,
-      "replaysSessionSampleRate": 0.1,
-      "replaysOnErrorSampleRate": 1.0
+      "tracesSampleRate": 0.1
     },
     "citeData": {
       "help": {
