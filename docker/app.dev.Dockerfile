@@ -3,6 +3,8 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.4.9
+FROM docker.io/library/node:lts-slim AS node
+
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -18,20 +20,12 @@ RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev libyaml-dev git pkg-config && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-ENV NODE_VERSION=24.15.0
-ENV NVM_DIR=/usr/local/nvm
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-RUN mkdir -p $NVM_DIR
-# Setup node
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && \
-  . $NVM_DIR/nvm.sh && \
-  nvm install $NODE_VERSION && \
-  nvm alias default $NODE_VERSION  && \
-  nvm use default && \
-  corepack enable
-
-ENV NODE_PATH=$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
-ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+# Install Node and pnpm; pnpm switches itself to the version in package.json's packageManager
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+  ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx && \
+  npm install -g pnpm
 
 # Set production environment
 ENV RAILS_ENV="development" \
