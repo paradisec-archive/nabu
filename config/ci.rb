@@ -2,6 +2,8 @@
 
 CI.run do
   step 'Style: Ruby', 'bin/rubocop'
+  step 'Style: Biome', 'pnpm lint:biome'
+  step 'Unused code: knip', 'pnpm lint:knip'
 
   step 'Security: Brakeman code analysis', 'bin/brakeman --no-pager'
   step 'Security: Gem audit', 'bin/bundle-audit'

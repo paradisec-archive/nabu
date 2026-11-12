@@ -68,6 +68,31 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  lint_js:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint and check formatting with Biome
+        run: pnpm lint:biome
+
+      - name: Find unused files, exports and dependencies with knip
+        run: pnpm lint:knip
+
   test:
     runs-on: ubuntu-latest
 
