@@ -13,9 +13,13 @@ WORKDIR /app
 RUN wget -q "$MF_CLIENT_URL" \
   && tar -xzf "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
   && rm "unimelb-mf-clients-${MF_CLIENT_VERSION}-linux-x64.tar.gz" \
-  && mv ./* mf
+  && mv ./* mf \
+  && rm -rf mf/jre
 
-# The bundled JRE derives its filesystem path encoding (sun.jnu.encoding) from the
+# The client's own JRE lags upstream security releases; Corretto ships fixes promptly.
+COPY --from=amazoncorretto:21-al2023-headless /usr/lib/jvm/java-21-amazon-corretto/ /app/mf/jre/
+
+# The JRE derives its filesystem path encoding (sun.jnu.encoding) from the
 # locale; without this, non-ASCII filenames throw InvalidPathException and whole
 # check batches are silently skipped.
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8

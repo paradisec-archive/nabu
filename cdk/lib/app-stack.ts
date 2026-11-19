@@ -728,7 +728,7 @@ export class AppStack extends cdk.Stack {
     if (env === 'prod') {
       const image = new ecrAssets.DockerImageAsset(this, 'CopyToMediafluxImage', {
         directory: 'docker/mediaflux',
-        extraHash: baseImageHash('node:lts-slim'),
+        extraHash: baseImageHash('node:lts-slim', 'amazoncorretto:21-al2023-headless'),
       });
 
       const mediafluxSecrets = new secretsmanager.Secret(this, 'MediaFluxSecrets', {
