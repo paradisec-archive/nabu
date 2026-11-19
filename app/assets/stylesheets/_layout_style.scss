@@ -74,92 +74,11 @@ body.bp {
     .auth {
       display: inline;
       padding-top: 10px;
-      margin-right: 0 !important;
+      margin-right: 0;
       font-size: 16px;
 
       .inner {
         float: right;
-      }
-    }
-  }
-
-  #nav {
-    width: 100%;
-    height: 36px;
-    background: #617798;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-
-    #menu {
-      height: 36px;
-      padding: 0;
-
-      margin: 0;
-      overflow: hidden;
-
-      font-size: 18px;
-      border: 0;
-
-      li {
-        float: left;
-        display: inline;
-        margin-left: 0;
-
-        white-space: nowrap;
-        list-style-type: none;
-        list-style-image: none;
-
-        &:first-child,
-        &.first {
-          padding-left: 0;
-        }
-
-        &:last-child {
-          padding-right: 0;
-        }
-
-        &.last {
-          padding-right: 0;
-        }
-
-        padding: {
-          right: 0px;
-          left: 0px;
-        }
-      }
-
-      li {
-        float: left;
-        display: block;
-        line-height: 32px;
-        border-width: 0 2px 0 1px;
-
-        a {
-          display: block;
-          height: 34px;
-          padding: 0 80px 0 40px;
-          color: white;
-          background: #617798;
-          border: solid 1px #20538d;
-
-          &:hover,
-          &:focus {
-            background: #356094;
-          }
-
-          &:active {
-            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
-          }
-
-          &.active {
-            background: #20538d;
-          }
-        }
-      }
-
-      li:last-child {
-        float: right;
-        display: block;
-        text-align: right;
       }
     }
   }
@@ -313,6 +232,11 @@ body.bp {
       a {
         padding: 0px 5px;
       }
+
+      a.minwhitespace {
+        padding: 0;
+        margin: 0;
+      }
     }
   }
 
@@ -392,13 +316,18 @@ body.bp {
     }
   }
 
+  .choices {
+    margin-bottom: inherit;
+  }
+
   input[type="text"],
   input[type="email"],
   input[type="password"],
   input[type="date"],
   textarea,
   div .choices,
-  td select {
+  /* biome-ignore lint/style/noDescendingSpecificity: must follow table.form select, which ties with td select:hover/:focus */
+    td select {
     background: linear-gradient(to top, #ffffff, #eeeeee 1px, #ffffff 25px);
 
     border: solid 1px #e5e5e5;
@@ -484,7 +413,7 @@ body.bp {
 
   .right {
     float: right;
-    display: inline-block !important;
+    display: inline-block;
   }
 
   .clear {
@@ -555,9 +484,6 @@ body.bp {
   }
 
   // choices.js
-  .choices {
-    margin-bottom: inherit;
-  }
   .choices__inner {
     min-height: inherit;
   }
@@ -767,9 +693,85 @@ body.bp {
     }
   }
 
-  .minwhitespace {
-    padding: 0 !important;
-    margin: 0 !important;
+  #nav {
+    width: 100%;
+    height: 36px;
+    background: #617798;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+    #menu {
+      height: 36px;
+      padding: 0;
+
+      margin: 0;
+      overflow: hidden;
+
+      font-size: 18px;
+      border: 0;
+
+      li {
+        float: left;
+        display: inline;
+        margin-left: 0;
+
+        white-space: nowrap;
+        list-style-type: none;
+        list-style-image: none;
+
+        &:first-child,
+        &.first {
+          padding-left: 0;
+        }
+
+        &:last-child {
+          padding-right: 0;
+        }
+
+        &.last {
+          padding-right: 0;
+        }
+
+        padding: {
+          right: 0px;
+          left: 0px;
+        }
+      }
+
+      li {
+        float: left;
+        display: block;
+        line-height: 32px;
+        border-width: 0 2px 0 1px;
+
+        a {
+          display: block;
+          height: 34px;
+          padding: 0 80px 0 40px;
+          color: white;
+          background: #617798;
+          border: solid 1px #20538d;
+
+          &:hover,
+          &:focus {
+            background: #356094;
+          }
+
+          &:active {
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
+          }
+
+          &.active {
+            background: #20538d;
+          }
+        }
+      }
+
+      li:last-child {
+        float: right;
+        display: block;
+        text-align: right;
+      }
+    }
   }
 
   $blue: #e5ecf9;
@@ -784,5 +786,6 @@ body.bp {
 }
 
 .hidden {
+  // biome-ignore lint/complexity/noImportantStyles: utility class must beat component display rules
   display: none !important;
 }
