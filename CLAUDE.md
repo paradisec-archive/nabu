@@ -35,6 +35,15 @@ nabu_run bundle exec rubocop
   Only run it by hand.
 - Run `nabu_run bin/ci` before calling work done. It runs rubocop, Biome, knip, brakeman, bundle-audit and pnpm audit, then the full suite if those passed.
 
+## Deploying
+
+- `bin/release stage|prod` (`--branch` for stage only): fast-forwards the `stage`/`prod` branch from main, pulls base images,
+  runs `cdk deploy nabu-appstack-<env>` with AWS profile `nabu-<env>`, then force-redeploys `downloader`.
+- Prod is account 618916419351, stage 847483222616, both in ap-southeast-2, ECS cluster `nabu` (services app, jobs, downloader, oni, sentry).
+- The production image is the root `Dockerfile`. Keep its `RUBY_VERSION` ARG, `docker/app.dev.Dockerfile` and `.ruby-version` in step.
+- To check what's running, read the image from the `app` service's task definition, log in with `aws ecr get-login-password`, then
+  `docker buildx imagetools inspect <image>` and look for `RUBY_VERSION`.
+
 ## Agent skills
 
 ### Issue tracker
