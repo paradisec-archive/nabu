@@ -2,7 +2,7 @@
 # check=error=true
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.4.9
+ARG RUBY_VERSION=3.4.13
 FROM docker.io/library/node:lts-slim AS node
 
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
